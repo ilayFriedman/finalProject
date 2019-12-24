@@ -29,9 +29,9 @@ app.use(function(req,res,next){
 // set connection to DB
 mongoose.connect('mongodb://localhost:27017/ourDB', function (err, db) {
     console.log('Connect to DB')
-})
-mongoose.connection.on('connected', () => console.log('Connected'));
-mongoose.connection.on('error', () => console.log('Connection failed with - ',err));
+});
+// mongoose.connection.on('connected', () => console.log('Connected'));
+// mongoose.connection.on('error', () => console.log('Connection failed with - ',err));
 
 // PORT LISTENER
 app.listen(port, function () {

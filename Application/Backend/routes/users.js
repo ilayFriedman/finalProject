@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 //     next();
 // });
 
+//TODO If user is not found, return an error (perhaps 404)
+
 router.post('/login', async function (req, res) {
         try {
             await user.find({
@@ -28,6 +30,7 @@ router.post('/login', async function (req, res) {
                     }
                 } else {
                     console.log(err)
+                    //TODO shouldn't this be a 500?
                     res.status(400).send(`problem: ${err}`)
                 }
             })
