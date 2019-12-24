@@ -22,19 +22,26 @@ router.get('/private/getMap', async function (req, res) {
 
 router.post('/private/createMap', async function (req, res) {
     try {
-        var Creator = req.decoded.username;
+        var CreatorId = req.decoded._id;
         var newMap = new map({
-            Name: req.body.Name,
-            Creator: Creator,
+            MapName: req.body.MapName,
+            CreatorId: CreatorId,
             CreationTime: new Date(),
             Description: req.body.Description,
-            Model: req.body.Model
+            Model: req.body.Model,
+            Permission: {
+                "Owner": {"userId": CreatorId, "permission": "owner"},
+                "Users": [{"userId": CreatorId, "permission": "owner"}],
+                "Groups": []
+            },
+            Subscribers: [],
+            ContainingFolders: []
         })
         newMap.save(function (err) {
-            if (err){
+            if (err) {
                 console.log(err)
                 res.status(400).send(`problem: ${err}`)
-            }else{
+            } else {
                 res.status(200).send("map added successfully")
             }
         });
@@ -42,6 +49,58 @@ router.post('/private/createMap', async function (req, res) {
         console.log(e);
         res.status(500).send(`problem: ${e}`)
     }
+})
+
+router.delete('/private/removeMap', async function (req, res) {
+    if (req.body._id) {
+        map.remove({_id: req.body._id}, function (err) {
+            if (err) {
+                console.log(err)
+                res.status(400).send(`problem: ${err}`)
+            } else {
+                res.status(200).send("map deleted successfully")
+            }
+        });
+    }
+})
+
+router.get('/private/getAllUserMaps', async function (req, res) {
+    try {
+        await map.find({
+            'CreatorId': req.decoded._id
+        }, function (err, result) {
+            if (result) {
+                res.send(result);
+            } else {
+                res.status(400).send(`problem: ${err}`)
+            }
+        })
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`)
+    }
+})
+
+router.put('/private/updateMap', async function (req, res){
+    if(req.body._id){
+        // map.find({"_id": req.body._id}, function(err, result) {
+        //     if (err) {
+        //         console.log(err)
+        //         res.status(400).send(`problem: ${err}`)
+        //     } else {
+        //         console.log(result)
+        //         res.status(200).send("map deleted successfully")
+        //     }
+        // });
+        map.findOneAndUpdate({"_id": req.body._id}, {'Model': req.body.model}, function(err) {
+            if (err) {
+                console.log(err)
+                res.status(400).send(`problem: ${err}`)
+            } else {
+                res.status(200).send("map deleted successfully")
+            }
+        });
+    }
+
 })
 
 

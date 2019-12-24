@@ -27,7 +27,7 @@ app.use(function(req,res,next){
 })
 
 // set connection to DB
-mongoose.connect('mongodb://localhost:27017/ourDB', { useNewUrlParser: true, useUnifiedTopology: true }, function (err, db) {
+mongoose.connect('mongodb://localhost:27017/ourDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err, db) {
     console.log('Connect to DB')
 });
 
@@ -54,5 +54,7 @@ app.use('/private', function (req, res, next) {
 //Call routes
 app.post('/login', usersRoute);
 app.get('/private/getMap', mapsRoute);
+app.get('/private/getAllUserMaps', mapsRoute);
 app.post('/private/createMap', mapsRoute);
-app.delete('/private/deleteMap', mapsRoute);
+app.delete('/private/removeMap', mapsRoute);
+app.put('/private/updateMap', mapsRoute);

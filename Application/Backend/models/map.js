@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
 const MapSchema = new mongoose.Schema({
-    Name: {
+    MapName: {
         type: String,
         required: true
     },
-    Creator: {
+    CreatorId: {
         type: String,
         required: true
     },
@@ -23,11 +23,15 @@ const MapSchema = new mongoose.Schema({
     },
     Permission: {
         type: Object,
-        required: false
+        required: true
     },
-    Followers: {
+    Subscribers: {
         type: Array,
-        required: false
+        required: true
+    },
+    ContainingFolders: {
+        type: Array,
+        default: []
     }
 })
 
