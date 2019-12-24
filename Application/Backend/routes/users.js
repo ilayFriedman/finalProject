@@ -18,12 +18,10 @@ router.post('/login', async function (req, res) {
                 'Password': req.body.Password
             }, function (err, result) {
                 if (result) {
-                    console.log(result)
                     if (result.length > 0) {
                         let payload = {username: req.body.Username};
                         let options = {expiresIn: "1d"};
                         const token = jwt.sign(payload, secret, options);
-                        console.log(user)
                         res.send({"token": token, "full_name": result[0].FirstName + " " + result[0].LastName});
                     } else {
                         res.send("No such user")

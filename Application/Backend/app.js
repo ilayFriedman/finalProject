@@ -27,11 +27,9 @@ app.use(function(req,res,next){
 })
 
 // set connection to DB
-mongoose.connect('mongodb://localhost:27017/ourDB', function (err, db) {
+mongoose.connect('mongodb://localhost:27017/ourDB', { useNewUrlParser: true, useUnifiedTopology: true }, function (err, db) {
     console.log('Connect to DB')
 });
-// mongoose.connection.on('connected', () => console.log('Connected'));
-// mongoose.connection.on('error', () => console.log('Connection failed with - ',err));
 
 // PORT LISTENER
 app.listen(port, function () {
@@ -58,5 +56,3 @@ app.post('/login', usersRoute);
 app.get('/private/getMap', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.delete('/private/deleteMap', mapsRoute);
-
-
