@@ -22,18 +22,20 @@ router.get('/private/getMap', async function (req, res) {
 
 router.post('/private/createMap', async function (req, res) {
     try {
-        var username = req.decoded.username;
+        var Creator = req.decoded.username;
         var newMap = new map({
-            Name: req.body.mapName,
-            Creator: username,
+            Name: req.body.Name,
+            Creator: Creator,
             CreationTime: new Date(),
-            Description: req.body.description,
-            Model: req.body.map
+            Description: req.body.Description,
+            Model: req.body.Model
         })
         newMap.save(function (err) {
             if (err){
                 console.log(err)
                 res.status(400).send(`problem: ${err}`)
+            }else{
+                res.status(200).send("map added successfully")
             }
         });
     } catch (e) {

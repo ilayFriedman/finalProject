@@ -14,13 +14,13 @@ const jwt = require('jsonwebtoken');
 router.post('/login', async function (req, res) {
         try {
             await user.find({
-                'UserName': req.body.UserName,
+                'Username': req.body.Username,
                 'Password': req.body.Password
             }, function (err, result) {
                 if (result) {
                     console.log(result)
                     if (result.length > 0) {
-                        let payload = {username: req.body.username};
+                        let payload = {username: req.body.Username};
                         let options = {expiresIn: "1d"};
                         const token = jwt.sign(payload, secret, options);
                         console.log(user)
@@ -30,15 +30,14 @@ router.post('/login', async function (req, res) {
                     }
                 } else {
                     console.log(err)
-                    //TODO shouldn't this be a 500?
-                    res.status(400).send(`problem: ${err}`)
+                    res.status(500).send(`problem: ${err}`)
                 }
             })
         } catch (e) {
             console.log(e);
             res.status(500).send(`problem: ${e}`)
         }
-        console.log(req.body);
+        // console.log(req.body);
     }
 );
 
