@@ -4,6 +4,7 @@ const server = require('../Backend/app');
 const should = chai.should();
 const dbHandler = require('./db-handler');
 const user = require('../Backend/models/user')
+const map = require('../Backend/models/map')
 
 chai.use(chaiHttp);
 const serverAddress = "http://localhost:3000";
@@ -12,15 +13,15 @@ const existingUserPass = 'a';
 const missingUsername = 'noSuchUser';
 const missingUserPass = 'noSuchPass';
 
-describe('Users', function() {
+describe('Users', function () {
 
     /**
      * Connect to a new in-memory database before running any tests.
      * Then, insert a test user.
      */
-    before(async function(){
-        await dbHandler.connect({ useUnifiedTopology: true, });
-        var newMap = new user({
+    before(async function () {
+        await dbHandler.connect({useUnifiedTopology: true,});
+        var newUser = new user({
             Username: "a",
             Password: "a",
             FirstName: "FirstName",
@@ -28,48 +29,199 @@ describe('Users', function() {
             City: "City",
             Country: "Country"
         })
-        newMap.save(function (err) {});
+        newUser.save(function (err) {
+        });
     });
-
-
-    /**
-     * Clear all test data after every test.
-     */
-    afterEach(async () => await dbHandler.clearDatabase());
 
     /**
      * Remove and close the db and server.
      */
-    after(async () => await dbHandler.closeDatabase());
-
-    it('should return the user\'s full name, and a token', function(done) {
-
-        chai.request(serverAddress)
-            .post('/login')
-            .send({ Username: existingUsername,
-                    Password: existingUserPass
-                })
-            .end(function(err, res, body){
-                res.statusCode.should.equal(200);
-                res.body.full_name.should.equal("FirstName LastName");
-
-                done();
-            }
-        );
+    after(async function () {
+        await dbHandler.clearDatabase()
+        await dbHandler.closeDatabase()
     });
 
-    it('should not find such user', function(done) {
+    it('should return the user\'s full name, and a token', function (done) {
+
         chai.request(serverAddress)
             .post('/login')
-            .send({ Username: missingUsername,
-                Password: missingUserPass
+            .send({
+                Username: existingUsername,
+                Password: existingUserPass
             })
-            .end(function(err, res, body){
+            .end(function (err, res, body) {
                     res.statusCode.should.equal(200);
-                    res.text.should.equal("No such user");
+                    res.body.full_name.should.equal("FirstName LastName");
 
                     done();
                 }
             );
     });
+
+    it('should not find such user', function (done) {
+            chai.request(serverAddress)
+                .post('/login')
+                .send({
+                    Username: missingUsername,
+                    Password: missingUserPass
+                })
+                .end(function (err, res) {
+                        res.statusCode.should.equal(200);
+                        res.text.should.equal("No such user");
+
+                        done();
+                    }
+                );
+        }
+    );
+});
+
+describe('Maps', function () {
+
+    /**
+     * Connect to a new in-memory database before running any tests.
+     * Then, insert a test map.
+     */
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImEiLCJfaWQiOiI1ZTAxYzhkNDA0Mjg1NjI0MTRkNWFiNWMiLCJpYXQiOjE1NzcxOTQwNDYsImV4cCI6MTU3NzI4MDQ0Nn0.R_dS-qbLhop1UzpsafuSfA_t2plP96Tna1E9uPSy4s0"
+    before(async function () {
+        await dbHandler.connect({useUnifiedTopology: true,});
+        // let newMap = new map({
+        //     MapName: "TestMap",
+        //     CreatorID: "a",
+        //     Description: "Description",
+        //     Model: { "class": "go.GraphLinksModel",
+        //         "modelData": {"position":"-658 -379"},
+        //         "nodeDataArray": [
+        //             {"category":"Task", "text":"Task", "fill":"#ffffff", "stroke":"#000000", "strokeWidth":1, "description":"Add a Description", "key":-1, "loc":"-221.515625 -280", "refs":[], "ctxs":[], "comment":"5e01d8ce58d49412d0a5cba0"},
+        //             {"category":"Quality", "text":"Quality", "fill":"#ffffff", "stroke":"#000000", "strokeWidth":1, "description":"Add a Description", "key":-2, "loc":"-217.515625 -132", "refs":[], "ctxs":[], "comment":null}
+        //         ],
+        //         "linkDataArray": [ {"category":"Association", "text":"", "toArrow":"", "routing":{"class":"go.EnumValue", "classType":"Link", "name":"Normal"}, "description":"Add a Description", "points":[-221.0908251994365,-264.28240737915036,-217.96977391360795,-148.80350980349422], "from":-1, "to":-2, "refs":[], "ctxs":[], "comment":null} ]}
+        // })
+        // newMap.save(function (err) {});
+    });
+
+    /**
+     * Remove and close the db and server.
+     */
+    after(async function () {
+        await dbHandler.clearDatabase()
+        await dbHandler.closeDatabase()
+    });
+
+    it('should add a map', function (done) {
+
+        chai.request(serverAddress)
+            .post('/private/createMap')
+            .set('token', `${token}`)
+            .send({
+                MapName: "oren4",
+                CreatorId: "5e01c8d40428562414d5ab5c",
+                Description: "Description",
+                Model: {
+                    class: "go.GraphLinksModel",
+                    modelData: {position: "-658 -379"},
+                    nodeDataArray: [
+                        {
+                            category: "Task",
+                            text: "Task",
+                            fill: "#ffffff",
+                            stroke: "#000000",
+                            strokeWidth: 1,
+                            description: "Add a Description",
+                            key: -1,
+                            "loc": "-221.515625 -280",
+                            "refs": [],
+                            "ctxs": [],
+                            "comment": "5e01d8ce58d49412d0a5cba0"
+                        },
+                        {
+                            "category": "Quality",
+                            "text": "Quality",
+                            "fill": "#ffffff",
+                            "stroke": "#000000",
+                            "strokeWidth": 1,
+                            "description": "Add a Description",
+                            "key": -2,
+                            "loc": "-217.515625 -132",
+                            "refs": [],
+                            "ctxs": [],
+                            "comment": null
+                        }
+                    ],
+                    "linkDataArray": [{
+                        "category": "Association",
+                        "text": "",
+                        "toArrow": "",
+                        "routing": {"class": "go.EnumValue", "classType": "Link", "name": "Normal"},
+                        "description": "Add a Description",
+                        "points": [-221.0908251994365, -264.28240737915036, -217.96977391360795, -148.80350980349422],
+                        "from": -1,
+                        "to": -2,
+                        "refs": [],
+                        "ctxs": [],
+                        "comment": null
+                    }]
+                }
+            })
+            .end(function (err, res) {
+                    res.statusCode.should.equal(200);
+                    res.text.should.equal("map added successfully");
+
+                    done();
+                }
+            );
+    });
+
+    it('should not find a token', function (done) {
+            chai.request(serverAddress)
+                .post('/private/createMap')
+                .send()
+                .end(function (err, res) {
+                        res.statusCode.should.equal(401);
+                        res.text.should.equal("Access denied. No token provided.");
+
+                        done();
+                    }
+                );
+        }
+    );
+
+    it('should remove map', async function (done) {
+
+            await map.find({}, function (err, result) {
+                if (result) {
+                    console.log(result);
+                    if (result.length > 0) {
+                        let mapID = result[0]._id.toString();
+                        chai.request(serverAddress)
+                            .post('/private/removeMap')
+                            .set('token', `${token}`)
+                            .send({_id: mapID})
+                            .end(function (err, res) {
+                                    res.statusCode.should.equal(200);
+                                    res.text.should.equal("map deleted successfully");
+
+                                    done();
+                                }
+                            )
+                    }
+                }
+
+
+            });
+
+        }
+    );
+    // router.delete('/private/removeMap', async function (req, res) {
+    //     if (req.body._id) {
+    //         map.remove({_id: req.body._id}, function (err) {
+    //             if (err) {
+    //                 console.log(err)
+    //                 res.status(400).send(`problem: ${err}`)
+    //             } else {
+    //                 res.status(200).send("map deleted successfully")
+    //             }
+    //         });
+    //     }
+    // })
 });

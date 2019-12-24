@@ -40,15 +40,19 @@ app.listen(port, function () {
 app.use('/private', function (req, res, next) {
     const token = req.header("token");
     // no token
-    if (!token) res.status(401).send("Access denied. No token provided.");
-    // verify token
-    try {
-        const decoded = jwt.verify(token, secret);
-        req.decoded = decoded;
-    } catch (exception) {
-        res.status(400).send("Invalid token.");
+    if (!token){
+        res.status(401).send("Access denied. No token provided.");
     }
-    next()
+    else{
+        // verify token
+        try {
+            const decoded = jwt.verify(token, secret);
+            req.decoded = decoded;
+        } catch (exception) {
+            res.status(400).send("Invalid token.");
+        }
+        next();
+    }
 })
 
 //Call routes
