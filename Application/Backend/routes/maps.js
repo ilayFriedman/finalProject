@@ -53,15 +53,24 @@ router.post('/private/createMap', async function (req, res) {
 
 router.delete('/private/removeMap', async function (req, res) {
     if (req.body._id) {
-        map.remove({_id: req.body._id}, function (err) {
-            if (err) {
-                console.log(err);
-                res.status(400).send(`problem: ${err}`);
-            } else {
-                res.status(200).send("map deleted successfully");
+        map.findOne({_id: req.body._id}, function(err, result){
+            if(result){
+                map.deleteOne({_id: result._id}, function (err) {
+                    if (err) {
+                        res.status(500).send(`problem: ${err}`);
+                    } else {
+                        res.status(200).send("map deleted successfully");
+                    }
+                });
             }
-        });
+            else{
+                res.status(404).send(`Could not find a map with the given _id.`);
+            }
+        })
+    }else{
+        res.status(400).send(`Missing id of map`);
     }
+
 });
 
 router.get('/private/getAllUserMaps', async function (req, res) {
