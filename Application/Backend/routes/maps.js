@@ -98,6 +98,7 @@ router.get('/private/getAllUserMaps', async function (req, res) {
     }
 });
 
+//TODO enforce that only a user with Write permissions updates the map.
 router.put('/private/updateMap', async function (req, res){
     if(req.body._id){
         map.findOneAndUpdate({"_id": req.body._id}, {'Model': req.body.model}, function(err) {
@@ -109,7 +110,6 @@ router.put('/private/updateMap', async function (req, res){
             }
         });
     }
-
 });
 
 

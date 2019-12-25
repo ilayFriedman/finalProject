@@ -3,6 +3,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const mongod = new MongoMemoryServer();
 
+let isConnected = false;
 /**
  * Connect to the in-memory database.
  */
@@ -18,6 +19,7 @@ module.exports.connect = async () => {
     };
 
     await mongoose.connect(uri, mongooseOpts);
+    isConnected = true;
 };
 
 /**
@@ -27,6 +29,7 @@ module.exports.closeDatabase = async () => {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
     await mongod.stop();
+    isConnected = false;
 };
 
 /**
