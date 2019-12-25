@@ -11,13 +11,14 @@ module.exports.connect = async () => {
 
     const mongooseOpts = {
         useNewUrlParser: true,
-        autoReconnect: true,
-        reconnectTries: Number.MAX_VALUE,
-        reconnectInterval: 1000
+        //autoReconnect: true,
+        //reconnectTries: Number.MAX_VALUE,
+        //reconnectInterval: 1000,
+        useUnifiedTopology: true
     };
 
     await mongoose.connect(uri, mongooseOpts);
-}
+};
 
 /**
  * Drop database, close the connection and stop mongod.
@@ -26,7 +27,7 @@ module.exports.closeDatabase = async () => {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
     await mongod.stop();
-}
+};
 
 /**
  * Remove all the data for all db collections.
@@ -38,4 +39,4 @@ module.exports.clearDatabase = async () => {
         const collection = collections[key];
         await collection.deleteMany();
     }
-}
+};

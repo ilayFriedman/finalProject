@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const map = require('../models/map')
+const map = require('../models/map');
 const jwt = require('jsonwebtoken');
+const user = require ('../models/user');
 
 router.get('/private/getMap', async function (req, res) {
     try {
@@ -75,13 +76,21 @@ router.delete('/private/removeMap', async function (req, res) {
 
 router.get('/private/getAllUserMaps', async function (req, res) {
     try {
-        await map.find({
+        await user.findOne({
             'CreatorId': req.decoded._id
-        }, function (err, result) {
+        }, async function (err, result) {
             if (result) {
-                res.send(result);
+                await map.find({
+                    'CreatorId':result._id
+                }, function (err, result) {
+                    if (result) {
+                        res.send(result);
+                    } else {
+                        res.status(400).send(`problem: ${err}`);
+                    }
+                });
             } else {
-                res.status(400).send(`problem: ${err}`);
+                res.send("No such user")
             }
         });
     } catch (e) {

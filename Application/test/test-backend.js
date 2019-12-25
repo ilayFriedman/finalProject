@@ -8,10 +8,82 @@ const map = require('../Backend/models/map')
 
 chai.use(chaiHttp);
 const serverAddress = "http://localhost:3000";
-const existingUsername = 'a';
-const existingUserPass = 'a';
+
 const missingUsername = 'noSuchUser';
 const missingUserPass = 'noSuchPass';
+
+const testUserData = {
+    Username: "a",
+    Password: "a",
+    FirstName: "FirstName",
+    LastName: "LastName",
+    City: "City",
+    Country: "Country"
+}
+const testMapData = {
+    MapName: "oren4",
+    CreatorId: "5e01c8d40428562414d5ab5c",
+    Description: "shit1",
+    Model: {
+        class: "go.GraphLinksModel",
+        modelData: {position: "-658 -379"},
+        nodeDataArray: [
+            {
+                category: "Task",
+                text: "Task",
+                fill: "#ffffff",
+                stroke: "#000000",
+                strokeWidth: 1,
+                description: "Add a Description",
+                key: -1,
+                loc: "-221.515625 -280",
+                refs: [],
+                ctxs: [],
+                comment: "5e01d8ce58d49412d0a5cba0"
+            },
+            {
+                category: "Quality",
+                text: "Quality",
+                fill: "#ffffff",
+                stroke: "#000000",
+                strokeWidth: 1,
+                description: "Add a Description",
+                key: -2,
+                loc: "-217.515625 -132",
+                refs: [],
+                ctxs: [],
+                comment: null
+            }
+        ],
+        linkDataArray: [{
+            category: "Association",
+            text: "",
+            toArrow: "",
+            routing: {class: "go.EnumValue", classType: "Link", name: "Normal"},
+            description: "Add a Description",
+            points: [-221.0908251994365, -264.28240737915036, -217.96977391360795, -148.80350980349422],
+            from: -1,
+            to: -2,
+            refs: [],
+            ctxs: [],
+            comment: null
+        }]
+    }
+}
+let testUserId = "";
+
+let createUser = function (userData = testUserData) {
+    try {
+        const user = new user(userData);
+        user.save(function (err, user) {
+            if (user) {
+                testUserId = user._id;
+            }
+        });
+    } catch (e) {
+    }
+};
+
 
 describe('Users', function () {
 
@@ -20,17 +92,11 @@ describe('Users', function () {
      * Then, insert a test user.
      */
     before(async function () {
-        await dbHandler.connect({useUnifiedTopology: true,});
-        var newUser = new user({
-            Username: "a",
-            Password: "a",
-            FirstName: "FirstName",
-            LastName: "LastName",
-            City: "City",
-            Country: "Country"
-        });
-        newUser.save(function (err) {
-        });
+        await dbHandler.connect();
+        // let newUser = new user(testUserData);
+        // newUser.save(function (err) {
+        // });
+        createUser();
     });
 
     /**
@@ -43,15 +109,16 @@ describe('Users', function () {
 
     it('should return the user\'s full name, and a token', function (done) {
 
+        user.find({testUserData.})
         chai.request(serverAddress)
             .post('/login')
             .send({
-                Username: existingUsername,
-                Password: existingUserPass
+                Username: testUserData.Username,
+                Password: testUserData.Password
             })
             .end(function (err, res, body) {
                     res.statusCode.should.equal(200);
-                    res.body.full_name.should.equal("FirstName LastName");
+                    res.body.full_name.should.equal(testUserData.FirstName + " " + testUserData.LastName);
 
                     done();
                 }
