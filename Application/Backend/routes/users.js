@@ -24,7 +24,7 @@ router.post('/login', async function (req, res) {
                         const token = jwt.sign(payload, secret, options);
                         res.send({"token": token, "full_name": result[0].FirstName + " " + result[0].LastName});
                     } else {
-                        res.send("No such user")
+                        res.status(400).send("No such user")
                     }
                 } else {
                     console.log(err)
