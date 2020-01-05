@@ -1,0 +1,30 @@
+.navBar{
+  border-radius: 5px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  color: white;
+  position: fixed;
+  width: 99%;
+  top: 0px;
+}
+
+.spanItem {
+  float: left;
+  font-family: 'Calibri', sans-seif;
+}
+
+.spanItem a {
+  border-radius: 25px;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.spanItem a:hover:not(.active) {
+  background-color: #111;
+}

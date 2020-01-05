@@ -1,0 +1,13 @@
+<body>
+<nav class="navBar">
+  <span class="spanItem"><a ng-init="welcomePath = '#!/';" ng-href={{welcomePath}}>Home</a></span>
+  <span class="spanItem"><a href="#!LogIn" ng-hide="loged">Log In</a></span>
+  <span class="spanItem"><a href="#!Register" ng-hide="loged">Register</a></span>
+  <span class="spanItem" id="Mabout"><a href="">About</a></span>
+  <span class="spanItem"><a href="#!POIS">Points Of Interests</a></span>
+  <span class="spanItem"><a href="#!Favorites" ng-show="loged">My Favorites<span ng-controller="LoginHomeController"></span></a></span>
+  <span class="spanItem hello">Hello <span ng-controller="indexController">{{helloName()}}</span></span>
+  <span class="spanItem" style="float:right;font-weight: normal" ng-click="logOut()" ng-show="loged"><a href="#">Log Out</a></span>
+
+</nav>
+</body>
