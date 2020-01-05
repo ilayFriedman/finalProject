@@ -6,15 +6,18 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from "@angular/material";
 import { LoginComponent } from './login/login.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthenticationService} from "./services/authentication.service";
 import {HttpClientModule} from "@angular/common/http";
+import { InspectorComponent } from './inspector/inspector.component';
+import { GojsAngularModule } from 'gojs-angular';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
-  ],
+    LoginComponent,
+    InspectorComponent,
+],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -25,7 +28,9 @@ import {HttpClientModule} from "@angular/common/http";
     MatToolbarModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatButtonModule
+    MatButtonModule,
+    FormsModule,
+    GojsAngularModule
   ],
   providers: [
     AuthenticationService
