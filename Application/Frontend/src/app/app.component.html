@@ -3,13 +3,12 @@
 <!--    <button mat-icon-button>-->
 <!--      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>-->
 <!--    </button>-->
-    <h1>ME-Mapper</h1>
+    <h1 mat-button [routerLink]="'/home'">ME-Mapper</h1>
     <span class="menu-spacer"></span>
     <div>
+      <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
       <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
-      <span class="mainMenu"><a mat-button [routerLink]="'/oren'"> oren </a></span>
-      <span class="mainMenu"><a mat-button [routerLink]="'/saas'"> saar </a></span>
-
+<!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->
     </div>
   </mat-toolbar-row>
 

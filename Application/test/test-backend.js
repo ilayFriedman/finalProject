@@ -190,7 +190,7 @@ describe('Users', function () {
             })
             .end(function (err, res, body) {
                     res.statusCode.should.equal(200);
-                    res.body.full_name.should.equal(testUserData.FirstName + " " + testUserData.LastName);
+                    res.body.fullName.should.equal(testUserData.FirstName + " " + testUserData.LastName);
 
                     done();
                 }

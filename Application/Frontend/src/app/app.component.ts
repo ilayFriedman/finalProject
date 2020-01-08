@@ -7,5 +7,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
-  title = 'Frontend';
+  title = 'ME-Mapper';
+  userFullName = sessionStorage.userFullName
 }

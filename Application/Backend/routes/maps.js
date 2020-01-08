@@ -76,8 +76,8 @@ router.delete('/private/removeMap', async function (req, res) {
 
 router.get('/private/getAllUserMaps', async function (req, res) {
     try {
-        await user.findOne({
-            'CreatorId': req.decoded._id
+        user.findOne({
+            '_id': req.decoded._id
         }, async function (err, result) {
             if (result) {
                 await map.find({
@@ -90,7 +90,7 @@ router.get('/private/getAllUserMaps', async function (req, res) {
                     }
                 });
             } else {
-                res.send("No such user")
+                res.status(400).send("No such user")
             }
         });
     } catch (e) {
