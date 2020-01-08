@@ -3,10 +3,9 @@
 <div>
   <h2>My Maps:</h2>
   <div style="border: solid black">
-    <div *ngFor="let map of myMaps">
-      <app-map-viewer></app-map-viewer>
-      <span><a [routerLink]="['/mapViewer']">{{map.MapName}}</a></span>
-      <div>{{map.CreationTime}}</div>
-  </div>
+    <span *ngFor="let map of myMaps; let idx = index">
+
+      <span><a [routerLink]="['/mapViewer', idx]">{{map.MapName}}</a></span><br>
+    </span>
 </div>
 </div>

@@ -15,30 +15,22 @@ export class MapIndexComponent implements OnInit {
 
   constructor(private mapHandler: MapsHandlerService, private http: HttpClient) {
     this.fullName = sessionStorage.userFullName;
+    // this.mapHandler.getMaps()
   }
 
   ngOnInit() {
-    this.myMaps = this.http.get(this.localUrl + '/private/getAllUserMaps', {
-      headers: {'token': sessionStorage.token}
-    }).subscribe(response => {
-        this.myMaps = response
-        // this.mapHandler.myMaps = response
-        // console.log(response)
-      }, error => {
-        console.log(error.error)
-        alert(error.error)
-      }
-    );
-    let shit = JSON.parse(this.myMaps[0].Model);
-    console.log("oren" + this.myMaps[0])
-    // this.myMaps = this.mapHandler.getMaps()
-    // console.log(this.myMaps)
-    // console.log(this.mapHandler.myMaps)
+    console.log("strat index")
+    this.mapHandler.myMapsPromise.then(res => {
+      this.mapHandler.myMaps = res;
+      this.myMaps = res
+      console.log('OK');
+      console.log("from index: " + this.myMaps);
+      
+    }).catch
+      (err=> {
+        console.log("error here");
+        console.log(err)
+      })
   }
-
-  getMaps() {
-
-  }
-
 
 }

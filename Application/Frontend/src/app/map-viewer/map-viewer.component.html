@@ -1,1 +1,45 @@
-<p>{{this.mapHandler.myMaps[0]}}</p>
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="menu-spacer"></span>
+        <div>
+            <button class="mapsMenu"mat-raised-button [routerLink]="'/home'"> New </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save As </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Print </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Undo </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Redo </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom In </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom Out </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Reset </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Cut </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Copy </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Paste </button>
+            <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
+            <!-- <span class="mapsMenu"><a mat-menu-item [matMenuTriggerFor]="moreOptions"> more </a></span> -->
+
+            <mat-menu #moreOptions="matMenu">
+                <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
+                <button mat-button>Imort</button><br>
+                <button mat-button>To Complex</button><br>
+                <button mat-button>To Simple</button><br>
+                <button mat-button>Change Position</button>
+            </mat-menu>
+
+            <mat-menu #Export="matMenu">
+                    <button mat-button >PNG Image</button><br>
+                    <button mat-button >JPEG Image</button><br>
+                    <button mat-button >JSON File</button>
+            </mat-menu>
+        </div>
+    </mat-toolbar-row>
+
+</mat-toolbar>
+
+<div>{{currMap.MapName}}
+        <div id="myDiagramDiv" style="border: solid 1px black; width:1400px; height:700px"></div>
+
+
+</div>
+<!-- 
+<div>{{mapModel.class}}</div> -->

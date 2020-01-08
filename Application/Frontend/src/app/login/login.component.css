@@ -9,10 +9,10 @@
 .loginTitle {
   font-family: 'Calibri', ssans-seif;
   background-color: #fafafa;
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   font-size: 300%;
   font-weight: bold;
-  color: #3F51B5;
+  color: #0099ff;
   text-shadow: rgba(238, 238, 238, 0.84) 2px 3px 3px
 }
 .form-lbl{
@@ -97,17 +97,17 @@
   padding: 19px 39px 18px 39px;
   color: #FFF;
   margin: 0 auto;
-  background: #3F51B5;
+  background: #0099ff;
   font-size: 18px;
   text-align: center;
   font-style: normal;
   width: 100%;
-  border: 1px solid #3F51B5;
+  border: 1px solid #0099ff;
   border-width: 1px 1px 3px;
   margin-bottom: 10px;
 }
 .form-style-5 input[type="submit"]:hover,
 .form-style-5 input[type="button"]:hover
 {
-  background: #5566c3;
+  background: #0099ff;
 }

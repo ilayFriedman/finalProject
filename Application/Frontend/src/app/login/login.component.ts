@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {HttpClient} from "@angular/common/http";
 import {Router} from '@angular/router';
+import { MapsHandlerService } from '../services/maps-handler.service';
 
 
 @Component({

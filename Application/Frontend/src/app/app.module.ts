@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from "@angular/material";
+import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule} from "@angular/material";
 import { LoginComponent } from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
@@ -28,6 +28,7 @@ import {MapsHandlerService} from "./services/maps-handler.service";
     MatListModule,
     MatIconModule,
     MatToolbarModule,
+    MatMenuModule,
     ReactiveFormsModule,
     HttpClientModule,
     MatButtonModule,

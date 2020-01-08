@@ -10,7 +10,7 @@ import {MapIndexComponent} from "./map-index/map-index.component";
 const routes: Routes = [
   {path: 'logedHome', component: MapIndexComponent },
   {path: 'login', component: LoginComponent},
-  {path: 'mapViewer', component: MapViewerComponent}
+  {path: 'mapViewer/:id', component: MapViewerComponent}
 ];
 
 @NgModule({
