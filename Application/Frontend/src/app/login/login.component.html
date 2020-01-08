@@ -1,0 +1,18 @@
+<div class="login" style="margin-top: 5%; height: 800px">
+  <h1 class="loginTitle" style="text-align: center;">Login:</h1>
+<form class="form-style-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label class="form-lbl">Username:</label>
+    <input type="text" class="form-control" formControlName="username">
+    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+      <div *ngIf="f.username.errors.required">Password is required</div>
+    </div>
+    <label class="form-lbl">Password:</label>
+    <input type="text" class="form-control" formControlName="password">
+    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+      <div *ngIf="f.password.errors.required">Password is required</div>
+    </div>
+    <input type="submit" value="Go" class="form-control">
+  </div>
+</form>
+</div>
