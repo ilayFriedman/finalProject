@@ -32,7 +32,9 @@ export class MapViewerComponent implements OnInit {
 
     this.myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
       {
-        "undoManager.isEnabled": true  // enable undo & redo
+        
+        "undoManager.isEnabled": true,
+        initialContentAlignment: go.Spot.Center,  // enable undo & redo
       });
 
     // define a simple Node template
@@ -48,14 +50,61 @@ export class MapViewerComponent implements OnInit {
     //   );
 
     var qualityTemplate =
-      $(go.Node, "Spot",
-        $(go.Panel, "Auto",
-          $(go.Shape, "Ellipse", { strokeWidth: 2, fill: "white" },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            new go.Binding("text", "text"))
-        )
-      );
+    $(go.Node, "Spot",
+
+    {
+        locationSpot: go.Spot.Center,
+        locationObjectName: "PANEL",
+        selectionObjectName: "PANEL",
+        selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
+        contextMenu: nodeMenu
+    },
+
+    { locationSpot: go.Spot.Center },
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    { selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate },
+    { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
+    //{ rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
+    new go.Binding("angle").makeTwoWay(),
+    // the main object is a Panel that surrounds a TextBlock with a Shape
+    $(go.Panel, "Auto",
+      { name: "PANEL" },
+      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+      $(go.Shape, "Ellipse",  // default figure
+        {
+            portId: "", // the default port: if no spot on link data, use closest side
+            fromLinkable: true, toLinkable: true, cursor: "pointer",
+            fill: "white"  // default color
+        },
+        new go.Binding("figure", "figure").makeTwoWay(),
+        new go.Binding("fill", "fill").makeTwoWay(),
+        new go.Binding("stroke", "stroke").makeTwoWay(),
+        new go.Binding("strokeWidth", "strokeWidth").makeTwoWay()
+        ),
+      $(go.TextBlock,
+        {
+            font: "bold 10pt Helvetica, Arial, sans-serif",
+            margin: 4,
+            maxSize: new go.Size(160, NaN),
+            wrap: go.TextBlock.WrapFit,
+            textAlign: "center",
+            name: "TEXT",
+            editable: true
+        },
+        new go.Binding("text", "text").makeTwoWay())
+    ),
+    // four small named ports, one on each side:
+    /*
+    makePort("T", go.Spot.Top, false, true),
+    makePort("L", go.Spot.Left, true, true),
+    makePort("R", go.Spot.Right, true, true),
+    makePort("B", go.Spot.Bottom, true, false),
+    */
+    { // handle mouse enter/leave events to show/hide the ports
+        mouseEnter: function (e, node) { showSmallPorts(node, true); },
+        mouseLeave: function (e, node) { showSmallPorts(node, false); }
+    }
+  ));
 
     var taskTemplate =
       $(go.Node, "Spot",
@@ -213,6 +262,73 @@ export class MapViewerComponent implements OnInit {
 
     this.myDiagram.model = go.Model.fromJson(this.currMap.Model)
     // this.myDiagram.model = new go.GraphLinksModel(this.currMap.Model.nodeDataArray,this.currMap.Model.linkDataArray);
-  }
+  
+    var myPalette =
+          $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
+            {
+                layout: $(go.GridLayout,
+                    {
+                        alignment: go.GridLayout.Location,
+                        wrappingColumn: 1
+                    }),
+                maxSelectionCount: 1,
+                nodeTemplateMap: this.myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+                linkTemplate: // simplify the link template, just in this Palette
+                  $(go.Link,
+                    {
+                        locationSpot: go.Spot.Center,
+                        selectionAdornmentTemplate:
+                          $(go.Adornment, "Link",
+                            { locationSpot: go.Spot.Center },
+                            $(go.Shape,
+                              {
+                                  isPanelMain: true,
+                                  fill: null,
+                                  stroke: "deepskyblue",
+                                  strokeWidth: 0
+                              }),
+                            $(go.Shape,  // the arrowhead
+                              { toArrow: "Standard", stroke: null })
+                          )
+                    },
+                    new go.Binding("routing", "routing"),
+                    new go.Binding("curve", "curve"),
+                    new go.Binding("curviness", "curviness"),
+                    new go.Binding("adjusting", "adjusting"),
+                    {
+                        corner: 5,
+                        //toShortLength: 4
+                    },
+                    new go.Binding("points"),
+                    $(go.Shape,  // the link path shape
+                      { isPanelMain: true, strokeWidth: 1 }),
+                    $(go.Shape,  // the arrowhead
+                      { toArrow: "Standard", stroke: null },
+                      new go.Binding("toArrow", "toArrow")),
+                      $(go.TextBlock,
+                        new go.Binding("text", "text"))
+                    //  $(go.Panel, "Auto",
+                    //    $(go.Shape, "RoundedRectangle",
+                    //    { fill: "#f2f2f2", stroke: null }),
+                    //      $(go.TextBlock,
+                    //{
+                    //    margin: 0
+                    //},
+                    //          new go.Binding("text", "text")))
+                  ),
+                model: new go.GraphLinksModel([  // specify the contents of the Palette
+                  { category: "Task", text: "Task", fill: "#ffffff", stroke: "#000000", strokeWidth: 1,description:"Add a Description" },
+                  { category: "Quality", text: "Quality", fill: "#ffffff", stroke: "#000000", strokeWidth: 1,description:"Add a Description" },
+                ], [
+                  // the Palette also has a disconnected Link, which the user can drag-and-drop
+                  { category: "AchievedBy", text: "achieved by", routing: go.Link.Normal,description:"Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+                  { category: "ConsistsOf", text: "consists of", routing: go.Link.Normal,description:"Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+                  { category: "ExtendedBy", text: "extended by", routing: go.Link.Normal,description:"Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+                  { category: "Association", text: "association", toArrow: "", routing: go.Link.Normal,description:"Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+                  { category: "Contribution", text: "contribution",description:"Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+                  //{ category: "Contribution", text: "contribution", points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+                ])
+            });
+}
 
 }

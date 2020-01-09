@@ -2,7 +2,7 @@
     <mat-toolbar-row>
         <span class="menu-spacer"></span>
         <div>
-            <button class="mapsMenu"mat-raised-button [routerLink]="'/home'"> New </button>
+            <button class="mapsMenu" mat-raised-button [routerLink]="'/home'"> New </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save As </button>
@@ -27,9 +27,9 @@
             </mat-menu>
 
             <mat-menu #Export="matMenu">
-                    <button mat-button >PNG Image</button><br>
-                    <button mat-button >JPEG Image</button><br>
-                    <button mat-button >JSON File</button>
+                <button mat-button>PNG Image</button><br>
+                <button mat-button>JPEG Image</button><br>
+                <button mat-button>JSON File</button>
             </mat-menu>
         </div>
     </mat-toolbar-row>
@@ -37,9 +37,20 @@
 </mat-toolbar>
 
 <div>{{currMap.MapName}}
-        <div id="myDiagramDiv" style="border: solid 1px black; width:1400px; height:700px"></div>
+    <div id="myPalette" style="border: solid"></div>
+    <div id="myDiagramDiv" style="border: solid 1px black; width:77%; height:700px;"></div>
 
 
 </div>
-<!-- 
-<div>{{mapModel.class}}</div> -->
+
+<!-- <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
+    <div id="sideBar">
+        <div class="handle" style="border: solid">Map Shapes</div>
+        <div id="myPalette" style="border: solid"></div>
+        <div class="handle" style="border: solid">Overview</div>
+        <div id="myOverview" style="border: solid"></div>
+    </div>
+    <div id="mainBar">
+        <div id="myDiagramDiv"></div>
+    </div>
+</div> -->
