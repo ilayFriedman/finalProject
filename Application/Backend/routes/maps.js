@@ -101,15 +101,19 @@ router.get('/private/getAllUserMaps', async function (req, res) {
 //TODO enforce that only a user with Write permissions updates the map.
 router.put('/private/updateMap', async function (req, res){
     if(req.body._id){
-        map.findOneAndUpdate({"_id": req.body._id}, {'Model': req.body.model}, function(err) {
+        map.findOneAndUpdate({"_id": req.body._id}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
             if (err) {
                 console.log(err);
-                res.status(400).send(`problem: ${err}`);
+                res.status(500).send("Server error occurred.");
             } else {
-                res.status(200).send("map deleted successfully");
+                res.status(200).send("Map updated successfully.");
             }
         });
     }
+    else{
+        res.status(400).send("No map ID attached to request.");
+    }
+
 });
 
 
