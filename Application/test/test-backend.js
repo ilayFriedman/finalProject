@@ -205,7 +205,7 @@ describe('Users', function () {
                     Password: missingUserPass
                 })
                 .end(function (err, res) {
-                        res.statusCode.should.equal(200);
+                        res.statusCode.should.equal(400);
                         res.text.should.equal("No such user");
 
                         done();
