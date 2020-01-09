@@ -49,62 +49,62 @@ export class MapViewerComponent implements OnInit {
     //       new go.Binding("text", "text"))
     //   );
 
-    var qualityTemplate =
-    $(go.Node, "Spot",
+  //   var qualityTemplate =
+  //   $(go.Node, "Spot",
 
-    {
-        locationSpot: go.Spot.Center,
-        locationObjectName: "PANEL",
-        selectionObjectName: "PANEL",
-        selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
-        contextMenu: nodeMenu
-    },
+  //   {
+  //       locationSpot: go.Spot.Center,
+  //       locationObjectName: "PANEL",
+  //       selectionObjectName: "PANEL",
+  //       selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
+  //       contextMenu: nodeMenu
+  //   },
 
-    { locationSpot: go.Spot.Center },
-    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-    { selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate },
-    { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
-    //{ rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
-    new go.Binding("angle").makeTwoWay(),
-    // the main object is a Panel that surrounds a TextBlock with a Shape
-    $(go.Panel, "Auto",
-      { name: "PANEL" },
-      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-      $(go.Shape, "Ellipse",  // default figure
-        {
-            portId: "", // the default port: if no spot on link data, use closest side
-            fromLinkable: true, toLinkable: true, cursor: "pointer",
-            fill: "white"  // default color
-        },
-        new go.Binding("figure", "figure").makeTwoWay(),
-        new go.Binding("fill", "fill").makeTwoWay(),
-        new go.Binding("stroke", "stroke").makeTwoWay(),
-        new go.Binding("strokeWidth", "strokeWidth").makeTwoWay()
-        ),
-      $(go.TextBlock,
-        {
-            font: "bold 10pt Helvetica, Arial, sans-serif",
-            margin: 4,
-            maxSize: new go.Size(160, NaN),
-            wrap: go.TextBlock.WrapFit,
-            textAlign: "center",
-            name: "TEXT",
-            editable: true
-        },
-        new go.Binding("text", "text").makeTwoWay())
-    ),
-    // four small named ports, one on each side:
-    /*
-    makePort("T", go.Spot.Top, false, true),
-    makePort("L", go.Spot.Left, true, true),
-    makePort("R", go.Spot.Right, true, true),
-    makePort("B", go.Spot.Bottom, true, false),
-    */
-    { // handle mouse enter/leave events to show/hide the ports
-        mouseEnter: function (e, node) { showSmallPorts(node, true); },
-        mouseLeave: function (e, node) { showSmallPorts(node, false); }
-    }
-  ));
+  //   { locationSpot: go.Spot.Center },
+  //   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+  //   { selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate },
+  //   { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
+  //   //{ rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
+  //   new go.Binding("angle").makeTwoWay(),
+  //   // the main object is a Panel that surrounds a TextBlock with a Shape
+  //   $(go.Panel, "Auto",
+  //     { name: "PANEL" },
+  //     new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+  //     $(go.Shape, "Ellipse",  // default figure
+  //       {
+  //           portId: "", // the default port: if no spot on link data, use closest side
+  //           fromLinkable: true, toLinkable: true, cursor: "pointer",
+  //           fill: "white"  // default color
+  //       },
+  //       new go.Binding("figure", "figure").makeTwoWay(),
+  //       new go.Binding("fill", "fill").makeTwoWay(),
+  //       new go.Binding("stroke", "stroke").makeTwoWay(),
+  //       new go.Binding("strokeWidth", "strokeWidth").makeTwoWay()
+  //       ),
+  //     $(go.TextBlock,
+  //       {
+  //           font: "bold 10pt Helvetica, Arial, sans-serif",
+  //           margin: 4,
+  //           maxSize: new go.Size(160, NaN),
+  //           wrap: go.TextBlock.WrapFit,
+  //           textAlign: "center",
+  //           name: "TEXT",
+  //           editable: true
+  //       },
+  //       new go.Binding("text", "text").makeTwoWay())
+  //   ),
+  //   // four small named ports, one on each side:
+  //   /*
+  //   makePort("T", go.Spot.Top, false, true),
+  //   makePort("L", go.Spot.Left, true, true),
+  //   makePort("R", go.Spot.Right, true, true),
+  //   makePort("B", go.Spot.Bottom, true, false),
+  //   */
+  //   { // handle mouse enter/leave events to show/hide the ports
+  //       mouseEnter: function (e, node) { showSmallPorts(node, true); },
+  //       mouseLeave: function (e, node) { showSmallPorts(node, false); }
+  //   }
+  // ));
 
     var taskTemplate =
       $(go.Node, "Spot",
