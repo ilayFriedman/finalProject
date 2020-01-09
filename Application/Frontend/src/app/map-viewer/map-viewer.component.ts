@@ -536,8 +536,16 @@ export class MapViewerComponent implements OnInit {
             { category: "Contribution", text: "contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
             //{ category: "Contribution", text: "contribution", points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
           ])
-  }//init
 
+          var myOverview =
+            $(go.Overview, "myOverview",
+            { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+        // change color of viewport border in Overview
+        myOverview.box.elt(0).stroke = "dodgerblue";
+  }//init
+  saveDiagramProperties() {
+    myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+}
 
 
 }
