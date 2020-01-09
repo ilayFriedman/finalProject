@@ -142,11 +142,11 @@ async function createMap(mapData = testMapData) {
         mapDataCopy.CreatorId = testUserId;
         mapDataCopy.CreationTime = new Date();
         mapDataCopy.Permission = {
-                "Owner": {"userId": testUserId, "permission": "owner"},
-                "Users": [{"userId": testUserId, "permission": "owner"}],
-                    "Groups": []
-            },
-        mapDataCopy.Subscribers = [];
+            "Owner": {"userId": testUserId, "permission": "owner"},
+            "Users": [{"userId": testUserId, "permission": "owner"}],
+            "Groups": []
+        },
+            mapDataCopy.Subscribers = [];
         mapDataCopy.ContainingFolders = [];
         const newMap = new usermap(mapDataCopy);
         await newMap.save(function (err, savedMap) {
@@ -167,9 +167,6 @@ describe('Users', function () {
      */
     before(async function () {
         await dbHandler.connect();
-        // let newUser = new user(testUserData);
-        // newUser.save(function (err) {
-        // });
         createUser();
     });
 
@@ -205,7 +202,7 @@ describe('Users', function () {
                     Password: missingUserPass
                 })
                 .end(function (err, res) {
-                        res.statusCode.should.equal(200);
+                        res.statusCode.should.equal(400);
                         res.text.should.equal("No such user");
 
                         done();
@@ -262,6 +259,40 @@ describe('Maps', function () {
         }
     );
 
+    it('should find and update stored map', async function (done) {
+        map.find({
+            'MapName': testMapData.MapName
+        }, function (err, result) {
+            if (result) {
+                chai.request(serverAddress)
+                    .put('/private/updateMap')
+                    .set('token', testUserToken)
+                    .send({_id: result[0]._id, model: testChangeMapModel})
+                    .end(function (err, res) {
+                            res.statusCode.should.equal(200);
+                            res.text.should.equal("Map updated successfully.");
+                        }
+                    );
+            }
+        })
+
+        done();
+    });
+
+    it('should not find _id of map in updateMap', async function (done) {
+        chai.request(serverAddress)
+            .put('/private/updateMap')
+            .set('token', testUserToken)
+            .send({model: testChangeMapModel})
+            .end(function (err, res) {
+                    res.statusCode.should.equal(400);
+                    res.text.should.equal("No map ID attached to request.");
+                }
+            );
+
+        done();
+    });
+
     it('should remove map', function (done) {
             map.findOne({MapName: "oren4"}, function (err, result) {
                 if (result) {
@@ -298,7 +329,7 @@ describe('Maps', function () {
             );
     });
 
-    it('should not find an _id', function (done) {
+    it('should not find an _id in removeMap', function (done) {
         chai.request(serverAddress)
             .delete('/private/removeMap')
             .set('token', testUserToken)
@@ -311,44 +342,4 @@ describe('Maps', function () {
                 }
             );
     });
-
-    it('should find the stored map', function (done) {
-        chai.request(serverAddress)
-            .put('/private/updateMap')
-            .set('token', testUserToken)
-            .send({_id: testMap._id, model: testChangeMapModel})
-            .end(function (err, res) {
-                    res.statusCode.should.equal(200);
-                    res.text.should.equal("map deleted successfully");
-
-                    map.findById(testMap._id, function (res, err) {
-                        // testChangeMapModel = {
-                        //     class: "go.GraphLinksModel",
-                        //     modelData: {position: "-658 -379"},
-                        //     nodeDataArray: [
-                        //         {
-                        //             category: "Task",
-                        //             text: "Change",
-                        //             fill: "#ffffff",
-                        res.nodeDataArray[0].text.should.equal("Change");
-                    })
-
-
-                    done();
-                }
-            );
-    });
-
-    // router.put('/private/updateMap', async function (req, res){
-    //     if(req.body._id){
-    //         map.findOneAndUpdate({"_id": req.body._id}, {'Model': req.body.model}, function(err) {
-    //             if (err) {
-    //                 console.log(err);
-    //                 res.status(400).send(`problem: ${err}`);
-    //             } else {
-    //                 res.status(200).send("map deleted successfully");
-    //             }
-    //         });
-    //     }
-    // });
 });
