@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
 import * as go from 'gojs';
+// import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
-declare var myDiagram: any;
+// declare var myDiagram: any;
 
 @Component({
   selector: 'app-map-viewer',
@@ -16,6 +17,7 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   currIdx: any;
   currMap: any;
+  myDiagram: any;
   
   constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
 
@@ -32,7 +34,7 @@ export class MapViewerComponent implements OnInit {
   init() {
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    this.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
         initialContentAlignment: go.Spot.Center,
         allowDrop: true,  // must be true to accept drops from the Palette
@@ -463,19 +465,19 @@ export class MapViewerComponent implements OnInit {
           { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 })  // use selection object's strokeWidth
       );
     // adding node templates
-    myDiagram.nodeTemplateMap.add("Quality", qualityTemplate);
-    myDiagram.nodeTemplateMap.add("Task", taskTemplate);
+    this.myDiagram.nodeTemplateMap.add("Quality", qualityTemplate);
+    this.myDiagram.nodeTemplateMap.add("Task", taskTemplate);
 
     // adding links templates
-    myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
-    myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
-    myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
-    myDiagram.linkTemplateMap.add("ExtendBy", extendByLinkTamplate);
-    myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
+    this.myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
+    this.myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
+    this.myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
+    this.myDiagram.linkTemplateMap.add("ExtendBy", extendByLinkTamplate);
+    this.myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
 
 
 
-    myDiagram.model = go.Model.fromJson(this.currMap.Model);
+    this.myDiagram.model = go.Model.fromJson(this.currMap.Model);
 
     var myPalette =
       $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
@@ -486,7 +488,7 @@ export class MapViewerComponent implements OnInit {
               wrappingColumn: 1
             }),
           maxSelectionCount: 1,
-          nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+          nodeTemplateMap: this.myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
           linkTemplate: // simplify the link template, just in this Palette
             $(go.Link,
               {
@@ -541,25 +543,26 @@ export class MapViewerComponent implements OnInit {
 
           var myOverview =
             $(go.Overview, "myOverview",
-            { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+            { observed: this.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
         // change color of viewport border in Overview
         // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
   saveDiagramProperties() {
-    myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+    this.myDiagram.model.modelData.position = go.Point.stringify(this.myDiagram.position);
 }
 
-// save() {
-//   saveDiagramProperties();  // do this first, before writing to JSON
-//   var currentModel = myDiagram.model.toJson();
-//   //alert(currentModel);
-//   //$('#mySavedModel').val(currentModel);
-//   myDiagram.isModified = false;
+save() {
+  this.saveDiagramProperties();  // do this first, before writing to JSON
+  var currentModel = this.myDiagram.model.toJson();
+  //alert(currentModel);
+  //$('#mySavedModel').val(currentModel);
+  this.myDiagram.isModified = false;
 
-//   if (isSaved == 'False') {
-//       $('#saveMapModal').modal('show');
-//       $('#saveNewMap').find('input#Model').val(currentModel);
-//   }
+  // if (isSaved == 'False') {
+  //     $('#saveMapModal').modal('show');
+  //     $('#saveNewMap').find('input#Model').val(currentModel);
+  // }
+}
 
 
 }
