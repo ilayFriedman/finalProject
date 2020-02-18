@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
 import * as go from 'gojs';
+import { MatDialog, MatDialogConfig } from '@angular/material';
+
 // import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 // declare var myDiagram: any;
@@ -17,8 +19,9 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   currIdx: any;
   currMap: any;
+  savePlease: boolean = false;
   // public myDiagram: any;
-  
+
   constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
@@ -525,44 +528,48 @@ export class MapViewerComponent implements OnInit {
                 new go.Binding("text", "text"))
 
             ),
-          
+
         });
 
-        myPalette.model = new go.GraphLinksModel([  // specify the contents of the Palette
-          { category: "Task", text: "Task", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
-          { category: "Quality", text: "Quality", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
-        ], [
-            // the Palette also has a disconnected Link, which the user can drag-and-drop
-            { category: "AchievedBy", text: "achieved by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-            { category: "ConsistsOf", text: "consists of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-            { category: "ExtendedBy", text: "extended by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-            { category: "Association", text: "association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-            { category: "Contribution", text: "contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
-            //{ category: "Contribution", text: "contribution", points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
-          ])
+    myPalette.model = new go.GraphLinksModel([  // specify the contents of the Palette
+      { category: "Task", text: "Task", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
+      { category: "Quality", text: "Quality", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
+    ], [
+      // the Palette also has a disconnected Link, which the user can drag-and-drop
+      { category: "AchievedBy", text: "achieved by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "ConsistsOf", text: "consists of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "ExtendedBy", text: "extended by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Association", text: "association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Contribution", text: "contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+      //{ category: "Contribution", text: "contribution", points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+    ])
 
-          var myOverview =
-            $(go.Overview, "myOverview",
-            { observed: this.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
-        // change color of viewport border in Overview
-        // myOverview.box.elt(0).stroke = "dodgerblue";
+    var myOverview =
+      $(go.Overview, "myOverview",
+        { observed: this.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+    // change color of viewport border in Overview
+    // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
-//   saveDiagramProperties() {
-//     this.myDiagram.model.modelData.position = go.Point.stringify(this.myDiagram.position);
-// }
+  saveDiagramProperties() {
+    this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
+  }
 
-// save() {
-//   this.saveDiagramProperties();  // do this first, before writing to JSON
-//   var currentModel = this.myDiagram.model.toJson();
-//   //alert(currentModel);
-//   //$('#mySavedModel').val(currentModel);
-//   this.myDiagram.isModified = false;
+  
+  save() {
+    console.log("orebennennnn")
+    this.saveDiagramProperties();  // do this first, before writing to JSON
+    var currentModel = this.mapHandler.myDiagram.model.toJson();
+    this.savePlease = true;
+      //alert(currentModel);
+      //$('#mySavedModel').val(currentModel);
+      this.mapHandler.myDiagram.isModified = false;
 
-//   // if (isSaved == 'False') {
-//   //     $('#saveMapModal').modal('show');
-//   //     $('#saveNewMap').find('input#Model').val(currentModel);
-//   // }
-// }
-
+      // if (isSaved == 'False') {
+      //     $('#saveMapModal').modal('show');
+      //     $('#saveNewMap').find('input#Model').val(currentModel);
+      // }
+    
+  
+  }
 
 }

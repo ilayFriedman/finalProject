@@ -13,6 +13,7 @@ import { MapIndexComponent } from './map-index/map-index.component';
 import { Router } from '@angular/router';
 import {MapsHandlerService} from "./services/maps-handler.service";
 import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
+import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TextMapConverterComponent } from './text-map-converter/text-map-convert
     LoginComponent,
     MapViewerComponent,
     MapIndexComponent,
-    TextMapConverterComponent
+    TextMapConverterComponent,
+    SaveAsMapComponent
 ],
   imports: [
     BrowserModule,
