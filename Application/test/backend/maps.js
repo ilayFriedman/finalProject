@@ -119,16 +119,39 @@ const testChangeMapModel = {
 let testUserId = "";
 let testUserToken;
 
-async function createUser(userData = testUserData) {
+function createUser(userData = testUserData) {
     try {
+        // mongoose.connect('your MongoDB connection string');
+        // var conn = mongoose.connection;
+        //
+        // var promises = ['aaa', 'bbb', 'ccc'].map(function(name) {
+        //     return new Promise(function(resolve, reject) {
+        //         var collection = conn.collection(name);
+        //         collection.drop(function(err) {
+        //             if (err) { return reject(err); }
+        //             console.log('dropped ' + name);
+        //             resolve();
+        //         });
+        //     });
+        // });
+        //
+        // Promise.all(promises)
+        //     .then(function() { console.log('all dropped)'); })
+        //     .catch(console.error);
+
+
         const newUser = new user(userData);
-        await newUser.save(function (err, savedUser) {
-            if (savedUser) {
-                testUserId = savedUser._id;
-                let payload = {username: savedUser.Username, _id: savedUser._id};
-                let options = {expiresIn: "1d"};
-                testUserToken = jwt.sign(payload, secret, options);
-            }
+        return new Promise(function(resolve, reject){
+            newUser.save(function (err, savedUser) {
+                if (savedUser) {
+                    testUserId = savedUser._id;
+                    let payload = {username: savedUser.Username, _id: savedUser._id};
+                    let options = {expiresIn: "1d"};
+                    testUserToken = jwt.sign(payload, secret, options);
+                    resolve();
+                }
+                return (reject(err))
+            });
         });
     } catch (e) {
         console.log(e)
@@ -241,7 +264,7 @@ describe('Maps', function () {
     let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImEiLCJfaWQiOiI1ZTAxYzhkNDA0Mjg1NjI0MTRkNWFiNWMiLCJpYXQiOjE1NzcxOTQwNDYsImV4cCI6MTU3NzI4MDQ0Nn0.R_dS-qbLhop1UzpsafuSfA_t2plP96Tna1E9uPSy4s0"
     before(async function () {
         await dbHandler.connect({useUnifiedTopology: true,});
-        createUser();
+        // await createUser();
     });
 
     /**
@@ -252,18 +275,25 @@ describe('Maps', function () {
         await dbHandler.closeDatabase()
     });
 
+    // Promise.all(promises)
+    //     .then(function() { console.log('all dropped)'); })
+    //     .catch(console.error);
     it('should add a map', function (done) {
-        chai.request(serverAddress)
-            .post('/private/createMap')
-            .set('token', testUserToken)
-            .send(testMapData)
-            .end(function (err, res) {
-                    res.statusCode.should.equal(200);
-                    res.text.should.equal("map added successfully");
+        createUser()
+            .then(function() {
+                chai.request(serverAddress)
+                    .post('/private/createMap')
+                    .set('token', testUserToken)
+                    .send(testMapData)
+                    .end(function (err, res) {
+                            res.statusCode.should.equal(200);
+                            res.text.should.equal("map added successfully");
 
-                    done();
-                }
-            );
+                            done();
+                        }
+                    );
+            })
+            .catch();
     });
 
     it('should not find a token', function (done) {
