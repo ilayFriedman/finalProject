@@ -19,7 +19,7 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   currIdx: any;
   currMap: any;
-  savePlease: boolean = false;
+  toSave: boolean = false;
   // public myDiagram: any;
 
   constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
@@ -550,16 +550,18 @@ export class MapViewerComponent implements OnInit {
     // change color of viewport border in Overview
     // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
+  
   saveDiagramProperties() {
+    this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
     this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
   }
 
-  
+
   save() {
     console.log("orebennennnn")
     this.saveDiagramProperties();  // do this first, before writing to JSON
     var currentModel = this.mapHandler.myDiagram.model.toJson();
-    this.savePlease = true;
+    this.toSave = true;
       //alert(currentModel);
       //$('#mySavedModel').val(currentModel);
       this.mapHandler.myDiagram.isModified = false;

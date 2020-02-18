@@ -23,13 +23,14 @@ router.get('/private/getMap', async function (req, res) {
 
 router.post('/private/createMap', async function (req, res) {
     try {
+        console.log("im hereEEEEe")
         const CreatorId = req.decoded._id;
         const newMap = new map({
             MapName: req.body.MapName,
             CreatorId: CreatorId,
             CreationTime: new Date(),
             Description: req.body.Description,
-            Model: req.body.Model,
+            Model: JSON.parse(req.body.Model),
             Permission: {
                 "Owner": {"userId": CreatorId, "permission": "owner"},
                 "Users": [{"userId": CreatorId, "permission": "owner"}],

@@ -28,17 +28,22 @@ export class SaveAsMapComponent implements OnInit {
     return this.saveMapForm.controls;
   }
 
+
+
   onSubmit() {
     this.submitted = true;
     // stop here if form is invalid
     if (this.saveMapForm.invalid) {
       return;
     }
+    this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
     var data = {
       'MapName': this.saveMapForm.controls.mapName.value,
       'Description': this.saveMapForm.controls.description.value,
-      'Model': this.mapHandler.myDiagram.Model
+      'Model': this.mapHandler.myDiagram.model
     }
+    
+    console.log(data)
     let result = this.http.post(this.localUrl + '/private/createMap', data, {
       headers: { 'token': sessionStorage.token }
     });
