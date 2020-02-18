@@ -190,7 +190,7 @@ describe('Users', function () {
                     res.statusCode.should.equal(200);
                     res.text.should.equal("user successfully registered");
 
-                    await dbHandler.clearDatabase()
+                    dbHandler.clearDatabase()
 
                     done();
                 }
@@ -198,6 +198,7 @@ describe('Users', function () {
     });
 
     it('should return the user\'s full name, and a token', function (done) {
+        createUser();
         chai.request(serverAddress)
             .post('/login')
             .send({
