@@ -45,8 +45,8 @@ body {
   display: flex;
 }
 #myPalette {
-  width: 200px;
-  min-height: 570px;
+  width: 100px;
+  min-height: 370px;
   background-color: #e6f5ff;
   /* Just so it's visible */
 }
