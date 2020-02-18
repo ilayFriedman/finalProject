@@ -17,7 +17,7 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   currIdx: any;
   currMap: any;
-  myDiagram: any;
+  public myDiagram: any;
   
   constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
 
@@ -478,6 +478,7 @@ export class MapViewerComponent implements OnInit {
 
 
     this.myDiagram.model = go.Model.fromJson(this.currMap.Model);
+    this.mapHandler.myDiagram = this.myDiagram
 
     var myPalette =
       $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element

@@ -9,6 +9,7 @@ export class MapsHandlerService {
   myMaps: any;
   shit : any;
   myMapsPromise: Promise<any>;
+  myDiagram : any;
 
   constructor(private http: HttpClient) {
     this.myMapsPromise = this.http.get(this.localUrl + '/private/getAllUserMaps', {
