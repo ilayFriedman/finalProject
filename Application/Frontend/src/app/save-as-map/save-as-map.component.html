@@ -1,12 +1,12 @@
-<form class="form-style-5" [formGroup]="saveAsMapForm" (ngSubmit)="onSubmit()">
+<form class="form-style-5" [formGroup]="saveMapForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
         <label class="form-lbl">Map Name:</label>
         <input type="text" class="form-control" formControlName="mapName">
-        <div *ngIf="f.mapName.errors.required">Map name is required</div>
+        <!-- <div *ngIf="f.mapName.errors.required">Map name is required</div> -->
     </div>
     <label class="form-lbl">Description:</label>
     <input type="text" class="form-control" formControlName="description">
-    <div *ngIf="f.description.errors.required">Description is required</div>
+    <!-- <div *ngIf="f.description.errors.required">Description is required</div> -->
     <div>
     <input type="submit" value="Go" class="form-control">
     </div>
