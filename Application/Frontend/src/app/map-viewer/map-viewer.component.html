@@ -4,7 +4,7 @@
         <div>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/home'"> New </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
-            <!-- <button class="mapsMenu" mat-raised-button (click)="openDialog()"> Save </button> -->
+            <button class="mapsMenu" mat-raised-button (click)="openDialog()"> Save </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save As </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Print </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Undo </button>
@@ -50,6 +50,8 @@
     </div>
     <div id="myDiagram"></div>
 </div>
+
+<app-text-map-converter></app-text-map-converter>
 <!-- </div> -->
 <!-- 
 <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
