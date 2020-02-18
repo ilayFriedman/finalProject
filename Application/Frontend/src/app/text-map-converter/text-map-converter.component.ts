@@ -6,15 +6,51 @@ import { MapsHandlerService } from '../services/maps-handler.service';
   styleUrls: ['./text-map-converter.component.css']
 })
 export class TextMapConverterComponent implements OnInit {
-
+  mapModel : any
   constructor(private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
-<<<<<<< HEAD
-    console.log(this.mapHandler.myDiagram)
-=======
-    console.log(this.mapHandler.myDiagram.model)
->>>>>>> 7bdf5f9402af009734d1abc737f3e5464e9fe97c
+    this.mapModel = this.mapHandler.myDiagram.model
+    this.convertMapToText()
   }
+  
+  convertMapToText(){
+    var nodesKeysDict = {};
+    var translate = "";
+    for (let node of this.mapModel.nodeDataArray) {
+      nodesKeysDict[node.key]= [node.text,node.category]
+    }
 
+    for (let link of this.mapModel.linkDataArray) {
+      translate += nodesKeysDict[link.from][1]+" "+ nodesKeysDict[link.from][0]+" is "
+      console.log(link.category)
+      switch(link.category) { 
+        case "Association": { 
+          translate += "associated with " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+           break; 
+        } 
+        case "AchievedBy": { 
+          translate += "achieved by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+           break; 
+        } 
+        case "extendBy": { 
+          translate += "extend by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          break; 
+        } 
+        case "ConsistsOf": { 
+          translate += "consists of " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          break; 
+        } 
+        case "Contribution": { 
+          translate += "contributs to " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          break; 
+        } 
+        default: { 
+          translate += link.category+ " " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+           break; 
+        } 
+     } 
+    }
+    console.log(translate)
+  }
 }
