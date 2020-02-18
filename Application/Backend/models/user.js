@@ -17,14 +17,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    City: {
-        type: String,
-        required: true
-    },
-    Country: {
-        type: String,
-        required: true
-    }
+    // City: {
+    //     type: String,
+    //     required: true
+    // },
+    // Country: {
+    //     type: String,
+    //     required: true
+    // }
 });
 
 module.exports = mongoose.model('Users', UserSchema, 'Users');

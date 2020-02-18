@@ -118,7 +118,6 @@ const testChangeMapModel = {
 }
 let testUserId = "";
 let testUserToken;
-let testMap;
 
 async function createUser(userData = testUserData) {
     try {
@@ -167,7 +166,7 @@ describe('Users', function () {
      */
     before(async function () {
         await dbHandler.connect();
-        createUser();
+        // createUser();
     });
 
     /**
@@ -176,6 +175,26 @@ describe('Users', function () {
     after(async function () {
         await dbHandler.clearDatabase()
         await dbHandler.closeDatabase()
+    });
+
+    it('should register a new user', function (done) {
+        chai.request(serverAddress)
+            .post('/register')
+            .send({
+                email: testUserData.Username,
+                FirstName: testUserData.FirstName,
+                LastName: testUserData.LastName,
+                pwd: testUserData.Password
+            })
+            .end(function (err, res, body) {
+                    res.statusCode.should.equal(200);
+                    res.text.should.equal("user successfully registered");
+
+                    await dbHandler.clearDatabase()
+
+                    done();
+                }
+            );
     });
 
     it('should return the user\'s full name, and a token', function (done) {
