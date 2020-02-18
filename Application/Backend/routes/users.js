@@ -3,14 +3,6 @@ const router = express.Router();
 const user = require('../models/user')
 const jwt = require('jsonwebtoken');
 
-// const secret = "memapsrules"
-
-// router.use(function (req, res, next) {
-//     next();
-// });
-
-//TODO If user is not found, return an error (perhaps 404)
-
 router.post('/login', async function (req, res) {
         try {
             await user.find({
@@ -35,9 +27,45 @@ router.post('/login', async function (req, res) {
             console.log(e);
             res.status(500).send(`problem: ${e}`)
         }
-        // console.log(req.body);
     }
 );
 
+// {"email": String, "FirstName":string, "LastName":string, "pwd":string}
+router.post('/register', async function (req, res) {
+    try {
+        await user.find({
+            'Username': req.body.email
+        }, function (err, result) {
+            if (result) {
+                // Enforce email address in Users' collection is unique
+                if (result.length > 0) {
+                    res.status(409).send(`Email address is already registered`)
+                } else {
+                        const newUser = new user({
+                            Username: req.body.email,
+                            FirstName: req.body.FirstName,
+                            LastName: req.body.LastName,
+                            Password: req.body.pwd
+                        });
+                        newUser.save(function (err) {
+                            if (err) {
+                                console.log(err)
+                                res.status(400).send(`problem: ${err}`)
+                            } else {
+                                res.status(200).send("user successfully registered")
+                            }
+                        });
+                }
+            } else {
+                console.log(err)
+                res.status(500).send(`problem: ${err}`)
+            }
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`problem: ${e}`)
+    }
+}
+);
 
 module.exports = router;

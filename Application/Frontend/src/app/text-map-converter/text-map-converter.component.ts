@@ -10,7 +10,11 @@ export class TextMapConverterComponent implements OnInit {
   constructor(private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
+<<<<<<< HEAD
     console.log(this.mapHandler.myDiagram)
+=======
+    console.log(this.mapHandler.myDiagram.model)
+>>>>>>> 7bdf5f9402af009734d1abc737f3e5464e9fe97c
   }
 
 }
