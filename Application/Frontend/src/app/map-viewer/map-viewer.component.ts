@@ -4,6 +4,8 @@ import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
 import * as go from 'gojs';
 
+declare var myDiagram: any;
+
 @Component({
   selector: 'app-map-viewer',
   templateUrl: './map-viewer.component.html',
@@ -14,7 +16,7 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   currIdx: any;
   currMap: any;
-  // myDiagram: any;
+  
   constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
@@ -30,7 +32,7 @@ export class MapViewerComponent implements OnInit {
   init() {
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    var myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
         initialContentAlignment: go.Spot.Center,
         allowDrop: true,  // must be true to accept drops from the Palette
@@ -541,11 +543,23 @@ export class MapViewerComponent implements OnInit {
             $(go.Overview, "myOverview",
             { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
         // change color of viewport border in Overview
-        myOverview.box.elt(0).stroke = "dodgerblue";
+        // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
   saveDiagramProperties() {
     myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
 }
+
+// save() {
+//   saveDiagramProperties();  // do this first, before writing to JSON
+//   var currentModel = myDiagram.model.toJson();
+//   //alert(currentModel);
+//   //$('#mySavedModel').val(currentModel);
+//   myDiagram.isModified = false;
+
+//   if (isSaved == 'False') {
+//       $('#saveMapModal').modal('show');
+//       $('#saveNewMap').find('input#Model').val(currentModel);
+//   }
 
 
 }
