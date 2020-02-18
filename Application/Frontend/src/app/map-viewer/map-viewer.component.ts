@@ -541,11 +541,11 @@ export class MapViewerComponent implements OnInit {
             $(go.Overview, "myOverview",
             { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
         // change color of viewport border in Overview
-        myOverview.box.elt(0).stroke = "dodgerblue";
+        // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
-  saveDiagramProperties() {
-    myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-}
+//   saveDiagramProperties() {
+//     myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+// }
 
 
 }
