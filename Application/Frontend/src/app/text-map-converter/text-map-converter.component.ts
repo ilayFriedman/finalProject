@@ -23,36 +23,35 @@ export class TextMapConverterComponent implements OnInit {
     }
 
     for (let link of this.mapModel.linkDataArray) {
-      translate += nodesKeysDict[link.from][1]+" "+ nodesKeysDict[link.from][0]+" is "
-      console.log(link.category)
+      translate += nodesKeysDict[link.from][1]+" "+ nodesKeysDict[link.from][0].bold()+" is ";
+      console.log(link.category);
       switch(link.category) { 
         case "Association": { 
-          translate += "associated with " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += "associated with " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
            break; 
         } 
         case "AchievedBy": { 
-          translate += "achieved by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += "achieved by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
            break; 
         } 
         case "extendBy": { 
-          translate += "extend by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += "extend by " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
           break; 
         } 
         case "ConsistsOf": { 
-          translate += "consists of " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += "consists of " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
           break; 
         } 
         case "Contribution": { 
-          translate += "contributs to " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += "contributs to " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
           break; 
         } 
         default: { 
-          translate += link.category+ " " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0]+"\n"
+          translate += link.category+ " " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold()+";<br/>";
            break; 
         } 
      } 
     }
-    console.log(translate)
-    this.translatedMap = translate
+    document.getElementById("translateShow").innerHTML  = translate
   }
 }
