@@ -1,10 +1,10 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const server = require('../Backend/app');
+const server = require('../../Backend/app');
 const should = chai.should();
 const dbHandler = require('./db-handler');
-const user = require('../Backend/models/user')
-const map = require('../Backend/models/map')
+const user = require('../../Backend/models/user')
+const map = require('../../Backend/models/map')
 const jwt = require('jsonwebtoken');
 
 
@@ -118,18 +118,40 @@ const testChangeMapModel = {
 }
 let testUserId = "";
 let testUserToken;
-let testMap;
 
-async function createUser(userData = testUserData) {
+function createUser(userData = testUserData) {
     try {
+        // mongoose.connect('your MongoDB connection string');
+        // var conn = mongoose.connection;
+        //
+        // var promises = ['aaa', 'bbb', 'ccc'].map(function(name) {
+        //     return new Promise(function(resolve, reject) {
+        //         var collection = conn.collection(name);
+        //         collection.drop(function(err) {
+        //             if (err) { return reject(err); }
+        //             console.log('dropped ' + name);
+        //             resolve();
+        //         });
+        //     });
+        // });
+        //
+        // Promise.all(promises)
+        //     .then(function() { console.log('all dropped)'); })
+        //     .catch(console.error);
+
+
         const newUser = new user(userData);
-        await newUser.save(function (err, savedUser) {
-            if (savedUser) {
-                testUserId = savedUser._id;
-                let payload = {username: savedUser.Username, _id: savedUser._id};
-                let options = {expiresIn: "1d"};
-                testUserToken = jwt.sign(payload, secret, options);
-            }
+        return new Promise(function(resolve, reject){
+            newUser.save(function (err, savedUser) {
+                if (savedUser) {
+                    testUserId = savedUser._id;
+                    let payload = {username: savedUser.Username, _id: savedUser._id};
+                    let options = {expiresIn: "1d"};
+                    testUserToken = jwt.sign(payload, secret, options);
+                    resolve();
+                }
+                return (reject(err))
+            });
         });
     } catch (e) {
         console.log(e)
@@ -159,58 +181,79 @@ async function createMap(mapData = testMapData) {
     }
 };
 
-describe('Users', function () {
+// describe('Users', function () {
 
-    /**
-     * Connect to a new in-memory database before running any tests.
-     * Then, insert a test user.
-     */
-    before(async function () {
-        await dbHandler.connect();
-        createUser();
-    });
+//     /**
+//      * Connect to a new in-memory database before running any tests.
+//      * Then, insert a test user.
+//      */
+//     before(async function () {
+//         await dbHandler.connect();
+//     });
 
-    /**
-     * Remove and close the db and server.
-     */
-    after(async function () {
-        await dbHandler.clearDatabase()
-        await dbHandler.closeDatabase()
-    });
+//     /**
+//      * Remove and close the db and server.
+//      */
+//     after(async function () {
+//         await dbHandler.clearDatabase()
+//         await dbHandler.closeDatabase()
+//     });
 
-    it('should return the user\'s full name, and a token', function (done) {
-        chai.request(serverAddress)
-            .post('/login')
-            .send({
-                Username: testUserData.Username,
-                Password: testUserData.Password
-            })
-            .end(function (err, res, body) {
-                    res.statusCode.should.equal(200);
-                    res.body.fullName.should.equal(testUserData.FirstName + " " + testUserData.LastName);
+//     it('should register a new user', function (done) {
+//         chai.request(serverAddress)
+//             .post('/register')
+//             .send({
+//                 email: testUserData.Username,
+//                 FirstName: testUserData.FirstName,
+//                 LastName: testUserData.LastName,
+//                 pwd: testUserData.Password
+//             })
+//             .end(function (err, res, body) {
+//                     res.statusCode.should.equal(200);
+//                     res.text.should.equal("user successfully registered");
 
-                    done();
-                }
-            );
-    });
+//                     dbHandler.clearDatabase()
 
-    it('should not find such user', function (done) {
-            chai.request(serverAddress)
-                .post('/login')
-                .send({
-                    Username: missingUsername,
-                    Password: missingUserPass
-                })
-                .end(function (err, res) {
-                        res.statusCode.should.equal(400);
-                        res.text.should.equal("No such user");
+//                     done();
+//                 }
+//             );
+//     });
 
-                        done();
-                    }
-                );
-        }
-    );
-});
+//     it('should return the user\'s full name, and a token', function (done) {
+//         createUser();
+
+//         chai.request(serverAddress)
+//             .post('/login')
+//             .send({
+//                 Username: testUserData.Username,
+//                 Password: testUserData.Password
+//             })
+//             .end(function (err, res, body) {
+//                     res.statusCode.should.equal(200);
+//                     res.body.fullName.should.equal(testUserData.FirstName + " " + testUserData.LastName);
+
+//                     done();
+//                 }
+//             );
+//     });
+
+//     it('should not find such user', function (done) {
+//             chai.request(serverAddress)
+//                 .post('/login')
+//                 .send({
+//                     Username: missingUsername,
+//                     Password: missingUserPass
+//                 })
+//                 .end(function (err, res) {
+//                         res.statusCode.should.equal(400);
+//                         res.text.should.equal("No such user");
+
+//                         done();
+//                     }
+//                 );
+//         }
+//     );
+// });
 
 describe('Maps', function () {
 
@@ -221,6 +264,7 @@ describe('Maps', function () {
     let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImEiLCJfaWQiOiI1ZTAxYzhkNDA0Mjg1NjI0MTRkNWFiNWMiLCJpYXQiOjE1NzcxOTQwNDYsImV4cCI6MTU3NzI4MDQ0Nn0.R_dS-qbLhop1UzpsafuSfA_t2plP96Tna1E9uPSy4s0"
     before(async function () {
         await dbHandler.connect({useUnifiedTopology: true,});
+        // await createUser();
     });
 
     /**
@@ -231,18 +275,25 @@ describe('Maps', function () {
         await dbHandler.closeDatabase()
     });
 
+    // Promise.all(promises)
+    //     .then(function() { console.log('all dropped)'); })
+    //     .catch(console.error);
     it('should add a map', function (done) {
-        chai.request(serverAddress)
-            .post('/private/createMap')
-            .set('token', testUserToken)
-            .send(testMapData)
-            .end(function (err, res) {
-                    res.statusCode.should.equal(200);
-                    res.text.should.equal("map added successfully");
+        createUser()
+            .then(function() {
+                chai.request(serverAddress)
+                    .post('/private/createMap')
+                    .set('token', testUserToken)
+                    .send(testMapData)
+                    .end(function (err, res) {
+                            res.statusCode.should.equal(200);
+                            res.text.should.equal("map added successfully");
 
-                    done();
-                }
-            );
+                            done();
+                        }
+                    );
+            })
+            .catch();
     });
 
     it('should not find a token', function (done) {
