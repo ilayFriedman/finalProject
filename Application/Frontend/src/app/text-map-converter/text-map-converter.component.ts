@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, SystemJsNgModuleLoader } from '@angular/core';
+import { MapsHandlerService } from '../services/maps-handler.service';
 @Component({
   selector: 'app-text-map-converter',
   templateUrl: './text-map-converter.component.html',
@@ -7,9 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TextMapConverterComponent implements OnInit {
 
-  constructor() { }
+  constructor(private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
+    console.log(this.mapHandler.myDiagram)
   }
 
 }

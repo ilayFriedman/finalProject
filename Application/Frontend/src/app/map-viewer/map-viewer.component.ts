@@ -108,7 +108,7 @@ export class MapViewerComponent implements OnInit {
       console.log(obj.diagram);
       console.log(val);
 
-      myDiagram.model.setDataProperty(obj.data, "text", val);
+      this.myDiagram.model.setDataProperty(obj.data, "text", val);
       obj.diagram.commitTransaction("setContributionValue");
     }
 
