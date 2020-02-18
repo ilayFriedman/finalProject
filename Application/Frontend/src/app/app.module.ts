@@ -12,13 +12,15 @@ import { MapViewerComponent } from './map-viewer/map-viewer.component';
 import { MapIndexComponent } from './map-index/map-index.component';
 import { Router } from '@angular/router';
 import {MapsHandlerService} from "./services/maps-handler.service";
+import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MapViewerComponent,
-    MapIndexComponent
+    MapIndexComponent,
+    TextMapConverterComponent
 ],
   imports: [
     BrowserModule,
