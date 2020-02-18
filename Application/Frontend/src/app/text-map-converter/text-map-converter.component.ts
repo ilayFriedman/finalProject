@@ -7,6 +7,7 @@ import { MapsHandlerService } from '../services/maps-handler.service';
 })
 export class TextMapConverterComponent implements OnInit {
   mapModel : any
+  translatedMap : any
   constructor(private mapHandler: MapsHandlerService) { }
 
   ngOnInit() {
@@ -52,5 +53,6 @@ export class TextMapConverterComponent implements OnInit {
      } 
     }
     console.log(translate)
+    this.translatedMap = translate
   }
 }

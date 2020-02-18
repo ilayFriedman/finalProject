@@ -8,16 +8,7 @@ body {
     padding-bottom: 30px;
 }
 
-#myDiagram {
-  float: left;
-  border-left: none;
-  width: 90%;
-  height: 758px;
-  background-color: white;
-  /*border-bottom: 1px solid black;*/
-  border-left: 1px solid black;
-  /* display:inline; */
-}
+
 
 #description {
   float: left;
@@ -48,18 +39,36 @@ body {
   border: 1px solid black;
   
 }
+
+
 #block_container {
-    display: flex;
-    justify-content: center;
-    width: 90%;
-    height: 90%;
-  }
+  /* display: flex; */
+  background-color: #073852;
+  display: flex;
+}
 #myPalette {
-  width: 100%;
+  width: 200px;
   min-height: 570px;
   background-color: #e6f5ff;
+  /* Just so it's visible */
+}
+#myDiagram {
+  
+  /* Grow to rest of container */
+  /* Just so it's visible */
+  flex: 1;
+  /* float: left; */
+  border-left: none;
+  /* width: 90%;
+  height: 758px; */
+  background-color: white;
+  /*border-bottom: 1px solid black;*/
+  border-left: 1px solid black;
   /* display:inline; */
 }
+
+
+
 
 #myOverview {
   width: 100%;
