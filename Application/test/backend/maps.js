@@ -121,25 +121,6 @@ let testUserToken;
 
 function createUser(userData = testUserData) {
     try {
-        // mongoose.connect('your MongoDB connection string');
-        // var conn = mongoose.connection;
-        //
-        // var promises = ['aaa', 'bbb', 'ccc'].map(function(name) {
-        //     return new Promise(function(resolve, reject) {
-        //         var collection = conn.collection(name);
-        //         collection.drop(function(err) {
-        //             if (err) { return reject(err); }
-        //             console.log('dropped ' + name);
-        //             resolve();
-        //         });
-        //     });
-        // });
-        //
-        // Promise.all(promises)
-        //     .then(function() { console.log('all dropped)'); })
-        //     .catch(console.error);
-
-
         const newUser = new user(userData);
         return new Promise(function(resolve, reject){
             newUser.save(function (err, savedUser) {
@@ -181,79 +162,6 @@ async function createMap(mapData = testMapData) {
     }
 };
 
-// describe('Users', function () {
-
-//     /**
-//      * Connect to a new in-memory database before running any tests.
-//      * Then, insert a test user.
-//      */
-//     before(async function () {
-//         await dbHandler.connect();
-//     });
-
-//     /**
-//      * Remove and close the db and server.
-//      */
-//     after(async function () {
-//         await dbHandler.clearDatabase()
-//         await dbHandler.closeDatabase()
-//     });
-
-//     it('should register a new user', function (done) {
-//         chai.request(serverAddress)
-//             .post('/register')
-//             .send({
-//                 email: testUserData.Username,
-//                 FirstName: testUserData.FirstName,
-//                 LastName: testUserData.LastName,
-//                 pwd: testUserData.Password
-//             })
-//             .end(function (err, res, body) {
-//                     res.statusCode.should.equal(200);
-//                     res.text.should.equal("user successfully registered");
-
-//                     dbHandler.clearDatabase()
-
-//                     done();
-//                 }
-//             );
-//     });
-
-//     it('should return the user\'s full name, and a token', function (done) {
-//         createUser();
-
-//         chai.request(serverAddress)
-//             .post('/login')
-//             .send({
-//                 Username: testUserData.Username,
-//                 Password: testUserData.Password
-//             })
-//             .end(function (err, res, body) {
-//                     res.statusCode.should.equal(200);
-//                     res.body.fullName.should.equal(testUserData.FirstName + " " + testUserData.LastName);
-
-//                     done();
-//                 }
-//             );
-//     });
-
-//     it('should not find such user', function (done) {
-//             chai.request(serverAddress)
-//                 .post('/login')
-//                 .send({
-//                     Username: missingUsername,
-//                     Password: missingUserPass
-//                 })
-//                 .end(function (err, res) {
-//                         res.statusCode.should.equal(400);
-//                         res.text.should.equal("No such user");
-
-//                         done();
-//                     }
-//                 );
-//         }
-//     );
-// });
 
 describe('Maps', function () {
 
@@ -275,9 +183,6 @@ describe('Maps', function () {
         await dbHandler.closeDatabase()
     });
 
-    // Promise.all(promises)
-    //     .then(function() { console.log('all dropped)'); })
-    //     .catch(console.error);
     it('should add a map', function (done) {
         createUser()
             .then(function() {

@@ -30,7 +30,6 @@ router.post('/login', async function (req, res) {
     }
 );
 
-// {"email": String, "FirstName":string, "LastName":string, "pwd":string}
 router.post('/register', async function (req, res) {
     try {
         await user.find({
@@ -65,7 +64,25 @@ router.post('/register', async function (req, res) {
         console.log(e);
         res.status(500).send(`problem: ${e}`)
     }
-}
-);
+});
+
+router.post('/private/changeInfo', async function (req, res) {
+    if(!req.body.FirstName || !req.body.LastName || !req.body.pwd){
+        res.status(400).send("Could not update user information. The fields FirstName, LastName and pwd are required.");
+    }
+    try {
+        user.findOneAndUpdate({"_id": req.decoded._id}, {$set:{'FirstName': req.body.FirstName, 'LastName': req.body.LastName, 'Password': req.body.pwd }}, function(err, mongoRes) {
+            if (err) {
+                console.log(err);
+                res.status(500).send("Server error occurred.");
+            } else {
+                res.status(200).send("User information updated successfully.");
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`problem: ${e}`)
+    }
+});
 
 module.exports = router;

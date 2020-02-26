@@ -12,6 +12,7 @@ const serverAddress = "http://localhost:3000";
 
 const missingUsername = 'noSuchUser';
 const missingUserPass = 'noSuchPass';
+let testUserToken;
 
 const testUserData = {
     Username: "a",
@@ -22,16 +23,20 @@ const testUserData = {
     Country: "Country"
 }
 
-async function createUser(userData = testUserData) {
+function createUser(userData = testUserData) {
     try {
         const newUser = new user(userData);
-        await newUser.save(function (err, savedUser) {
-            if (savedUser) {
-                testUserId = savedUser._id;
-                let payload = {username: savedUser.Username, _id: savedUser._id};
-                let options = {expiresIn: "1d"};
-                testUserToken = jwt.sign(payload, secret, options);
-            }
+        return new Promise(function(resolve, reject){
+            newUser.save(function (err, savedUser) {
+                if (savedUser) {
+                    testUserId = savedUser._id;
+                    let payload = {username: savedUser.Username, _id: savedUser._id};
+                    let options = {expiresIn: "1d"};
+                    testUserToken = jwt.sign(payload, secret, options);
+                    resolve();
+                }
+                return (reject(err))
+            });
         });
     } catch (e) {
         console.log(e)
@@ -76,10 +81,33 @@ describe('Users', function () {
             );
     });
 
-    it('should return the user\'s full name, and a token', function (done) {
-        createUser();
+    it('should not allow registration with email that is already used', function (done) {
+        createUser()
+        .then(function(){
+            chai.request(serverAddress)
+            .post('/register')
+            .send({
+                email: testUserData.Username,
+                FirstName: testUserData.FirstName,
+                LastName: testUserData.LastName,
+                pwd: testUserData.Password
+            })
+            .end(function (err, res, body) {
+                    res.statusCode.should.equal(409);
+                    res.text.should.equal("Email address is already registered");
 
-        chai.request(serverAddress)
+                    dbHandler.clearDatabase();
+
+                    done();
+                }
+            );
+        });
+    });
+
+    it('should return the user\'s full name, and a token', function (done) {
+        createUser()
+        .then(function(){
+            chai.request(serverAddress)
             .post('/login')
             .send({
                 Username: testUserData.Username,
@@ -89,9 +117,12 @@ describe('Users', function () {
                     res.statusCode.should.equal(200);
                     res.body.fullName.should.equal(testUserData.FirstName + " " + testUserData.LastName);
 
+                    dbHandler.clearDatabase();
+
                     done();
                 }
             );
+        });
     });
 
     it('should not find such user', function (done) {
@@ -110,4 +141,33 @@ describe('Users', function () {
                 );
         }
     );
+
+    it("Should update the user's information", function (done) {
+        createUser()
+        .then(function(){
+            chai.request(serverAddress)
+            .post('/private/changeInfo')
+            .set('token', testUserToken)
+            .send({
+                FirstName: "Change",
+                LastName: "Change",
+                pwd: "Change"
+            })
+            .end(function (err, res, body) {
+                    res.statusCode.should.equal(200);
+                    res.text.should.equal("User information updated successfully.");
+
+                    user.findById(jwt.verify(testUserToken, secret)._id, function (err, updatedUser) {
+                        if(updatedUser){
+                            updatedUser.LastName.should.equal("Change");
+                            updatedUser.FirstName.should.equal("Change");
+                            updatedUser.Password.should.equal("Change");
+
+                            done();
+                        }
+                    });   
+                }  
+            );
+        });
+    });
 });

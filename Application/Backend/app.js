@@ -58,6 +58,8 @@ app.use('/private', function (req, res, next) {
 //Call routes
 app.post('/login', usersRoute);
 app.post('/register', usersRoute);
+app.post('/private/changeInfo', usersRoute);
+
 app.get('/private/getMap', mapsRoute);
 app.get('/private/getAllUserMaps', mapsRoute);
 app.post('/private/createMap', mapsRoute);
