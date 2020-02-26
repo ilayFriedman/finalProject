@@ -1,4 +1,4 @@
-<form class="form-style-5" [formGroup]="saveMapForm" (ngSubmit)="onSubmit()">
+<form class="form-style-5" [formGroup]="saveMapForm">
     <div class="form-group">
         <label class="form-lbl">Map Name:</label>
         <input type="text" class="form-control" formControlName="mapName">
@@ -8,6 +8,6 @@
     <input type="text" class="form-control" formControlName="description">
     <!-- <div *ngIf="f.description.errors.required">Description is required</div> -->
     <div>
-    <input type="submit" value="Go" class="form-control">
+    <button  (click)="onSubmit()" id="saveButton" value="Go" class="form-control">Go</button>
     </div>
 </form>

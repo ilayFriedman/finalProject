@@ -15,7 +15,11 @@ export class SaveAsMapComponent implements OnInit {
   });
   localUrl = 'http://localhost:3000';
   submitted = false
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) { }
+  // save: any;
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
+    // let save = document.getElementById("saveButton");
+    // save.addEventListener("click", (e:Event) => this.onSubmit());
+   }
 
   ngOnInit() {
     this.saveMapForm = this.formBuilder.group({
@@ -28,32 +32,32 @@ export class SaveAsMapComponent implements OnInit {
     return this.saveMapForm.controls;
   }
 
-
-
   onSubmit() {
     this.submitted = true;
     // stop here if form is invalid
     if (this.saveMapForm.invalid) {
       return;
     }
-    this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
-    var data = {
+    // this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
+    let data = {
       'MapName': this.saveMapForm.controls.mapName.value,
-      'Description': this.saveMapForm.controls.description.value,
-      'Model': this.mapHandler.myDiagram.model
+      'Model': this.mapHandler.myDiagram.model.toJson(),
+      'Description': this.saveMapForm.controls.description.value
     }
-    
-    console.log(data)
     let result = this.http.post(this.localUrl + '/private/createMap', data, {
       headers: { 'token': sessionStorage.token }
     });
 
     result.subscribe(response => {
       this.submitted = false;
+      console.log("GOOD")
+      // alert("Map Saved Successfully")
+
     }, error => {
       this.submitted = false;
+      console.log("SDSSDSD")
       console.log(error.error)
-      alert(error.error)
+      // alert(error.error)
     }
     );
 

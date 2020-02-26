@@ -4,11 +4,10 @@ import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
 import * as go from 'gojs';
 import { MatDialog, MatDialogConfig } from '@angular/material';
+import { HttpClient } from '@angular/common/http';
+// import * as shit from '../../assets/LocalStorageCommandHandler.js'
 
-// import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
-
-// declare var myDiagram: any;
-
+declare var LocalStorageCommandHandler: any;
 @Component({
   selector: 'app-map-viewer',
   templateUrl: './map-viewer.component.html',
@@ -20,10 +19,10 @@ export class MapViewerComponent implements OnInit {
   currIdx: any;
   currMap: any;
   toSave: boolean = false;
+  localUrl = 'http://localhost:3000';
   // public myDiagram: any;
 
-  constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService) { }
-
+  constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
   ngOnInit() {
     this.router.params.subscribe(params => {
       this.currIdx = params['id'];
@@ -31,10 +30,12 @@ export class MapViewerComponent implements OnInit {
     this.currMap = this.mapHandler.myMaps[this.currIdx]
     console.log(this.currIdx);
     console.log("curr map: " + this.currMap.MapName);
-    this.init()
+      this.init()
+    
   }
 
   init() {
+
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     this.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
@@ -58,16 +59,15 @@ export class MapViewerComponent implements OnInit {
         // "InitialLayoutCompleted": loadDiagramProperties,  // this DiagramEvent listener is defined below
         // "LinkDrawn": maybeChangeLinkCategory,     // these two DiagramEvents call a
         // "LinkRelinked": maybeChangeLinkCategory,
-        // "undoManager.isEnabled": true,
-
+        "undoManager.isEnabled": true,
         // "linkingTool.linkValidation": validLink2,  // defined below
         // "relinkingTool.linkValidation": validLink2,
-
+        // commandHandler: $(LocalStorageCommandHandler),
         "toolManager.mouseWheelBehavior": go.ToolManager.WheelNone,
         "panningTool.isEnabled": false,
         //"isModelReadOnly": true
       });
-
+    this.mapHandler.myDiagram.commandHandler = LocalStorageCommandHandler;
     var nodeSelectionAdornmentTemplate =
       $(go.Adornment, "Auto",
         $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
@@ -361,8 +361,8 @@ export class MapViewerComponent implements OnInit {
       );
 
     var extendByLinkTamplate =
-    $(go.Link,  // the whole link panel
-      {
+      $(go.Link,  // the whole link panel
+        {
           routing: go.Link.Normal,
           curve: go.Link.None,
           //curviness: 'None',
@@ -372,31 +372,31 @@ export class MapViewerComponent implements OnInit {
           reshapable: true,
           selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
           // contextMenu: LinkMenu //linkMenu
-      },
-      new go.Binding("routing", "routing"),
-    new go.Binding("curve", "curve"),
-    new go.Binding("curviness", "curviness"),
-    { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
-    new go.Binding("points").makeTwoWay(),
-    $(go.Shape,  // the link path shape
-      { isPanelMain: true, strokeWidth: 1 }),
-    $(go.Shape,  // the arrowhead
-      { toArrow: "Standard", stroke: null }),
-    $(go.Panel, "Auto",
-      new go.Binding("visible", "true").ofObject(),
-      $(go.Shape, "RoundedRectangle",  // the link shape
-        { fill: "white", stroke: null }), //#F8F8F8
-      $(go.TextBlock,
-        {
-            textAlign: "center",
-            font: "9pt helvetica, arial, sans-serif",
-            stroke: "black",
-            margin: 1,
-            minSize: new go.Size(10, NaN),
-            editable: false
         },
-        new go.Binding("text").makeTwoWay())
-    ));
+        new go.Binding("routing", "routing"),
+        new go.Binding("curve", "curve"),
+        new go.Binding("curviness", "curviness"),
+        { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
+        new go.Binding("points").makeTwoWay(),
+        $(go.Shape,  // the link path shape
+          { isPanelMain: true, strokeWidth: 1 }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "Standard", stroke: null }),
+        $(go.Panel, "Auto",
+          new go.Binding("visible", "true").ofObject(),
+          $(go.Shape, "RoundedRectangle",  // the link shape
+            { fill: "white", stroke: null }), //#F8F8F8
+          $(go.TextBlock,
+            {
+              textAlign: "center",
+              font: "9pt helvetica, arial, sans-serif",
+              stroke: "black",
+              margin: 1,
+              minSize: new go.Size(10, NaN),
+              editable: false
+            },
+            new go.Binding("text").makeTwoWay())
+        ));
     var contributionLinkTamplate =
       $(go.Link, // the whole link panel
         {
@@ -544,38 +544,48 @@ export class MapViewerComponent implements OnInit {
       $(go.Overview, "myOverview",
         { observed: this.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
 
-    
 
-    $(go.Diagram,"myDiagram",
+
+    $(go.Diagram, "myDiagram",
       {
-          "ModelChanged": function(e) { if (e.isTransactionFinished) console.log(); }
+        "ModelChanged": function (e) { if (e.isTransactionFinished) console.log(); }
 
       })
     // change color of viewport border in Overview
     // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
-  
+
   saveDiagramProperties() {
-    this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
     this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
   }
 
 
-  save() {
-    console.log("orebennennnn")
-    this.saveDiagramProperties();  // do this first, before writing to JSON
-    var currentModel = this.mapHandler.myDiagram.model.toJson();
+  saveAs() {
+    this.saveDiagramProperties();
     this.toSave = true;
-      //alert(currentModel);
-      //$('#mySavedModel').val(currentModel);
-      this.mapHandler.myDiagram.isModified = false;
+    this.mapHandler.myDiagram.isModified = false;
+  }
 
-      // if (isSaved == 'False') {
-      //     $('#saveMapModal').modal('show');
-      //     $('#saveNewMap').find('input#Model').val(currentModel);
-      // }
-    
-  
+  save() {
+    let data = {
+      '_id': this.currMap._id,
+      'model': this.mapHandler.myDiagram.model.toJson()
+    }
+
+    console.log(data)
+    let result = this.http.put(this.localUrl + '/private/updateMap', data, {
+      headers: { 'token': sessionStorage.token }
+    });
+
+    result.subscribe(response => {
+      console.log("GOOD")
+      alert("Map Updated Successfully")
+
+    }, error => {
+      console.log("BAD")
+      console.log(error.error)
+    }
+    );
   }
 
 }

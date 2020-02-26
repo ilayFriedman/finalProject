@@ -4,10 +4,10 @@
         <div>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/home'"> New </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
+            <button class="mapsMenu" mat-raised-button (click)="saveAs()"> Save As </button>
             <button class="mapsMenu" mat-raised-button (click)="save()"> Save </button>
-            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Save As </button>
-            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Print </button>
-            <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Undo </button>
+            <button class="mapsMenu" mat-raised-button > Print </button>
+            <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Redo </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom In </button>
             <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom Out </button>
