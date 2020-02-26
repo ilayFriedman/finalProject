@@ -45,16 +45,17 @@ body {
   display: flex;
 }
 #myPalette {
-  width: 100px;
+  width: 150px;
   min-height: 370px;
   background-color: #e6f5ff;
   /* Just so it's visible */
 }
 #myDiagram {
   
+  
   /* Grow to rest of container */
   /* Just so it's visible */
-  flex: 1;
+  flex: 70%;
   /* float: left; */
   border-left: none;
   /* width: 90%;
@@ -63,6 +64,25 @@ body {
   /*border-bottom: 1px solid black;*/
   border-left: 1px solid black;
   /* display:inline; */
+}
+
+#rightSideUnknownForFutureUse{
+  
+  background-color: #e6f5ff;
+ /* Grow to rest of container */
+ /* Just so it's visible */
+ flex: 10%;
+ /* float: left; */
+ border-left: none;
+ /*border-bottom: 1px solid black;*/
+ border-left: 1px solid black;
+ /* display:inline; */
+}
+
+#textConverter{
+  
+  background-color: #e6f5ff;
+   -content: center;
 }
 
 #myOverview {

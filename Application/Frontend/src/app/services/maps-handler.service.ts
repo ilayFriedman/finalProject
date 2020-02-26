@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, SimpleChanges} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({
@@ -16,8 +16,5 @@ export class MapsHandlerService {
       headers: {'token': sessionStorage.token}
     }).toPromise()
   }
-
-
-
-
+  
 }

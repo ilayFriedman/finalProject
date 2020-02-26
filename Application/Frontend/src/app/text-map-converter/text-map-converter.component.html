@@ -1,1 +1,9 @@
-<p id="translateShow"></p>
+<div style="margin: 50%">
+        <b>add new link: </b><input type="text" id="newLink" size="100"><input type="submit" value="Submit">
+
+        <ul class="links">
+                <li *ngFor="let link of links" [class.selected]="link === selectedLink" (click)="onClick"><p [innerHTML]="link"></p></li>
+            </ul>
+        </div>
+
+

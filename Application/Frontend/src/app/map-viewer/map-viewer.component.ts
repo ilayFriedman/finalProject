@@ -361,9 +361,8 @@ export class MapViewerComponent implements OnInit {
       );
 
     var extendByLinkTamplate =
-      $(go.Link,  // the whole link panel
-
-        {
+    $(go.Link,  // the whole link panel
+      {
           routing: go.Link.Normal,
           curve: go.Link.None,
           //curviness: 'None',
@@ -373,34 +372,31 @@ export class MapViewerComponent implements OnInit {
           reshapable: true,
           selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
           // contextMenu: LinkMenu //linkMenu
+      },
+      new go.Binding("routing", "routing"),
+    new go.Binding("curve", "curve"),
+    new go.Binding("curviness", "curviness"),
+    { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
+    new go.Binding("points").makeTwoWay(),
+    $(go.Shape,  // the link path shape
+      { isPanelMain: true, strokeWidth: 1 }),
+    $(go.Shape,  // the arrowhead
+      { toArrow: "Standard", stroke: null }),
+    $(go.Panel, "Auto",
+      new go.Binding("visible", "true").ofObject(),
+      $(go.Shape, "RoundedRectangle",  // the link shape
+        { fill: "white", stroke: null }), //#F8F8F8
+      $(go.TextBlock,
+        {
+            textAlign: "center",
+            font: "9pt helvetica, arial, sans-serif",
+            stroke: "black",
+            margin: 1,
+            minSize: new go.Size(10, NaN),
+            editable: false
         },
-
-        new go.Binding("routing", "routing"),
-        new go.Binding("curve", "curve"),
-        new go.Binding("curviness", "curviness"),
-        { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
-        new go.Binding("points").makeTwoWay(),
-        $(go.Shape,  // the link path shape
-          { isPanelMain: true, strokeWidth: 1 }),
-        $(go.Shape,  // the arrowhead
-          { toArrow: "Standard", stroke: null }),
-        $(go.Panel, "Auto",
-          new go.Binding("visible", "true").ofObject(),
-          $(go.Shape, "RoundedRectangle",  // the link shape
-            { fill: "white", stroke: null }), //#F8F8F8
-          $(go.TextBlock,
-            {
-              textAlign: "center",
-              font: "9pt helvetica, arial, sans-serif",
-              stroke: "black",
-              margin: 1,
-              minSize: new go.Size(10, NaN),
-              editable: false
-            },
-            new go.Binding("text").makeTwoWay())
-        )
-      );
-
+        new go.Binding("text").makeTwoWay())
+    ));
     var contributionLinkTamplate =
       $(go.Link, // the whole link panel
         {
@@ -547,6 +543,14 @@ export class MapViewerComponent implements OnInit {
     var myOverview =
       $(go.Overview, "myOverview",
         { observed: this.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+
+    
+
+    $(go.Diagram,"myDiagram",
+      {
+          "ModelChanged": function(e) { if (e.isTransactionFinished) console.log(); }
+
+      })
     // change color of viewport border in Overview
     // myOverview.box.elt(0).stroke = "dodgerblue";
   }//init
