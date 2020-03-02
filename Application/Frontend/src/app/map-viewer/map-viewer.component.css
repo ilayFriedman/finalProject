@@ -19,14 +19,14 @@ body {
   width: 100%;
   position: relative;
 }
-
+/* 
 #mainBar {
-  float: left;
+  float: auto;
   width: 90%;
   min-height: 500px;
   text-align: center;
   border: 1px solid black;
-}
+} */
 
 /* #sideBar {
   float: left;
@@ -79,11 +79,7 @@ body {
  /* display:inline; */
 }
 
-#textConverter{
-  
-  background-color: #e6f5ff;
-   -content: center;
-}
+
 
 #myOverview {
   width: 100%;
@@ -514,4 +510,5 @@ body {
     margin:auto;
     color:red;
 }
+
 

@@ -7,7 +7,7 @@ import { MapsHandlerService } from '../services/maps-handler.service';
 })
 export class TextMapConverterComponent implements OnInit  {
 
-  @Input() mapModel : any
+  mapModel : any
   links: String[] = []
 
   constructor(private mapHandler: MapsHandlerService) { }
@@ -18,9 +18,6 @@ export class TextMapConverterComponent implements OnInit  {
     this.convertMapToText()
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log("hi!")
-  }
 
   convertMapToText(){
     var nodesKeysDict = {};
@@ -61,7 +58,7 @@ export class TextMapConverterComponent implements OnInit  {
      this.links.push(translate)
      translate = ""
     }
-    console.log(this.links)
+    // console.log(this.links)
   }
 
   // doTextareaValueChange(ev) {
