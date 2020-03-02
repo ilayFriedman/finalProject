@@ -67,7 +67,7 @@ export class MapViewerComponent implements OnInit {
         "panningTool.isEnabled": false,
         //"isModelReadOnly": true
       });
-    this.mapHandler.myDiagram.commandHandler = LocalStorageCommandHandler;
+    // this.mapHandler.myDiagram.commandHandler = LocalStorageCommandHandler;
     var nodeSelectionAdornmentTemplate =
       $(go.Adornment, "Auto",
         $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
