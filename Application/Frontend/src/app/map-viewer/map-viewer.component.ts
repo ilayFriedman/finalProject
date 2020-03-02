@@ -476,7 +476,7 @@ export class MapViewerComponent implements OnInit {
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.currMap.Model);
 
     this.mapHandler.myDiagram.model.addChangedListener(function(e) {
-      console.log(e.model)
+      // console.log(e.model)
     });
 
 
@@ -549,11 +549,11 @@ export class MapViewerComponent implements OnInit {
 
 
 
-    $(go.Diagram, "myDiagram",
-      {
-        "ModelChanged": function (e) { if (e.isTransactionFinished) console.log(); }
+    // $(go.Diagram, "myDiagram",
+    //   {
+    //     "ModelChanged": function (e) { if (e.isTransactionFinished) console.log(); }
 
-      })
+    //   })
     // change color of viewport border in Overview
     // myOverview.box.elt(0).stroke = "dodgerblue";
 
@@ -581,7 +581,7 @@ export class MapViewerComponent implements OnInit {
 
     console.log(data)
     let result = this.http.put(this.localUrl + '/private/updateMap', data, {
-      headers: { 'token': sessionStorage.token }
+      headers: { 'token': sessionStorage.token, responseType: 'text' }
     });
 
     result.subscribe(response => {

@@ -1,13 +1,13 @@
-<form class="form-style-5" [formGroup]="saveMapForm">
+<form class="form-save-as" [formGroup]="saveMapForm">
     <div class="form-group">
         <label class="form-lbl">Map Name:</label>
         <input type="text" class="form-control" formControlName="mapName">
         <!-- <div *ngIf="f.mapName.errors.required">Map name is required</div> -->
-    </div>
+    </div><br>
     <label class="form-lbl">Description:</label>
     <input type="text" class="form-control" formControlName="description">
     <!-- <div *ngIf="f.description.errors.required">Description is required</div> -->
-    <div>
-    <button  (click)="onSubmit()" id="saveButton" value="Go" class="form-control">Go</button>
+    <div><br>
+        <button (click)="onSubmit('save-as-modal');" id="saveButton" value="Go" class="form-control">Go</button>
     </div>
 </form>

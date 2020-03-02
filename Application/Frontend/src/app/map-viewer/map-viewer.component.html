@@ -5,7 +5,7 @@
             <div style="margin: auto; text-align: center;">
                 <button class="mapsMenu" mat-raised-button> New </button>
                 <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
-                <button class="mapsMenu" mat-raised-button (click)="openModal('custom-modal-1')"> Save As </button>
+                <button class="mapsMenu" mat-raised-button (click)="openModal('save-as-modal')"> Save As </button>
                 <button class="mapsMenu" mat-raised-button (click)="save()"> Save </button>
                 <button class="mapsMenu" mat-raised-button> Print </button>
                 <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
@@ -21,7 +21,7 @@
 
                 <mat-menu #moreOptions="matMenu">
                     <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
-                    <button mat-button>Import</button><br>
+                    <button mat-button (click)="openModal('import-modal')">Import</button><br>
                     <button mat-button>To Complex</button><br>
                     <button mat-button>To Simple</button><br>
                     <button mat-button>Change Position</button>
@@ -37,11 +37,21 @@
     </mat-toolbar>
 </div>
 
-<jw-modal id="custom-modal-1">
+
+<jw-modal id="save-as-modal">
     <div class="jw-modal-body">
+        <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
         <h1>Save your map as:</h1>
         <app-save-as-map></app-save-as-map>
-        <button (click)="closeModal('custom-modal-1');">Close</button>
+    </div>
+</jw-modal>
+
+<jw-modal id="import-modal">
+    <div class="jw-modal-body">
+        <span class="close" (click)="closeModal('import-modal')">&times;</span>
+        <h1>Import Map From:</h1>
+        <input type="file" class="filepicker">
+        <!-- <button (click)="import()"></button> -->
     </div>
 </jw-modal>
 <!-- <app-save-as-map [hidden]='!toSave'></app-save-as-map> -->

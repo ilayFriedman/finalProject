@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
+import { ModalService } from '../services/modal.service';
 
 @Component({
   selector: 'app-save-as-map',
@@ -16,7 +17,7 @@ export class SaveAsMapComponent implements OnInit {
   localUrl = 'http://localhost:3000';
   submitted = false
   // save: any;
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
+  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
     // let save = document.getElementById("saveButton");
     // save.addEventListener("click", (e:Event) => this.onSubmit());
    }
@@ -32,7 +33,9 @@ export class SaveAsMapComponent implements OnInit {
     return this.saveMapForm.controls;
   }
 
-  onSubmit() {
+  onSubmit(id: string) {
+    console.log(id)
+    this.modalService.close(id);
     this.submitted = true;
     // stop here if form is invalid
     if (this.saveMapForm.invalid) {
@@ -45,19 +48,17 @@ export class SaveAsMapComponent implements OnInit {
       'Description': this.saveMapForm.controls.description.value
     }
     let result = this.http.post(this.localUrl + '/private/createMap', data, {
-      headers: { 'token': sessionStorage.token }
+      headers: { 'token': sessionStorage.token, responseType: 'text'}
     });
 
     result.subscribe(response => {
       this.submitted = false;
-      console.log("GOOD")
-      // alert("Map Saved Successfully")
+      alert("Map Saved Successfully")
 
     }, error => {
       this.submitted = false;
-      console.log("SDSSDSD")
       console.log(error.error)
-      // alert(error.error)
+      alert(error.error)
     }
     );
 
