@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import {MapsHandlerService} from "./services/maps-handler.service";
 import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
 import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
     MapViewerComponent,
     MapIndexComponent,
     TextMapConverterComponent,
-    SaveAsMapComponent
+    SaveAsMapComponent,
+    RegisterComponent
 ],
   imports: [
     BrowserModule,
