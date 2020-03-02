@@ -7,7 +7,7 @@
     <span class="menu-spacer"></span>
     <div>
       <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
-      <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
+      <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
       <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
       <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"> Change user info </a></span>
       
