@@ -37,7 +37,14 @@
     </mat-toolbar>
 </div>
 
-<app-save-as-map [hidden]='!toSave'></app-save-as-map>
+<jw-modal id="custom-modal-1">
+    <div class="jw-modal-body">
+        <h1>Save your map as:</h1>
+        <app-save-as-map></app-save-as-map>
+        <button (click)="closeModal('custom-modal-1');">Close</button>
+    </div>
+</jw-modal>
+<!-- <app-save-as-map [hidden]='!toSave'></app-save-as-map> -->
 
 <!-- <div id="myPalette" style="border: solid"></div> -->
 <!-- <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
@@ -59,11 +66,7 @@
     <app-text-map-converter></app-text-map-converter>
 
 </div>
-<jw-modal id="custom-modal-1">
-    <h1>A Custom Modal!</h1>
-    <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p>
-    <button (click)="closeModal('custom-modal-1');">Close</button>
-</jw-modal>
+
 <!-- </div> -->
 <!-- 
 <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
