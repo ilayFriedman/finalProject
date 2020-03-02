@@ -17,6 +17,7 @@ import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
 import { RegisterComponent } from './register/register.component';
 import { ModalComponent } from './modal/modal.component';
 import { ModalService } from './services/modal.service';
+import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ModalService } from './services/modal.service';
     TextMapConverterComponent,
     SaveAsMapComponent,
     RegisterComponent,
-    ModalComponent
+    ModalComponent,
+    ChangeUserInfoComponent
 ],
   imports: [
     BrowserModule,
