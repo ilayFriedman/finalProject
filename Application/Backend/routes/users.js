@@ -85,4 +85,19 @@ router.post('/private/changeInfo', async function (req, res) {
     }
 });
 
+router.get('/private/getUsers', async function (req, res) {
+    try {
+        await user.find({}, function (err, result) {
+            if (result) {
+                console.log(result);
+                res.send(result);
+            } else {
+                res.status(400).send(`problem: ${err}`)
+            }
+        })
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`)
+    }
+});
+
 module.exports = router;
