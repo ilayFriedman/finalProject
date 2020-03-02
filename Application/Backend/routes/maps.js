@@ -43,7 +43,7 @@ router.post('/private/createMap', async function (req, res) {
                 console.log(err)
                 res.status(400).send(`problem: ${err}`)
             } else {
-                res.status(200).send({'message':"map added successfully"})
+                res.status(200).send('map added successfully')
             }
         });
     } catch (e) {
@@ -106,7 +106,7 @@ router.put('/private/updateMap', async function (req, res){
                 console.log(err);
                 res.status(500).send("Server error occurred.");
             } else {
-                res.status(200).send({'message':"Map updated successfully."});
+                res.status(200).send('Map updated successfully.');
             }
         });
     }
