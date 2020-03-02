@@ -15,6 +15,8 @@ import {MapsHandlerService} from "./services/maps-handler.service";
 import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
 import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
 import { RegisterComponent } from './register/register.component';
+import { ModalComponent } from './modal/modal.component';
+import { ModalService } from './services/modal.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { RegisterComponent } from './register/register.component';
     MapIndexComponent,
     TextMapConverterComponent,
     SaveAsMapComponent,
-    RegisterComponent
+    RegisterComponent,
+    ModalComponent
 ],
   imports: [
     BrowserModule,
@@ -42,7 +45,8 @@ import { RegisterComponent } from './register/register.component';
     GojsAngularModule
   ],
   providers: [
-    MapsHandlerService
+    MapsHandlerService,
+    ModalService
   ],
   bootstrap: [AppComponent]
 })

@@ -5,9 +5,8 @@ import { AppModule } from '../app.module';
 import * as go from 'gojs';
 import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-// import * as shit from '../../assets/LocalStorageCommandHandler.js'
+import { ModalService } from '../services/modal.service';
 
-declare var LocalStorageCommandHandler: any;
 @Component({
   selector: 'app-map-viewer',
   templateUrl: './map-viewer.component.html',
@@ -22,7 +21,7 @@ export class MapViewerComponent implements OnInit {
   localUrl = 'http://localhost:3000';
   // public myDiagram: any;
 
-  constructor(private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
+  constructor(private modalService: ModalService, private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
   ngOnInit() {
     this.router.params.subscribe(params => {
       this.currIdx = params['id'];
@@ -62,12 +61,10 @@ export class MapViewerComponent implements OnInit {
         "undoManager.isEnabled": true,
         // "linkingTool.linkValidation": validLink2,  // defined below
         // "relinkingTool.linkValidation": validLink2,
-        // commandHandler: $(LocalStorageCommandHandler),
         "toolManager.mouseWheelBehavior": go.ToolManager.WheelNone,
         "panningTool.isEnabled": false,
         //"isModelReadOnly": true
       });
-    // this.mapHandler.myDiagram.commandHandler = LocalStorageCommandHandler;
     var nodeSelectionAdornmentTemplate =
       $(go.Adornment, "Auto",
         $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
@@ -561,9 +558,10 @@ export class MapViewerComponent implements OnInit {
 
 
   saveAs() {
-    this.saveDiagramProperties();
-    this.toSave = true;
-    this.mapHandler.myDiagram.isModified = false;
+    this.modalService.open('my-custom-modal');
+    // this.saveDiagramProperties();
+    // this.toSave = true;
+    // this.mapHandler.myDiagram.isModified = false;
   }
 
   save() {
@@ -588,4 +586,66 @@ export class MapViewerComponent implements OnInit {
     );
   }
 
+  generateImage(imgType) {
+    var img = this.mapHandler.myDiagram.makeImage({
+        scale: 1,
+        background: "white",
+        type: imgType,
+        details: 1
+    });
+    return img;
+}
+
+download(filename, content) {
+  var a = document.createElement('a');
+  this.linkDownload(a, filename, content);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+linkDownload(a, filename, content) {
+  var imgData = content.src.replace(/^data:image\/[^;]/, "data:application/octet-stream");
+  //contentType =  '';
+  //uriContent = contentType + encodeURIComponent(r);
+  //alert(uriContent);
+  a.setAttribute('href', imgData);
+  a.setAttribute('download', filename);
+}
+
+saveAsImg(type, ext) {
+  var imgType = type;
+  var imgExt = ext;
+  var fileName = this.currMap.MapName;
+  var dataImage = this.generateImage(imgType);
+  //console.log(dataImage);
+  this.download(fileName + imgExt, dataImage)
+}
+
+downloadJSON(filename, content) {
+  var a = document.createElement('a');
+  var data = 'data:text/json;charset=utf8,' + encodeURIComponent(content);
+  a.setAttribute('href', data);
+  a.setAttribute('download', filename);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+saveAsJSON(type, ext) {
+  //var imgType = type;
+  var imgExt = ext;
+  var fileName = this.currMap.MapName;
+  var data = this.mapHandler.myDiagram.model.toJson();
+  //console.log(data);
+  this.downloadJSON(fileName + imgExt, data)
+}
+
+openModal(id: string) {
+  this.modalService.open(id);
+}
+
+closeModal(id: string) {
+  this.modalService.close(id);
+}
 }

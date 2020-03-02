@@ -2,35 +2,35 @@
     <mat-toolbar>
         <mat-toolbar-row>
             <span class="menu-spacer"></span>
-            <div  style="margin: auto; text-align: center;">
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/home'"> New </button>
+            <div style="margin: auto; text-align: center;">
+                <button class="mapsMenu" mat-raised-button> New </button>
                 <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Open </button>
-                <button class="mapsMenu" mat-raised-button (click)="saveAs()"> Save As </button>
+                <button class="mapsMenu" mat-raised-button (click)="openModal('custom-modal-1')"> Save As </button>
                 <button class="mapsMenu" mat-raised-button (click)="save()"> Save </button>
-                <button class="mapsMenu" mat-raised-button > Print </button>
+                <button class="mapsMenu" mat-raised-button> Print </button>
                 <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Redo </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom In </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Zoom Out </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Reset </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Cut </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Copy </button>
-                <button class="mapsMenu" mat-raised-button [routerLink]="'/login'"> Paste </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
+                <button class="mapsMenu" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
                 <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
                 <!-- <span class="mapsMenu"><a mat-menu-item [matMenuTriggerFor]="moreOptions"> more </a></span> -->
-    
+
                 <mat-menu #moreOptions="matMenu">
                     <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
-                    <button mat-button>Imort</button><br>
+                    <button mat-button>Import</button><br>
                     <button mat-button>To Complex</button><br>
                     <button mat-button>To Simple</button><br>
                     <button mat-button>Change Position</button>
                 </mat-menu>
-    
+
                 <mat-menu #Export="matMenu">
-                    <button mat-button>PNG Image</button><br>
-                    <button mat-button>JPEG Image</button><br>
-                    <button mat-button>JSON File</button>
+                    <button mat-button (click)="saveAsImg('image/png', '.png')">PNG Image</button><br>
+                    <button mat-button (click)="saveAsImg('image/jpeg', '.jpg')">JPEG Image</button><br>
+                    <button mat-button (click)="saveAsJSON('', '.json')">JSON File</button>
                 </mat-menu>
             </div>
         </mat-toolbar-row>
@@ -52,16 +52,18 @@
     <div id="rightSideUnknownForFutureUse">
         <div class="handle">Overview</div>
         <div id="myOverview"></div>
-    
+
     </div>
 </div>
 <div id="textConverter">
-       <app-text-map-converter></app-text-map-converter>
-    
+    <app-text-map-converter></app-text-map-converter>
+
 </div>
-
-
-
+<jw-modal id="custom-modal-1">
+    <h1>A Custom Modal!</h1>
+    <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p>
+    <button (click)="closeModal('custom-modal-1');">Close</button>
+</jw-modal>
 <!-- </div> -->
 <!-- 
 <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
@@ -75,4 +77,3 @@
 <!-- <div id="myDiagram">sdsdfsdfsdfsdf</div>
      </div> 
 </div>  -->
-
