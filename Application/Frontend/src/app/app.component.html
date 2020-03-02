@@ -8,7 +8,7 @@
     <div>
       <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
       <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
-      <span class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
+      <span *ngIf='isSignedOut()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
 <!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->
     </div>
   </mat-toolbar-row>
