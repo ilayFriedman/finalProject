@@ -10,8 +10,8 @@ export class AppComponent {
   title = 'ME-Mapper';
   userFullName = sessionStorage.userFullName
 
-  isSignedOut(){
-    return sessionStorage.userFullName == null;
+  isLoggedIn(){
+    return sessionStorage.userFullName != null;
   }
 }
 
