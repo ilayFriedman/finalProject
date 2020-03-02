@@ -475,6 +475,12 @@ export class MapViewerComponent implements OnInit {
 
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.currMap.Model);
 
+    this.mapHandler.myDiagram.model.addChangedListener(function(e) {
+      console.log(e.model)
+    });
+
+
+
     var myPalette =
       $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
         {
@@ -550,6 +556,9 @@ export class MapViewerComponent implements OnInit {
       })
     // change color of viewport border in Overview
     // myOverview.box.elt(0).stroke = "dodgerblue";
+
+
+
   }//init
 
   saveDiagramProperties() {

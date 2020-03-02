@@ -1,4 +1,4 @@
-import { Component, OnInit, SystemJsNgModuleLoader, SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit, SystemJsNgModuleLoader, SimpleChanges, Input, HostListener } from '@angular/core';
 import { MapsHandlerService } from '../services/maps-handler.service';
 @Component({
   selector: 'app-text-map-converter',
@@ -16,6 +16,8 @@ export class TextMapConverterComponent implements OnInit  {
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
     this.convertMapToText()
+    
+
   }
 
 
@@ -60,6 +62,9 @@ export class TextMapConverterComponent implements OnInit  {
     }
     // console.log(this.links)
   }
+
+  
+
 
   // doTextareaValueChange(ev) {
   //   try {
