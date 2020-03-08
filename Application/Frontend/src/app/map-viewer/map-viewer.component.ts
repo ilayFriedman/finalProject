@@ -581,7 +581,7 @@ export class MapViewerComponent implements OnInit {
 
     console.log(data)
     let result = this.http.put(this.localUrl + '/private/updateMap', data, {
-      headers: { 'token': sessionStorage.token, responseType: 'text' }
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
     });
 
     result.subscribe(response => {

@@ -2,44 +2,43 @@ const express = require('express');
 const router = express.Router();
 const map = require('../models/map');
 const jwt = require('jsonwebtoken');
-const user = require ('../models/user');
+const user = require('../models/user');
 
-function UserHasReadPermissionForMap(resMap, userId){
-    if (resMap.Permission.Owner.userId == userId){
-        console.log("owner");
+function UserHasReadPermissionForMap(resMap, userId) {
+    if (resMap.Permission.Owner.userId == userId) {
         return true;
     }
 
-    if(resMap.Permission.Write){
+    if (resMap.Permission.Write) {
         for (let i = 0; i < resMap.Permission.Write.length; i++) {
             const element = resMap.Permission.Write[i];
-            if(element.userId == userId){
+            if (element.userId == userId) {
                 return true;
             }
         }
     }
-    
-    if(resMap.Permission.Read){
+
+    if (resMap.Permission.Read) {
         for (let i = 0; i < resMap.Permission.Read.length; i++) {
             const element = resMap.Permission.Read[i];
-            if(element.userId == userId){
+            if (element.userId == userId) {
                 return true;
             }
         }
     }
-    
+
     return false;
 }
 
-function UserHasWritePermissionForMap(resMap, userId){
-    if (resMap.Permission.Owner.userId == userId){
+function UserHasWritePermissionForMap(resMap, userId) {
+    if (resMap.Permission.Owner.userId == userId) {
         return true;
     }
 
-    if(resMap.Permission.Write){
+    if (resMap.Permission.Write) {
         for (let i = 0; i < resMap.Permission.Write.length; i++) {
             const element = resMap.Permission.Write[i];
-            if(element.userId == userId){
+            if (element.userId == userId) {
                 return true;
             }
         }
@@ -48,14 +47,13 @@ function UserHasWritePermissionForMap(resMap, userId){
     return false;
 }
 
-function UserHasOwnerPermissionForMap(resMap, userId){
-    
-    if (resMap.Permission.Owner.userId == userId){
-        console.log("nu");
+function UserHasOwnerPermissionForMap(resMap, userId) {
+
+    if (resMap.Permission.Owner.userId == userId) {
         return true;
     }
 
-    return true;
+    return false;
 }
 
 router.get('/private/getMap', async function (req, res) {
@@ -64,13 +62,12 @@ router.get('/private/getMap', async function (req, res) {
             '_id': req.headers._id
         }, function (err, result) {
             if (result) {
-                if(UserHasReadPermissionForMap(result, req.decoded._id)){
-                    console.log(result);
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
                     res.send(result);
                 }
-                else{
+                else {
                     res.status(403).send("The user's permission are insufficient to retrieve map");
-                }        
+                }
             } else {
                 res.status(404).send(`problem: ${err}`);
             }
@@ -83,7 +80,6 @@ router.get('/private/getMap', async function (req, res) {
 router.post('/private/createMap', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
-        console.log("Creator ID: " + CreatorId);
         const newMap = new map({
             MapName: req.body.MapName,
             CreatorId: CreatorId,
@@ -91,9 +87,9 @@ router.post('/private/createMap', async function (req, res) {
             Description: req.body.Description,
             Model: req.body.Model,
             Permission: {
-                Owner: {"userId": CreatorId},
+                Owner: { "userId": CreatorId },
                 Write: [],
-                Read:[]
+                Read: []
             },
             Subscribers: [],
             ContainingFolders: []
@@ -114,11 +110,10 @@ router.post('/private/createMap', async function (req, res) {
 
 router.delete('/private/removeMap', async function (req, res) {
     if (req.body._id) {
-        map.findOne({_id: req.body._id}, function(err, result){
-            if(result){
-                if(UserHasOwnerPermissionForMap(result, req.decoded._id)){
-                    console.log(req.body)
-                    map.deleteOne({_id: result._id}, function (err) {
+        map.findOne({ _id: req.body._id }, function (err, result) {
+            if (result) {
+                if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
+                    map.deleteOne({ _id: result._id }, function (err) {
                         if (err) {
                             res.status(500).send(`problem: ${err}`);
                         } else {
@@ -126,15 +121,15 @@ router.delete('/private/removeMap', async function (req, res) {
                         }
                     });
                 }
-                else{
-                    res.status(403).send("The user's permission are insufficient to delete map");
+                else {
+                    res.status(403).send("The user's permissions are insufficient to delete map");
                 }
             }
-            else{
+            else {
                 res.status(404).send(`Could not find a map with the given _id.`);
             }
         })
-    }else{
+    } else {
         res.status(400).send(`Missing id of map`);
     }
 
@@ -147,11 +142,10 @@ router.get('/private/getAllUserMaps', async function (req, res) {
         }, function (err, result) {
             if (result) {
                 map.find({
-                    'CreatorId':result._id
+                    'CreatorId': result._id
                 }, function (err, result) {
                     if (result) {
                         result = result.filter(mapElem => UserHasReadPermissionForMap(mapElem, req.decoded._id))
-                        console.log(result);
                         res.send(result);
                     } else {
                         res.status(400).send(`problem: ${err}`);
@@ -166,25 +160,33 @@ router.get('/private/getAllUserMaps', async function (req, res) {
     }
 });
 
-//TODO enforce that only a user with Write permissions updates the map.
-router.put('/private/updateMap', async function (req, res){
-    if(req.body._id){
-        // map.findOneAndUpdate({"_id": req.body._id}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
-            isUserOwnerOrWrite = "this.Permission.Owner == req.decoded._id ||"
-        map.findOneAndUpdate({ "$where": "return (req.body._id == this._id) && this.Permission.Owner"}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
-            if (err) {
-                console.log(err);
-                res.status(500).send("Server error occurred.");
-            } else {
-                res.status(200).send('Map updated successfully.');
+router.put('/private/updateMap', async function (req, res) {
+    if (req.body._id) {
+        map.findOne({
+            '_id': req.body._id
+        }, function (err, result) {
+            if (result) {
+                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
+                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': req.body.model }, function (err, mongoRes) {
+                        if (err) {
+                            res.status(500).send("Server error occurred.");
+                        } else {
+                            res.status(200).send('Map updated successfully.');
+                        }
+                    });
+                }
+                else {
+                    res.status(403).send("The user's permissions are insufficient to update map");
+                }
             }
-        });
+            else {
+                res.status(404).send("Could not find map.");
+            }
+        })
     }
-    else{
+    else {
         res.status(400).send("No map ID attached to request.");
     }
-
 });
-
 
 module.exports = router;

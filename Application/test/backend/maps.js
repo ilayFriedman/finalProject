@@ -225,6 +225,7 @@ describe('Maps', function () {
                     .set('token', testUserToken)
                     .send({_id: result[0]._id, model: testChangeMapModel})
                     .end(function (err, res) {
+                        console.log(res)
                             res.statusCode.should.equal(200);
                             res.text.should.equal("Map updated successfully.");
 
