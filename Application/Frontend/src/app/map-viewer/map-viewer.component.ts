@@ -6,6 +6,8 @@ import * as go from 'gojs';
 import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
+import { FileUploader } from 'ng2-file-upload';
+
 
 @Component({
   selector: 'app-map-viewer',
@@ -19,7 +21,7 @@ export class MapViewerComponent implements OnInit {
   currMap: any;
   toSave: boolean = false;
   localUrl = 'http://localhost:3000';
-  // public myDiagram: any;
+  fileToImport: any;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
   ngOnInit() {
@@ -29,8 +31,8 @@ export class MapViewerComponent implements OnInit {
     this.currMap = this.mapHandler.myMaps[this.currIdx]
     console.log(this.currIdx);
     console.log("curr map: " + this.currMap.MapName);
-      this.init()
-    
+    this.init()
+
   }
 
   init() {
@@ -475,7 +477,7 @@ export class MapViewerComponent implements OnInit {
 
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.currMap.Model);
 
-    this.mapHandler.myDiagram.model.addChangedListener(function(e) {
+    this.mapHandler.myDiagram.model.addChangedListener(function (e) {
       // console.log(e.model)
     });
 
@@ -597,64 +599,83 @@ export class MapViewerComponent implements OnInit {
 
   generateImage(imgType) {
     var img = this.mapHandler.myDiagram.makeImage({
-        scale: 1,
-        background: "white",
-        type: imgType,
-        details: 1
+      scale: 1,
+      background: "white",
+      type: imgType,
+      details: 1
     });
     return img;
-}
+  }
 
-download(filename, content) {
-  var a = document.createElement('a');
-  this.linkDownload(a, filename, content);
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+  download(filename, content) {
+    var a = document.createElement('a');
+    this.linkDownload(a, filename, content);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
-linkDownload(a, filename, content) {
-  var imgData = content.src.replace(/^data:image\/[^;]/, "data:application/octet-stream");
-  //contentType =  '';
-  //uriContent = contentType + encodeURIComponent(r);
-  //alert(uriContent);
-  a.setAttribute('href', imgData);
-  a.setAttribute('download', filename);
-}
+  linkDownload(a, filename, content) {
+    var imgData = content.src.replace(/^data:image\/[^;]/, "data:application/octet-stream");
+    //contentType =  '';
+    //uriContent = contentType + encodeURIComponent(r);
+    //alert(uriContent);
+    a.setAttribute('href', imgData);
+    a.setAttribute('download', filename);
+  }
 
-saveAsImg(type, ext) {
-  var imgType = type;
-  var imgExt = ext;
-  var fileName = this.currMap.MapName;
-  var dataImage = this.generateImage(imgType);
-  //console.log(dataImage);
-  this.download(fileName + imgExt, dataImage)
-}
+  saveAsImg(type, ext) {
+    var imgType = type;
+    var imgExt = ext;
+    var fileName = this.currMap.MapName;
+    var dataImage = this.generateImage(imgType);
+    //console.log(dataImage);
+    this.download(fileName + imgExt, dataImage)
+  }
 
-downloadJSON(filename, content) {
-  var a = document.createElement('a');
-  var data = 'data:text/json;charset=utf8,' + encodeURIComponent(content);
-  a.setAttribute('href', data);
-  a.setAttribute('download', filename);
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+  downloadJSON(filename, content) {
+    var a = document.createElement('a');
+    var data = 'data:text/json;charset=utf8,' + encodeURIComponent(content);
+    a.setAttribute('href', data);
+    a.setAttribute('download', filename);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
-saveAsJSON(type, ext) {
-  //var imgType = type;
-  var imgExt = ext;
-  var fileName = this.currMap.MapName;
-  var data = this.mapHandler.myDiagram.model.toJson();
-  //console.log(data);
-  this.downloadJSON(fileName + imgExt, data)
-}
+  saveAsJSON(type, ext) {
+    //var imgType = type;
+    var imgExt = ext;
+    var fileName = this.currMap.MapName;
+    var data = this.mapHandler.myDiagram.model.toJson();
+    //console.log(data);
+    this.downloadJSON(fileName + imgExt, data)
+  }
 
-openModal(id: string) {
-  this.modalService.open(id);
-}
+  openModal(id: string) {
+    this.modalService.open(id);
+  }
 
-closeModal(id: string) {
-  this.modalService.close(id);
-}
-}
+  closeModal(id: string) {
+    this.modalService.close(id);
+  }
+
+
+  importMap(fileList: FileList, modalID: string) {
+    let file = fileList[0];
+    let fileReader: FileReader = new FileReader();
+    let self = this;
+    let currModel;
+    fileReader.onloadend = function (x) {
+      self.fileToImport = fileReader.result;
+      // console.log(self.fileToImport)
+      currModel = JSON.parse(self.fileToImport)
+      console.log(currModel)
+      self.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
+    }
+    fileReader.readAsText(file);
+    this.closeModal(modalID);
+
+  }
+
+}// component

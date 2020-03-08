@@ -48,12 +48,12 @@ export class SaveAsMapComponent implements OnInit {
       'Description': this.saveMapForm.controls.description.value
     }
     let result = this.http.post(this.localUrl + '/private/createMap', data, {
-      headers: { 'token': sessionStorage.token, responseType: 'text'}
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
     });
 
     result.subscribe(response => {
       this.submitted = false;
-      alert("Map Saved Successfully")
+      alert(response)
 
     }, error => {
       this.submitted = false;

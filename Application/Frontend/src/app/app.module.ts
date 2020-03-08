@@ -18,6 +18,7 @@ import { RegisterComponent } from './register/register.component';
 import { ModalComponent } from './modal/modal.component';
 import { ModalService } from './services/modal.service';
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
+import { FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { ChangeUserInfoComponent } from './change-user-info/change-user-info.com
     HttpClientModule,
     MatButtonModule,
     FormsModule,
-    GojsAngularModule
+    GojsAngularModule,
+    FileUploadModule
   ],
   providers: [
     MapsHandlerService,

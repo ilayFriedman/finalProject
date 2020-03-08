@@ -50,8 +50,8 @@
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('import-modal')">&times;</span>
         <h1>Import Map From:</h1>
-        <input type="file" class="filepicker">
-        <!-- <button (click)="import()"></button> -->
+        <input type="file" (change)="importMap($event.target.files, 'import-modal')">
+        <!-- <button (click)="importMap($event.target.files)">Import</button> -->
     </div>
 </jw-modal>
 <!-- <app-save-as-map [hidden]='!toSave'></app-save-as-map> -->
