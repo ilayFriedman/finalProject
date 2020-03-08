@@ -4,20 +4,77 @@ const map = require('../models/map');
 const jwt = require('jsonwebtoken');
 const user = require ('../models/user');
 
+function UserHasReadPermissionForMap(resMap, userId){
+    if (resMap.Permission.Owner.userId == userId){
+        console.log("owner");
+        return true;
+    }
+
+    if(resMap.Permission.Write){
+        for (let i = 0; i < resMap.Permission.Write.length; i++) {
+            const element = resMap.Permission.Write[i];
+            if(element.userId == userId){
+                return true;
+            }
+        }
+    }
+    
+    if(resMap.Permission.Read){
+        for (let i = 0; i < resMap.Permission.Read.length; i++) {
+            const element = resMap.Permission.Read[i];
+            if(element.userId == userId){
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+function UserHasWritePermissionForMap(resMap, userId){
+    if (resMap.Permission.Owner.userId == userId){
+        return true;
+    }
+
+    if(resMap.Permission.Write){
+        for (let i = 0; i < resMap.Permission.Write.length; i++) {
+            const element = resMap.Permission.Write[i];
+            if(element.userId == userId){
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function UserHasOwnerPermissionForMap(resMap, userId){
+    if (resMap.Permission.Owner.userId == userId){
+        return true;
+    }
+
+    return false;
+}
+
 router.get('/private/getMap', async function (req, res) {
     try {
         await map.find({
             '_id': req.headers._id
         }, function (err, result) {
             if (result) {
-                console.log(result);
-                res.send(result);
+                if(UserHasReadPermissionForMap(result, req.decoded._id)){
+                    console.log(result);
+                    res.send(result);
+                }
+                else{
+                    res.status(403).send("The user's permission are insufficient to retrieve map");
+                }        
             } else {
-                res.status(400).send(`problem: ${err}`)
+                res.status(404).send(`problem: ${err}`);
             }
         })
     } catch (e) {
-        res.status(400).send(`problem: ${e}`)
+        res.status(500).send(`problem: ${e}`)
     }
 });
 
@@ -31,9 +88,9 @@ router.post('/private/createMap', async function (req, res) {
             Description: req.body.Description,
             Model: req.body.Model,
             Permission: {
-                "Owner": {"userId": CreatorId, "permission": "owner"},
-                "Users": [{"userId": CreatorId, "permission": "owner"}],
-                "Groups": []
+                Owner: [{"userId": CreatorId}],
+                Write: [],
+                Read:[]
             },
             Subscribers: [],
             ContainingFolders: []
@@ -78,12 +135,14 @@ router.get('/private/getAllUserMaps', async function (req, res) {
     try {
         user.findOne({
             '_id': req.decoded._id
-        }, async function (err, result) {
+        }, function (err, result) {
             if (result) {
-                await map.find({
+                map.find({
                     'CreatorId':result._id
                 }, function (err, result) {
                     if (result) {
+                        result = result.filter(mapElem => UserHasReadPermissionForMap(mapElem, req.decoded._id))
+                        console.log(result);
                         res.send(result);
                     } else {
                         res.status(400).send(`problem: ${err}`);
@@ -101,7 +160,9 @@ router.get('/private/getAllUserMaps', async function (req, res) {
 //TODO enforce that only a user with Write permissions updates the map.
 router.put('/private/updateMap', async function (req, res){
     if(req.body._id){
-        map.findOneAndUpdate({"_id": req.body._id}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
+        // map.findOneAndUpdate({"_id": req.body._id}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
+            isUserOwnerOrWrite = "this.Permission.Owner == req.decoded._id ||"
+        map.findOneAndUpdate({ "$where": "return (req.body._id == this._id) && this.Permission.Owner"}, {$set:{'Model': req.body.model}}, function(err, mongoRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send("Server error occurred.");
