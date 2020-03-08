@@ -11,9 +11,6 @@ const jwt = require('jsonwebtoken');
 chai.use(chaiHttp);
 const serverAddress = "http://localhost:3000";
 
-const missingUsername = 'noSuchUser';
-const missingUserPass = 'noSuchPass';
-
 const testUserData = {
     Username: "a",
     Password: "a",
@@ -139,23 +136,27 @@ function createUser(userData = testUserData) {
     }
 };
 
-async function createMap(mapData = testMapData) {
+async function createMapWithReadPermission(mapData = testMapData) {
     try {
         let mapDataCopy = {...mapData};
         mapDataCopy.CreatorId = testUserId;
         mapDataCopy.CreationTime = new Date();
         mapDataCopy.Permission = {
-            "Owner": {"userId": testUserId, "permission": "owner"},
-            "Users": [{"userId": testUserId, "permission": "owner"}],
-            "Groups": []
+            "Owner": {/*"userId": testUserId, "permission": "owner"*/},
+            "Write": [/*{"userId": testUserId, "permission": "owner"}*/],
+            "Read": [{"userId": testUserId, "permission": "owner"}]
         },
             mapDataCopy.Subscribers = [];
         mapDataCopy.ContainingFolders = [];
         const newMap = new usermap(mapDataCopy);
-        await newMap.save(function (err, savedMap) {
-            if (savedMap) {
-                testMap = savedMap;
-            }
+        return new Promise(function(resolve, reject){
+            newMap.save(function (err, saveMap) {
+                if (savedMap) {
+                    testMap = savedMap;
+                    resolve();
+                }
+                return (reject(err))
+            });
         });
     } catch (e) {
         console.log(e)
@@ -169,7 +170,6 @@ describe('Maps', function () {
      * Connect to a new in-memory database before running any tests.
      * Then, insert a test map.
      */
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImEiLCJfaWQiOiI1ZTAxYzhkNDA0Mjg1NjI0MTRkNWFiNWMiLCJpYXQiOjE1NzcxOTQwNDYsImV4cCI6MTU3NzI4MDQ0Nn0.R_dS-qbLhop1UzpsafuSfA_t2plP96Tna1E9uPSy4s0"
     before(async function () {
         await dbHandler.connect({useUnifiedTopology: true,});
         // await createUser();
@@ -227,6 +227,12 @@ describe('Maps', function () {
                     .end(function (err, res) {
                             res.statusCode.should.equal(200);
                             res.text.should.equal("Map updated successfully.");
+
+                            map.findById(result[0], function (err, updatedMap) {
+                                if(updatedMap){
+                                    updatedMap.Model.nodeDataArray[0].text.should.equal(testChangeMapModel.nodeDataArray[0].text);
+                                }
+                            });   
                         }
                     );
             }
@@ -250,25 +256,24 @@ describe('Maps', function () {
     });
 
     it('should remove map', function (done) {
-            map.findOne({MapName: "oren4"}, function (err, result) {
-                if (result) {
-                    let mapID = result/*[0]*/._id.toString();
-                    chai.request(serverAddress)
-                        .delete('/private/removeMap')
-                        .set('token', testUserToken)
-                        .send({_id: mapID})
-                        .end(function (err, res) {
-                                res.statusCode.should.equal(200);
-                                res.text.should.equal("map deleted successfully");
+        map.findOne({MapName: "oren4"}, function (err, result) {
+            if (result) {
+                let mapID = result._id.toString();
+                chai.request(serverAddress)
+                    .delete('/private/removeMap')
+                    .set('token', testUserToken)
+                    .send({_id: mapID})
+                    .end(function (err, res) {
+                            res.statusCode.should.equal(200);
+                            res.text.should.equal("map deleted successfully");
 
-                                done();
-                            }
-                        );
-                }
-            });
+                            done();
+                        }
+                    );
+            }
+        });
 
-        }
-    );
+    });
 
     it('should not find map to remove', function (done) {
         let mapID = "noSuchID";

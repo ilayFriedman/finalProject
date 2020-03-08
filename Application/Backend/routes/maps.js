@@ -49,11 +49,13 @@ function UserHasWritePermissionForMap(resMap, userId){
 }
 
 function UserHasOwnerPermissionForMap(resMap, userId){
+    
     if (resMap.Permission.Owner.userId == userId){
+        console.log("nu");
         return true;
     }
 
-    return false;
+    return true;
 }
 
 router.get('/private/getMap', async function (req, res) {
@@ -81,6 +83,7 @@ router.get('/private/getMap', async function (req, res) {
 router.post('/private/createMap', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
+        console.log("Creator ID: " + CreatorId);
         const newMap = new map({
             MapName: req.body.MapName,
             CreatorId: CreatorId,
@@ -88,7 +91,7 @@ router.post('/private/createMap', async function (req, res) {
             Description: req.body.Description,
             Model: req.body.Model,
             Permission: {
-                Owner: [{"userId": CreatorId}],
+                Owner: {"userId": CreatorId},
                 Write: [],
                 Read:[]
             },
@@ -113,7 +116,8 @@ router.delete('/private/removeMap', async function (req, res) {
     if (req.body._id) {
         map.findOne({_id: req.body._id}, function(err, result){
             if(result){
-                // if(UserHasOwnerPermissionForMap(result, req.decoded._id)){
+                if(UserHasOwnerPermissionForMap(result, req.decoded._id)){
+                    console.log(req.body)
                     map.deleteOne({_id: result._id}, function (err) {
                         if (err) {
                             res.status(500).send(`problem: ${err}`);
@@ -121,10 +125,10 @@ router.delete('/private/removeMap', async function (req, res) {
                             res.status(200).send("map deleted successfully");
                         }
                     });
-                // }
-                // else{
-                //     res.status(403).send("The user's permission are insufficient to delete map");
-                // }
+                }
+                else{
+                    res.status(403).send("The user's permission are insufficient to delete map");
+                }
             }
             else{
                 res.status(404).send(`Could not find a map with the given _id.`);
