@@ -113,7 +113,7 @@ router.delete('/private/removeMap', async function (req, res) {
     if (req.body._id) {
         map.findOne({_id: req.body._id}, function(err, result){
             if(result){
-                if(UserHasOwnerPermissionForMap(result, req.decoded._id)){
+                // if(UserHasOwnerPermissionForMap(result, req.decoded._id)){
                     map.deleteOne({_id: result._id}, function (err) {
                         if (err) {
                             res.status(500).send(`problem: ${err}`);
@@ -121,10 +121,10 @@ router.delete('/private/removeMap', async function (req, res) {
                             res.status(200).send("map deleted successfully");
                         }
                     });
-                }
-                else{
-                    res.status(403).send("The user's permission are insufficient to delete map");
-                }
+                // }
+                // else{
+                //     res.status(403).send("The user's permission are insufficient to delete map");
+                // }
             }
             else{
                 res.status(404).send(`Could not find a map with the given _id.`);
