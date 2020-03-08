@@ -72,7 +72,7 @@ describe('Users', function () {
             })
             .end(function (err, res, body) {
                     res.statusCode.should.equal(200);
-                    res.text.should.equal("user successfully registered");
+                    res.text.should.equal("User successfully registered");
 
                     dbHandler.clearDatabase()
 
@@ -133,7 +133,7 @@ describe('Users', function () {
                     Password: missingUserPass
                 })
                 .end(function (err, res) {
-                        res.statusCode.should.equal(400);
+                        res.statusCode.should.equal(404);
                         res.text.should.equal("No such user");
 
                         done();

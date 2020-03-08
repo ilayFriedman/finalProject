@@ -192,7 +192,7 @@ describe('Maps', function () {
                     .send(testMapData)
                     .end(function (err, res) {
                             res.statusCode.should.equal(200);
-                            res.text.should.equal("map added successfully");
+                            res.text.should.equal("Map added successfully");
 
                             done();
                         }
@@ -225,7 +225,6 @@ describe('Maps', function () {
                     .set('token', testUserToken)
                     .send({_id: result[0]._id, model: testChangeMapModel})
                     .end(function (err, res) {
-                        console.log(res)
                             res.statusCode.should.equal(200);
                             res.text.should.equal("Map updated successfully.");
 
@@ -266,7 +265,7 @@ describe('Maps', function () {
                     .send({_id: mapID})
                     .end(function (err, res) {
                             res.statusCode.should.equal(200);
-                            res.text.should.equal("map deleted successfully");
+                            res.text.should.equal("Map deleted successfully.");
 
                             done();
                         }
@@ -284,7 +283,7 @@ describe('Maps', function () {
             .send({_id: mapID})
             .end(function (err, res) {
                     res.statusCode.should.equal(404);
-                    res.text.should.equal("Could not find a map with the given _id.");
+                    res.text.should.equal("Could not find the requested map.");
 
                     done();
                 }
@@ -298,7 +297,7 @@ describe('Maps', function () {
             .send()
             .end(function (err, res) {
                     res.statusCode.should.equal(400);
-                    res.text.should.equal("Missing id of map");
+                    res.text.should.equal("Missing map id");
 
                     done();
                 }

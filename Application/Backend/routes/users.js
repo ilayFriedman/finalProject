@@ -16,16 +16,16 @@ router.post('/login', async function (req, res) {
                         const token = jwt.sign(payload, secret, options);
                         res.send({"token": token, "fullName": result[0].FirstName + " " + result[0].LastName});
                     } else {
-                        res.status(400).send("No such user")
+                        res.status(404).send("No such user")
                     }
                 } else {
                     console.log(err)
-                    res.status(500).send(`problem: ${err}`)
+                    res.status(500).send("Server error occured.");
                 }
             })
         } catch (e) {
             console.log(e);
-            res.status(500).send(`problem: ${e}`)
+            res.status(500).send("Server error occured.")
         }
     }
 );
@@ -49,20 +49,20 @@ router.post('/register', async function (req, res) {
                         newUser.save(function (err) {
                             if (err) {
                                 console.log(err)
-                                res.status(400).send(`problem: ${err}`)
+                                res.status(500).send(`Server error occured.`)
                             } else {
-                                res.status(200).send("user successfully registered")
+                                res.status(200).send("User successfully registered")
                             }
                         });
                 }
             } else {
                 console.log(err)
-                res.status(500).send(`problem: ${err}`)
+                res.status(500).send(`Server error occured.`)
             }
         })
     } catch (e) {
         console.log(e);
-        res.status(500).send(`problem: ${e}`)
+        res.status(500).send(`Server error occured.`)
     }
 });
 
@@ -81,7 +81,7 @@ router.post('/private/changeInfo', async function (req, res) {
         });
     } catch (e) {
         console.log(e);
-        res.status(500).send(`problem: ${e}`)
+        res.status(500).send(`Server error occured.`)
     }
 });
 
@@ -92,11 +92,11 @@ router.get('/private/getUsers', async function (req, res) {
                 console.log(result);
                 res.send(result);
             } else {
-                res.status(400).send(`problem: ${err}`)
+                res.status(500).send(`Server error occured.`)
             }
         })
     } catch (e) {
-        res.status(400).send(`problem: ${e}`)
+        res.status(500).send(`Server error occured.`)
     }
 });
 

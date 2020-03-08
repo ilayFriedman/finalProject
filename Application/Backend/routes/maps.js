@@ -66,14 +66,14 @@ router.get('/private/getMap', async function (req, res) {
                     res.send(result);
                 }
                 else {
-                    res.status(403).send("The user's permission are insufficient to retrieve map");
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
                 }
             } else {
-                res.status(404).send(`problem: ${err}`);
+                res.status(404).send("Could not find the requested map.");
             }
         })
     } catch (e) {
-        res.status(500).send(`problem: ${e}`)
+        res.status(500).send('Server error occured.');
     }
 });
 
@@ -96,15 +96,15 @@ router.post('/private/createMap', async function (req, res) {
         });
         newMap.save(function (err) {
             if (err) {
-                console.log(err)
-                res.status(400).send(`problem: ${err}`)
+                console.log(err);
+                res.status(500).send(`Server error occured.`);
             } else {
-                res.status(200).send('map added successfully')
+                res.status(200).send('Map added successfully');
             }
         });
     } catch (e) {
         console.log(e);
-        res.status(500).send(`problem: ${e}`)
+        res.status(500).send();
     }
 });
 
@@ -115,9 +115,9 @@ router.delete('/private/removeMap', async function (req, res) {
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
                     map.deleteOne({ _id: result._id }, function (err) {
                         if (err) {
-                            res.status(500).send(`problem: ${err}`);
+                            res.status(500).send(`Server error occured.`);
                         } else {
-                            res.status(200).send("map deleted successfully");
+                            res.status(200).send("Map deleted successfully.");
                         }
                     });
                 }
@@ -126,11 +126,11 @@ router.delete('/private/removeMap', async function (req, res) {
                 }
             }
             else {
-                res.status(404).send(`Could not find a map with the given _id.`);
+                res.status(404).send(`Could not find the requested map.`);
             }
         })
     } else {
-        res.status(400).send(`Missing id of map`);
+        res.status(400).send(`Missing map id`);
     }
 
 });
