@@ -6,7 +6,6 @@ import * as go from 'gojs';
 import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
-import { FileUploader } from 'ng2-file-upload';
 
 
 @Component({
@@ -95,11 +94,7 @@ export class MapViewerComponent implements OnInit {
       });
     }
     function setContributionValue(obj, val) {
-      console.log(obj.part);
       var link = obj.part.adornedPart;
-
-      console.log(link);
-
       setElementText(link, val);
     }
 
@@ -114,6 +109,28 @@ export class MapViewerComponent implements OnInit {
       obj.diagram.commitTransaction("setContributionValue");
     }
 
+//     var nodeMenu =
+//     $(go.Adornment, "Vertical",
+//       //$("ContextMenuButton",
+//       //    $(go.TextBlock, "Properties", { margin: 3 }),
+//       //    { click: function (e, obj) { nodeProperties(e, obj); } }),
+//       //$("ContextMenuButton",
+//           //$(go.TextBlock, "Properties", { margin: 3 }),
+//           //{ click: function (e, obj) { showModal(obj); } }));
+//     $("ContextMenuButton",
+//          $(go.TextBlock, "Properties", { margin: 3 }),
+//          { click: function (e, obj) { showModal(obj); } }),
+//     $("ContextMenuButton",
+//          $(go.TextBlock, "Filter Radius"),
+//          { click: function (e, obj) { showFilterMenu(obj); } }));
+
+//  var LinkMenu =
+//     $(go.Adornment, "Vertical",
+//       $("ContextMenuButton",
+//           $(go.TextBlock, "Properties", { margin: 3 }),
+//           { click: function (e, obj) { showModal(obj); } }));
+
+          
     var contributionLinkMenu =
       $(go.Adornment, "Vertical",
         $("ContextMenuButton",
@@ -567,7 +584,6 @@ export class MapViewerComponent implements OnInit {
     this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
   }
 
-
   saveAs() {
     this.modalService.open('my-custom-modal');
     // this.saveDiagramProperties();
@@ -668,13 +684,20 @@ export class MapViewerComponent implements OnInit {
     let currModel;
     fileReader.onloadend = function (x) {
       self.fileToImport = fileReader.result;
-      // console.log(self.fileToImport)
       currModel = JSON.parse(self.fileToImport)
       console.log(currModel)
+      self.newMap()
       self.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
+
     }
     fileReader.readAsText(file);
     this.closeModal(modalID);
+
+  }
+
+  newMap() {
+    this.mapHandler.myDiagram.clear()
+    this.currMap = null
 
   }
 

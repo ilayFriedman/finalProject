@@ -18,7 +18,7 @@ import { RegisterComponent } from './register/register.component';
 import { ModalComponent } from './modal/modal.component';
 import { ModalService } from './services/modal.service';
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
-import { FileUploadModule } from 'ng2-file-upload';
+import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,8 @@ import { FileUploadModule } from 'ng2-file-upload';
     SaveAsMapComponent,
     RegisterComponent,
     ModalComponent,
-    ChangeUserInfoComponent
+    ChangeUserInfoComponent,
+    NodeMenuModalComponent
 ],
   imports: [
     BrowserModule,
@@ -45,8 +46,7 @@ import { FileUploadModule } from 'ng2-file-upload';
     HttpClientModule,
     MatButtonModule,
     FormsModule,
-    GojsAngularModule,
-    FileUploadModule
+    GojsAngularModule
   ],
   providers: [
     MapsHandlerService,
