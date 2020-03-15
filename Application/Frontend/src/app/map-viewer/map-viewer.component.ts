@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnChanges , EventEmitter, Output, ViewChild, ViewChildren} from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
@@ -6,7 +6,7 @@ import * as go from 'gojs';
 import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
-
+import { TextMapConverterComponent } from '../text-map-converter/text-map-converter.component';
 
 @Component({
   selector: 'app-map-viewer',
@@ -21,6 +21,7 @@ export class MapViewerComponent implements OnInit {
   toSave: boolean = false;
   localUrl = 'http://localhost:3000';
   fileToImport: any;
+  updateConverter: boolean = false
 
   constructor(private modalService: ModalService, private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
   ngOnInit() {
@@ -494,10 +495,7 @@ export class MapViewerComponent implements OnInit {
 
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.currMap.Model);
 
-    this.mapHandler.myDiagram.model.addChangedListener(function (e) {
-      // console.log(e.model)
-    });
-
+    this.mapHandler.myDiagram.model.addChangedListener(this.updateConverterACtivate);
 
 
     var myPalette =
@@ -579,6 +577,21 @@ export class MapViewerComponent implements OnInit {
 
 
   }//init
+
+  updateConverterACtivate = (e) =>{
+      
+    if(e.Ze == "CommittingTransaction"){
+      if(e.Vo != "Move" && e.Vo != "Initial Layout"){
+        // this.child.convertMapToText()
+        if(this.updateConverter == false)
+          this.updateConverter = true
+        else
+          this.updateConverter = false
+        console.log(e)
+      }
+    }
+      
+   }
 
   saveDiagramProperties() {
     this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
