@@ -9,22 +9,14 @@
                 </button>
                 <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"> Save </button>
                 <button class="mapsMenu" title="Print" mat-raised-button> Print </button>
-                <button class="mapsMenu" title="Cut (Ctrl + x)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
-                <button class="mapsMenu" title="Copy (Ctrl + c)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
-                <button class="mapsMenu" title="Paste (Ctrl + v)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
-                <button class="mapsMenu" title="Undo (Ctrl + z)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
-                <button class="mapsMenu" title="Redo (Ctrl + y)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
-                <button class="mapsMenu" title="Zoom In (Ctrl + +)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
-                <button class="mapsMenu" title="Zoom Out (Ctrl + -)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
-                <button class="mapsMenu" title="Reset Zoom (Ctrl + 0)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset </button>
+                <button class="mapsMenu" title="Cut (Ctrl + x)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
+                <button class="mapsMenu" title="Copy (Ctrl + c)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
+                <button class="mapsMenu" title="Paste (Ctrl + v)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
+                <button class="mapsMenu" title="Undo (Ctrl + z)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
+                <button class="mapsMenu" title="Redo (Ctrl + y)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
+                <button class="mapsMenu" title="Zoom In (Ctrl + +)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
+                <button class="mapsMenu" title="Zoom Out (Ctrl + -)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
+                <button class="mapsMenu" title="Reset Zoom (Ctrl + 0)" mat-raised-button (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset </button>
                 <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
                 <!-- <span class="mapsMenu"><a mat-menu-item [matMenuTriggerFor]="moreOptions"> more </a></span> -->
 
@@ -63,9 +55,9 @@
 </jw-modal>
 
 <jw-modal id="refModal">
-    <div class="jw-modal-body">
+    <div class="jw-modal-body" (change)="saveChanges()">
         <span class="close" (click)="closeModal('refModal')">&times;</span>
-       <app-node-menu-modal></app-node-menu-modal>
+        <app-node-menu-modal></app-node-menu-modal>
     </div>
 </jw-modal>
 
