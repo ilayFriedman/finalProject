@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalService } from '../services/modal.service';
 
 @Component({
   selector: 'app-node-menu-modal',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NodeMenuModalComponent implements OnInit {
 
-  constructor() { }
+
+  constructor(private modalService: ModalService) { }
 
   ngOnInit() {
+  }
+  
+  saveChanges(){
+    this.modalService.saveChangesInNode()
   }
 
 }

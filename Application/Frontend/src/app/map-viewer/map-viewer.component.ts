@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges, OnChanges , EventEmitter, Output, ViewChild, ViewChildren} from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
@@ -7,6 +7,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
 import { TextMapConverterComponent } from '../text-map-converter/text-map-converter.component';
+import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-map-viewer',
@@ -22,6 +23,8 @@ export class MapViewerComponent implements OnInit {
   localUrl = 'http://localhost:3000';
   fileToImport: any;
   updateConverter: boolean = false
+  currNode: any;
+  obj:any;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
   ngOnInit() {
@@ -36,7 +39,7 @@ export class MapViewerComponent implements OnInit {
   }
 
   init() {
-
+    let self = this;
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     this.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
@@ -110,28 +113,23 @@ export class MapViewerComponent implements OnInit {
       obj.diagram.commitTransaction("setContributionValue");
     }
 
-//     var nodeMenu =
-//     $(go.Adornment, "Vertical",
-//       //$("ContextMenuButton",
-//       //    $(go.TextBlock, "Properties", { margin: 3 }),
-//       //    { click: function (e, obj) { nodeProperties(e, obj); } }),
-//       //$("ContextMenuButton",
-//           //$(go.TextBlock, "Properties", { margin: 3 }),
-//           //{ click: function (e, obj) { showModal(obj); } }));
-//     $("ContextMenuButton",
-//          $(go.TextBlock, "Properties", { margin: 3 }),
-//          { click: function (e, obj) { showModal(obj); } }),
-//     $("ContextMenuButton",
-//          $(go.TextBlock, "Filter Radius"),
-//          { click: function (e, obj) { showFilterMenu(obj); } }));
+    var nodeMenu =
+      $(go.Adornment, "Vertical",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Properties", { margin: 3 }),
+          { click: function (e, obj) { self.showModal(obj); } }),
+        // $("ContextMenuButton",
+        //      $(go.TextBlock, "Filter Radius"),
+        //      { click: function (e, obj) { showFilterMenu(obj); } })
+      );
 
-//  var LinkMenu =
-//     $(go.Adornment, "Vertical",
-//       $("ContextMenuButton",
-//           $(go.TextBlock, "Properties", { margin: 3 }),
-//           { click: function (e, obj) { showModal(obj); } }));
+    //  var LinkMenu =
+    //     $(go.Adornment, "Vertical",
+    //       $("ContextMenuButton",
+    //           $(go.TextBlock, "Properties", { margin: 3 }),
+    //           { click: function (e, obj) { showModal(obj); } }));
 
-          
+
     var contributionLinkMenu =
       $(go.Adornment, "Vertical",
         $("ContextMenuButton",
@@ -159,7 +157,7 @@ export class MapViewerComponent implements OnInit {
           locationObjectName: "PANEL",
           selectionObjectName: "PANEL",
           selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
-          // contextMenu: nodeMenu
+          contextMenu: nodeMenu
         },
 
         { locationSpot: go.Spot.Center },
@@ -393,10 +391,13 @@ export class MapViewerComponent implements OnInit {
         new go.Binding("routing", "routing"),
         new go.Binding("curve", "curve"),
         new go.Binding("curviness", "curviness"),
-        { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
+        // { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
         new go.Binding("points").makeTwoWay(),
         $(go.Shape,  // the link path shape
-          { isPanelMain: true, strokeWidth: 1 }),
+          { isPanelMain: true, strokeWidth: 1 },
+          new go.Binding("stroke", "color"),  // shape.stroke = data.color
+          new go.Binding("strokeWidth", "strokeWidth")  // shape.strokeWidth = data.thick
+        ),
         $(go.Shape,  // the arrowhead
           { toArrow: "Standard", stroke: null }),
         $(go.Panel, "Auto",
@@ -488,7 +489,7 @@ export class MapViewerComponent implements OnInit {
     this.mapHandler.myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
     this.mapHandler.myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
     this.mapHandler.myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
-    this.mapHandler.myDiagram.linkTemplateMap.add("ExtendBy", extendByLinkTamplate);
+    this.mapHandler.myDiagram.linkTemplateMap.add("ExtendedBy", extendByLinkTamplate);
     this.mapHandler.myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
 
 
@@ -575,23 +576,33 @@ export class MapViewerComponent implements OnInit {
     // myOverview.box.elt(0).stroke = "dodgerblue";
 
 
-
   }//init
 
-  updateConverterACtivate = (e) =>{
-      
-    if(e.Ze == "CommittingTransaction"){
-      if(e.Vo != "Move" && e.Vo != "Initial Layout"){
+  showModal(obj) {
+    this.currNode = obj.part.adornedObject;
+    console.log(this.obj);
+    // var activeObject = self.currNode.data;
+    // var selectedObject = self.currNode;
+    // var refsOfObject = self.currNode.data.items;
+    // // setInitialObjectStyle(node.data);
+
+    this.openModalMenu('refModal')
+  }
+
+  updateConverterACtivate = (e) => {
+
+    if (e.Ze == "CommittingTransaction") {
+      if (e.Vo != "Move" && e.Vo != "Initial Layout") {
         // this.child.convertMapToText()
-        if(this.updateConverter == false)
+        if (this.updateConverter == false)
           this.updateConverter = true
         else
           this.updateConverter = false
         console.log(e)
       }
     }
-      
-   }
+
+  }
 
   saveDiagramProperties() {
     this.mapHandler.myDiagram.model.modelData.position = go.Point.stringify(this.mapHandler.myDiagram.position);
@@ -685,10 +696,28 @@ export class MapViewerComponent implements OnInit {
     this.modalService.open(id);
   }
 
+  openModalMenu(id: string){    
+    this.modalService.obj = this.currNode.data
+
+    this.modalService.openMenu(id);
+  }
+
   closeModal(id: string) {
     this.modalService.close(id);
   }
 
+  saveChanges(){
+    console.log("oren");
+    this.currNode.data.text = this.modalService.currNodeText
+    this.currNode.data.description = this.modalService.currNodeDescription
+    console.log(this.currNode.data.text);
+    console.log(this.mapHandler.myDiagram.model);
+    var changedModel = this.mapHandler.myDiagram.model.toJson()
+    this.mapHandler.myDiagram.model = go.Model.fromJson(changedModel);
+    
+    
+    
+  }
 
   importMap(fileList: FileList, modalID: string) {
     let file = fileList[0];
@@ -713,5 +742,6 @@ export class MapViewerComponent implements OnInit {
     this.currMap = null
 
   }
+
 
 }// component
