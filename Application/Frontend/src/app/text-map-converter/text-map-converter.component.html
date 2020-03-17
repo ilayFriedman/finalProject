@@ -2,21 +2,36 @@
         <table>
                 <tr>
                         <td><b>add new link: </b></td>
-                        <td><input type="text" id="nameFrom" size="20" placeholder="enter name"></td>
-                        <td><select id="fromOptions">
-                                <option *ngFor="let title of titleArray" [value]="title.Value" [attr.selected]="passenger.Title==title.Text ? true : null">
-                              {{title.Text}}
-                            </option>
+                        <td><select [(ngModel)]="ba" (ngModelChange)="onChangeFrom($event)">
+                                <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option>
+                                <optgroup label="Create New Nodes:">
+                                        <option [ngValue]="true" *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
+                                </optgroup>
+                                <optgroup label="Use Current Model Nodes:">
+                                        <option [ngValue]="!true" *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
+                                </optgroup>
                               </select>
                         </td>
-                        <td>is bla bla to</td>
-                        <td><input type="text" id="nameTo" size="20" placeholder="enter name"></td>
-                        <td><select id="toOptions">
-                                <option value="volvo">Volvo</option>
-                                <option value="saab">Saab</option>
-                                <option value="opel">Opel</option>
-                                <option value="audi">Audi</option>
-                              </select></td>
+                        <td *ngIf="userShowInputTypeText_From"><input type="text" id="nameFrom" size="10" placeholder="Enter New Name"></td>
+                        <td><select id="linkType">
+                                <option value="" selected disabled hidden>&lt;&lt; Link type &gt;&gt;</option>
+                                <optgroup label="Toolbar Links:"></optgroup>
+                                <option *ngFor="let item of typesOflinks | keyvalue">{{item.key}}</option>
+
+                              </select>
+                        </td>
+                        <td><select [(ngModel)]="ba" (ngModelChange)="onChangeTo($event)">
+                                <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option>
+                                <optgroup label="Create New Nodes:">
+                                        <option [ngValue]="true" *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
+                                </optgroup>
+                                <optgroup label="Use Current Model Nodes:">
+                                        <option [ngValue]="!true" *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
+                                </optgroup>
+                              </select>
+                        </td>
+                        <td *ngIf="userShowInputTypeText_To"><input type="text" id="nameTo" size="10" placeholder="Enter New Name"></td>
+
                 </tr>
         </table>
         <ul class="links">

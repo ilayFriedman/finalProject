@@ -30,3 +30,6 @@
     background-color: #BBD8DC;
     color: white;
   }
+  th, td {
+    padding: 5%;
+  }

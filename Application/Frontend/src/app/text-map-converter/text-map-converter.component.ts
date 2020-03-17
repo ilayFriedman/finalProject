@@ -10,16 +10,30 @@ import { MapsHandlerService } from '../services/maps-handler.service';
 
 
 export class TextMapConverterComponent implements OnInit,OnChanges {
-
-
+  userShowInputTypeText_From = false
+  userShowInputTypeText_To = false
   @Input() doUpade: boolean;
   mapModel : any = null
   links: String[] = []
   numOfLinks = -1
+
+  typesOflinks : any = null
+  typesOfNodes : any = null
+  typesOfNodes_model : any = null
+  onChangeFrom(newValue) {
+    this.userShowInputTypeText_From=newValue
+    console.log(this.userShowInputTypeText_From)
+  }
+
+  onChangeTo(newValue) {
+    this.userShowInputTypeText_To=newValue
+    console.log(this.userShowInputTypeText_To)
+  }
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.mapModel != null){
       console.log("Mapmodel not null")
+      this.links = []
       this.convertMapToText() 
     }
     else{
@@ -32,6 +46,20 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
+    this.typesOflinks = this.mapHandler.myDiagram.linkTemplateMap.Eb
+    this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Eb
+    this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
+    // remove empty-link and comment-link elements from dict
+    delete this.typesOflinks[""]
+    delete this.typesOflinks["Comment"]
+
+    // remove empty-node, Comment,LinkLabel elements from dict
+    delete this.typesOfNodes[""]
+    delete this.typesOfNodes["Comment"]
+    delete this.typesOfNodes["LinkLabel"]
+
+
+    // console.log(this.typesOflinks)
     this.convertMapToText()
     // this.numOfLinks = this.mapModel.linkDataArray.length
     // console.log(this.numOfLinks)
@@ -90,6 +118,9 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     }
     // console.log(this.links)
     // console.log(nodesKeysDict)
+    console.log("#############")
+    console.log(this.typesOfNodes)
+    console.log(this.typesOfNodes_model)
     }
   }
 

@@ -590,16 +590,24 @@ export class MapViewerComponent implements OnInit {
   }
 
   updateConverterACtivate = (e) => {
-
-    if (e.Ze == "CommittingTransaction") {
-      if (e.Vo != "Move" && e.Vo != "Initial Layout") {
-        // this.child.convertMapToText()
-        if (this.updateConverter == false)
-          this.updateConverter = true
-        else
-          this.updateConverter = false
-        console.log(e)
+    if(e != null){    // firing from touch the model
+      if (e.Ze == "CommittingTransaction") {
+        if (e.Vo != "Move" && e.Vo != "Initial Layout") {
+          // this.child.convertMapToText()
+          if (this.updateConverter == false)
+            this.updateConverter = true
+          else
+            this.updateConverter = false
+          console.log(e)
+        }
       }
+    }
+    else{   // firing from touch not on the model (like from menu buttons)
+      if (this.updateConverter == false)
+        this.updateConverter = true
+      else
+        this.updateConverter = false
+      
     }
 
   }

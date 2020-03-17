@@ -2,7 +2,7 @@
     <mat-toolbar>
         <mat-toolbar-row>
             <span class="menu-spacer"></span>
-            <div style="margin: auto; text-align: center;">
+            <div style="margin: auto; text-align: center;position: relative;" (click)="updateConverterACtivate()">
                 <button class="mapsMenu" title="New Map" mat-raised-button (click)="newMap()"> New </button>
                 <button class="mapsMenu" title="Open" mat-raised-button [routerLink]="'/login'"> Open </button>
                 <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"> Save As
