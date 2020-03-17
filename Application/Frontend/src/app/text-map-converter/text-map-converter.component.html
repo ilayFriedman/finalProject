@@ -4,11 +4,11 @@
                         <td><b>add new link: </b></td>
                         <td><input type="text" id="nameFrom" size="20" placeholder="enter name"></td>
                         <td><select id="fromOptions">
-                                <option value="volvo">Volvo</option>
-                                <option value="saab">Saab</option>
-                                <option value="opel">Opel</option>
-                                <option value="audi">Audi</option>
-                              </select></td>
+                                <option *ngFor="let title of titleArray" [value]="title.Value" [attr.selected]="passenger.Title==title.Text ? true : null">
+                              {{title.Text}}
+                            </option>
+                              </select>
+                        </td>
                         <td>is bla bla to</td>
                         <td><input type="text" id="nameTo" size="20" placeholder="enter name"></td>
                         <td><select id="toOptions">
