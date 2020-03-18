@@ -1,14 +1,15 @@
 <div>
-        <table>
+        <div class="addNewLinks">
+        <table >
                 <tr>
                         <td><b>add new link: </b></td>
-                        <td><select [(ngModel)]="ba" (ngModelChange)="onChangeFrom($event)">
+                        <td><select>
                                 <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option>
                                 <optgroup label="Create New Nodes:">
-                                        <option [ngValue]="true" *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
+                                        <option *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
                                 </optgroup>
                                 <optgroup label="Use Current Model Nodes:">
-                                        <option [ngValue]="!true" *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
+                                        <option *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
                                 </optgroup>
                               </select>
                         </td>
@@ -20,23 +21,26 @@
 
                               </select>
                         </td>
-                        <td><select [(ngModel)]="ba" (ngModelChange)="onChangeTo($event)">
+                        <td><select>
                                 <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option>
                                 <optgroup label="Create New Nodes:">
-                                        <option [ngValue]="true" *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
+                                        <option *ngFor="let item of typesOfNodes | keyvalue" >{{item.key}}</option>
                                 </optgroup>
                                 <optgroup label="Use Current Model Nodes:">
-                                        <option [ngValue]="!true" *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
+                                        <option *ngFor="let item of this.typesOfNodes_model" >{{item.text}}</option>
                                 </optgroup>
                               </select>
                         </td>
                         <td *ngIf="userShowInputTypeText_To"><input type="text" id="nameTo" size="10" placeholder="Enter New Name"></td>
-
+                        <td><button type="submit">add line</button></td>
                 </tr>
         </table>
+</div>
+<div >
         <ul class="links">
                 <li *ngFor="let link of links"><p [innerHTML]="link"></p></li>
             </ul>
     </div>
+</div>
 
 

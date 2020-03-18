@@ -1,5 +1,6 @@
 import { Component, OnInit, SystemJsNgModuleLoader, SimpleChanges, Input, HostListener, OnChanges } from '@angular/core';
 import { MapsHandlerService } from '../services/maps-handler.service';
+import * as go from 'gojs';
 @Component({
   selector: 'app-text-map-converter',
   templateUrl: './text-map-converter.component.html',
@@ -10,8 +11,6 @@ import { MapsHandlerService } from '../services/maps-handler.service';
 
 
 export class TextMapConverterComponent implements OnInit,OnChanges {
-  userShowInputTypeText_From = false
-  userShowInputTypeText_To = false
   @Input() doUpade: boolean;
   mapModel : any = null
   links: String[] = []
@@ -20,15 +19,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   typesOflinks : any = null
   typesOfNodes : any = null
   typesOfNodes_model : any = null
-  onChangeFrom(newValue) {
-    this.userShowInputTypeText_From=newValue
-    console.log(this.userShowInputTypeText_From)
-  }
 
-  onChangeTo(newValue) {
-    this.userShowInputTypeText_To=newValue
-    console.log(this.userShowInputTypeText_To)
-  }
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.mapModel != null){
@@ -68,6 +59,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
 
   convertMapToText(){
+    this.addLineToModel(true,true,true,true,true,true)
     console.log("--------------")
     var newNumLink = this.mapModel.linkDataArray.length
 
@@ -116,12 +108,30 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    // console.log(this.links)
+    console.log(this.mapModel)
     // console.log(nodesKeysDict)
-    console.log("#############")
-    console.log(this.typesOfNodes)
-    console.log(this.typesOfNodes_model)
+    // console.log("#############")
+    // console.log(this.typesOfNodes)
+    // console.log("#############")
+    // console.log(this.typesOfNodes_model)
     }
+  }
+
+  addLineToModel(existFrom, typeFrom, nameFrom, typeName, existTo, nameTo ){
+    console.log("add!")
+    // checks & add if necessary From_Node
+    if(existFrom != true){
+
+      this.mapHandler.myDiagram.addNodeData({ key: "shit", color: "white" } )
+    //   var $ = go.GraphObject.make;
+    //   this.mapModel.add(
+    //     $(go.Node, "Auto",
+    //       $(go.Shape, "Task", { fill: "lightblue" }),
+    //       $(go.TextBlock, "Hello!", { margin: 5 })
+    //     ));
+      
+    }
+
   }
 
 }
