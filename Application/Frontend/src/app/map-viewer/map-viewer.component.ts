@@ -149,9 +149,25 @@ export class MapViewerComponent implements OnInit {
         //      { click: function (e, obj) { showModal(obj); } })
       );
 
+      this.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+        //console.log(e.diagram.selection.first().data);
+        var node = e.diagram.selection.first();
+        node.data.refs = [];
+        node.data.ctxs = [];
+        node.data.comment = null;
+        //console.log(e.subject);
+        //console.log(myDiagram.currentTool.linkingTool);
+        if (node.data.category === "Contribution") {
+            setElementText(node, "?")
+        }
+        if (node.data.category === "Association") {
+            setElementText(node, "")
+        }
+    });
+
+    // ##########   SET NODES AND LINK PROPERTIES ###########
     var qualityTemplate =
       $(go.Node, "Spot",
-
         {
           locationSpot: go.Spot.Center,
           locationObjectName: "PANEL",
@@ -159,12 +175,11 @@ export class MapViewerComponent implements OnInit {
           selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
           contextMenu: nodeMenu
         },
-
         { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate },
         { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
-        //{ rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
+        // { rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
         new go.Binding("angle").makeTwoWay(),
         // the main object is a Panel that surrounds a TextBlock with a Shape
         $(go.Panel, "Auto",
@@ -214,14 +229,14 @@ export class MapViewerComponent implements OnInit {
           locationSpot: go.Spot.Center,
           locationObjectName: "PANEL",
           selectionObjectName: "PANEL",
-          selectionAdornmentTemplate: nodeSelectionAdornmentTemplate
-          // contextMenu: nodeMenu
+          selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
+          contextMenu: nodeMenu
         },
 
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectable: true },
         { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
-        //{ rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
+        // { rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
         new go.Binding("angle").makeTwoWay(),
         // the main object is a Panel that surrounds a TextBlock with a Shape
         $(go.Panel, "Auto",
@@ -580,7 +595,15 @@ export class MapViewerComponent implements OnInit {
 
   showModal(obj) {
     this.currNode = obj.part.adornedObject;
-    console.log(this.obj);
+    // console.log(this.obj);
+    var refs = this.currNode.data.refs
+    console.log("########");
+    console.log(refs);
+    // refs.push("ref1")
+    // console.log(refs);
+
+    
+    
     // var activeObject = self.currNode.data;
     // var selectedObject = self.currNode;
     // var refsOfObject = self.currNode.data.items;

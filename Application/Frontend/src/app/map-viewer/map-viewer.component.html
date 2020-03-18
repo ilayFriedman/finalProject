@@ -37,7 +37,7 @@
 
 <button (click)="openModal('refModal')">modal</button>
 
-<jw-modal id="save-as-modal">
+<jw-modal class="jw-modal" id="save-as-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
         <h1>Save your map as:</h1>
@@ -45,7 +45,7 @@
     </div>
 </jw-modal>
 
-<jw-modal id="import-modal">
+<jw-modal class="jw-modal" id="import-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('import-modal')">&times;</span>
         <h1>Import Map From:</h1>
@@ -54,7 +54,7 @@
     </div>
 </jw-modal>
 
-<jw-modal id="refModal">
+<jw-modal class="jw-modal" id="refModal">
     <div class="jw-modal-body" (change)="saveChanges()">
         <span class="close" (click)="closeModal('refModal')">&times;</span>
         <app-node-menu-modal></app-node-menu-modal>
