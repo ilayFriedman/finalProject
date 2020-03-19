@@ -32,7 +32,7 @@
                               </select>
                         </td>
                         <td *ngIf="userShowInputTypeText_To"><input type="text" id="nameTo" size="10" placeholder="Enter New Name"></td>
-                        <td><button type="submit">add line</button></td>
+                        <td><button type="submit" (click)="addLineToModel(true,true,'taskA',true,true,'QualB') ">add line</button></td>
                 </tr>
         </table>
 </div>

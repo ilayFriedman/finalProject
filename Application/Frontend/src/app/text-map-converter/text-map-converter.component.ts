@@ -23,8 +23,6 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.mapModel != null){
-      console.log("Mapmodel not null")
-      this.links = []
       this.convertMapToText() 
     }
     else{
@@ -59,12 +57,11 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
 
   convertMapToText(){
-    this.addLineToModel(true,true,true,true,true,true)
-    console.log("--------------")
+    console.log("-----converter---------")
     var newNumLink = this.mapModel.linkDataArray.length
 
     if(newNumLink != this.numOfLinks){
-      console.log(newNumLink)
+      // console.log(newNumLink)
       var nodesKeysDict = {};
       var translate = "";
       this.links = []
@@ -75,7 +72,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     
     for (let link of this.mapModel.linkDataArray) {
       if(nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null ){
-        console.log()
+        // console.log()
         translate += nodesKeysDict[link.from][1]+" "+ nodesKeysDict[link.from][0].bold()+" is ";
         // console.log(link.category);
         switch(link.category) { 
@@ -108,7 +105,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    console.log(this.mapModel)
+    // console.log(this.mapModel)
     // console.log(nodesKeysDict)
     // console.log("#############")
     // console.log(this.typesOfNodes)
@@ -119,19 +116,16 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
   addLineToModel(existFrom, typeFrom, nameFrom, typeName, existTo, nameTo ){
     console.log("add!")
-    // checks & add if necessary From_Node
-    if(existFrom != true){
-
-      this.mapHandler.myDiagram.addNodeData({ key: "shit", color: "white" } )
-    //   var $ = go.GraphObject.make;
-    //   this.mapModel.add(
-    //     $(go.Node, "Auto",
-    //       $(go.Shape, "Task", { fill: "lightblue" }),
-    //       $(go.TextBlock, "Hello!", { margin: 5 })
-    //     ));
-      
-    }
-
+    this.mapHandler.myDiagram.commit(function(d) {
+      var nodeFrom = { key: "shit" ,category: "Task", text: "shit", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description"}
+      d.model.addNodeData(nodeFrom);
+      var nodeTo = { key: "shit2" ,category: "Task", text: "shit", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description"}
+      d.model.addNodeData(nodeTo);
+      var link = { category: "AchievedBy", text: "achieved by",from: nodeFrom.key, to: nodeTo.key } 
+      d.model.addLinkData(link);
+      console.log(d.model.linkDataArray)
+    }, "shift node");
+  
   }
 
 }
