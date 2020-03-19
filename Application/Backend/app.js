@@ -13,6 +13,7 @@ secret = "memapsrules";
 //Import routes
 const usersRoute = require('./routes/users');
 const mapsRoute = require('./routes/maps');
+const groupsRoute = require('./routes/groups');
 
 
 
@@ -65,3 +66,7 @@ app.get('/private/getAllUserMaps', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.delete('/private/removeMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
+
+app.post('/private/createGroup', groupsRoute);
+app.post("/private/updateGroupProperties", groupsRoute);
+app.delete('/private/deleteGroup', groupsRoute);

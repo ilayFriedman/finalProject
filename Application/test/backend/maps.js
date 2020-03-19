@@ -215,30 +215,23 @@ describe('Maps', function () {
         }
     );
 
-    it('should find and update stored map', async function (done) {
-        map.find({
-            'MapName': testMapData.MapName
-        }, function (err, result) {
-            if (result) {
-                chai.request(serverAddress)
-                    .put('/private/updateMap')
-                    .set('token', testUserToken)
-                    .send({_id: result[0]._id, model: testChangeMapModel})
-                    .end(function (err, res) {
-                            res.statusCode.should.equal(200);
-                            res.text.should.equal("Map updated successfully.");
+    it('should find and update stored map', function () {
+        return map.find({'MapName': testMapData.MapName}).exec()
+        .then((result, err) => {
+            return chai.request(serverAddress)
+                .put('/private/updateMap')
+                .set('token', testUserToken)
+                .send({_id: result[0]._id, model: testChangeMapModel})
+                .then((res, err) => {
+                    res.statusCode.should.equal(200);
+                    res.text.should.equal("Map updated successfully.");
 
-                            map.findById(result[0], function (err, updatedMap) {
-                                if(updatedMap){
-                                    updatedMap.Model.nodeDataArray[0].text.should.equal(testChangeMapModel.nodeDataArray[0].text);
-                                }
-                            });   
-                        }
-                    );
-            }
+                    map.findById(result[0]).exec()
+                    .then((updatedMap, err) => {
+                        updatedMap.Model.nodeDataArray[0].text.should.equal(testChangeMapModel.nodeDataArray[0].text);
+                    });   
+                });
         })
-
-        done();
     });
 
     it('should not find _id of map in updateMap', async function (done) {
