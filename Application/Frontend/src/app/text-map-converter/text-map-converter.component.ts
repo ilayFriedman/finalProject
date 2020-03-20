@@ -157,6 +157,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
           console.log(self.nodeSelected_From.key)
           var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
           d.model.addNodeData(nodeFrom);
+
           
           // create new Node-From
           var nodeTo = self.nodeSelected_To
@@ -193,7 +194,6 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
             // CASE TO IS EXIST
             else{
               console.log("set exsisting link!!!")
-              
             }
     }
     // console.log("add now!")
