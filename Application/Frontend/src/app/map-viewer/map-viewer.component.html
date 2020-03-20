@@ -55,7 +55,7 @@
 </jw-modal>
 
 <jw-modal class="jw-modal" id="refModal">
-    <div class="jw-modal-body" (change)="saveChanges()">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body" (change)="saveChanges()">
         <span class="close" (click)="closeModal('refModal')">&times;</span>
         <app-node-menu-modal></app-node-menu-modal>
     </div>
