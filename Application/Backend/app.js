@@ -14,6 +14,7 @@ secret = "memapsrules";
 const usersRoute = require('./routes/users');
 const mapsRoute = require('./routes/maps');
 const groupsRoute = require('./routes/groups');
+const referencesRoute = require('./routes/references');
 
 
 
@@ -21,30 +22,29 @@ var port = 3000;
 
 
 //chrome exp handle
-app.use(function(req,res,next){
-    res.header("Access-Control-Allow-Origin","*");
-    res.header("Access-Control-Allow-Headers","Origin, X-Requested-With,Content-Type, Accept");
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With,Content-Type, Accept");
     next();
 })
 
 // set connection to DB
-mongoose.connect('mongodb://localhost:27017/ourDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err, db) {
+mongoose.connect('mongodb://localhost:27017/ourDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function(err, db) {
     console.log('Connect to DB')
 });
 
 // PORT LISTENER
-app.listen(port, function () {
+app.listen(port, function() {
     console.log('Example app listening on port ' + port);
 });
 
 // Decode token and continue to other methods
-app.use('/private', function (req, res, next) {
+app.use('/private', function(req, res, next) {
     const token = req.header("token");
     // no token
-    if (!token){
+    if (!token) {
         res.status(401).send("Access denied. No token provided.");
-    }
-    else{
+    } else {
         // verify token
         try {
             const decoded = jwt.verify(token, secret);
@@ -70,3 +70,6 @@ app.put('/private/updateMap', mapsRoute);
 app.post('/private/createGroup', groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.delete('/private/deleteGroup', groupsRoute);
+
+app.post('/private/createReference', referencesRoute);
+app.get('/private/getAllReferences', referencesRoute);

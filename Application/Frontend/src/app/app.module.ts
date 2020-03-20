@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule, MatTabsModule} from "@angular/material";
+import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule, MatTabsModule, MatTableModule, MatCheckboxModule} from "@angular/material";
 import { LoginComponent } from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
@@ -47,7 +47,9 @@ import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.compon
     HttpClientModule,
     MatButtonModule,
     FormsModule,
-    GojsAngularModule
+    GojsAngularModule,
+    MatCheckboxModule,
+    MatTableModule
   ],
   providers: [
     MapsHandlerService,
