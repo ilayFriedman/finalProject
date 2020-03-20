@@ -31,7 +31,7 @@
                               </select>
                               <input type="text" [(ngModel)]='name_To'  *ngIf="ngIfCheck(this.nodeSelected_To)" placeholder="&lt;&lt;~ Enter New Name ~&gt;&gt;">
                         </td>
-                        <td><button type="submit" (click)="submitAction()">add line</button></td>
+                        <td><button type="submit" (click)="submitAction()" [disabled]="!canSubmit()">Insert/Update Link</button></td>
                 </tr>
         </table>
 </div>

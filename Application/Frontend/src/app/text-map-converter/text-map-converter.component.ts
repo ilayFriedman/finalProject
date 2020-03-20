@@ -122,7 +122,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   }
 
   submitAction(){
-    var self = this
+      var self = this
     var keyToInsert = this.mapModel.nodeDataArray.length + 1
     // CASE FROM IS NEW
     if(!!this.nodeSelected_From.category == false){
@@ -194,8 +194,65 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
             // CASE TO IS EXIST
             else{
               console.log("set exsisting link!!!")
-            }
-    }
+              console.log(this.nodeSelected_From)
+              console.log(this.nodeSelected_To)
+              console.log(this.linkSelected)
+              console.log(this.mapModel.linkDataArray)
+              var modelLinks = this.mapHandler.myDiagram.model.linkDataArray
+              var existLink = false
+              modelLinks.forEach(link => {
+                if(link.category != this.linkSelected.key && link.from == this.nodeSelected_From.key && link.to == this.nodeSelected_To.key){
+                  existLink = true
+                }   
+              });
+
+              if(existLink) { // checks if selected link diffrent from the one that in the model
+                if(!confirm("These nodes are connected with diffrent link already.\nAre you sure you want to update the link?")){
+                  return
+                }
+              }
+              console.log("ok!")
+              this.mapHandler.myDiagram.commit(function(d) {
+                var nodeFrom = self.nodeSelected_From
+                var nodeTo = self.nodeSelected_To
+                var newLinkToInesrt = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+                console.log(modelLinks)
+                modelLinks.forEach(link => {
+                  if(link.from == nodeFrom.key && link.to == nodeTo.key){
+                    d.model.removeLinkData(link)
+                  }
+                });
+                d.model.addLinkData(newLinkToInesrt);
+                // d.model.removeLinkData(shit[0])
+              }, "fromOld_ToOld");
+              
+  }
+}
+this.name_From = ""
+this.name_To = ""
+this.nodeSelected_From = "Choose Node"
+this.linkSelected = "Choose Link Type"
+this.nodeSelected_To = "Choose Node"
+  }
+
+ngIfCheck(check){
+  return ((!check.category) && !(typeof(check) == "string"))
+}
+
+canSubmit(){
+  var ans = this.nodeSelected_From != "Choose Node" && this.linkSelected != "Choose Link Type" && this.nodeSelected_To != "Choose Node"
+  if(this.ngIfCheck(this.nodeSelected_From))
+    ans = ans && this.name_From != ""
+  if(this.ngIfCheck(this.nodeSelected_To))
+    ans = ans && this.name_To != ""
+  return ans
+}
+
+}
+
+
+
+
     // console.log("add now!")
     // // checks! key is string or num, type is valid
     // this.mapHandler.myDiagram.commit(function(d) {
@@ -211,7 +268,6 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     //   d.model.addLinkData(link);
     //   console.log(d.model.linkDataArray)
     // }, "createNewLinkFromTextToGragh");
-  }
 
 
   
@@ -262,8 +318,4 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     // this.creteLinkInModel(typeFrom,nameFrom,keyFrom,linktType,linkName,typeTo,nameTo,keyTo)
   // }
 
-  ngIfCheck(check){
-    return ((!check.category) && !(typeof(check) == "string"))
-  }
-}
 
