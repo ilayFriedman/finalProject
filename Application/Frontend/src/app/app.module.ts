@@ -19,6 +19,7 @@ import { ModalComponent } from './modal/modal.component';
 import { ModalService } from './services/modal.service';
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
 import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.component';
+import { AngularDraggableModule } from 'angular2-draggable';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,9 @@ import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.compon
     FormsModule,
     GojsAngularModule,
     MatCheckboxModule,
-    MatTableModule
+    MatTableModule,
+    AngularDraggableModule,
+
   ],
   providers: [
     MapsHandlerService,
