@@ -46,13 +46,13 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Eb
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
     // remove empty-link and comment-link elements from dict
-    delete this.typesOflinks[""]
-    delete this.typesOflinks["Comment"]
+    // delete this.typesOflinks[""]
+    // delete this.typesOflinks["Comment"]
 
     // remove empty-node, Comment,LinkLabel elements from dict
-    delete this.typesOfNodes[""]
-    delete this.typesOfNodes["Comment"]
-    delete this.typesOfNodes["LinkLabel"]
+    // delete this.typesOfNodes[""]
+    // delete this.typesOfNodes["Comment"]
+    // delete this.typesOfNodes["LinkLabel"]
 
 
     // console.log(this.typesOflinks)

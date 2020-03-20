@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../services/modal.service';
-import { MatTableDataSource, } from '@angular/material';
+import { MatTableDataSource, PageEvent, } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
 
@@ -52,7 +52,9 @@ export class NodeMenuModalComponent implements OnInit {
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
   dataSource: MatTableDataSource<ReferenceElement>;
   selection = new SelectionModel<ReferenceElement>(true, []);
-
+  pageSize = 10;
+  pageEvent: PageEvent;
+  
   constructor(private modalService: ModalService, private http: HttpClient) {
   }
 
