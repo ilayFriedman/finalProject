@@ -42,7 +42,7 @@ export class MapViewerComponent implements OnInit {
     let self = this;
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    this.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    self.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
         initialContentAlignment: go.Spot.Center,
         allowDrop: true,  // must be true to accept drops from the Palette
@@ -109,7 +109,7 @@ export class MapViewerComponent implements OnInit {
       console.log(obj.diagram);
       console.log(val);
 
-      this.mapHandler.myDiagram.model.setDataProperty(obj.data, "text", val);
+      self.mapHandler.myDiagram.model.setDataProperty(obj.data, "text", val);
       obj.diagram.commitTransaction("setContributionValue");
     }
 
@@ -149,7 +149,7 @@ export class MapViewerComponent implements OnInit {
         //      { click: function (e, obj) { showModal(obj); } })
       );
 
-      this.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+      self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
         //console.log(e.diagram.selection.first().data);
         var node = e.diagram.selection.first();
         node.data.refs = [];
@@ -497,21 +497,21 @@ export class MapViewerComponent implements OnInit {
           { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 })  // use selection object's strokeWidth
       );
     // adding node templates
-    this.mapHandler.myDiagram.nodeTemplateMap.add("Quality", qualityTemplate);
-    this.mapHandler.myDiagram.nodeTemplateMap.add("Task", taskTemplate);
+    self.mapHandler.myDiagram.nodeTemplateMap.add("Quality", qualityTemplate);
+    self.mapHandler.myDiagram.nodeTemplateMap.add("Task", taskTemplate);
 
     // adding links templates
-    this.mapHandler.myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
-    this.mapHandler.myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
-    this.mapHandler.myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
-    this.mapHandler.myDiagram.linkTemplateMap.add("ExtendedBy", extendByLinkTamplate);
-    this.mapHandler.myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
+    self.mapHandler.myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
+    self.mapHandler.myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
+    self.mapHandler.myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
+    self.mapHandler.myDiagram.linkTemplateMap.add("ExtendedBy", extendByLinkTamplate);
+    self.mapHandler.myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
 
 
 
-    this.mapHandler.myDiagram.model = go.Model.fromJson(this.currMap.Model);
+    self.mapHandler.myDiagram.model = go.Model.fromJson(self.currMap.Model);
 
-    this.mapHandler.myDiagram.model.addChangedListener(this.updateConverterACtivate);
+    self.mapHandler.myDiagram.model.addChangedListener(self.updateConverterACtivate);
 
 
     var myPalette =
@@ -523,7 +523,7 @@ export class MapViewerComponent implements OnInit {
               wrappingColumn: 1
             }),
           maxSelectionCount: 1,
-          nodeTemplateMap: this.mapHandler.myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+          nodeTemplateMap: self.mapHandler.myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
           linkTemplate: // simplify the link template, just in this Palette
             $(go.Link,
               {
@@ -578,7 +578,7 @@ export class MapViewerComponent implements OnInit {
 
     var myOverview =
       $(go.Overview, "myOverview",
-        { observed: this.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+        { observed: self.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
 
 
 

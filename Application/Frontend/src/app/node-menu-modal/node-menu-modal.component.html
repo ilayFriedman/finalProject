@@ -5,13 +5,15 @@
                 <tr>
                     <td>Text:</td>
                     <td>
-                        <input type="text" id="textFeature" class="form-control" name="objectText" [(ngModel)]="this.modalService.currNodeText">
+                        <input type="text" id="textFeature" class="form-control" name="objectText"
+                            [(ngModel)]="this.modalService.currNodeText">
                     </td>
                 </tr>
                 <tr>
                     <td>Description:</td>
                     <td>
-                        <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="50" rows="5" [(ngModel)]="this.modalService.currNodeDescription"></textarea>
+                        <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="50"
+                            rows="5" [(ngModel)]="this.modalService.currNodeDescription"></textarea>
                     </td>
                 </tr>
             </tbody>
@@ -23,14 +25,18 @@
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
                 <tr>
-                <th mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()">
-                    </mat-checkbox>
-                </th>
-                <td mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
-                    </mat-checkbox>
-                </td></tr>
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()">
+                        </mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
+                        </mat-checkbox>
+                    </td>
+                </tr>
             </ng-container>
 
             <!-- Position Column -->
@@ -60,8 +66,10 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
             </tr>
-        </table>
 
+
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 50, 100]" showFirstLastButtons></mat-paginator>
     </mat-tab>
     <mat-tab label="Third"> Content 3 </mat-tab>
 </mat-tab-group>
