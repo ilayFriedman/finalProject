@@ -20,9 +20,12 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   typesOfNodes : any = null
   typesOfNodes_model : any = null
 
-  nodeSelected_From :any
-  linkSelected : any
-  nodeSelected_To : any
+  nodeSelected_From :any = "Choose Node"
+  linkSelected : any = "Choose Link Type"
+  nodeSelected_To : any = "Choose Node"
+
+  name_From: String = ""
+  name_To: String = ""
 
   ngOnChanges(changes: SimpleChanges): void {
     
@@ -119,17 +122,50 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   }
 
   submitAction(){
+    var self = this
+    var keyToInsert = this.mapModel.nodeDataArray.length + 1
     // CASE FROM IS NEW
     if(!!this.nodeSelected_From.category == false){
       
       // CASE TO IS NEW
       if(!!this.nodeSelected_To.category == false){
         console.log("createNewLInk!!")
+        this.mapHandler.myDiagram.commit(function(d) {
+          
+          // create new Node-From
+          console.log(self.nodeSelected_From.key)
+          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          d.model.addNodeData(nodeFrom);
+          keyToInsert++
+          
+          // create new Node-From
+          var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          d.model.addNodeData(nodeTo);
+
+          // create link
+          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+          d.model.addLinkData(link);
+          console.log(d.model.linkDataArray)
+        }, "createNewLinkFromTextToGragh");
       }
 
       // CASE TO IS EXIST
       else{
         console.log("'to' is exist , but 'from' is new!!")
+        this.mapHandler.myDiagram.commit(function(d) {
+          // create new Node-From
+          console.log(self.nodeSelected_From.key)
+          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          d.model.addNodeData(nodeFrom);
+          
+          // create new Node-From
+          var nodeTo = self.nodeSelected_To
+
+          // create link
+          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+          d.model.addLinkData(link);
+          console.log(d.model.linkDataArray)
+        }, "fromNew_ToOld");
       }
     }
 
@@ -138,16 +174,26 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
             // CASE TO IS NEW
             if(!!this.nodeSelected_To.category == false){
               console.log("'from' is exist but 'to' is new!!!")
+              this.mapHandler.myDiagram.commit(function(d) {
+                // create new Node-From
+                console.log(self.nodeSelected_From.key)
+                var nodeFrom = self.nodeSelected_From
+                
+                // create new Node-From
+                var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+                d.model.addNodeData(nodeTo);
+      
+                // create link
+                var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+                d.model.addLinkData(link);
+                console.log(d.model.linkDataArray)
+              }, "fromOld_ToNew");
             }
       
             // CASE TO IS EXIST
             else{
               console.log("set exsisting link!!!")
-              console.log(this.nodeSelected_From)
-              console.log(this.nodeSelected_To)
-              this.mapHandler.myDiagram.commit(function(d) {
-                d.model.setToKeyForLinkData(this.nodeSelected_From, this.nodeSelected_To.key);
-              }, "setLink");
+              
             }
     }
     // console.log("add now!")
@@ -216,5 +262,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     // this.creteLinkInModel(typeFrom,nameFrom,keyFrom,linktType,linkName,typeTo,nameTo,keyTo)
   // }
 
+  ngIfCheck(check){
+    return ((!check.category) && !(typeof(check) == "string"))
+  }
 }
 

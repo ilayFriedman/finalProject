@@ -4,7 +4,7 @@
                 <tr>
                         <td><b>add new link: </b></td>
                         <td><select [(ngModel)] ='nodeSelected_From'>
-                                <!-- <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option> -->
+                                <option [ngValue]="" selected disabled hidden>{{ nodeSelected_From }}</option>
                                 <optgroup label="Create New Nodes:">
                                         <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>
                                 </optgroup>
@@ -12,17 +12,16 @@
                                         <option *ngFor="let item of this.typesOfNodes_model" [ngValue]="item">{{item.text}}</option>
                                 </optgroup>
                               </select>
+                              <input type="text" [(ngModel)]='name_From' *ngIf="ngIfCheck(this.nodeSelected_From)" placeholder="&lt;&lt;~ Enter New Name ~&gt;&gt;">
                         </td>
-                        <td *ngIf="userShowInputTypeText_From"><input type="text" id="nameFrom" size="10" placeholder="Enter New Name"></td>
                         <td><select [(ngModel)] ='linkSelected'>
-                                <!-- <option value="" selected disabled hidden>&lt;&lt; Link type &gt;&gt;</option> -->
+                                <option [ngValue]="" selected disabled hidden>{{ linkSelected }}</option>
                                 <optgroup label="Toolbar Links:"></optgroup>
                                 <option *ngFor="let item of typesOflinks | keyvalue" [ngValue]="item">{{item.key}}</option>
-
-                              </select>
+                                </select>
                         </td>
                         <td><select [(ngModel)] ='nodeSelected_To'>
-                                <!-- <option value="" selected disabled hidden>&lt;&lt; Node type &gt;&gt;</option> -->
+                                <option [ngValue]="" selected disabled hidden>{{ nodeSelected_To }}</option>
                                 <optgroup label="Create New Nodes:">
                                         <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>
                                 </optgroup>
@@ -30,8 +29,8 @@
                                         <option *ngFor="let item of this.typesOfNodes_model" [ngValue]="item">{{item.text}}</option>
                                 </optgroup>
                               </select>
+                              <input type="text" [(ngModel)]='name_To'  *ngIf="ngIfCheck(this.nodeSelected_To)" placeholder="&lt;&lt;~ Enter New Name ~&gt;&gt;">
                         </td>
-                        <td *ngIf="userShowInputTypeText_To"><input type="text" id="nameTo" size="10" placeholder="Enter New Name"></td>
                         <td><button type="submit" (click)="submitAction()">add line</button></td>
                 </tr>
         </table>
