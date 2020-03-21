@@ -112,7 +112,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    console.log(this.mapModel)
+    // console.log(this.mapModel)
     // console.log(nodesKeysDict)
     // console.log("#############")
     // console.log(this.typesOfNodes)
@@ -246,6 +246,11 @@ canSubmit(){
   if(this.ngIfCheck(this.nodeSelected_To))
     ans = ans && this.name_To != ""
   return ans
+}
+
+
+updateNodeColor(fillColor){
+
 }
 
 }
