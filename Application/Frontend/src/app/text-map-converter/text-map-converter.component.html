@@ -3,7 +3,7 @@
         <table >
                 <tr>
                         <td><b>add new link: </b></td>
-                        <td><select [(ngModel)] ='nodeSelected_From'>
+                        <td><select (ngModelChange)="colorChanger($event,'from')" [(ngModel)] ='nodeSelected_From'>
                                 <option [ngValue]="" selected disabled hidden>{{ nodeSelected_From }}</option>
                                 <optgroup label="Create New Nodes:">
                                         <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>
@@ -20,7 +20,7 @@
                                 <option *ngFor="let item of typesOflinks | keyvalue" [ngValue]="item">{{item.key}}</option>
                                 </select>
                         </td>
-                        <td><select [(ngModel)] ='nodeSelected_To'>
+                        <td><select (ngModelChange)="colorChanger($event,'to')" [(ngModel)] ='nodeSelected_To'>
                                 <option [ngValue]="" selected disabled hidden>{{ nodeSelected_To }}</option>
                                 <optgroup label="Create New Nodes:">
                                         <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>

@@ -27,6 +27,9 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   name_From: String = ""
   name_To: String = ""
 
+  fromColoredKey = null
+  toColoredKey = null
+
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.mapModel != null){
@@ -233,6 +236,12 @@ this.name_To = ""
 this.nodeSelected_From = "Choose Node"
 this.linkSelected = "Choose Link Type"
 this.nodeSelected_To = "Choose Node"
+
+this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+  if(node.key == this.fromColoredKey || node.key == this.toColoredKey){
+    this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+  }   
+});
   }
 
 ngIfCheck(check){
@@ -245,14 +254,48 @@ canSubmit(){
     ans = ans && this.name_From != ""
   if(this.ngIfCheck(this.nodeSelected_To))
     ans = ans && this.name_To != ""
+  
   return ans
 }
 
-
-updateNodeColor(fillColor){
-
+colorChanger(event,sender){
+  if(event.category){
+    if(sender == "from" && event.key != this.fromColoredKey){
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.fromColoredKey = event.key
+    }
+    if(sender == "to" && event.key != this.toColoredKey){ // sender == "to"
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.toColoredKey = event.key
+    }
+  }
+  else{
+    if(sender == "from"){
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+    }
+    if(sender == "to"){ // sender == "to"
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+      if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
+        this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+      }   
+    });
+  }
 }
-
+}
 }
 
 
