@@ -69,6 +69,7 @@ app.put('/private/updateMap', mapsRoute);
 
 app.post('/private/createGroup', groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
+app.post("/private/SetUserPermissionForGroup", groupsRoute);
 app.delete('/private/deleteGroup', groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
