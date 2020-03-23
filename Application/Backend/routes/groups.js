@@ -29,7 +29,7 @@ function UserHasManagerPermissionForGroup(resGroup, userId) {
         return true;
     }
 
-    if (resGroup.Permission.Manager) {
+    if (resGroup.Members.Manager) {
         for (let i = 0; i < resGroup.Members.Manager.length; i++) {
             const element = resGroup.Members.Manager[i];
             if (element.userId == userId) {
@@ -110,7 +110,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Owner) {
                 group.Members.Owner = [];
             }
-            group.Members.Owner.push(userId);
+            group.Members.Owner.push({"userId": userId});
             permission = true;
 
             break;
@@ -119,7 +119,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Manager) {
                 group.Members.Manager = [];
             }
-            group.Members.Manager.push(userId);
+            group.Members.Manager.push({"userId": userId});
             permissionGiven = true;
 
             break;
@@ -128,7 +128,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Member) {
                 group.Members.Member = [];
             }
-            group.Members.Member.push(userId);
+            group.Members.Member.push({"userId": userId});
             permissionGiven = true;
 
             break;
@@ -235,7 +235,7 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
 
             isUserGivingPermissionHasSufficientPrivileges = UserHasOwnerPermissionForGroup(result, req.decoded._id); // Owner can give any permission.
             isUserGivingPermissionHasSufficientPrivileges = isUserGivingPermissionHasSufficientPrivileges // A Manager can give another user Manager or Memeber permissions.
-                                                            || (UserHasManagerPermissionForGroup(req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
+                                                            || (UserHasManagerPermissionForGroup(result, req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
             if (!isUserGivingPermissionHasSufficientPrivileges){
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;

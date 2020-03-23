@@ -29,14 +29,18 @@ const testGroupData = {
 let testUserId = "";
 let testUserToken;
 
+function getTestUserId(){
+    return testUserId;
+}
+
 function createUser(userData = testUserData, ) {
     try {
         const newUser = new user(userData);
         return new Promise(function(resolve, reject){
             newUser.save(function (err, savedUser) {
                 if (savedUser) {
-                    testUserId = savedUser._id;
-                    let payload = {username: savedUser.Username, _id: savedUser._id};
+                    testUserId = savedUser.id;
+                    let payload = {username: savedUser.Username, _id: savedUser.id};
                     let options = {expiresIn: "1d"};
                     testUserToken = jwt.sign(payload, secret, options);
                     resolve();
@@ -116,7 +120,7 @@ describe('Groups', function () {
     });
 
     
-    it('should disallow update group due to insufficient permissions', function () {
+    it('should disallow update group description due to insufficient permissions', function () {
         const newUserData = {
             Username: "b",
             Password: "b",
@@ -157,6 +161,92 @@ describe('Groups', function () {
                         .catch()
                     });     
             }
+        });
+    });
+
+    it('should disallow update group memebrs due to insufficient permissions', function () {
+        const newUserData = {
+            Username: "c",
+            Password: "c",
+            FirstName: "FirstName",
+            LastName: "LastName",
+            City: "City",
+            Country: "Country"
+        }
+        const newUser = new user(newUserData);
+        let newUserToken;
+        p = new Promise(function(resolve, reject){
+            newUser.save(function (err, savedUser) {
+                if (savedUser) {
+                    let payload = {username: savedUser.Username, _id: savedUser._id};
+                    let options = {expiresIn: "1d"};
+                    newUserToken = jwt.sign(payload, secret, options);
+                    resolve();
+                }
+                return (reject(err))
+            });
+        });
+
+        return p
+        .then(function() {return group.find({'Name': testGroupData.groupName}).exec()})
+        .then(result => {
+            return chai.request(serverAddress)
+                .post('/private/SetUserPermissionForGroup')
+                .set('token', newUserToken)
+                .send({_id: result[0]._id, userId: testUserId, permission: "Manager"})
+                .then((res, err) =>{
+                    return group.findById(result[0]).exec()
+                    .then(updatedGroup => {
+                        res.statusCode.should.equal(403);
+                        res.text.should.equal("The user's permissions are insufficient to set requested permission.");
+                        updatedGroup.Members.Owner[0].userId.should.equal(testUserId);                                
+                    })
+                    //.catch()
+                });     
+        });
+    });
+
+    it('should sallow update group memebrs', function () {
+        const newUserData = {
+            Username: "d",
+            Password: "d",
+            FirstName: "FirstName",
+            LastName: "LastName",
+            City: "City",
+            Country: "Country"
+        }
+        const newUser = new user(newUserData);
+        let newUserToken;
+        let newUserId;
+        p = new Promise(function(resolve, reject){
+            newUser.save(function (err, savedUser) {
+                if (savedUser) {
+                    newUserId = savedUser.id
+                    let payload = {username: savedUser.Username, _id: savedUser.id};
+                    let options = {expiresIn: "1d"};
+                    newUserToken = jwt.sign(payload, secret, options);
+                    resolve();
+                }
+                return (reject(err))
+            });
+        });
+
+        return p
+        .then(function() {return group.find({'Name': testGroupData.groupName}).exec()})
+        .then(result => {
+            return chai.request(serverAddress)
+                .post('/private/SetUserPermissionForGroup')
+                .set('token', testUserToken)
+                .send({_id: result[0]._id, userId: newUserId, permission: "Manager"})
+                .then((res, err) =>{
+                    return group.findById(result[0]).exec()
+                    .then(updatedGroup => {
+                        res.statusCode.should.equal(200);
+                        res.text.should.equal("Group permissions has been updated successfully.");
+                        updatedGroup.Members.Manager[0].userId.should.equal(newUserId);                                
+                    })
+                    //.catch()
+                });     
         });
     });
 
