@@ -15,6 +15,8 @@ const usersRoute = require('./routes/users');
 const mapsRoute = require('./routes/maps');
 const groupsRoute = require('./routes/groups');
 const referencesRoute = require('./routes/references');
+const foldersRoute = require('./routes/folders')
+
 
 
 
@@ -73,3 +75,7 @@ app.delete('/private/deleteGroup', groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);
+
+app.post('/private/createFolder', foldersRoute)
+app.get('/private/getFolderContents', foldersRoute)
+app.post('/private/addMapToFolder', foldersRoute)
