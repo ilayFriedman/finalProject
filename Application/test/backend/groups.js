@@ -270,17 +270,31 @@ describe('Groups', function () {
                 res.statusCode.should.equal(200);
                 JSON.parse(res.text).should.deep.equal(result[0].Members);
             })
-            // .end((err, res) => {
-            //     try{
-                    
-                    
-            //         done();
-            //     }
-            //     catch(e){
-            //         done(e);
-            //     }
-            // });  
         })             
+    });
+
+    it('should GetGroupsUserBlongsTo', function () {
+        let groupId;
+        return group.find({'Name': testGroupData.groupName}).exec()
+        .then((result, err) => {
+            expectedResponse = [{
+                "GroupId": result[0].id,
+                "GroupName": result[0].Name,
+                GroupDescription: result[0].Description
+            }];
+
+            return chai.request(serverAddress)
+            .get('/private/GetGroupsUserBlongsTo')
+            .set('token', otherUserToken)
+            .send()
+            .then((res, err) => {
+                console.log("res\n" + res.body.toString());
+                console.log("exp\n" + expectedResponse.toString());
+                res.statusCode.should.equal(200);
+                res.body.should.deep.equal(expectedResponse);
+                console.log(res);
+            })  
+        });
     });
     
     it('should disallow revoking Owner permission', function () {
