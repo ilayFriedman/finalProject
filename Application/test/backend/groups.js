@@ -267,8 +267,6 @@ describe('Groups', function () {
             .set('token', testUserToken)
             .send({groupId: result[0].id})
             .then((res, err) => {
-                console.log(result[0].Members)
-                console.log(res.text)
                 res.statusCode.should.equal(200);
                 JSON.parse(res.text).should.deep.equal(result[0].Members);
             })
