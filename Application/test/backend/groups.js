@@ -288,11 +288,29 @@ describe('Groups', function () {
             .set('token', otherUserToken)
             .send()
             .then((res, err) => {
-                console.log("res\n" + res.body.toString());
-                console.log("exp\n" + expectedResponse.toString());
                 res.statusCode.should.equal(200);
                 res.body.should.deep.equal(expectedResponse);
-                console.log(res);
+            })  
+        });
+    });
+
+    it('should GetGroupsUserOwns', function () {
+        let groupId;
+        return group.find({'Name': testGroupData.groupName}).exec()
+        .then((result, err) => {
+            expectedResponse = [{
+                "GroupId": result[0].id,
+                "GroupName": result[0].Name,
+                GroupDescription: result[0].Description
+            }];
+
+            return chai.request(serverAddress)
+            .get('/private/GetGroupsUserOwns')
+            .set('token', testUserToken)
+            .send()
+            .then((res, err) => {
+                res.statusCode.should.equal(200);
+                res.body.should.deep.equal(expectedResponse);
             })  
         });
     });

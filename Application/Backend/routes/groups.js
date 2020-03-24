@@ -355,4 +355,28 @@ router.get('/private/GetGroupsUserBlongsTo', async function (req, res) {
     });
 });
 
+router.get('/private/GetGroupsUserOwns', async function (req, res) {
+    group.find({}, function (err, result) {
+        if (err) {
+            res.status(500).send("Server error occurred.");
+            return;
+        }    
+
+        let responseArray = [];
+
+        result.forEach(resGroup => {
+            if(UserHasOwnerPermissionForGroup(resGroup, req.decoded._id)){
+                responseArray.push({
+                    "GroupId": resGroup.id,
+                    "GroupName": resGroup.Name,
+                    "GroupDescription": resGroup.Description
+                });
+            }
+        });
+
+        res.writeHead(200, {"Content-Type": "application/json"});
+        res.end(JSON.stringify(responseArray));
+    });
+});
+
 module.exports = router;
