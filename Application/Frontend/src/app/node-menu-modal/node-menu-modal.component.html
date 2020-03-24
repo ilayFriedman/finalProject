@@ -21,6 +21,7 @@
 
     </mat-tab>
     <mat-tab label="References">
+        <div class="refTable">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
@@ -68,8 +69,9 @@
             </tr>
 
 
-        </table>
-        <mat-paginator [pageSizeOptions]="[5, 50, 100]" showFirstLastButtons></mat-paginator>
+        </table></div>
+        <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons></mat-paginator>
+       
     </mat-tab>
     <mat-tab label="Third"> Content 3 </mat-tab>
 </mat-tab-group>
