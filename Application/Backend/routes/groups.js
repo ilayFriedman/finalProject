@@ -29,7 +29,7 @@ function UserHasManagerPermissionForGroup(resGroup, userId) {
         return true;
     }
 
-    if (resGroup.Permission.Manager) {
+    if (resGroup.Members.Manager) {
         for (let i = 0; i < resGroup.Members.Manager.length; i++) {
             const element = resGroup.Members.Manager[i];
             if (element.userId == userId) {
@@ -110,7 +110,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Owner) {
                 group.Members.Owner = [];
             }
-            group.Members.Owner.push(userId);
+            group.Members.Owner.push({"userId": userId});
             permission = true;
 
             break;
@@ -119,7 +119,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Manager) {
                 group.Members.Manager = [];
             }
-            group.Members.Manager.push(userId);
+            group.Members.Manager.push({"userId": userId});
             permissionGiven = true;
 
             break;
@@ -128,7 +128,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Member) {
                 group.Members.Member = [];
             }
-            group.Members.Member.push(userId);
+            group.Members.Member.push({"userId": userId});
             permissionGiven = true;
 
             break;
@@ -223,6 +223,40 @@ router.post('/private/updateGroupProperties', async function (req, res) {
     }
 });
 
+router.delete('/private/RemoveUserFromGroup', async function (req, res) {
+    if(req.body._id && req.body.userId) {
+        group.findOne({
+            '_id': req.body._id
+        }, function (err, result) {
+            if(!result){
+                res.status(404).send("Could not find map.");
+                return;
+            }
+
+            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.body.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
+
+            if (!isUserGivingPermissionHasSufficientPrivileges){
+                res.status(403).send("The user's permissions are insufficient to set requested permission.");
+                return;
+            }
+
+            deleteUserCurrentPermission(result, req.body.userId);
+
+            group.findOneAndUpdate({ _id: req.body._id }, { 'Members': result.Members }, function (err, mongoRes) {
+                if (err) {
+                    res.status(500).send("Server error occurred.");
+                } else {
+                    res.status(200).send('Group permissions has been updated successfully.');
+                }
+            });
+
+        })
+    }
+    else {
+        res.status(400).send("No group Id, user Id or permission level attached to request.");
+    }
+});
+
 router.post('/private/SetUserPermissionForGroup', async function (req, res) {
     if(req.body._id && req.body.userId && req.body.permission) {
         group.findOne({
@@ -235,7 +269,7 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
 
             isUserGivingPermissionHasSufficientPrivileges = UserHasOwnerPermissionForGroup(result, req.decoded._id); // Owner can give any permission.
             isUserGivingPermissionHasSufficientPrivileges = isUserGivingPermissionHasSufficientPrivileges // A Manager can give another user Manager or Memeber permissions.
-                                                            || (UserHasManagerPermissionForGroup(req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
+                                                            || (UserHasManagerPermissionForGroup(result, req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
             if (!isUserGivingPermissionHasSufficientPrivileges){
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;
@@ -244,7 +278,7 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
             deleteUserCurrentPermission(result, req.body.userId);
             let permissionGiven = addUserPermissionOnGroup(result, req.body.userId, req.body.permission);
             if(!permissionGiven){
-                res.status(404).send("Unsupported permission requested. Supported permissions are: 'Member', 'Manager' and 'Owner'.");
+                res.status(400).send("Unsupported permission requested. Supported permissions are: 'Member', 'Manager' and 'Owner'.");
                 return;
             }
 
@@ -256,6 +290,34 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
                 }
             });
 
+        })
+    }
+    else {
+        res.status(400).send("No group Id, user Id or permission level attached to request.");
+    }
+});
+
+router.get('/private/GetGroupsMembers', async function (req, res) {
+    if(req.body.groupId) {
+        group.findOne({
+            '_id': req.body.groupId
+        }, function (err, result) {
+            if(!result){
+                res.status(404).send("Could not find map.");
+                return;
+            }
+
+            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id); // Manager can view permissions.
+            if (!isUserGivingPermissionHasSufficientPrivileges){
+                res.status(403).send("The user's permissions are insufficient to set requested permission.");
+                return;
+            }
+
+            if (err) {
+                res.status(500).send("Server error occurred.");
+            } else {
+                res.status(200).send(result.Members);
+            }
         })
     }
     else {

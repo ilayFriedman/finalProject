@@ -27,6 +27,9 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   name_From: String = ""
   name_To: String = ""
 
+  fromColoredKey = null
+  toColoredKey = null
+
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.mapModel != null){
@@ -112,7 +115,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    console.log(this.mapModel)
+    // console.log(this.mapModel)
     // console.log(nodesKeysDict)
     // console.log("#############")
     // console.log(this.typesOfNodes)
@@ -122,7 +125,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   }
 
   submitAction(){
-    var self = this
+      var self = this
     var keyToInsert = this.mapModel.nodeDataArray.length + 1
     // CASE FROM IS NEW
     if(!!this.nodeSelected_From.category == false){
@@ -157,6 +160,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
           console.log(self.nodeSelected_From.key)
           var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
           d.model.addNodeData(nodeFrom);
+
           
           // create new Node-From
           var nodeTo = self.nodeSelected_To
@@ -193,9 +197,110 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
             // CASE TO IS EXIST
             else{
               console.log("set exsisting link!!!")
+              console.log(this.nodeSelected_From)
+              console.log(this.nodeSelected_To)
+              console.log(this.linkSelected)
+              console.log(this.mapModel.linkDataArray)
+              var modelLinks = this.mapHandler.myDiagram.model.linkDataArray
+              var existLink = false
+              modelLinks.forEach(link => {
+                if(link.category != this.linkSelected.key && link.from == this.nodeSelected_From.key && link.to == this.nodeSelected_To.key){
+                  existLink = true
+                }   
+              });
+
+              if(existLink) { // checks if selected link diffrent from the one that in the model
+                if(!confirm("These nodes are connected with diffrent link already.\nAre you sure you want to update the link?")){
+                  return
+                }
+              }
+              console.log("ok!")
+              this.mapHandler.myDiagram.commit(function(d) {
+                var nodeFrom = self.nodeSelected_From
+                var nodeTo = self.nodeSelected_To
+                var newLinkToInesrt = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+                console.log(modelLinks)
+                modelLinks.forEach(link => {
+                  if(link.from == nodeFrom.key && link.to == nodeTo.key){
+                    d.model.removeLinkData(link)
+                  }
+                });
+                d.model.addLinkData(newLinkToInesrt);
+                // d.model.removeLinkData(shit[0])
+              }, "fromOld_ToOld");
               
-            }
+  }
+}
+this.name_From = ""
+this.name_To = ""
+this.nodeSelected_From = "Choose Node"
+this.linkSelected = "Choose Link Type"
+this.nodeSelected_To = "Choose Node"
+
+this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+  if(node.key == this.fromColoredKey || node.key == this.toColoredKey){
+    this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+  }   
+});
+  }
+
+ngIfCheck(check){
+  return ((!check.category) && !(typeof(check) == "string"))
+}
+
+canSubmit(){
+  var ans = this.nodeSelected_From != "Choose Node" && this.linkSelected != "Choose Link Type" && this.nodeSelected_To != "Choose Node"
+  if(this.ngIfCheck(this.nodeSelected_From))
+    ans = ans && this.name_From != ""
+  if(this.ngIfCheck(this.nodeSelected_To))
+    ans = ans && this.name_To != ""
+  
+  return ans
+}
+
+colorChanger(event,sender){
+  if(event.category){
+    if(sender == "from" && event.key != this.fromColoredKey){
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.fromColoredKey = event.key
     }
+    if(sender == "to" && event.key != this.toColoredKey){ // sender == "to"
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.toColoredKey = event.key
+    }
+  }
+  else{
+    if(sender == "from"){
+      this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+        if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        }   
+      });
+    }
+    if(sender == "to"){ // sender == "to"
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+      if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
+        this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+      }   
+    });
+  }
+}
+}
+}
+
+
+
+
     // console.log("add now!")
     // // checks! key is string or num, type is valid
     // this.mapHandler.myDiagram.commit(function(d) {
@@ -211,7 +316,6 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     //   d.model.addLinkData(link);
     //   console.log(d.model.linkDataArray)
     // }, "createNewLinkFromTextToGragh");
-  }
 
 
   
@@ -262,8 +366,4 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     // this.creteLinkInModel(typeFrom,nameFrom,keyFrom,linktType,linkName,typeTo,nameTo,keyTo)
   // }
 
-  ngIfCheck(check){
-    return ((!check.category) && !(typeof(check) == "string"))
-  }
-}
 
