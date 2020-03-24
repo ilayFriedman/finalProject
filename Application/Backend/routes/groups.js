@@ -297,4 +297,32 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
     }
 });
 
+router.get('/private/GetGroupsMembers', async function (req, res) {
+    if(req.body.groupId) {
+        group.findOne({
+            '_id': req.body.groupId
+        }, function (err, result) {
+            if(!result){
+                res.status(404).send("Could not find map.");
+                return;
+            }
+
+            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id); // Manager can view permissions.
+            if (!isUserGivingPermissionHasSufficientPrivileges){
+                res.status(403).send("The user's permissions are insufficient to set requested permission.");
+                return;
+            }
+
+            if (err) {
+                res.status(500).send("Server error occurred.");
+            } else {
+                res.status(200).send(result.Members);
+            }
+        })
+    }
+    else {
+        res.status(400).send("No group Id, user Id or permission level attached to request.");
+    }
+});
+
 module.exports = router;

@@ -113,7 +113,6 @@ describe('Groups', function () {
             'Name': testGroupData.groupName
         }).exec()
         .then(result => {
-
             return chai.request(serverAddress)
                 .post('/private/updateGroupProperties')
                 .set('token', testUserToken)
@@ -214,7 +213,6 @@ describe('Groups', function () {
                         res.text.should.equal("The user's permissions are insufficient to set requested permission.");
                         updatedGroup.Members.Owner[0].userId.should.equal(testUserId);                                
                     })
-                    //.catch()
                 });     
         });
     });
@@ -261,6 +259,32 @@ describe('Groups', function () {
         });
     });
 
+    it('should GetGroupsMembers', function () {
+        return group.find({'Name': testGroupData.groupName}).exec()
+        .then((result, err) => {
+            return chai.request(serverAddress)
+            .get('/private/GetGroupsMembers')
+            .set('token', testUserToken)
+            .send({groupId: result[0].id})
+            .then((res, err) => {
+                console.log(result[0].Members)
+                console.log(res.text)
+                res.statusCode.should.equal(200);
+                JSON.parse(res.text).should.deep.equal(result[0].Members);
+            })
+            // .end((err, res) => {
+            //     try{
+                    
+                    
+            //         done();
+            //     }
+            //     catch(e){
+            //         done(e);
+            //     }
+            // });  
+        })             
+    });
+    
     it('should disallow revoking Owner permission', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then(result => {

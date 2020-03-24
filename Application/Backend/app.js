@@ -70,6 +70,7 @@ app.put('/private/updateMap', mapsRoute);
 app.post('/private/createGroup', groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.post("/private/SetUserPermissionForGroup", groupsRoute);
+app.get("/private/GetGroupsMembers", groupsRoute);
 app.delete('/private/deleteGroup', groupsRoute);
 app.delete("/private/RemoveUserFromGroup", groupsRoute);
 
