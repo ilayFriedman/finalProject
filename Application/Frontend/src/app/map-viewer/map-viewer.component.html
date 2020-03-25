@@ -35,8 +35,6 @@
     </mat-toolbar>
 </div>
 
-<button (click)="openModal('refModal')">modal</button>
-
 <jw-modal class="jw-modal" id="save-as-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
@@ -56,7 +54,7 @@
 
 <jw-modal class="jw-modal" id="refModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body" (change)="saveChanges()">
-        <span class="close" (click)="closeModal('refModal')">&times;</span>
+        <span class="close" (click)="closeMenuModal('refModal')">&times;</span>
         <app-node-menu-modal></app-node-menu-modal>
     </div>
 </jw-modal>

@@ -728,13 +728,15 @@ export class MapViewerComponent implements OnInit {
   }
 
   openModalMenu(id: string){    
-    this.modalService.obj = this.currNode.data
-
+    this.modalService.currNodeData = this.currNode.data
     this.modalService.openMenu(id);
   }
 
   closeModal(id: string) {
     this.modalService.close(id);
+  }
+  closeMenuModal(id: string) {
+    this.modalService.closeMenu(id);
   }
 
   saveChanges(){

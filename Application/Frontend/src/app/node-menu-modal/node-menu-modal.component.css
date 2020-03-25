@@ -1,6 +1,15 @@
 table {
     width: 100%;
     text-align-last: center;
+    /* table-layout:fixed; */
+}
+.mat-header-cell {
+    min-width: 60px;
+    /* border: solid; */
+    text-align: center;
+  }
+.refBtn{
+    margin: 5px;
 }
 
 

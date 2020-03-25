@@ -5,9 +5,20 @@ import { Injectable } from '@angular/core';
 })
 export class ModalService {
   private modals: any[] = [];
-  obj:any;
+  currNodeData: any;
   currNodeText: any;
   currNodeDescription: any;
+  loadNodeRefs: () => void;
+  unloadNodeRefs: () => void;
+
+  runLoadRefs(fn: () => void) {
+    this.loadNodeRefs = fn;
+    // from now on, call myFunc wherever you want inside this service
+  }
+  runUnloadRefs(fn: () => void) {
+    this.unloadNodeRefs = fn;
+    // from now on, call myFunc wherever you want inside this service
+  }
 
   add(modal: any) {
     // add modal to array of active modals
@@ -26,17 +37,28 @@ export class ModalService {
   }
 
   openMenu(id: String) {
-    console.log(this.obj);
-    this.currNodeText = this.obj.text;
-    this.currNodeDescription = this.obj.description    
+    console.log("open menu");    
+    console.log(this.currNodeData);
+    this.currNodeText = this.currNodeData.text;
+    this.currNodeDescription = this.currNodeData.description
+    this.loadNodeRefs()
     let modal: any = this.modals.filter(x => x.id === id)[0];
     modal.open();
   }
 
-  saveChangesInNode(){
-    this.obj.text = this.currNodeText
-    console.log(this.obj.text);
-    
+  closeMenu(id: string) {
+    this.unloadNodeRefs();
+    this.currNodeData = null;
+    this.currNodeText = null;
+    this.currNodeDescription = null;
+    let modal: any = this.modals.filter(x => x.id === id)[0];
+    modal.close();
+  }
+
+  saveChangesInNode() {
+    this.currNodeData.text = this.currNodeText
+    console.log(this.currNodeData.text);
+
   }
 
   close(id: string) {
@@ -44,4 +66,5 @@ export class ModalService {
     let modal: any = this.modals.filter(x => x.id === id)[0];
     modal.close();
   }
+
 }
