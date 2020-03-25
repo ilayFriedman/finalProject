@@ -8,8 +8,6 @@ import * as go from 'gojs';
 })
 
 
-
-
 export class TextMapConverterComponent implements OnInit,OnChanges {
   @Input() doUpade: boolean;
   mapModel : any = null
@@ -47,8 +45,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
-    this.typesOflinks = this.mapHandler.myDiagram.linkTemplateMap.Eb
-    this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Eb
+    this.typesOflinks = this.mapHandler.myDiagram.linkTemplateMap.Fb
+    this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Fb
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
     // remove empty-link and comment-link elements from dict
     // delete this.typesOflinks[""]
@@ -60,7 +58,11 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     // delete this.typesOfNodes["LinkLabel"]
 
 
-    // console.log(this.typesOflinks)
+    console.log(this.mapModel)
+    
+    console.log(this.typesOflinks)
+    console.log(this.typesOfNodes)
+    console.log(this.typesOfNodes_model)
     this.convertMapToText()
     // this.numOfLinks = this.mapModel.linkDataArray.length
     // console.log(this.numOfLinks)
@@ -117,7 +119,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    // console.log(this.mapModel)
+    
+    console.log(this.mapModel)
     // console.log(nodesKeysDict)
     // console.log("#############")
     // console.log(this.typesOfNodes)
