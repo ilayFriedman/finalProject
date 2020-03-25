@@ -83,4 +83,9 @@ app.get('/private/getAllReferences', referencesRoute);
 
 app.post('/private/createFolder', foldersRoute)
 app.get('/private/getFolderContents', foldersRoute)
+app.get('/private/getFolderProperties', foldersRoute)
 app.post('/private/addMapToFolder', foldersRoute)
+app.post('/private/updateFolderProperties', foldersRoute)
+app.delete('/private/removeMapFromFolder', foldersRoute)
+
+
