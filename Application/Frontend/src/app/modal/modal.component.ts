@@ -7,8 +7,7 @@ import { ModalService } from '../services/modal.service';
     <div class="jw-modal-body">
         <ng-content></ng-content>
     </div>
-</div>
-<div class="jw-modal-background"></div>`
+</div>`
 })
 
 export class ModalComponent implements OnInit, OnDestroy {

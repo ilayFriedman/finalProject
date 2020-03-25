@@ -69,10 +69,14 @@ app.post('/private/createMap', mapsRoute);
 app.delete('/private/removeMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
 
-app.post('/private/createGroup', groupsRoute);
+app.post("/private/createGroup", groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.post("/private/SetUserPermissionForGroup", groupsRoute);
-app.delete('/private/deleteGroup', groupsRoute);
+app.get("/private/GetGroupsMembers", groupsRoute);
+app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
+app.get("/private/GetGroupsUserOwns", groupsRoute);
+app.delete("/private/deleteGroup", groupsRoute);
+app.delete("/private/RemoveUserFromGroup", groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);
