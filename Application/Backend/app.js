@@ -15,6 +15,8 @@ const usersRoute = require('./routes/users');
 const mapsRoute = require('./routes/maps');
 const groupsRoute = require('./routes/groups');
 const referencesRoute = require('./routes/references');
+const foldersRoute = require('./routes/folders')
+
 
 
 
@@ -67,12 +69,23 @@ app.post('/private/createMap', mapsRoute);
 app.delete('/private/removeMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
 
-app.post('/private/createGroup', groupsRoute);
+app.post("/private/createGroup", groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.post("/private/SetUserPermissionForGroup", groupsRoute);
 app.get("/private/GetGroupsMembers", groupsRoute);
-app.delete('/private/deleteGroup', groupsRoute);
+app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
+app.get("/private/GetGroupsUserOwns", groupsRoute);
+app.delete("/private/deleteGroup", groupsRoute);
 app.delete("/private/RemoveUserFromGroup", groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);
+
+app.post('/private/createFolder', foldersRoute)
+app.get('/private/getFolderContents', foldersRoute)
+app.get('/private/getFolderProperties', foldersRoute)
+app.post('/private/addMapToFolder', foldersRoute)
+app.post('/private/updateFolderProperties', foldersRoute)
+app.delete('/private/removeMapFromFolder', foldersRoute)
+
+

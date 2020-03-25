@@ -29,6 +29,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
 
   fromColoredKey = null
   toColoredKey = null
+  chooseNodeColor = "yellow"
+  resetNodeColor = "white";
 
   ngOnChanges(changes: SimpleChanges): void {
     
@@ -239,7 +241,7 @@ this.nodeSelected_To = "Choose Node"
 
 this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
   if(node.key == this.fromColoredKey || node.key == this.toColoredKey){
-    this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+    this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
   }   
 });
   }
@@ -263,19 +265,19 @@ colorChanger(event,sender){
     if(sender == "from" && event.key != this.fromColoredKey){
       this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
         if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
-          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
         }   
       });
-      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill",this.chooseNodeColor)
       this.fromColoredKey = event.key
     }
     if(sender == "to" && event.key != this.toColoredKey){ // sender == "to"
       this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
         if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
-          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
         }   
       });
-      this.mapHandler.myDiagram.model.setDataProperty(event,"fill","yellow")
+      this.mapHandler.myDiagram.model.setDataProperty(event,"fill",this.chooseNodeColor)
       this.toColoredKey = event.key
     }
   }
@@ -283,87 +285,18 @@ colorChanger(event,sender){
     if(sender == "from"){
       this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
         if(node.key == this.fromColoredKey && node.key != this.toColoredKey){
-          this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+          this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
         }   
       });
     }
     if(sender == "to"){ // sender == "to"
     this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
       if(node.key == this.toColoredKey && node.key != this.fromColoredKey){
-        this.mapHandler.myDiagram.model.setDataProperty(node,"fill","white")
+        this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
       }   
     });
   }
 }
 }
 }
-
-
-
-
-    // console.log("add now!")
-    // // checks! key is string or num, type is valid
-    // this.mapHandler.myDiagram.commit(function(d) {
-    //   // create new Node-From
-    //   var nodeFrom = {category: typeFrom, text: nameFrom, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: keyFrom}
-    //   d.model.addNodeData(nodeFrom);
-      
-    //   // create new Node-From
-    //   var nodeTo = {category: typeTo, text: nameTo, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: keyTo}
-    //   d.model.addNodeData(nodeTo);
-
-    //   var link = { category: linktType, text: linkName ,from: nodeFrom.key, to: nodeTo.key } 
-    //   d.model.addLinkData(link);
-    //   console.log(d.model.linkDataArray)
-    // }, "createNewLinkFromTextToGragh");
-
-
-  
-  // submitAction(){
-    // var typeFrom: any
-    // var nameFrom: any
-    // var keyFrom: any
-    // var linktType: any
-    // var linkName: any
-    // var typeTo: any
-    // var nameTo: any
-    // var keyTo: any
-
-    // //checks if nodeSelected_From is exist
-    // if(!!this.nodeSelected_From.category == true){  // return true if in the model already :: exist!
-    //   console.log("im node that already exist!")
-    //   typeFrom = this.nodeSelected_From.category
-    //   nameFrom = this.nodeSelected_From.text
-    //   keyFrom = this.nodeSelected_From.key
-    // }
-    // else{
-    //   console.log("im new node")
-    // }
-    // // create link selected
-    //  linktType = this.linkSelected.key
-    //  linkName = this.linkSelected.key
-
-    //  //checks if nodeSelected_To is exist
-    //  if(!!this.nodeSelected_To.category == true){  // return true if in the model already :: exist!
-    //   console.log("im node that already exist!")
-    //   typeTo = this.nodeSelected_To.category
-    //   nameTo = this.nodeSelected_To.text
-    //   keyTo = this.nodeSelected_To.key
-    // }
-    // else{
-    //   console.log("im new node")
-    // }
-
-    // console.log(this.linkSelected)
-    // // console.log(this.nodeSelected_From)
-    // // console.log()
-
-
-    // if(this.typesOfNodes_model.some(e => e.key == '-1')) {
-    //   console.log('Exists');
-    // }
-    //create the link
-    // this.creteLinkInModel(typeFrom,nameFrom,keyFrom,linktType,linkName,typeTo,nameTo,keyTo)
-  // }
-
 

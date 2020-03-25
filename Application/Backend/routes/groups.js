@@ -3,13 +3,15 @@ const router = express.Router();
 const group = require('../models/group')
 const jwt = require('jsonwebtoken');
 
-function UserHasMemberPermissionForGroup(resGroup, userId) {
-    if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
-        return true;
-    }
-
-    if (UserHasManagerPermissionForGroup(resGroup, userId)) {
-        return true;
+function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactlyMemberPermission = false) {
+    if(!checkIfUserHasExactlyMemberPermission){
+        if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
+            return true;
+        }
+    
+        if (UserHasManagerPermissionForGroup(resGroup, userId)) {
+            return true;
+        }
     }
 
     if (resGroup.Members.Memeber) {
@@ -24,9 +26,11 @@ function UserHasMemberPermissionForGroup(resGroup, userId) {
     return false;
 }
 
-function UserHasManagerPermissionForGroup(resGroup, userId) {
-    if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
-        return true;
+function UserHasManagerPermissionForGroup(resGroup, userId,checkIfUserHasExactlyManagerPermission = false) {
+    if(!checkIfUserHasExactlyManagerPermission){
+        if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
+            return true;
+        }
     }
 
     if (resGroup.Members.Manager) {
@@ -323,6 +327,56 @@ router.get('/private/GetGroupsMembers', async function (req, res) {
     else {
         res.status(400).send("No group Id, user Id or permission level attached to request.");
     }
+});
+
+router.get('/private/GetGroupsUserBlongsTo', async function (req, res) {
+    group.find({}, function (err, result) {
+        if (err) {
+            res.status(500).send("Server error occurred.");
+            return;
+        }    
+
+        let responseArray = [];
+
+        result.forEach(resGroup => {
+            let checkIfUserHasExactlyMemberPermission = true;
+            if(UserHasMemberPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)
+            || UserHasManagerPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)){
+                responseArray.push({
+                    "GroupId": resGroup.id,
+                    "GroupName": resGroup.Name,
+                    "GroupDescription": resGroup.Description
+                });
+            }
+        });
+
+        res.writeHead(200, {"Content-Type": "application/json"});
+        res.end(JSON.stringify(responseArray));
+    });
+});
+
+router.get('/private/GetGroupsUserOwns', async function (req, res) {
+    group.find({}, function (err, result) {
+        if (err) {
+            res.status(500).send("Server error occurred.");
+            return;
+        }    
+
+        let responseArray = [];
+
+        result.forEach(resGroup => {
+            if(UserHasOwnerPermissionForGroup(resGroup, req.decoded._id)){
+                responseArray.push({
+                    "GroupId": resGroup.id,
+                    "GroupName": resGroup.Name,
+                    "GroupDescription": resGroup.Description
+                });
+            }
+        });
+
+        res.writeHead(200, {"Content-Type": "application/json"});
+        res.end(JSON.stringify(responseArray));
+    });
 });
 
 module.exports = router;
