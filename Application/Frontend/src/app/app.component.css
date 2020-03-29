@@ -1,14 +1,13 @@
-.myDiagramDiv {
-  background: whitesmoke;
-  width: 800px;
-  height: 300px;
-  border: 1px solid black;
-}
-
-.homeNav{
-  font-size: 600%;
+body{
+  background-color: #E9EAED;
 }
 .mat-toolbar.mat-primary {
-  background: #0099ff;
-  color: #fff;
+  /* background: #014464; */
+  background-image: -webkit-linear-gradient(135deg, #d2e1e7, #0272a7)
+/* background-image: -webkit-radial-gradient(10% 30%, rgb(181, 182, 185), #0272a7) */
+
+  
+}
+.toolbarAddition{
+  text-shadow: 1px 1px black;
 }

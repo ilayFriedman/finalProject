@@ -1,0 +1,16 @@
+<div>
+<mat-tab-group>
+    <mat-tab label="My Maps:">
+        <div class="mapsAndFolders">
+            <mat-list-item *ngFor="let map of myMaps; let idx = index; last as last">
+              <span mat-line><a [routerLink]="['/mapViewer', idx]">{{map.MapName}}</a></span>
+              <mat-divider *ngIf="!last"  style="margin: 10px;"></mat-divider>
+            </mat-list-item>
+        </div>
+        
+    </mat-tab>
+    <mat-tab label="Maps Shared With Me:">
+        coming soon! :)
+    </mat-tab>
+  </mat-tab-group>
+</div>

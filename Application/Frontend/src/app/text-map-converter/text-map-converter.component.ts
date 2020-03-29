@@ -247,6 +247,9 @@ this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
     this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
   }   
 });
+this.fromColoredKey = null
+this.toColoredKey = null
+this.convertMapToText()
   }
 
 ngIfCheck(check){
@@ -301,5 +304,13 @@ colorChanger(event,sender){
   }
 }
 }
+
+// removeLink(i){
+
+//   console.log(this.links[i])
+//   console.log(this.links)
+//   this.links.splice(i,1)
+//   console.log(this.links)
+// }
 }
 

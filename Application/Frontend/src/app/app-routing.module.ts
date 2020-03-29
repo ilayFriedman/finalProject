@@ -3,14 +3,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import {MapViewerComponent} from "./map-viewer/map-viewer.component";
 import {AppComponent} from "./app.component";
-import {MapIndexComponent} from "./map-index/map-index.component";
+import { LogedHomeComponent } from './loged-home/loged-home.component';
 import { RegisterComponent } from "./register/register.component";
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
 
 
 
 const routes: Routes = [
-  {path: 'logedHome', component: MapIndexComponent },
+  {path: 'logedHome', component: LogedHomeComponent },
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'changeUserInfo', component: ChangeUserInfoComponent},

@@ -87,5 +87,5 @@ app.get('/private/getFolderProperties', foldersRoute)
 app.post('/private/addMapToFolder', foldersRoute)
 app.post('/private/updateFolderProperties', foldersRoute)
 app.delete('/private/removeMapFromFolder', foldersRoute)
-
+app.get('/private/getRootFolderById', foldersRoute)
 

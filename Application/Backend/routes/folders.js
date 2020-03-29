@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
+const user = require('../models/user');
 
 router.post('/private/createFolder', async function(req, res) {
     try {
@@ -122,6 +123,30 @@ router.delete('/private/removeMapFromFolder', async function(req, res) {
 });
 
 
+
+router.get('/private/getRootFolderById', async function(req, res) {
+    try {
+        user.findOne({
+            '_id': req.decoded._id
+        }, function(err, result) {
+            if (result) {
+                folder.find({
+                    'UserRootFolder': result._id
+                }, function(err, result) {
+                    if (result) {
+                        res.status(200).send(result);
+                    } else {
+                        res.status(400).send(`problem: ${err}`);
+                    }
+                });
+            } else {
+                res.status(400).send("No such user")
+            }
+        });
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
+});
 
 
 module.exports = router;

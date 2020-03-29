@@ -1,19 +1,29 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-<!--    <button mat-icon-button>-->
-<!--      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>-->
-<!--    </button>-->
-    <h1 mat-button [routerLink]="'/home'">ME-Mapper</h1>
-    <span class="menu-spacer"></span>
-    <div>
-      <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
-      <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
-      <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
-      <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"> Change user info </a></span>
-      
-<!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->
-    </div>
-  </mat-toolbar-row>
+<html>
+  <head>
+    <script src="https://kit.fontawesome.com/02fbb6f7fc.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+    <!--    <button mat-icon-button>-->
+    <!--      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>-->
+    <!--    </button>-->
+        <h1 mat-button [routerLink]="'/home'" style="font-size: 20px;">ME-Mapper</h1>
+        <span class="menu-spacer"></span>
+        <div class="toolbarAddition">
+          <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
+          <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
+          <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
+          <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"> Change user info </a></span>
+          
+    <!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <router-outlet style="position:fixed; top:0;"></router-outlet>
 
-</mat-toolbar>
-<router-outlet></router-outlet>
+    <i class="fab fa-airbnb"></i>
+    
+  </body>
+</html>
+

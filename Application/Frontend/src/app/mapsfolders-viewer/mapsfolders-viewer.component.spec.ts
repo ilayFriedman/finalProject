@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MapIndexComponent } from './map-index.component';
+import { MapsfoldersViewerComponent } from './mapsfolders-viewer.component';
 
-describe('MapIndexComponent', () => {
-  let component: MapIndexComponent;
-  let fixture: ComponentFixture<MapIndexComponent>;
+describe('MapsfoldersViewerComponent', () => {
+  let component: MapsfoldersViewerComponent;
+  let fixture: ComponentFixture<MapsfoldersViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MapIndexComponent ]
+      declarations: [ MapsfoldersViewerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MapIndexComponent);
+    fixture = TestBed.createComponent(MapsfoldersViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
