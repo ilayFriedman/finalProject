@@ -249,6 +249,7 @@ this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
 });
 this.fromColoredKey = null
 this.toColoredKey = null
+this.convertMapToText()
   }
 
 ngIfCheck(check){

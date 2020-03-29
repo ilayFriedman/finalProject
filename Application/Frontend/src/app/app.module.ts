@@ -10,7 +10,6 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import { GojsAngularModule } from 'gojs-angular';
 import { MapViewerComponent } from './map-viewer/map-viewer.component';
-import { MapIndexComponent } from './map-index/map-index.component';
 import { Router } from '@angular/router';
 import {MapsHandlerService} from "./services/maps-handler.service";
 import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
@@ -21,19 +20,22 @@ import { ModalService } from './services/modal.service';
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
 import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.component';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { MapsfoldersViewerComponent } from './mapsfolders-viewer/mapsfolders-viewer.component';
+import { LogedHomeComponent } from './loged-home/loged-home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MapViewerComponent,
-    MapIndexComponent,
     TextMapConverterComponent,
     SaveAsMapComponent,
     RegisterComponent,
     ModalComponent,
     ChangeUserInfoComponent,
-    NodeMenuModalComponent
+    NodeMenuModalComponent,
+    MapsfoldersViewerComponent,
+    LogedHomeComponent
 ],
   imports: [
     BrowserModule,
