@@ -3,13 +3,21 @@ table {
     text-align-last: center;
     /* table-layout:fixed; */
 }
+
+tbody {
+    margin: 10px;
+}
+
 .mat-header-cell {
     min-width: 60px;
     /* border: solid; */
     text-align: center;
-  }
-.refBtn{
+}
+
+.refBtn {
     margin: 5px;
 }
 
-
+.tab-content {
+    margin: 10px;
+}

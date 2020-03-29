@@ -1,148 +1,152 @@
-<div (onload)="loadNodeRefs()">
+<div>
     <mat-tab-group id="nodeMenu">
         <mat-tab label="Details">
-            <table id="detailsTable" class="table table-hover borderless table-vcenter">
-                <tbody>
-                    <tr>
-                        <td>Text:</td>
-                        <td>
-                            <input type="text" id="textFeature" class="form-control" name="objectText"
-                                [(ngModel)]="this.modalService.currNodeText">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Description:</td>
-                        <td>
-                            <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="50"
-                                rows="5" [(ngModel)]="this.modalService.currNodeDescription"></textarea>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+            <div class="tab-content">
+                <table id="detailsTable" class="table table-hover borderless table-vcenter">
+                    <tbody>
+                        <tr>
+                            <td>Text:</td>
+                            <td>
+                                <input type="text" id="textFeature" class="form-control" name="objectText"
+                                    [(ngModel)]="this.modalService.currNodeText">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td>
+                                <textarea id="descriptionFeature" name="objectDescription" class="form-control"
+                                    cols="50" rows="5" [(ngModel)]="this.modalService.currNodeDescription"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </mat-tab>
         <mat-tab label="References">
-            <div style="width: max-content;">
-                <div>
-                    <span id="nodeRefsSpan" style="float: left;">
-                        <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
-                            <!-- Checkbox Column -->
-                            <ng-container matColumnDef="select">
-                                <tr>
-                                    <th mat-header-cell *matHeaderCellDef>
-                                        <mat-checkbox (change)="$event ? masterToggle('node') : null"
-                                            [checked]="nodeRefSelection.hasValue() && isAllSelected('node')"
-                                            [indeterminate]="nodeRefSelection.hasValue() && !isAllSelected('node')">
-                                        </mat-checkbox>
-                                    </th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <mat-checkbox (click)="$event.stopPropagation()"
-                                            (change)="$event ? nodeRefSelection.toggle(row) : null"
-                                            [checked]="nodeRefSelection.isSelected(row)">
-                                        </mat-checkbox>
-                                    </td>
-                                </tr>
-                            </ng-container>
-
-                            <!-- Position Column -->
-                            <ng-container matColumnDef="Title">
-                                <th mat-header-cell *matHeaderCellDef> Title </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
-                            </ng-container>
-
-                            <!-- Name Column -->
-                            <ng-container matColumnDef="Publication">
-                                <th mat-header-cell *matHeaderCellDef> Publication </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
-                            </ng-container>
-
-                            <!-- Weight Column -->
-                            <ng-container matColumnDef="Link">
-                                <th mat-header-cell *matHeaderCellDef> Link </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
-                            </ng-container>
-
-                            <!-- Symbol Column -->
-                            <ng-container matColumnDef="CreationTime">
-                                <th mat-header-cell *matHeaderCellDef> Creation Time </th>
-                                <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
-                            </ng-container>
-
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                                (click)="nodeRefSelection.toggle(row)">
+            <div class="tab-content" style="width: max-content;">
+                <span id="nodeRefsSpan" style="float: left;">
+                    <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <tr>
+                                <th mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox (change)="$event ? masterToggle('node') : null"
+                                        [checked]="nodeRefSelection.hasValue() && isAllSelected('node')"
+                                        [indeterminate]="nodeRefSelection.hasValue() && !isAllSelected('node')">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? nodeRefSelection.toggle(row) : null"
+                                        [checked]="nodeRefSelection.isSelected(row)">
+                                    </mat-checkbox>
+                                </td>
                             </tr>
+                        </ng-container>
+
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="Title">
+                            <th mat-header-cell *matHeaderCellDef> Title </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="Publication">
+                            <th mat-header-cell *matHeaderCellDef> Publication </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="Link">
+                            <th mat-header-cell *matHeaderCellDef> Link </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="CreationTime">
+                            <th mat-header-cell *matHeaderCellDef> Creation Time </th>
+                            <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            (click)="nodeRefSelection.toggle(row)">
+                        </tr>
 
 
-                        </table>
-                    </span>
-                    <span id="allRefsSpan" style="float: right;" *ngIf="this.doShowAll">
-                        <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
-                            <!-- Checkbox Column -->
-                            <ng-container matColumnDef="select">
-                                <tr>
-                                    <th mat-header-cell *matHeaderCellDef>
-                                        <mat-checkbox (change)="$event ? masterToggle('all') : null"
-                                            [checked]="allRefSelection.hasValue() && isAllSelected('all')"
-                                            [indeterminate]="allRefSelection.hasValue() && !isAllSelected('all')">
-                                        </mat-checkbox>
-                                    </th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <mat-checkbox (click)="$event.stopPropagation()"
-                                            (change)="$event ? allRefSelection.toggle(row) : null"
-                                            [checked]="allRefSelection.isSelected(row)">
-                                        </mat-checkbox>
-                                    </td>
-                                </tr>
-                            </ng-container>
-
-                            <!-- Position Column -->
-                            <ng-container matColumnDef="Title">
-                                <th mat-header-cell *matHeaderCellDef> Title </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
-                            </ng-container>
-
-                            <!-- Name Column -->
-                            <ng-container matColumnDef="Publication">
-                                <th mat-header-cell *matHeaderCellDef> Publication </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
-                            </ng-container>
-
-                            <!-- Weight Column -->
-                            <ng-container matColumnDef="Link">
-                                <th mat-header-cell *matHeaderCellDef> Link </th>
-                                <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
-                            </ng-container>
-
-                            <!-- Symbol Column -->
-                            <ng-container matColumnDef="CreationTime">
-                                <th mat-header-cell *matHeaderCellDef> Creation Time </th>
-                                <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
-                            </ng-container>
-
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                                (click)="allRefSelection.toggle(row)">
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: left;">
+                            <mat-paginator #nodePaginator [pageSizeOptions]="[1, 10, 20]" showFirstLastButtons>
+                            </mat-paginator>
+                        </span>
+                    </div>
+                </span>
+                <span id="allRefsSpan" style="float: right;" [hidden]="this.doShowAll">
+                    <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <tr>
+                                <th mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox (change)="$event ? masterToggle('all') : null"
+                                        [checked]="allRefSelection.hasValue() && isAllSelected('all')"
+                                        [indeterminate]="allRefSelection.hasValue() && !isAllSelected('all')">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? allRefSelection.toggle(row) : null"
+                                        [checked]="allRefSelection.isSelected(row)">
+                                    </mat-checkbox>
+                                </td>
                             </tr>
+                        </ng-container>
+
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="Title">
+                            <th mat-header-cell *matHeaderCellDef> Title </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="Publication">
+                            <th mat-header-cell *matHeaderCellDef> Publication </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="Link">
+                            <th mat-header-cell *matHeaderCellDef> Link </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="CreationTime">
+                            <th mat-header-cell *matHeaderCellDef> Creation Time </th>
+                            <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            (click)="allRefSelection.toggle(row)">
+                        </tr>
 
 
-                        </table>
-                    </span>
-                    <span style="float: right; margin: 5px;">
-                        <div class="refBtn"><button (click)="showAllRefs()">{{btnShowAll}}</button></div>
-                        <div class="refBtn"><button (click)="addRefToNode()">Add Reference</button></div>
-                        <div class="refBtn"><button (click)="removeRefToNode()">Remove Reference</button></div>
-                    </span>
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: right;">
+                            <mat-paginator #allPaginator [pageSizeOptions]="[1, 10, 20]" showFirstLastButtons>
+                            </mat-paginator>
+                        </span>
 
-                </div>
-                <div style="position: relative; bottom: 0;">
-                    <span style="float: left;"><mat-paginator id="paginator" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
-                    </mat-paginator></span>
-                    
-                </div>
+                    </div>
+                </span>
+                <span style="float: right; margin: 5px;">
+                    <div class="refBtn"><button (click)="showAllRefs()">{{btnShowAll}}</button></div>
+                    <div class="refBtn"><button (click)="addRefToNode()">Add Reference</button></div>
+                    <div class="refBtn"><button (click)="removeRefToNode()">Remove Reference</button></div>
+                </span>
             </div>
-
-
         </mat-tab>
         <mat-tab label="Third"> Content 3 </mat-tab>
     </mat-tab-group>

@@ -128,18 +128,19 @@ body {
 }
 
 .jw-modal-body {
-
     text-align: center;
     background-color: #fefefe;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #888;
+    min-width: max-content;
     width: max-content;
     height: max-content;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
     line-height: 10pt;
 }
+
 .close {
     line-height: 10pt;
     color: #aaaaaa;

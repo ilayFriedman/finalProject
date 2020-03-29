@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import { ModalService } from '../services/modal.service';
 import { MatTableDataSource, MatPaginator, } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
@@ -26,7 +26,7 @@ export class NodeMenuModalComponent implements OnInit {
   allRefs: any;
   localUrl = 'http://localhost:3000';
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSizeOptions: number[] = [1, 10, 25, 100];
   doShowAll: boolean = false;
   btnShowAll: string = "Show All >";
 
@@ -39,14 +39,15 @@ export class NodeMenuModalComponent implements OnInit {
   allRefSelection = new SelectionModel<ReferenceElement>(true, []);
   nodeRefSelection = new SelectionModel<ReferenceElement>(true, []);
 
-  @ViewChild(MatPaginator, { static: true }) allPaginator: MatPaginator;
-  @ViewChild(MatPaginator, { static: true }) nodePaginator: MatPaginator;
+  @ViewChild("nodePaginator", { static: true }) nodePaginator: MatPaginator;
+  @ViewChild("allPaginator", { static: true }) allPaginator: MatPaginator;
+  // @ViewChildren(MatPaginator) Paginator = new QueryList<MatPaginator>();
 
   constructor(private modalService: ModalService, private http: HttpClient) {
 
   }
-
-  ngOnInit() {
+  ngOnInit() { }
+  ngAfterViewInit() {
     this.http.get(this.localUrl + '/private/getAllReferences', {
       headers: { 'token': sessionStorage.token }
     }).toPromise().then(res => {
@@ -70,8 +71,11 @@ export class NodeMenuModalComponent implements OnInit {
 
       });
       this.allRefSource = new MatTableDataSource<ReferenceElement>(this.allRefList);
-      // this.nodeRefSource = new MatTableDataSource<ReferenceElement>(this.modalService.currNodeData.refs);
-      this.allRefSource.paginator = this.allPaginator;
+      this.allRefSource.paginator = this.allPaginator
+      console.log("paginator");
+
+      console.log(this.allRefSource.paginator);
+
     }).catch
       (err => {
         console.log("error refs");
@@ -105,16 +109,16 @@ export class NodeMenuModalComponent implements OnInit {
       this.nodeRefList.push(element);
     })
     this.nodeRefSource = new MatTableDataSource<ReferenceElement>(this.nodeRefList);
-    this.nodeRefSource.paginator = this.nodePaginator;
+    this.nodeRefSource.paginator = this.nodePaginator
   }
 
   addRefToNode() {
     console.log(this.allRefSelection.selected[0]);
     this.allRefSelection.selected.forEach(element => {
-      if (this.modalService.currNodeData.refs.indexOf(element) == -1){
+      if (this.modalService.currNodeData.refs.indexOf(element) == -1) {
         this.modalService.currNodeData.refs.push(element)
       }
-      else{
+      else {
         alert("This reference already referened to this node")
       }
     });
