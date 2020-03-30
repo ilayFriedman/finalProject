@@ -22,6 +22,8 @@ import { NodeMenuModalComponent } from './node-menu-modal/node-menu-modal.compon
 import { AngularDraggableModule } from 'angular2-draggable';
 import { MapsfoldersViewerComponent } from './mapsfolders-viewer/mapsfolders-viewer.component';
 import { LogedHomeComponent } from './loged-home/loged-home.component';
+import { TreeViewModule } from '@progress/kendo-angular-treeview';
+
 
 @NgModule({
   declarations: [
@@ -55,7 +57,8 @@ import { LogedHomeComponent } from './loged-home/loged-home.component';
     MatCheckboxModule,
     MatTableModule,
     AngularDraggableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    TreeViewModule
   ],
   providers: [
     MapsHandlerService,

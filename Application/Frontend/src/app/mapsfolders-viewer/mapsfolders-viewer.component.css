@@ -1,12 +1,12 @@
 .mapsAndFolders{
     padding: 20px;
 }
-.mapsAndFolders span {
-    cursor: pointer;
+span {
+    /* cursor: pointer; */
     position: relative;
 
 }
-.mapsAndFolders span:hover {
+span:hover {
 left: .1em;
 
 }
@@ -28,5 +28,8 @@ a:hover {
 a:active {
     color: black;
     text-decoration: underline;
+}
+.manageButtons{
+    padding: 20px;
 }
   

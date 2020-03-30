@@ -12,5 +12,8 @@ export class FolderHandlerService {
   getRootUserFolder(){
     return this.http.get(this.localUrl + '/private/getRootFolderById', {headers: {'token': sessionStorage.token}}).toPromise()
   }
+  createNewFolder(folderName,Description,ParentDir,UserRootFolder){
+    
+  }
 
 }
