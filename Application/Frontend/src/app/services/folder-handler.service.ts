@@ -15,5 +15,14 @@ export class FolderHandlerService {
   getFolderContents(folderId: String){
     return this.http.post(this.localUrl + '/private/getFolderContents', {headers: {'token': sessionStorage.token,'FolderID': String(folderId)}}).toPromise()
   }
+  
+  createFolder(folderName, folderDesc,parentDir){
+    const bodyReq = {
+      folderName: folderName,
+      Description: folderDesc,
+      ParentDir: parentDir
+    }
+    return this.http.post(this.localUrl + '/private/createFolder')
+  }
 
 }

@@ -15,7 +15,6 @@ router.post('/private/createFolder', async function(req, res) {
             CreationTime: new Date(),
             Description: req.body.Description,
             ParentDir: req.body.ParentDir,
-            UserRootFolder: req.body.UserRootFolder
         });
         newFolder.save(function(err,saveRes) {
             if (err) {

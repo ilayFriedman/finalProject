@@ -57,6 +57,8 @@ export class MapsfoldersViewerComponent implements OnInit {
       console.log(res)
       console.log('=================')
 
+      // this.inserMapsToMapTreeViewer(Object(res),null)
+
       this.inserMapsToMapTreeViewer(Object(res), null)
 
 
