@@ -32,12 +32,13 @@ export class ModalService {
 
   open(id: string) {
     // open modal specified by id
+
     let modal: any = this.modals.filter(x => x.id === id)[0];
     modal.open();
   }
 
   openMenu(id: String) {
-    console.log("open menu");    
+    console.log("open menu");
     console.log(this.currNodeData);
     this.currNodeText = this.currNodeData.text;
     this.currNodeDescription = this.currNodeData.description

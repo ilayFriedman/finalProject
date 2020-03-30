@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
 import { TextMapConverterComponent } from '../text-map-converter/text-map-converter.component';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { ReferenceHendlerService } from '../services/reference-hendler.service';
 
 @Component({
   selector: 'app-map-viewer',
@@ -15,6 +17,7 @@ import { ClassGetter } from '@angular/compiler/src/output/output_ast';
   styleUrls: ['./map-viewer.component.css']
 })
 export class MapViewerComponent implements OnInit {
+  [x: string]: any;
   // @Input('name') mapIdx: any;
   mapModel: any;
   currIdx: any;
@@ -24,9 +27,17 @@ export class MapViewerComponent implements OnInit {
   fileToImport: any;
   updateConverter: boolean = false
   currNode: any;
-  obj:any;
+  obj: any;
+  newRefForm = new FormGroup({
+    title: new FormControl(),
+    authors: new FormControl(),
+    publication: new FormControl(),
+    description: new FormControl(),
+    link: new FormControl()
+  });
 
-  constructor(private modalService: ModalService, private router: ActivatedRoute, private mapHandler: MapsHandlerService, private http: HttpClient) { }
+  constructor(private modalService: ModalService, private router: ActivatedRoute,
+    private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
   ngOnInit() {
     this.router.params.subscribe(params => {
       this.currIdx = params['id'];
@@ -36,6 +47,13 @@ export class MapViewerComponent implements OnInit {
     console.log("curr map: " + this.currMap.MapName);
     this.init()
 
+    this.newRefForm = this.formBuilder.group({
+      title: ['', Validators.required],
+      authors: ['', Validators.required],
+      publication: ['', Validators.required],
+      description: ['', Validators.required],
+      link: ['', Validators.required]
+    });
   }
 
   init() {
@@ -149,20 +167,20 @@ export class MapViewerComponent implements OnInit {
         //      { click: function (e, obj) { showModal(obj); } })
       );
 
-      self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
-        //console.log(e.diagram.selection.first().data);
-        var node = e.diagram.selection.first();
-        node.data.refs = [];
-        node.data.ctxs = [];
-        node.data.comment = null;
-        //console.log(e.subject);
-        //console.log(myDiagram.currentTool.linkingTool);
-        if (node.data.category === "Contribution") {
-            setElementText(node, "?")
-        }
-        if (node.data.category === "Association") {
-            setElementText(node, "")
-        }
+    self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+      //console.log(e.diagram.selection.first().data);
+      var node = e.diagram.selection.first();
+      node.data.refs = [];
+      node.data.ctxs = [];
+      node.data.comment = null;
+      //console.log(e.subject);
+      //console.log(myDiagram.currentTool.linkingTool);
+      if (node.data.category === "Contribution") {
+        setElementText(node, "?")
+      }
+      if (node.data.category === "Association") {
+        setElementText(node, "")
+      }
     });
 
     // ##########   SET NODES AND LINK PROPERTIES ###########
@@ -602,8 +620,8 @@ export class MapViewerComponent implements OnInit {
     // refs.push("ref1")
     // console.log(refs);
 
-    
-    
+
+
     // var activeObject = self.currNode.data;
     // var selectedObject = self.currNode;
     // var refsOfObject = self.currNode.data.items;
@@ -613,7 +631,7 @@ export class MapViewerComponent implements OnInit {
   }
 
   updateConverterACtivate = (e) => {
-    if(e != null){    // firing from touch the model
+    if (e != null) {    // firing from touch the model
       if (e.Ze == "CommittingTransaction") {
         if (e.Vo != "Move" && e.Vo != "Initial Layout") {
           // this.child.convertMapToText()
@@ -625,12 +643,12 @@ export class MapViewerComponent implements OnInit {
         }
       }
     }
-    else{   // firing from touch not on the model (like from menu buttons)
+    else {   // firing from touch not on the model (like from menu buttons)
       if (this.updateConverter == false)
         this.updateConverter = true
       else
         this.updateConverter = false
-      
+
     }
 
   }
@@ -640,32 +658,38 @@ export class MapViewerComponent implements OnInit {
   }
 
   saveAs() {
-    this.modalService.open('my-custom-modal');
+    this.modalService.open('save-as-modal');
     // this.saveDiagramProperties();
     // this.toSave = true;
     // this.mapHandler.myDiagram.isModified = false;
   }
 
   save() {
-    let data = {
-      '_id': this.currMap._id,
-      'model': this.mapHandler.myDiagram.model.toJson()
+    if (this.currMap == null) {
+      console.log("no save -> save as");
+      this.saveAs()
     }
+    else {
+      let data = {
+        '_id': this.currMap._id,
+        'model': this.mapHandler.myDiagram.model.toJson()
+      }
 
-    console.log(data)
-    let result = this.http.put(this.localUrl + '/private/updateMap', data, {
-      headers: { 'token': sessionStorage.token }, responseType: 'text'
-    });
+      console.log(data)
+      let result = this.http.put(this.localUrl + '/private/updateMap', data, {
+        headers: { 'token': sessionStorage.token }, responseType: 'text'
+      });
 
-    result.subscribe(response => {
-      console.log("GOOD")
-      alert("Map Updated Successfully")
+      result.subscribe(response => {
+        console.log("GOOD")
+        alert("Map Updated Successfully")
 
-    }, error => {
-      console.log("BAD")
-      console.log(error.error)
+      }, error => {
+        console.log("BAD")
+        console.log(error.error)
+      }
+      );
     }
-    );
   }
 
   generateImage(imgType) {
@@ -727,7 +751,7 @@ export class MapViewerComponent implements OnInit {
     this.modalService.open(id);
   }
 
-  openModalMenu(id: string){    
+  openModalMenu(id: string) {
     this.modalService.currNodeData = this.currNode.data
     this.modalService.openMenu(id);
   }
@@ -735,21 +759,23 @@ export class MapViewerComponent implements OnInit {
   closeModal(id: string) {
     this.modalService.close(id);
   }
+
   closeMenuModal(id: string) {
     this.modalService.closeMenu(id);
   }
 
-  saveChanges(){
-    console.log("oren");
+  closeNewRefModal(id: string) {
+    this.modalService.closeMenu(id);
+    this.openModalMenu('refModal');
+  }
+
+  saveChanges() {
     this.currNode.data.text = this.modalService.currNodeText
     this.currNode.data.description = this.modalService.currNodeDescription
     console.log(this.currNode.data.text);
     console.log(this.mapHandler.myDiagram.model);
     var changedModel = this.mapHandler.myDiagram.model.toJson()
     this.mapHandler.myDiagram.model = go.Model.fromJson(changedModel);
-    
-    
-    
   }
 
   importMap(fileList: FileList, modalID: string) {
@@ -776,5 +802,14 @@ export class MapViewerComponent implements OnInit {
 
   }
 
+  addNewRef() {
+    console.log("new ref");
+    if (this.newRefForm.invalid) {
+      return;
+    }
+
+    this.refService.createNewRef(this.newRefForm.controls);
+
+  }
 
 }// component

@@ -4,6 +4,7 @@ import { MatTableDataSource, MatPaginator, } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
+import { ReferenceHendlerService } from '../services/reference-hendler.service';
 
 export interface ReferenceElement {
   _id: string,
@@ -24,7 +25,7 @@ export interface ReferenceElement {
 })
 export class NodeMenuModalComponent implements OnInit {
   allRefs: any;
-  localUrl = 'http://localhost:3000';
+
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
   pageSizeOptions: number[] = [1, 10, 25, 100];
   doShowAll: boolean = false;
@@ -43,14 +44,12 @@ export class NodeMenuModalComponent implements OnInit {
   @ViewChild("allPaginator", { static: true }) allPaginator: MatPaginator;
   // @ViewChildren(MatPaginator) Paginator = new QueryList<MatPaginator>();
 
-  constructor(private modalService: ModalService, private http: HttpClient) {
+  constructor(private modalService: ModalService, private http: HttpClient, private refService: ReferenceHendlerService) {
 
   }
   ngOnInit() { }
   ngAfterViewInit() {
-    this.http.get(this.localUrl + '/private/getAllReferences', {
-      headers: { 'token': sessionStorage.token }
-    }).toPromise().then(res => {
+    this.refService.getAllReferences().then(res => {
       this.allRefs = res;
       console.log("all refs: ");
       console.log(this.allRefs);
@@ -72,9 +71,6 @@ export class NodeMenuModalComponent implements OnInit {
       });
       this.allRefSource = new MatTableDataSource<ReferenceElement>(this.allRefList);
       this.allRefSource.paginator = this.allPaginator
-      console.log("paginator");
-
-      console.log(this.allRefSource.paginator);
 
     }).catch
       (err => {
@@ -103,8 +99,6 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   loadNodeRefs() {
-    console.log("load refs");
-
     this.modalService.currNodeData.refs.forEach(element => {
       this.nodeRefList.push(element);
     })
@@ -113,7 +107,6 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   addRefToNode() {
-    console.log(this.allRefSelection.selected[0]);
     this.allRefSelection.selected.forEach(element => {
       if (this.modalService.currNodeData.refs.indexOf(element) == -1) {
         this.modalService.currNodeData.refs.push(element)
@@ -122,11 +115,8 @@ export class NodeMenuModalComponent implements OnInit {
         alert("This reference already referened to this node")
       }
     });
-    console.log("new refs: ");
-    console.log(this.modalService.currNodeData.refs);
     this.unloadNodeRefs();
     this.loadNodeRefs();
-    // this.masterToggle('all')
     this.allRefSelection.clear()
   }
 
@@ -152,8 +142,20 @@ export class NodeMenuModalComponent implements OnInit {
 
   }
 
+  createNewReference() {
+    console.log("unchecked");
+
+  }
+
+  openNewRefModal(id: string) {
+    console.log(id);
+    this.modalService.open(id);
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(type: string) {
+    console.log("isallselected");
+
     if (type == "all") {
       const numSelected = this.allRefSelection.selected.length;
       const numRows = this.allRefSource.data.length;
@@ -168,6 +170,7 @@ export class NodeMenuModalComponent implements OnInit {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle(type: string) {
+    console.log("masterToggle");
     if (type == "all") {
       this.isAllSelected("all") ?
         this.allRefSelection.clear() :

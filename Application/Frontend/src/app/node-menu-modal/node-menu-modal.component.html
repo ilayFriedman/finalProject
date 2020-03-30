@@ -82,7 +82,7 @@
                         </span>
                     </div>
                 </span>
-                <span id="allRefsSpan" style="float: right;" [hidden]="this.doShowAll">
+                <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAll">
                     <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -142,9 +142,16 @@
                     </div>
                 </span>
                 <span style="float: right; margin: 5px;">
-                    <div class="refBtn"><button (click)="showAllRefs()">{{btnShowAll}}</button></div>
-                    <div class="refBtn"><button (click)="addRefToNode()">Add Reference</button></div>
-                    <div class="refBtn"><button (click)="removeRefToNode()">Remove Reference</button></div>
+                    <div class="refBtn"><button mat-raised-button (click)="showAllRefs()">{{btnShowAll}}</button></div>
+                    <div class="refBtn"><button mat-raised-button [disabled]="this.allRefSelection.selected.length == 0"
+                            (click)="addRefToNode()">Add Reference</button></div>
+                    <div class="refBtn"><button mat-raised-button
+                            [disabled]="this.nodeRefSelection.selected.length == 0" (click)="removeRefToNode()">Remove
+                            Reference</button>
+                    </div>
+                    <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
+                            Reference</button></div>
+
                 </span>
             </div>
         </mat-tab>
