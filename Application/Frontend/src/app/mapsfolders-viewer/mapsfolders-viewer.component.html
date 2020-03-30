@@ -3,14 +3,31 @@
     <mat-tab label="My Maps:">
         <div class="mapsAndFolders">
             <mat-list-item *ngFor="let map of myMaps; let idx = index; last as last">
-              <span mat-line><a [routerLink]="['/mapViewer', idx]">{{map.MapName}}</a></span>
+              <span mat-line><a [routerLink]="['/mapViewer', idx]">{{map.MapName}},{{idx}}</a></span>
               <mat-divider *ngIf="!last"  style="margin: 10px;"></mat-divider>
             </mat-list-item>
         </div>
-        
+        <div class="manageButtons">
+            <span>Create New Map</span> | <span>Create New Folder</span>
+            <button (click)="play()">play</button>
+        </div>
+        <div>
+            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items"
+            [expandedKeys]="expandedKeys"
+            [isSelected]="isItemSelected"
+            (selectionChange)="handleSelection($event)">
+            <ng-template kendoTreeViewNodeTemplate let-dataItem>
+                <span [ngClass]="iconClass(dataItem)"></span><a [routerLink]="['/mapViewer', idx]">{{dataItem.text}}</a>
+            </ng-template>
+    
+        </kendo-treeview>
+        </div>
     </mat-tab>
     <mat-tab label="Maps Shared With Me:">
         coming soon! :)
     </mat-tab>
   </mat-tab-group>
+  <div class="example-config">
+    Selected keys: {{selectedKeys.join(",")}}
+</div>
 </div>

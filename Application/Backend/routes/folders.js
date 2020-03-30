@@ -20,22 +20,25 @@ router.post('/private/createFolder', async function(req, res) {
         newFolder.save(function(err,saveRes) {
             if (err) {
                 console.log(err);
-                res.status(500).send(`Server error occured.`);
+                res.status(500).send(`Server error occured while creation.`);
             } else {
-                folder.findOneAndUpdate({'_id': saveRes.ParentDir},{$addToSet:{'SubFolders': {"folderID" : saveRes._id, "folderName": saveRes.Name}}}, function(err, result) {
-                    if (err) {
-                        folder.deleteOne({'_id': saveRes._id}, function (err) {
-                            if (err) {
-                                console.log(err);
-                                result.status(500).send(`Server error occured while delete.`);
-                            }
-                        });
-                        res.status(500).send(`Server error occured.`);
-                    }
-                    else{
-                        res.status(200).send('Folder created successfully. Parent updated');
-                    }});
-            }
+                if(saveRes.ParentDir != "/"){
+                    folder.findOneAndUpdate({'_id': saveRes.ParentDir},{$addToSet:{'SubFolders': {"folderID" : saveRes._id, "folderName": saveRes.Name}}}, function(err, result) {
+                        if (err) {
+                            folder.deleteOne({'_id': saveRes._id}, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                    result.status(500).send(`Server error occured while delete.`);
+                                }
+                            });
+                            res.status(500).send(`Server error occured when look parent.`);
+                        }
+                        else{
+                            res.status(200).send('Folder created successfully. Parent updated');
+                        }});
+                }
+                res.status(200).send('Folder created successfully. Parent updated');
+                }
         });
      
     } catch (e) {
@@ -44,7 +47,7 @@ router.post('/private/createFolder', async function(req, res) {
     }
 })
 
-router.get('/private/getFolderContents', async function(req, res) {
+router.post('/private/getFolderContents', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
@@ -75,7 +78,7 @@ router.post('/private/addMapToFolder', async function(req, res) {
 
 
 
-router.get('/private/getFolderProperties', async function(req, res) {
+router.post('/private/getFolderProperties', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
@@ -130,9 +133,7 @@ router.get('/private/getRootFolderById', async function(req, res) {
             '_id': req.decoded._id
         }, function(err, result) {
             if (result) {
-                folder.find({
-                    'UserRootFolder': result._id
-                }, function(err, result) {
+                folder.findOne({'Creator': result._id, 'ParentDir': "/"}, function(err, result) {
                     if (result) {
                         res.status(200).send(result);
                     } else {
