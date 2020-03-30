@@ -28,10 +28,6 @@ const FolderSchema = new mongoose.Schema({
        ParentDir: {
             type: String,
             required: true
-        },
-       UserRootFolder: {
-            type: String,
-            required: true
         }
 
 })

@@ -31,5 +31,10 @@ a:active {
 }
 .manageButtons{
     padding: 20px;
+
 }
+  .mat-raised-button{
+    margin: 1px 2px;
+}
+
   

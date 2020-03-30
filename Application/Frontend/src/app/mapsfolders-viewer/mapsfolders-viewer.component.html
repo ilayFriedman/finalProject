@@ -7,17 +7,16 @@
               <mat-divider *ngIf="!last"  style="margin: 10px;"></mat-divider>
             </mat-list-item>
         </div>
-        <div class="manageButtons">
+        <div style="padding: 20px;">
             <span>Create New Map</span> | <span>Create New Folder</span>
             <button (click)="play()">play</button>
         </div>
         <div>
-            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items"
-            [expandedKeys]="expandedKeys"
-            [isSelected]="isItemSelected"
-            (selectionChange)="handleSelection($event)">
+            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
                 <span [ngClass]="iconClass(dataItem)"></span><a [routerLink]="['/mapViewer', idx]">{{dataItem.text}}</a>
+                <button mat-raised-button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Map</button>
+                <button class ="mat-raised-button" mat-raised-button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Folder</button>
             </ng-template>
     
         </kendo-treeview>
@@ -27,7 +26,4 @@
         coming soon! :)
     </mat-tab>
   </mat-tab-group>
-  <div class="example-config">
-    Selected keys: {{selectedKeys.join(",")}}
-</div>
 </div>
