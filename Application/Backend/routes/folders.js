@@ -133,9 +133,7 @@ router.get('/private/getRootFolderById', async function(req, res) {
             '_id': req.decoded._id
         }, function(err, result) {
             if (result) {
-                folder.findOne({
-                    'UserRootFolder': result._id
-                }, function(err, result) {
+                folder.findOne({'Creator': result._id, 'ParentDir': "/"}, function(err, result) {
                     if (result) {
                         res.status(200).send(result);
                     } else {

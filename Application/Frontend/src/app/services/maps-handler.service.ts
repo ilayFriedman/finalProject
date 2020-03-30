@@ -18,8 +18,7 @@ export class MapsHandlerService {
   }
   
   getMap(mapId: String){
-    
-    return this.http.get(this.localUrl + '/private/getMap', {headers: {'token': sessionStorage.token,'_id': mapId}}).toPromise()
+    return this.http.get(this.localUrl + '/private/getMap', {headers: {'token': sessionStorage.token,'_id': String(mapId)}}).toPromise()
   }
 
   createMap(mapName: String, description: String,model){

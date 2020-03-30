@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
+import { of } from 'rxjs';
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
@@ -18,6 +19,17 @@ export class MapsfoldersViewerComponent implements OnInit {
   //folders variables
   currentLocation : String = "./(Root Folder)";
   currntFolderID : any = null;
+  public expandedKeys: any[] = ['0', '1'];
+  public hasChildren = (item: any) => item.items && item.items.length > 0;
+  public fetchChildren = (item: any) => of(item.items);
+  public selectedKeys: any[] = ['0_1'];
+
+  public isItemSelected = (_: any, index: string) => this.selectedKeys.indexOf(index) > -1;
+
+  public handleSelection({ index }: any): void {
+    console.log("hi!!")
+      this.selectedKeys = [index];
+  }
 
 
   public data: any[] = [{
@@ -57,6 +69,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     //maps init
     console.log("strat index")
     this.mapHandler.myMapsPromise.then(res => {
+      console.log(res)
       this.mapHandler.myMaps = res;
       this.myMaps = res
       console.log('OK');
@@ -71,10 +84,14 @@ export class MapsfoldersViewerComponent implements OnInit {
   
 
   // folders init : find the rootFolder
+
+  
     this.folderHandler.getRootUserFolder().then(res => {
       
-      // console.log('======folder request=====');
-      this.insertMaps(res.MapsInFolder,null)
+      console.log('======folder request=====');
+      console.log(res)
+      console.log('=================')
+      // this.insertMaps(res[0],null)
 
       
     }).catch
@@ -99,6 +116,8 @@ public iconClass({ text, items }: any): any {
 insertMaps(mapsIdsList,destinationFolder){
   mapsIdsList.forEach(mapId => {
     this.mapHandler.getMap(mapId).then(res => {
+     
+      
       this.data.push({text: res.MapName})
     }).catch
       (err=> {
@@ -118,6 +137,8 @@ play(){
       console.log("error here");
       console.log(err)
     })
+
+    
 }
 }
 

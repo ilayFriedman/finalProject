@@ -33,7 +33,7 @@ export class MapViewerComponent implements OnInit {
     });
     this.currMap = this.mapHandler.myMaps[this.currIdx]
     console.log(this.currIdx);
-    console.log("curr map: " + this.currMap.MapName);
+    //console.log("curr map: " + this.currMap.MapName);
     this.init()
 
   }
