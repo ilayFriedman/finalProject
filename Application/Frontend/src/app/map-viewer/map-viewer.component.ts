@@ -38,6 +38,7 @@ export class MapViewerComponent implements OnInit {
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
+
   ngOnInit() {
     this.router.params.subscribe(params => {
       this.currIdx = params['id'];
@@ -632,8 +633,8 @@ export class MapViewerComponent implements OnInit {
 
   updateConverterACtivate = (e) => {
     if (e != null) {    // firing from touch the model
-      if (e.Ze == "CommittingTransaction") {
-        if (e.Vo != "Move" && e.Vo != "Initial Layout") {
+      if (e.af == "CommittingTransaction") {
+        if (e.Uo != "Move" && e.Uo != "Initial Layout") {
           // this.child.convertMapToText()
           if (this.updateConverter == false)
             this.updateConverter = true
@@ -772,8 +773,6 @@ export class MapViewerComponent implements OnInit {
   saveChanges() {
     this.currNode.data.text = this.modalService.currNodeText
     this.currNode.data.description = this.modalService.currNodeDescription
-    console.log(this.currNode.data.text);
-    console.log(this.mapHandler.myDiagram.model);
     var changedModel = this.mapHandler.myDiagram.model.toJson()
     this.mapHandler.myDiagram.model = go.Model.fromJson(changedModel);
   }
@@ -808,7 +807,16 @@ export class MapViewerComponent implements OnInit {
       return;
     }
 
-    this.refService.createNewRef(this.newRefForm.controls);
+    this.refService.createNewRef(this.newRefForm.controls).then(res => {
+      console.log("new ref OK");
+      this.modalService.loadRefsFromDB()
+      this.closeNewRefModal('newRefModal');
+      alert(res)
+    }).catch
+      (err => {
+        console.log("error new refs");
+        console.log(err)
+      });
 
   }
 

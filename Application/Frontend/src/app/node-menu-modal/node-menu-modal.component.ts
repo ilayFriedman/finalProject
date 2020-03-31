@@ -5,6 +5,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
 import { ReferenceHendlerService } from '../services/reference-hendler.service';
+import { FormGroup, FormControl } from '@angular/forms';
+import * as go from 'gojs';
 
 export interface ReferenceElement {
   _id: string,
@@ -24,6 +26,7 @@ export interface ReferenceElement {
   styleUrls: ['./node-menu-modal.component.css']
 })
 export class NodeMenuModalComponent implements OnInit {
+  [x: string]: any;
   allRefs: any;
 
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
@@ -44,42 +47,55 @@ export class NodeMenuModalComponent implements OnInit {
   @ViewChild("allPaginator", { static: true }) allPaginator: MatPaginator;
   // @ViewChildren(MatPaginator) Paginator = new QueryList<MatPaginator>();
 
-  constructor(private modalService: ModalService, private http: HttpClient, private refService: ReferenceHendlerService) {
+
+  constructor(private modalService: ModalService, private refService: ReferenceHendlerService) {
 
   }
   ngOnInit() { }
+
   ngAfterViewInit() {
+    this.loadRefsFromDB();
+    this.modalService.runLoadNodeRefs(this.loadNodeRefs.bind(this));
+    this.modalService.runUnloadNodeRefs(this.unloadNodeRefs.bind(this));
+    this.modalService.runLoadRefsFromDB(this.loadRefsFromDB.bind(this));
+
+  }
+
+  loadRefsFromDB() {
+    this.allRefList = [];
+    // this.allRefSource = null;
     this.refService.getAllReferences().then(res => {
       this.allRefs = res;
-      console.log("all refs: ");
-      console.log(this.allRefs);
+      if (this.allRefs.length > 0) {
+        console.log("all refs: ");
+        console.log(this.allRefs);
 
-      this.allRefs.forEach(element => {
-        var tmp: ReferenceElement = {
-          _id: element._id,
-          Title: element.Title,
-          CreatorId: element.CreatorId,
-          CreationTime: new Date(element.CreationTime).toLocaleDateString(),
-          Authors: element.Authors,
-          Publication: element.Publication,
-          Description: element.Description,
-          Link: element.Link
-        }
+        this.allRefs.forEach(element => {
+          var tmp: ReferenceElement = {
+            _id: element._id,
+            Title: element.Title,
+            CreatorId: element.CreatorId,
+            CreationTime: new Date(element.CreationTime).toLocaleDateString(),
+            Authors: element.Authors,
+            Publication: element.Publication,
+            Description: element.Description,
+            Link: element.Link
+          }
 
-        this.allRefList.push(tmp);
+          this.allRefList.push(tmp);
 
-      });
-      this.allRefSource = new MatTableDataSource<ReferenceElement>(this.allRefList);
-      this.allRefSource.paginator = this.allPaginator
+        });
+        this.allRefSource = new MatTableDataSource<ReferenceElement>(this.allRefList);
+        this.allRefSource.paginator = this.allPaginator
+      } else {
+        console.log("no refs");
 
+      }
     }).catch
       (err => {
         console.log("error refs");
         console.log(err)
       })
-
-    this.modalService.runLoadRefs(this.loadNodeRefs.bind(this));
-    this.modalService.runUnloadRefs(this.unloadNodeRefs.bind(this));
 
   }
 
@@ -121,7 +137,6 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   removeRefToNode() {
-
     this.nodeRefSelection.selected.forEach(element => {
       console.log(element);
       // let match = this.modalService.currNodeData.refs.filter(ref => ref._id == element._id);
@@ -154,8 +169,6 @@ export class NodeMenuModalComponent implements OnInit {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(type: string) {
-    console.log("isallselected");
-
     if (type == "all") {
       const numSelected = this.allRefSelection.selected.length;
       const numRows = this.allRefSource.data.length;
@@ -170,7 +183,6 @@ export class NodeMenuModalComponent implements OnInit {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle(type: string) {
-    console.log("masterToggle");
     if (type == "all") {
       this.isAllSelected("all") ?
         this.allRefSelection.clear() :
@@ -189,4 +201,5 @@ export class NodeMenuModalComponent implements OnInit {
       this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
     }
   }
+
 }

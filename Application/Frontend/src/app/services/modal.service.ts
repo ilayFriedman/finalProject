@@ -10,14 +10,16 @@ export class ModalService {
   currNodeDescription: any;
   loadNodeRefs: () => void;
   unloadNodeRefs: () => void;
+  loadRefsFromDB: () => void;
 
-  runLoadRefs(fn: () => void) {
+  runLoadNodeRefs(fn: () => void) {
     this.loadNodeRefs = fn;
-    // from now on, call myFunc wherever you want inside this service
   }
-  runUnloadRefs(fn: () => void) {
+  runUnloadNodeRefs(fn: () => void) {
     this.unloadNodeRefs = fn;
-    // from now on, call myFunc wherever you want inside this service
+  }
+  runLoadRefsFromDB(fn: () => void) {
+    this.loadRefsFromDB = fn;
   }
 
   add(modal: any) {
