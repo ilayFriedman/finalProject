@@ -27,17 +27,23 @@ router.post('/private/createFolder', async function(req, res) {
                             folder.deleteOne({'_id': saveRes._id}, function (err) {
                                 if (err) {
                                     console.log(err);
-                                    result.status(500).send(`Server error occured while delete.`);
+                                    result.status(500).send(`Server error occured while delete. & Server error occured when look parent. `);
+                                    
+                                }
+                                else{
+                                    res.status(500).send(`Server error occured when look parent.`);
                                 }
                             });
-                            res.status(500).send(`Server error occured when look parent.`);
                         }
                         else{
                             res.status(200).send('Folder created successfully. Parent updated');
                         }});
                 }
-                res.status(200).send('Folder created successfully. Parent updated');
+                else{
+                    res.status(200).send('Folder created successfully. Parent updated');
                 }
+                }
+
         });
      
     } catch (e) {

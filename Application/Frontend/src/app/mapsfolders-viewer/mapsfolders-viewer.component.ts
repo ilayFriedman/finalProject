@@ -19,13 +19,16 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   //folders variables
   public data: any[] = [{
-    text: "./",
-    items: [
-      {text: "parent", items: [{text: "child1", isFolder: false}], isFolder: true}
-
-    ],
+    text: "/",
+    items: [],
     isFolder : true
   }];
+  selectedFolder: any;
+  public searchTerm = '';
+
+  public parsedData: any[] = this.data;
+  public expandedKeys: any[] = ['/'];
+
 
   constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient) {
   } 
@@ -56,8 +59,9 @@ export class MapsfoldersViewerComponent implements OnInit {
       console.log('======folder request=====');
       console.log(res)
       console.log('=================')
-
+      this.insertFoldersToMapTreeViewer(res,null)
       this.inserMapsToMapTreeViewer(Object(res),null)
+      
 
       
     }).catch
@@ -66,6 +70,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         console.log(err)
       })
 
+      this.parsedData = this.data;
 
   }
 
@@ -73,7 +78,7 @@ public iconClass({ text, items }: any): any {
   return {
       'k-i-file-pdf': is(text, 'pdf'),
       'k-i-folder': items !== undefined,
-      'k-i-html': is(text, 'html'),
+      'k-i-table-align-middle-center': items == undefined,
       'k-i-image': is(text, 'jpg|png'),
       'k-icon': true
   };
@@ -90,6 +95,11 @@ inserMapsToMapTreeViewer(mapsIdsList,destinationFolder){
   console.log(this.data)
 }
 
+insertFoldersToMapTreeViewer(folderIdsList, destinationFolder){
+  folderIdsList.SubFolders.forEach(folder=>{
+    this.data[0].items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
+  })
+}
 folderModal(){
   // this.mapHandler.createMap("newMap","NEW dESC",{}).then(res => {
   //   console.log('======CREATE MAP request=====');
@@ -103,10 +113,64 @@ folderModal(){
   
 }
 
+play(){
+  this.addNewFolder("somOfSon","bla bla")
+}
 addNewFolder(folderName,desc){
-  
+  this.folderHandler.createFolder(folderName,desc,this.selectedFolder ).then(res => {
+      
+    console.log('======create  succecess folder request=====');
+    console.log(res)
+    console.log('=================') 
+  }).catch
+    (err=> {
+      console.log("error with creation - promise return");
+      console.log(err)
+    })
+    
+}
+
+
+public handleSelection({ dataItem }: any): void {
+  console.log(dataItem)
+
+  this.selectedFolder = dataItem.folderID;
+}
+
+
+public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
+
+/**
+ * A function that determines whether a given node
+ * [has children](https://www.telerik.com/kendo-angular-ui/components/treeview/api/TreeViewComponent/#toc-haschildren).
+ */
+public hasChildren = (dataitem: any): boolean => !!dataitem.items;
+
+public onkeyup(value: string): void {
+  this.parsedData = this.search(this.data, value);
+}
+
+public search(items: any[], term: string): any[] {
+  return items.reduce((acc, item) => {
+        if (this.contains(item.text, term)) {
+          acc.push(item);
+        } else if (item.items && item.items.length > 0) {
+          const newItems = this.search(item.items, term);
+
+          if (newItems.length > 0) {
+                acc.push({ text: item.text, items: newItems });
+          }
+      }
+
+        return acc;
+    },                []);
+}
+
+public contains(text: string, term: string): boolean {
+  return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
 }
 
 
 }
+
 

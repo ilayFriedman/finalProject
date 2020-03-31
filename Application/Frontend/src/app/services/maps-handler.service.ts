@@ -21,14 +21,10 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getMap', {headers: {'token': sessionStorage.token,'_id': String(mapId)}}).toPromise()
   }
 
-  createMap(mapName: String, description: String,model){
-    const bodyReq = {
-      MapName: mapName,
-      Description: description,
-      Model: model
-    }
-    return this.http.post(this.localUrl + '/private/createMap', bodyReq ,{headers: {'token': sessionStorage.token}}).toPromise()
-  }
+  // createMap(mapName: String, description: String,model){
+  
+  //   return this.http.post(this.localUrl + '/private/createMap', bodyReq ,{headers: {'token': sessionStorage.token}}).toPromise()
+  // }
 
   deleteMap(mapId: String){
     console.log()

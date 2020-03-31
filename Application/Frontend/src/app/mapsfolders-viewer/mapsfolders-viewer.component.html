@@ -8,18 +8,29 @@
             </mat-list-item>
         </div>
         <div style="padding: 20px;">
-            <span>Create New Map</span> | <span>Create New Folder</span>
-            <button (click)="play()">play</button>
+            <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
+            <!-- <button (click)="play()">play</button> -->
         </div>
-        <div>
-            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items">
+        <div (mouseenter)="mouseEnter('true')" (mouseleave)="mouseLeave('false')">
+            
+            <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" (selectionChange)="handleSelection($event)"
+            [children]="children"
+            [hasChildren]="hasChildren"
+            [animate]="false"
+            [expandBy]="'text'"
+            [(expandedKeys)]="expandedKeys">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                <span [ngClass]="iconClass(dataItem)"></span><a [routerLink]="['/mapViewer', idx]">{{dataItem.text}}</a>
-                <button mat-raised-button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Map</button>
-                <button class ="mat-raised-button" mat-raised-button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Folder</button>
+                <span [ngClass]="iconClass(dataItem)"></span>{{dataItem.text}}
+                <span>
+                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Map</button>
+                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Folder</button>
+                </span>
             </ng-template>
-    
         </kendo-treeview>
+        </div>
+
+        <div class="example-config">
+            Selected keys: {{selectedFolder}}
         </div>
     </mat-tab>
     <mat-tab label="Maps Shared With Me:">
