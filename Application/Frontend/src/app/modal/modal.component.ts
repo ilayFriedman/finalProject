@@ -34,9 +34,9 @@ export class ModalComponent implements OnInit, OnDestroy {
         this.element.addEventListener('click', function (e: any) {
             if (e.target.className === 'jw-modal') {
                 modal.close();
-            }        
+            }
         });
-        this.element.addEventListener('keydown', function(e:any) {
+        this.element.addEventListener('keydown', function (e: any) {
             if (e.key === "Escape") {
                 modal.close();
             }

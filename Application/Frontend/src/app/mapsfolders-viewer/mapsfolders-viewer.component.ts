@@ -3,7 +3,7 @@ import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { of, Observable } from 'rxjs';
-import {MatButtonModule} from '@angular/material/button'
+import { MatButtonModule } from '@angular/material/button'
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
@@ -12,7 +12,7 @@ const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileN
   styleUrls: ['./mapsfolders-viewer.component.css']
 })
 export class MapsfoldersViewerComponent implements OnInit {
-  
+
   localUrl = 'http://localhost:3000';
   // maps variables
   myMaps: any;
@@ -31,9 +31,9 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
   constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient) {
-  } 
+  }
 
-  ngOnInit(){
+  ngOnInit() {
     //maps init
     console.log("strat index")
     this.mapHandler.myMapsPromise.then(res => {
@@ -42,20 +42,20 @@ export class MapsfoldersViewerComponent implements OnInit {
       this.myMaps = res
       console.log('OK');
       // console.log("from index: " + this.myMaps);
-      
+
     }).catch
-      (err=> {
+      (err => {
         console.log("error here");
         console.log(err)
       })
 
-  
 
-  // folders init : find the rootFolder
 
-  
+    // folders init : find the rootFolder
+
+
     this.folderHandler.getRootUserFolder().then(res => {
-      
+
       console.log('======folder request=====');
       console.log(res)
       console.log('=================')
@@ -63,9 +63,8 @@ export class MapsfoldersViewerComponent implements OnInit {
       this.inserMapsToMapTreeViewer(Object(res),null)
       
 
-      
     }).catch
-      (err=> {
+      (err => {
         console.log("error here");
         console.log(err)
       })
@@ -74,8 +73,8 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   }
 
-public iconClass({ text, items }: any): any {
-  return {
+  public iconClass({ text, items }: any): any {
+    return {
       'k-i-file-pdf': is(text, 'pdf'),
       'k-i-folder': items !== undefined,
       'k-i-table-align-middle-center': items == undefined,

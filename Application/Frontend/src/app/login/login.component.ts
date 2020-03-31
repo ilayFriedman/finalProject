@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {HttpClient} from "@angular/common/http";
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { HttpClient } from "@angular/common/http";
+import { Router } from '@angular/router';
 import { MapsHandlerService } from '../services/maps-handler.service';
 
 
@@ -48,19 +48,17 @@ export class LoginComponent implements OnInit {
     let result = this.http.post(this.localUrl + '/login', data);
 
     result.subscribe(response => {
-        this.submitted = false;
-        // @ts-ignore
-      // console.log(response.token)
+      this.submitted = false;
       // @ts-ignore
-        sessionStorage.setItem('token', response.token);
+      sessionStorage.setItem('token', response.token);
       // @ts-ignore
       sessionStorage.setItem('userFullName', response.fullName);
-        this.router.navigate(['/logedHome']);
-      }, error => {
-        this.submitted = false;
-        console.log(error.error)
-        alert(error.error)
-      }
+      this.router.navigate(['/logedHome']);
+    }, error => {
+      this.submitted = false;
+      console.log(error.error)
+      alert(error.error)
+    }
     );
   }
 
