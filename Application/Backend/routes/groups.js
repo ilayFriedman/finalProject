@@ -14,9 +14,9 @@ function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactly
         }
     }
 
-    if (resGroup.Members.Memeber) {
-        for (let i = 0; i < resGroup.Members.Memeber.length; i++) {
-            const element = resGroup.Members.Memeber[i];
+    if (resGroup.Members.Member) {
+        for (let i = 0; i < resGroup.Members.Member.length; i++) {
+            const element = resGroup.Members.Member[i];
             if (element.userId == userId) {
                 return true;
             }
@@ -307,7 +307,7 @@ router.get('/private/GetGroupsMembers', async function (req, res) {
             '_id': req.body.groupId
         }, function (err, result) {
             if(!result){
-                res.status(404).send("Could not find map.");
+                res.status(404).send("Could not find group.");
                 return;
             }
 
