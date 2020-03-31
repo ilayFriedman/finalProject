@@ -9,11 +9,11 @@
         </div>
         <div style="padding: 20px;">
             <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
-            <!-- <button (click)="play()">play</button> -->
+            <button (click)="submitModal()">play</button>
         </div>
-        <div (mouseenter)="mouseEnter('true')" (mouseleave)="mouseLeave('false')">
-            
-            <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" (selectionChange)="handleSelection($event)"
+            <div>
+                <!-- (selectionChange)="handleSelection($event)" -->
+            <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" 
             [children]="children"
             [hasChildren]="hasChildren"
             [animate]="false"
@@ -23,7 +23,7 @@
                 <span [ngClass]="iconClass(dataItem)"></span>{{dataItem.text}}
                 <span>
                 <button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Map</button>
-                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Folder</button>
+                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder" (click)="handleSelectionButton(dataItem)">+ Folder</button>
                 </span>
             </ng-template>
         </kendo-treeview>

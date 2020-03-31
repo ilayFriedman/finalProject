@@ -31,6 +31,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   resetNodeColor = "white";
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log("change!");
     
     if(this.mapModel != null){
       this.convertMapToText() 
