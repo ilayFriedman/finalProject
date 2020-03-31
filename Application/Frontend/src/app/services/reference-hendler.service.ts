@@ -1,9 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+export interface ReferenceElement {
+  _id: string,
+  Title: string,
+  CreatorId: string,
+  CreationTime: string,
+  Authors: string,
+  Publication: string,
+  Description: string,
+  Link: string
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class ReferenceHendlerService {
   localUrl = 'http://localhost:3000';
   constructor(private http: HttpClient) { }
@@ -25,17 +39,9 @@ export class ReferenceHendlerService {
       "Link": fields.link.value
     }
     console.log(data);
-    this.http.post(this.localUrl + '/private/createReference', data, {
+    return this.http.post(this.localUrl + '/private/createReference', data, {
       headers: { 'token': sessionStorage.token }, responseType: 'text'
-    }).toPromise().then(res => {
-      console.log("new ref OK");
-
-      alert(res)
-    }).catch
-      (err => {
-        console.log("error new refs");
-        console.log(err)
-      })
+    }).toPromise()
 
   }
 }

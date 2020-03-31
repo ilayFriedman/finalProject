@@ -43,6 +43,7 @@
     </mat-toolbar>
 </div>
 
+<!-- save map as modal -->
 <jw-modal class="jw-modal" id="save-as-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
@@ -51,6 +52,7 @@
     </div>
 </jw-modal>
 
+<!-- import map modal -->
 <jw-modal class="jw-modal" id="import-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('import-modal')">&times;</span>
@@ -60,6 +62,7 @@
     </div>
 </jw-modal>
 
+<!-- references modal -->
 <jw-modal class="jw-modal" id="refModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body" (change)="saveChanges()">
         <span class="close" (click)="closeMenuModal('refModal')">&times;</span>
@@ -67,6 +70,8 @@
     </div>
 </jw-modal>
 
+
+<!-- create new ref modal -->
 <jw-modal class="jw-modal" id="newRefModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
         <span class="close" (click)="closeNewRefModal('newRefModal')">&times;</span>
@@ -105,9 +110,6 @@
         </div>
     </div>
 </jw-modal>
-
-
-
 
 
 
