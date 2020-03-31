@@ -20,14 +20,16 @@ export class MapsfoldersViewerComponent implements OnInit {
   //folders variables
   public data: any[] = [{
     text: "/",
+    folderID: "5e80d535132e0540b827c4cd",
     items: [],
     isFolder : true
   }];
   selectedFolder: any;
   public searchTerm = '';
-
+  public mouseInside : boolean = false;
   public parsedData: any[] = this.data;
   public expandedKeys: any[] = ['/'];
+
 
 
   constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient) {
@@ -56,9 +58,9 @@ export class MapsfoldersViewerComponent implements OnInit {
 
     this.folderHandler.getRootUserFolder().then(res => {
 
-      console.log('======folder request=====');
-      console.log(res)
-      console.log('=================')
+      console.log('======getRootUserFolder request OK=====');
+      // console.log(res)
+      // console.log('=================')
       this.insertFoldersToMapTreeViewer(res,null)
       this.inserMapsToMapTreeViewer(Object(res),null)
       
@@ -112,41 +114,56 @@ folderModal(){
   
 }
 
-play(){
-  this.addNewFolder("somOfSon","bla bla")
-}
-addNewFolder(folderName,desc){
-  this.folderHandler.createFolder(folderName,desc,this.selectedFolder ).then(res => {
+submitModal(folderName,desc,parent){
+  var self = this
+  this.folderHandler.createFolder(folderName,desc,parent).then(res => {
       
-    console.log('======create  succecess folder request=====');
-    console.log(res)
-    console.log('=================') 
+    console.log('======create new folder request OK=====');
+    self.selectedFolder.items.push({text: res.folderName})
+    // console.log('=================') 
+    
   }).catch
     (err=> {
       console.log("error with creation - promise return");
       console.log(err)
     })
-    
+
 }
 
 
-public handleSelection({ dataItem }: any): void {
+addNewFolder(){
+// open modal
+}
+
+ngIfManageButtons(dataItem, mouseInside){
+  console.log("inside!");
+  console.log(mouseInside);
+  return dataItem.isFolder && mouseInside
+}
+// Tree-view functionallity
+
+// public handleSelection({ dataItem }: any): void {
+//   console.log(this.data)
+//   console.log(dataItem)
+//   this.selectedFolder = dataItem
+//   dataItem.items.push("blabla")
+//   console.log(this.data)
+// }
+public handleSelectionButton(dataItem): void {
+  console.log(this.data)
   console.log(dataItem)
-
-  this.selectedFolder = dataItem.folderID;
+  this.selectedFolder = dataItem
+   this.selectedFolder.items.push("blabla")
+  console.log(this.data)
 }
-
 
 public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
 
-/**
- * A function that determines whether a given node
- * [has children](https://www.telerik.com/kendo-angular-ui/components/treeview/api/TreeViewComponent/#toc-haschildren).
- */
 public hasChildren = (dataitem: any): boolean => !!dataitem.items;
 
 public onkeyup(value: string): void {
   this.parsedData = this.search(this.data, value);
+  console.log(this.parsedData)
 }
 
 public search(items: any[], term: string): any[] {
