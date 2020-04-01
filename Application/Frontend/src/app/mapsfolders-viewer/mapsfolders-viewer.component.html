@@ -10,6 +10,7 @@
         <div style="padding: 20px;">
             <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
             <button (click)="submitModal()">play</button>
+            <button (click)="addNewFolder()">openModal</button>
         </div>
             <div>
                 <!-- (selectionChange)="handleSelection($event)" -->
@@ -37,4 +38,19 @@
         coming soon! :)
     </mat-tab>
   </mat-tab-group>
+
+<h2>Add New Folder</h2>
+<form [formGroup]="addFolderGroup">
+    <div>
+        <label for="folderName">Folder Name: </label>
+        <input id="name" type="text" formControlName="folderName">
+    </div>  
+    <div>
+    <label for="description">Description: </label>
+    <input id="folderDescription" type="text" formControlName="folderDescription">
+    </div>
+    <button class="button" type="submit">Add folder</button>
+</form>
+
+
 </div>

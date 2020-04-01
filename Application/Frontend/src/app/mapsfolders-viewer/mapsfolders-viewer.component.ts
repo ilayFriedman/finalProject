@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { of, Observable } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button'
+import { ModalService } from '../services/modal.service';
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
@@ -32,7 +33,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient, private modalHandler: ModalService) {
   }
 
   ngOnInit() {
@@ -119,7 +120,7 @@ submitModal(folderName,desc,parent){
   this.folderHandler.createFolder(folderName,desc,parent).then(res => {
       
     console.log('======create new folder request OK=====');
-    self.selectedFolder.items.push({text: res.folderName})
+    self.selectedFolder.items.push({text: res})
     // console.log('=================') 
     
   }).catch

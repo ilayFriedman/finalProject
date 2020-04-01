@@ -22,7 +22,6 @@ export class FolderHandlerService {
       Description: folderDesc,
       ParentDir: parentDir
     }
-    console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'},).toPromise()
   }
 
