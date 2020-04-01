@@ -1,0 +1,22 @@
+<mat-tab-group>
+    <mat-tab label="Group Owner">
+        <!-- <div style="padding: 20px;">
+        </div> -->
+        <span>
+            Add a new group
+            <span class="material-icons" title="Create a new group" style="cursor: pointer;"> add </span>
+        </span>
+        <div>
+            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items">
+                <ng-template kendoTreeViewNodeTemplate let-dataItem>
+                    <span [ngClass]="iconClass(dataItem)"></span>
+                    <h4>{{dataItem.text}}</h4>
+                    <h5 style="margin-left: 10px;">{{dataItem.GroupDescription}}</h5>
+                    <span class="material-icons"  (click)="console.log('click');" style="margin-left: 30px; cursor: pointer;" > edit </span>
+                    <span class="material-icons" title="Permanently delete group '{{dataItem.text}}'" (click)="deleteGroup(dataItem)" style="margin-left: 10px; cursor: pointer;" > backspace </span>
+                </ng-template>
+    
+            </kendo-treeview>
+        </div>
+    </mat-tab>
+</mat-tab-group> 

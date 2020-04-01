@@ -6,6 +6,7 @@ import {AppComponent} from "./app.component";
 import { LogedHomeComponent } from './loged-home/loged-home.component';
 import { RegisterComponent } from "./register/register.component";
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
+import { GroupsComponent} from "./groups/groups.component";
 
 
 
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'changeUserInfo', component: ChangeUserInfoComponent},
-  {path: 'mapViewer/:id', component: MapViewerComponent}
+  {path: 'mapViewer/:id', component: MapViewerComponent},
+  {path: 'groups', component: GroupsComponent}
 ];
 
 @NgModule({
