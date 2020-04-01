@@ -227,6 +227,7 @@ router.post('/private/updateGroupProperties', async function (req, res) {
     }
 });
 
+//TODO @Saar Change middleware to work with an array of users.
 router.delete('/private/RemoveUserFromGroup', async function (req, res) {
     if(req.body._id && req.body.userId) {
         group.findOne({
@@ -261,6 +262,7 @@ router.delete('/private/RemoveUserFromGroup', async function (req, res) {
     }
 });
 
+//TODO @Saar Change middleware to work with an array of users.
 router.post('/private/SetUserPermissionForGroup', async function (req, res) {
     if(req.body._id && req.body.userId && req.body.permission) {
         group.findOne({
