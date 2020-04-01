@@ -123,11 +123,6 @@ export class MapViewerComponent implements OnInit {
 
     function setElementText(obj, val) {
       obj.diagram.startTransaction("setElementText");
-      console.log("obj: ");
-
-      console.log(obj.diagram);
-      console.log(val);
-
       self.mapHandler.myDiagram.model.setDataProperty(obj.data, "text", val);
       obj.diagram.commitTransaction("setContributionValue");
     }
@@ -614,21 +609,8 @@ export class MapViewerComponent implements OnInit {
 
   showModal(obj) {
     this.currNode = obj.part.adornedObject;
-    // console.log(this.obj);
     var refs = this.currNode.data.refs
-    console.log("########");
-    console.log(refs);
-    // refs.push("ref1")
-    // console.log(refs);
-
-
-
-    // var activeObject = self.currNode.data;
-    // var selectedObject = self.currNode;
-    // var refsOfObject = self.currNode.data.items;
-    // // setInitialObjectStyle(node.data);
-
-    this.openModalMenu('refModal')
+    this.openModalMenu('nodeMenuModal')
   }
 
   updateConverterACtivate = (e) => {
@@ -767,7 +749,7 @@ export class MapViewerComponent implements OnInit {
 
   closeNewRefModal(id: string) {
     this.modalService.closeMenu(id);
-    this.openModalMenu('refModal');
+    // this.openModalMenu('nodeMenuModal');
   }
 
   saveChanges() {
