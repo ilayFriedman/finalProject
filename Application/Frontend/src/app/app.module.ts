@@ -26,6 +26,7 @@ import { AngularDraggableModule } from 'angular2-draggable';
 import { MapsfoldersViewerComponent } from './mapsfolders-viewer/mapsfolders-viewer.component';
 import { LogedHomeComponent } from './loged-home/loged-home.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
+import { GroupsComponent } from './groups/groups.component';
 
 // import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
@@ -42,7 +43,8 @@ import { TreeViewModule } from '@progress/kendo-angular-treeview';
     ChangeUserInfoComponent,
     NodeMenuModalComponent,
     MapsfoldersViewerComponent,
-    LogedHomeComponent
+    LogedHomeComponent,
+    GroupsComponent
   ],
   imports: [
     BrowserModule,

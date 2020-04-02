@@ -26,7 +26,7 @@ export interface ReferenceElement {
   styleUrls: ['./node-menu-modal.component.css']
 })
 export class NodeMenuModalComponent implements OnInit {
-  [x: string]: any;
+  // [x: string]: any;
   allRefs: any;
 
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
@@ -200,6 +200,16 @@ export class NodeMenuModalComponent implements OnInit {
     if (setPageSizeOptionsInput) {
       this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
     }
+  }
+
+  applyFilterAllRefs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.allRefSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilterNodeRefs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.nodeRefSource.filter = filterValue.trim().toLowerCase();
   }
 
 }

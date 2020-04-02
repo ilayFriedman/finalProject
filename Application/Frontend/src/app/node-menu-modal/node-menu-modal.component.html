@@ -25,6 +25,10 @@
         <mat-tab label="References">
             <div class="tab-content" style="width: max-content;">
                 <span id="nodeRefsSpan" style="float: left;">
+                    <mat-form-field>
+                        <mat-label>Filter</mat-label>
+                        <input matInput (keyup)="applyFilterNodeRefs($event)">
+                    </mat-form-field>
                     <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -83,6 +87,10 @@
                     </div>
                 </span>
                 <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAll">
+                    <mat-form-field>
+                        <mat-label>Filter</mat-label>
+                        <input matInput (keyup)="applyFilterAllRefs($event)">
+                    </mat-form-field>
                     <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
