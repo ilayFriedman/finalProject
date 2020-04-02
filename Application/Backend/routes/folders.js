@@ -36,11 +36,13 @@ router.post('/private/createFolder', async function(req, res) {
                             });
                         }
                         else{
-                            res.status(200).send('Folder created successfully. Parent updated');
+                            res.writeHead(200, {"Content-Type": "application/json"});
+                            res.end(JSON.stringify(saveRes));
                         }});
                 }
                 else{
-                    res.status(200).send('Folder created successfully. Parent updated');
+                    res.writeHead(200, {"Content-Type": "application/json"});
+                    res.end(JSON.stringify(saveRes));
                 }
                 }
 
@@ -56,7 +58,10 @@ router.post('/private/getFolderContents', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
-                res.status(200).send({"MapsInFolder": result.MapsInFolder, "SubFolders" :result.SubFolders})
+                var answer = {"MapsInFolder": result.MapsInFolder, "SubFolders" :result.SubFolders}
+                res.writeHead(200, {"Content-Type": "application/json"});
+                res.end(JSON.stringify(answer));
+                res.status(200).send()
             } else {
                 res.status(400).send(`problem: ${err}`);
             }

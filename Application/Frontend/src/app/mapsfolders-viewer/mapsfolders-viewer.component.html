@@ -10,6 +10,7 @@
         <div style="padding: 20px;">
             <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
             <button (click)="submitModal()">play</button>
+            <button (click)="addNewFolder()">openModal</button>
         </div>
             <div>
                 <!-- (selectionChange)="handleSelection($event)" -->
@@ -18,11 +19,13 @@
             [hasChildren]="hasChildren"
             [animate]="false"
             [expandBy]="'text'"
-            [(expandedKeys)]="expandedKeys">
+            [(expandedKeys)]="expandedKeys"
+            (collapse)="handleCollapse($event)"
+            (expand)="handleExpand($event)">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                <span [ngClass]="iconClass(dataItem)"></span>{{dataItem.text}}
+                <span [ngClass]="iconClass(dataItem)" (click)="getDataIfExpanded(dataItem)"></span>{{dataItem.text}}
                 <span>
-                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder">+ Map</button>
+                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder" (click)="handleSelectionButton(dataItem)">+ Map</button>
                 <button style="margin-left: 5px;" *ngIf="dataItem.isFolder" (click)="handleSelectionButton(dataItem)">+ Folder</button>
                 </span>
             </ng-template>
@@ -37,4 +40,34 @@
         coming soon! :)
     </mat-tab>
   </mat-tab-group>
+
+<h2>Add New Folder</h2>
+<form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+    <div>
+        <label>Folder Name: </label>
+        <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
+    </div>  
+    <div>
+    <label>Description: </label>
+    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+    </div>
+    <input type="submit" value="Add Folder">
+   
+</form>
+
+<h2>Add New Map</h2>
+<form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+    <div>
+        <label>Folder Name: </label>
+        <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
+    </div>  
+    <div>
+    <label>Description: </label>
+    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+    </div>
+    <input type="submit" value="Add Folder">
+   
+</form>
+
+
 </div>

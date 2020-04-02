@@ -13,7 +13,10 @@ export class FolderHandlerService {
     return this.http.get(this.localUrl + '/private/getRootFolderById', { headers: { 'token': sessionStorage.token } }).toPromise()
   }
   getFolderContents(folderId: String) {
-    return this.http.post(this.localUrl + '/private/getFolderContents', { headers: { 'token': sessionStorage.token, 'FolderID': String(folderId) } }).toPromise()
+    const bodyReq = {
+      FolderID: folderId,
+    }
+    return this.http.post(this.localUrl + '/private/getFolderContents', bodyReq,{ headers: { 'token': sessionStorage.token}}).toPromise()
   }
 
   createFolder(folderName, folderDesc, parentDir) {
@@ -22,8 +25,7 @@ export class FolderHandlerService {
       Description: folderDesc,
       ParentDir: parentDir
     }
-    console.log(bodyReq)
-    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'},).toPromise()
+    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
 }

@@ -31,13 +31,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
   resetNodeColor = "white";
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("change!");
-    
     if(this.mapModel != null){
       this.convertMapToText() 
-    }
-    else{
-      console.log("NULL!")
     }
   }
 
@@ -49,6 +44,8 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     this.typesOflinks = this.mapHandler.myDiagram.linkTemplateMap.Fb
     this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Fb
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
+    this.convertMapToText()
+
     // remove empty-link and comment-link elements from dict
     // delete this.typesOflinks[""]
     // delete this.typesOflinks["Comment"]
@@ -58,25 +55,12 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     // delete this.typesOfNodes["Comment"]
     // delete this.typesOfNodes["LinkLabel"]
 
-
-    console.log(this.mapModel)
-    
-    console.log(this.typesOflinks)
-    console.log(this.typesOfNodes)
-    console.log(this.typesOfNodes_model)
-    this.convertMapToText()
-    // this.numOfLinks = this.mapModel.linkDataArray.length
-    // console.log(this.numOfLinks)
-
   }
 
 
   convertMapToText(){
-    console.log("-----converter---------")
     var newNumLink = this.mapModel.linkDataArray.length
-
     if(newNumLink != this.numOfLinks){
-      // console.log(newNumLink)
       var nodesKeysDict = {};
       var translate = "";
       this.links = []
@@ -87,9 +71,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     
     for (let link of this.mapModel.linkDataArray) {
       if(nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null ){
-        // console.log()
         translate += nodesKeysDict[link.from][1]+" "+ nodesKeysDict[link.from][0].bold()+" is ";
-        // console.log(link.category);
         switch(link.category) { 
           case "Association": { 
             translate += "associated with " + nodesKeysDict[link.to][1]+" " + nodesKeysDict[link.to][0].bold();
@@ -120,23 +102,17 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       translate = ""
     }
     }
-    
-    console.log(this.mapModel)
-    // console.log(nodesKeysDict)
-    // console.log("#############")
-    // console.log(this.typesOfNodes)
-    // console.log("#############")
-    // console.log(this.typesOfNodes_model)
+    // console.log(this.mapModel)
     }
   }
 
   submitAction(){
-      var self = this
+    var self = this
     var keyToInsert = this.mapModel.nodeDataArray.length + 1
-    // CASE FROM IS NEW
+    // CASE "FROM" IS NEW
     if(!!this.nodeSelected_From.category == false){
       
-      // CASE TO IS NEW
+      // CASE "TO" IS NEW
       if(!!this.nodeSelected_To.category == false){
         console.log("createNewLInk!!")
         this.mapHandler.myDiagram.commit(function(d) {
@@ -158,7 +134,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
         }, "createNewLinkFromTextToGragh");
       }
 
-      // CASE TO IS EXIST
+      // CASE "TO" IS EXIST
       else{
         console.log("'to' is exist , but 'from' is new!!")
         this.mapHandler.myDiagram.commit(function(d) {
@@ -179,9 +155,9 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       }
     }
 
-    // CASE FROM IS EXIST
+    // CASE "FROM" IS EXIST
     else{
-            // CASE TO IS NEW
+            // CASE "TO" IS NEW
             if(!!this.nodeSelected_To.category == false){
               console.log("'from' is exist but 'to' is new!!!")
               this.mapHandler.myDiagram.commit(function(d) {
@@ -200,7 +176,7 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
               }, "fromOld_ToNew");
             }
       
-            // CASE TO IS EXIST
+            // CASE "TO" IS EXIST
             else{
               console.log("set exsisting link!!!")
               console.log(this.nodeSelected_From)
@@ -232,11 +208,11 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
                   }
                 });
                 d.model.addLinkData(newLinkToInesrt);
-                // d.model.removeLinkData(shit[0])
               }, "fromOld_ToOld");
               
   }
 }
+//resets all after adding new Link
 this.name_From = ""
 this.name_To = ""
 this.nodeSelected_From = "Choose Node"
@@ -248,8 +224,11 @@ this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
     this.mapHandler.myDiagram.model.setDataProperty(node,"fill",this.resetNodeColor)
   }   
 });
+
 this.fromColoredKey = null
 this.toColoredKey = null
+
+// retranslate 
 this.convertMapToText()
   }
 
@@ -257,7 +236,7 @@ ngIfCheck(check){
   return ((!check.category) && !(typeof(check) == "string"))
 }
 
-canSubmit(){
+submitValidationCheck(){
   var ans = this.nodeSelected_From != "Choose Node" && this.linkSelected != "Choose Link Type" && this.nodeSelected_To != "Choose Node"
   if(this.ngIfCheck(this.nodeSelected_From))
     ans = ans && this.name_From != ""
@@ -267,7 +246,7 @@ canSubmit(){
   return ans
 }
 
-colorChanger(event,sender){
+colorChangerWhenPick(event,sender){
   if(event.category){
     if(sender == "from" && event.key != this.fromColoredKey){
       this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
@@ -306,12 +285,5 @@ colorChanger(event,sender){
 }
 }
 
-// removeLink(i){
-
-//   console.log(this.links[i])
-//   console.log(this.links)
-//   this.links.splice(i,1)
-//   console.log(this.links)
-// }
 }
 

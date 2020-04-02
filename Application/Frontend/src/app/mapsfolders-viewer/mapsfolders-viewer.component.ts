@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { of, Observable } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button'
+import { ModalService } from '../services/modal.service';
+import { FormBuilder, Validators } from '@angular/forms';
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
@@ -13,7 +15,10 @@ const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileN
 })
 export class MapsfoldersViewerComponent implements OnInit {
 
-  localUrl = 'http://localhost:3000';
+  // forms validation checkouts
+  addFolderCheckOut;
+  
+
   // maps variables
   myMaps: any;
 
@@ -28,12 +33,17 @@ export class MapsfoldersViewerComponent implements OnInit {
   public searchTerm = '';
   public mouseInside : boolean = false;
   public parsedData: any[] = this.data;
-  public expandedKeys: any[] = ['/'];
+  public expandedKeys: any[] = ['/']; // root: key /, is already expanded 
+  public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded 
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient) {
+
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder) {
+    this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
   }
+  
+
 
   ngOnInit() {
     //maps init
@@ -53,16 +63,15 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
 
-    // folders init : find the rootFolder
-
-
+    // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
 
       console.log('======getRootUserFolder request OK=====');
       // console.log(res)
       // console.log('=================')
-      this.insertFoldersToMapTreeViewer(res,null)
-      this.inserMapsToMapTreeViewer(Object(res),null)
+      this.insertFoldersToMapTreeViewer(res, this.data[0])
+      this.inserMapsToMapTreeViewer(Object(res), this.data[0])
+
       
 
     }).catch
@@ -75,6 +84,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   }
 
+  // tree-view icon's init
   public iconClass({ text, items }: any): any {
     return {
       'k-i-file-pdf': is(text, 'pdf'),
@@ -85,21 +95,40 @@ export class MapsfoldersViewerComponent implements OnInit {
   };
 }
 
-inserMapsToMapTreeViewer(mapsIdsList,destinationFolder){
-  console.log(mapsIdsList.MapsInFolder)
-  mapsIdsList.MapsInFolder.forEach(map => {
-    console.log(map);
-    
-    this.data[0].items.push({text: map.mapName,mapID: map.mapID, isFolder: false})
+
+inserMapsToMapTreeViewer(folderObject,rootNode){
+  folderObject.MapsInFolder.forEach(map => {
+  rootNode.items.push({text: map.mapName,mapID: map.mapID, isFolder: false})
   });
 
-  console.log(this.data)
 }
 
-insertFoldersToMapTreeViewer(folderIdsList, destinationFolder){
-  folderIdsList.SubFolders.forEach(folder=>{
-    this.data[0].items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
-  })
+insertFoldersToMapTreeViewer(folderObject, rootNode){
+  // get all child-folder
+  folderObject.SubFolders.forEach(folder=>{
+    var folderNode = {text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true}
+    rootNode.items.push(folderNode)
+    
+    // get next level of each folder
+    this.folderHandler.getFolderContents(folderNode.folderID).then(res => {
+          // console.log('======get Content folder request OK=====');
+          this.inserMapsToMapTreeViewer(res,folderNode)
+          this.shallowFolderInsert(res,folderNode)
+          console.log(res);
+
+        }).catch
+          (err=> {
+            console.log("error with creation - promise return");
+            console.log(err)
+          })
+
+  });
+}
+
+shallowFolderInsert(folderObecjt,rootNode){
+  folderObecjt.SubFolders.forEach(folder => {
+    rootNode.items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
+    });
 }
 folderModal(){
   // this.mapHandler.createMap("newMap","NEW dESC",{}).then(res => {
@@ -114,14 +143,21 @@ folderModal(){
   
 }
 
-submitModal(folderName,desc,parent){
+onSubmit_AddFolder(){
+
+  if (this.addFolderCheckOut.invalid ||this.addFolderCheckOut.controls.folderName.value == "/") {
+    console.log("bad form!")
+    return;
+  }
   var self = this
-  this.folderHandler.createFolder(folderName,desc,parent).then(res => {
-      
+  console.log(this.addFolderCheckOut.controls.folderName.value)
+  console.log(this.addFolderCheckOut.controls.description.value)
+  console.log(this.selectedFolder);
+  
+  this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
     console.log('======create new folder request OK=====');
-    self.selectedFolder.items.push({text: res.folderName})
-    // console.log('=================') 
-    
+    var jsonRes = JSON.parse(res)
+    self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
   }).catch
     (err=> {
       console.log("error with creation - promise return");
@@ -131,35 +167,45 @@ submitModal(folderName,desc,parent){
 }
 
 
-addNewFolder(){
-// open modal
-}
 
 ngIfManageButtons(dataItem, mouseInside){
   console.log("inside!");
   console.log(mouseInside);
   return dataItem.isFolder && mouseInside
 }
+
+
 // Tree-view functionallity
 
-// public handleSelection({ dataItem }: any): void {
-//   console.log(this.data)
-//   console.log(dataItem)
-//   this.selectedFolder = dataItem
-//   dataItem.items.push("blabla")
-//   console.log(this.data)
-// }
-public handleSelectionButton(dataItem): void {
-  console.log(this.data)
-  console.log(dataItem)
+public handleSelectionButton(dataItem) {
   this.selectedFolder = dataItem
-   this.selectedFolder.items.push("blabla")
-  console.log(this.data)
 }
 
-public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
 
+public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
 public hasChildren = (dataitem: any): boolean => !!dataitem.items;
+
+/**
+ * A `collapse` event handler that will remove the node hierarchical index
+ * from the collection, collapsing its children.
+ */
+public handleCollapse(node) {
+  this.expandedKeys = this.expandedKeys.filter(k => k !== node.index);
+}
+
+/**
+* An `expand` event handler that will add the node hierarchical index
+* to the collection, expanding the its children.
+*/
+public handleExpand(node) {
+  this.expandedKeys = this.expandedKeys.concat(node.index);
+  
+}
+
+public isExpanded = (dataItem: any, index: string) => {
+  
+  return this.expandedKeys.indexOf(index) > -1;
+}
 
 public onkeyup(value: string): void {
   this.parsedData = this.search(this.data, value);
