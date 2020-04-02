@@ -6,8 +6,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 })
 export class MapsHandlerService {
   localUrl = 'http://localhost:3000';
-  myMaps: any;
-  shit : any;
+  myMaps: any; // getAllMAPS
   myMapsPromise: Promise<any>;
   myDiagram : any;
 
