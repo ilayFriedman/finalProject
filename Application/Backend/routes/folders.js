@@ -58,7 +58,6 @@ router.post('/private/getFolderContents', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
-                console.log("i found the FOLDER")
                 var answer = {"MapsInFolder": result.MapsInFolder, "SubFolders" :result.SubFolders}
                 res.writeHead(200, {"Content-Type": "application/json"});
                 res.end(JSON.stringify(answer));

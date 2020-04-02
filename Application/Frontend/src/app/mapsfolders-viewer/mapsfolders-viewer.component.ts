@@ -71,6 +71,7 @@ export class MapsfoldersViewerComponent implements OnInit {
       // console.log('=================')
       this.insertFoldersToMapTreeViewer(res, this.data[0])
       this.inserMapsToMapTreeViewer(Object(res), this.data[0])
+
       
 
     }).catch
@@ -94,21 +95,40 @@ export class MapsfoldersViewerComponent implements OnInit {
   };
 }
 
-inserMapsToMapTreeViewer(mapsIdsList,destinationFolder){
-  console.log(mapsIdsList.MapsInFolder)
-  mapsIdsList.MapsInFolder.forEach(map => {
-    console.log(map);
-    
-    destinationFolder.items.push({text: map.mapName,mapID: map.mapID, isFolder: false})
+
+inserMapsToMapTreeViewer(folderObject,rootNode){
+  folderObject.MapsInFolder.forEach(map => {
+  rootNode.items.push({text: map.mapName,mapID: map.mapID, isFolder: false})
   });
 
-  console.log(this.data)
 }
 
-insertFoldersToMapTreeViewer(folderIdsList, destinationFolder){
-  folderIdsList.SubFolders.forEach(folder=>{
-    destinationFolder.items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
-  })
+insertFoldersToMapTreeViewer(folderObject, rootNode){
+  // get all child-folder
+  folderObject.SubFolders.forEach(folder=>{
+    var folderNode = {text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true}
+    rootNode.items.push(folderNode)
+    
+    // get next level of each folder
+    this.folderHandler.getFolderContents(folderNode.folderID).then(res => {
+          // console.log('======get Content folder request OK=====');
+          this.inserMapsToMapTreeViewer(res,folderNode)
+          this.shallowFolderInsert(res,folderNode)
+          console.log(res);
+
+        }).catch
+          (err=> {
+            console.log("error with creation - promise return");
+            console.log(err)
+          })
+
+  });
+}
+
+shallowFolderInsert(folderObecjt,rootNode){
+  folderObecjt.SubFolders.forEach(folder => {
+    rootNode.items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
+    });
 }
 folderModal(){
   // this.mapHandler.createMap("newMap","NEW dESC",{}).then(res => {
@@ -178,19 +198,6 @@ public handleCollapse(node) {
 * to the collection, expanding the its children.
 */
 public handleExpand(node) {
-  console.log(node.index)
-  if(this.expandedAtLeastOnce.indexOf(node.index) == -1 ){ // node never expanded
-    this.folderHandler.getFolderContents(node.dataItem.folderID).then(res => {
-      console.log('======get Content folder request OK=====');
-      this.inserMapsToMapTreeViewer(res,node.dataItem)
-      
-    }).catch
-      (err=> {
-        console.log("error with creation - promise return");
-        console.log(err)
-      })
-      this.expandedAtLeastOnce.push(node.index);
-  }
   this.expandedKeys = this.expandedKeys.concat(node.index);
   
 }
