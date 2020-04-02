@@ -5,7 +5,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
 import { ReferenceHendlerService } from '../services/reference-hendler.service';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';
 
 export interface ReferenceElement {
@@ -27,7 +27,9 @@ export interface ReferenceElement {
 })
 export class NodeMenuModalComponent implements OnInit {
   // [x: string]: any;
+  // [x: string]: any;
   allRefs: any;
+  // currNodeData = {};
 
   displayedColumns: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
   pageSizeOptions: number[] = [1, 10, 25, 100];
@@ -47,18 +49,47 @@ export class NodeMenuModalComponent implements OnInit {
   @ViewChild("allPaginator", { static: true }) allPaginator: MatPaginator;
   // @ViewChildren(MatPaginator) Paginator = new QueryList<MatPaginator>();
 
-
-  constructor(private modalService: ModalService, private refService: ReferenceHendlerService) {
+  newRefForm = new FormGroup({
+    title: new FormControl(),
+    authors: new FormControl(),
+    publication: new FormControl(),
+    description: new FormControl(),
+    link: new FormControl()
+  });
+  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) {
 
   }
-  ngOnInit() { }
-
-  ngAfterViewInit() {
+  ngOnInit() {
+    this.newRefForm = this.formBuilder.group({
+      title: ['', Validators.required],
+      authors: ['', Validators.required],
+      publication: ['', Validators.required],
+      description: ['', Validators.required],
+      link: ['', Validators.required]
+    });
     this.loadRefsFromDB();
-    this.modalService.runLoadNodeRefs(this.loadNodeRefs.bind(this));
-    this.modalService.runUnloadNodeRefs(this.unloadNodeRefs.bind(this));
-    this.modalService.runLoadRefsFromDB(this.loadRefsFromDB.bind(this));
+  }
 
+
+  tabClick(tabId) {
+    console.log(tabId.index);
+
+    switch (tabId.index) {
+      case 1: {
+        console.log("ref tab");
+        this.loadNodeRefs();
+        break;
+      }
+      // case constant_expression2: { 
+      //    //statements; 
+      //    break; 
+      // } 
+      default: {
+        console.log("default");
+
+        break;
+      }
+    }
   }
 
   loadRefsFromDB() {
@@ -67,9 +98,6 @@ export class NodeMenuModalComponent implements OnInit {
     this.refService.getAllReferences().then(res => {
       this.allRefs = res;
       if (this.allRefs.length > 0) {
-        console.log("all refs: ");
-        console.log(this.allRefs);
-
         this.allRefs.forEach(element => {
           var tmp: ReferenceElement = {
             _id: element._id,
@@ -88,7 +116,7 @@ export class NodeMenuModalComponent implements OnInit {
         this.allRefSource = new MatTableDataSource<ReferenceElement>(this.allRefList);
         this.allRefSource.paginator = this.allPaginator
       } else {
-        console.log("no refs");
+        console.log("no refs in DB");
 
       }
     }).catch
@@ -108,8 +136,6 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   unloadNodeRefs() {
-    console.log("unload");
-
     this.nodeRefList = [];
     this.nodeRefSource = null;
   }
@@ -120,6 +146,7 @@ export class NodeMenuModalComponent implements OnInit {
     })
     this.nodeRefSource = new MatTableDataSource<ReferenceElement>(this.nodeRefList);
     this.nodeRefSource.paginator = this.nodePaginator
+    console.log("node refs loaded");
   }
 
   addRefToNode() {
@@ -138,18 +165,9 @@ export class NodeMenuModalComponent implements OnInit {
 
   removeRefToNode() {
     this.nodeRefSelection.selected.forEach(element => {
-      console.log(element);
-      // let match = this.modalService.currNodeData.refs.filter(ref => ref._id == element._id);
-      // console.log("match");
-      // console.log(match);
       let idx = this.modalService.currNodeData.refs.indexOf(element)
-      console.log("idx");
-      console.log(idx);
-
       this.modalService.currNodeData.refs.splice(idx, 1);
     });
-    console.log("new refs: ");
-    console.log(this.modalService.currNodeData.refs);
     this.unloadNodeRefs();
     this.loadNodeRefs();
     // this.masterToggle('node')
@@ -157,14 +175,32 @@ export class NodeMenuModalComponent implements OnInit {
 
   }
 
-  createNewReference() {
-    console.log("unchecked");
-
+  openNewRefModal(id: string) {
+    this.loadNodeRefs()
+    this.modalService.open(id);
   }
 
-  openNewRefModal(id: string) {
-    console.log(id);
-    this.modalService.open(id);
+  closeNewRefModal(id: string) {
+    this.unloadNodeRefs();
+    this.newRefForm.reset()
+    this.modalService.close(id);
+  }
+
+  addNewRef() {
+    if (this.newRefForm.invalid) {
+      return;
+    }
+
+    this.refService.createNewRef(this.newRefForm.controls).then(res => {
+      this.loadRefsFromDB()
+      this.closeNewRefModal('newRefModal');
+      alert(res)
+    }).catch
+      (err => {
+        console.log("error new refs");
+        console.log(err)
+      });
+
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

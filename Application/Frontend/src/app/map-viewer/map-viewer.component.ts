@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren, NgModule } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
@@ -7,9 +7,12 @@ import { MatDialog, MatDialogConfig } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
 import { TextMapConverterComponent } from '../text-map-converter/text-map-converter.component';
+import { NodeMenuModalComponent } from '../node-menu-modal/node-menu-modal.component';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ReferenceHendlerService } from '../services/reference-hendler.service';
+
+
 
 @Component({
   selector: 'app-map-viewer',
@@ -28,13 +31,7 @@ export class MapViewerComponent implements OnInit {
   updateConverter: boolean = false
   currNode: any;
   obj: any;
-  newRefForm = new FormGroup({
-    title: new FormControl(),
-    authors: new FormControl(),
-    publication: new FormControl(),
-    description: new FormControl(),
-    link: new FormControl()
-  });
+
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
@@ -44,17 +41,9 @@ export class MapViewerComponent implements OnInit {
       this.currIdx = params['id'];
     });
     this.currMap = this.mapHandler.myMaps[this.currIdx]
-    console.log(this.currIdx);
-    //console.log("curr map: " + this.currMap.MapName);
     this.init()
 
-    this.newRefForm = this.formBuilder.group({
-      title: ['', Validators.required],
-      authors: ['', Validators.required],
-      publication: ['', Validators.required],
-      description: ['', Validators.required],
-      link: ['', Validators.required]
-    });
+
   }
 
   init() {
@@ -164,13 +153,10 @@ export class MapViewerComponent implements OnInit {
       );
 
     self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
-      //console.log(e.diagram.selection.first().data);
       var node = e.diagram.selection.first();
       node.data.refs = [];
       node.data.ctxs = [];
       node.data.comment = null;
-      //console.log(e.subject);
-      //console.log(myDiagram.currentTool.linkingTool);
       if (node.data.category === "Contribution") {
         setElementText(node, "?")
       }
@@ -622,7 +608,6 @@ export class MapViewerComponent implements OnInit {
             this.updateConverter = true
           else
             this.updateConverter = false
-          console.log(e)
         }
       }
     }
@@ -649,7 +634,6 @@ export class MapViewerComponent implements OnInit {
 
   save() {
     if (this.currMap == null) {
-      console.log("no save -> save as");
       this.saveAs()
     }
     else {
@@ -658,17 +642,14 @@ export class MapViewerComponent implements OnInit {
         'model': this.mapHandler.myDiagram.model.toJson()
       }
 
-      console.log(data)
       let result = this.http.put(this.localUrl + '/private/updateMap', data, {
         headers: { 'token': sessionStorage.token }, responseType: 'text'
       });
 
       result.subscribe(response => {
-        console.log("GOOD")
         alert("Map Updated Successfully")
 
       }, error => {
-        console.log("BAD")
         console.log(error.error)
       }
       );
@@ -707,7 +688,6 @@ export class MapViewerComponent implements OnInit {
     var imgExt = ext;
     var fileName = this.currMap.MapName;
     var dataImage = this.generateImage(imgType);
-    //console.log(dataImage);
     this.download(fileName + imgExt, dataImage)
   }
 
@@ -726,17 +706,17 @@ export class MapViewerComponent implements OnInit {
     var imgExt = ext;
     var fileName = this.currMap.MapName;
     var data = this.mapHandler.myDiagram.model.toJson();
-    //console.log(data);
     this.downloadJSON(fileName + imgExt, data)
   }
 
   openModal(id: string) {
+    // this.nodeModal.loadNodeRefs()
     this.modalService.open(id);
   }
 
   openModalMenu(id: string) {
-    this.modalService.currNodeData = this.currNode.data
-    this.modalService.openMenu(id);
+    // this.modalService.currNodeData = this.currNode.data
+    this.modalService.openMenu(id, this.currNode.data);
   }
 
   closeModal(id: string) {
@@ -747,14 +727,9 @@ export class MapViewerComponent implements OnInit {
     this.modalService.closeMenu(id);
   }
 
-  closeNewRefModal(id: string) {
-    this.modalService.closeMenu(id);
-    // this.openModalMenu('nodeMenuModal');
-  }
-
   saveChanges() {
-    this.currNode.data.text = this.modalService.currNodeText
-    this.currNode.data.description = this.modalService.currNodeDescription
+    this.currNode.data.text = this.modalService.currNodeData.text
+    this.currNode.data.description = this.modalService.currNodeData.description
     var changedModel = this.mapHandler.myDiagram.model.toJson()
     this.mapHandler.myDiagram.model = go.Model.fromJson(changedModel);
   }
@@ -767,7 +742,6 @@ export class MapViewerComponent implements OnInit {
     fileReader.onloadend = function (x) {
       self.fileToImport = fileReader.result;
       currModel = JSON.parse(self.fileToImport)
-      console.log(currModel)
       self.newMap()
       self.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
 
@@ -783,23 +757,6 @@ export class MapViewerComponent implements OnInit {
 
   }
 
-  addNewRef() {
-    console.log("new ref");
-    if (this.newRefForm.invalid) {
-      return;
-    }
 
-    this.refService.createNewRef(this.newRefForm.controls).then(res => {
-      console.log("new ref OK");
-      this.modalService.loadRefsFromDB()
-      this.closeNewRefModal('newRefModal');
-      alert(res)
-    }).catch
-      (err => {
-        console.log("error new refs");
-        console.log(err)
-      });
-
-  }
 
 }// component
