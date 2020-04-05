@@ -37,7 +37,7 @@
                                     <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                                 <span>
-                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="modalService.open('addFolderModal')"></span><!-- add subFolder-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="handleSelectionButton(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
                                     <span style="margin-right: 10px;" class="k-icon k-i-table-insert"></span><!-- addMap-->
                                 </span>     
 
@@ -69,11 +69,11 @@
   <!-- add folder modal -->
 <jw-modal class="jw-modal" id="addFolderModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        hi!
-        <span class="close" (click)="modalService.close('addFolderMoal')">&times;</span>
-        
-        <div>
+        <span class="close" (click)="closeModal_addFolder()">&times;</span>
+        <div *ngIf="!actionInModalIsSuccecs">
             <h2>Add New Folder</h2>
+            <div style="font-size: 13px;">Please insert folder name (required. name "/" invalid), and some description (required)</div>
+            <br><br>
             <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
                 <div>
                     <label>Folder Name: </label>
@@ -81,10 +81,18 @@
                 </div>  
                 <div>
                     <label>Description: </label>
-                    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+                    <textarea id="description" formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
                 </div>
+                <br><br>
                 <input type="submit" value="Add Folder">
+                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
             </form>
+        </div>
+
+        <div *ngIf="actionInModalIsSuccecs">
+            <div>The Folder Added Successfully!<br><br></div>
+            <div><span>(window will close in 3 secondes)</span></div>
+
         </div>
     </div>
 </jw-modal>

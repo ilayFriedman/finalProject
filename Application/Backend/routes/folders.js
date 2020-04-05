@@ -122,18 +122,48 @@ router.post('/private/updateFolderProperties', async function(req, res) {
 
 router.delete('/private/removeMapFromFolder', async function(req, res) {
     try {
-        folder.deleteOne({'_id': req.body.FolderID},{$pop:{"MapID" : req.body.MapID}}, function(err, result) {
+        folder.findOneAndUpdate({'_id': req.body.FolderID},{$pull:{'MapsInFolder': {"mapID": req.body.mapID}}}, function(err, result) {
             if (err) {
                 console.log(err);
-                res.status(500).send("Server error occurred.");
+                res.status(500).send("Server error occurred while pop from parent folder.");
             } else {
-                res.status(200).send("map removed successfully.");
+                res.status(200).send("map removed successfully from folder.");
             }
         });
     } catch (e) {
         res.status(400).send(`problem: ${e}`);
     }
 });
+
+router.delete('/private/removeFolderFromFolder', async function(req, res) {
+    try {
+        folder.findOneAndUpdate({'_id': req.body.parentID},{$pull:{'SubFolders': {"folderID" : req.body.folderID}}}, function(err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500).send("Server error occurred: while pop from parent folder");
+            } else {
+                try {
+                    folder.deleteOne({'_id': req.body.FolderID}, function(err, result) {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send("Server error occurred: while delete. parent pop was ok!.");
+                        } else {
+                            res.status(200).send("folder removed successfully from DB and Parent.");
+                        }
+                    });
+                }
+                catch (e) {
+                    res.status(400).send(`problem: ${e}`);
+                }
+                // res.status(200).send("map removed successfully from parentFolder.");
+            }
+        });
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
+
+});
+
 
 
 
