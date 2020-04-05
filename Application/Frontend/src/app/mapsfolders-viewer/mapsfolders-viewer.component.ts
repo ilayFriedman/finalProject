@@ -34,6 +34,8 @@ export class MapsfoldersViewerComponent implements OnInit {
   public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded ; REST in saved by _id
   public selectedKeys: any
   mouseOverNode: any;
+  actionInModalIsSuccecs: boolean = false;
+  formErrors: string;
 
 
 
@@ -111,39 +113,44 @@ shallowFolderInsert(folderObecjt,rootNode){
     // this.expandedAtLeastOnce.push(folder.folderID)
     });
 }
-folderModal(){
-  // this.mapHandler.createMap("newMap","NEW dESC",{}).then(res => {
-  //   console.log('======CREATE MAP request=====');
-  //   console.log(res)
-    
-  // }).catch
-  //   (err=> {
-  //     console.log("error here");
-  //     console.log(err)
-  //   })
-  
-}
 
 onSubmit_AddFolder(){
 
   if (this.addFolderCheckOut.invalid ||this.addFolderCheckOut.controls.folderName.value == "/") {
     console.log("bad form!")
+    console.log(this.selectedFolder)
+    this.formErrors = "Worng/Missing inputs.<br>Remember: can't create Folder with the name '/'."
     return;
   }
+  this.formErrors = ""
   var self = this
   console.log(this.addFolderCheckOut.controls.folderName.value)
   console.log(this.addFolderCheckOut.controls.description.value)
   console.log(this.selectedFolder);
-  
-  this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
-    console.log('======create new folder request OK=====');
-    var jsonRes = JSON.parse(res)
-    self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
-  }).catch
-    (err=> {
-      console.log("error with creation - promise return");
-      console.log(err)
-    })
+  var findDuplicateFolder = false
+  this.selectedFolder.items.forEach(element => {
+    if (self.addFolderCheckOut.controls.folderName.value == element.text){
+      findDuplicateFolder = true
+    } 
+  });
+  if(findDuplicateFolder == false){
+    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
+      console.log('======create new folder request OK=====');
+      var jsonRes = JSON.parse(res)
+      self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
+      this.actionInModalIsSuccecs = true
+      setTimeout (() => {this.closeModal_addFolder()}, 3000);
+    }).catch
+      (err=> {
+        console.log("error with creation - promise return");
+        console.log(err)
+      })
+
+    this.addFolderCheckOut.reset();
+  }
+  else{
+    this.formErrors = "A folder with that name already exists in this folder. <br>Give another name please"
+  }
 
 }
 
@@ -168,6 +175,13 @@ onSubmit_AddMap(){
 
 }
 
+closeModal_addFolder(){
+  this.modalService.close('addFolderModal');
+  this.actionInModalIsSuccecs = false
+  this.formErrors=''
+  this.addFolderCheckOut.reset();
+
+}
 
 getDescription(dataItem){
   if(dataItem.isFolder){
