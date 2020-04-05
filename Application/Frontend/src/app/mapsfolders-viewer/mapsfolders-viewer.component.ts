@@ -208,6 +208,21 @@ export class MapsfoldersViewerComponent implements OnInit {
     this.modalService.open(id);
   }
 
+  activateMapInMapViewer(dataItem) {
+    if (!dataItem.isFolder) {
+      this.mapHandler.getMap(dataItem.mapID).then(res => {
+        console.log(res);
+        this.mapHandler.currMap_mapViewer = res
+        this.router.navigate(['/mapViewer']);
+      }).catch
+        (err => {
+          console.log("error with getMap - promise return");
+          console.log(err)
+        })
+
+    }
+  }
+  // ############### modal functionallity ########################
 
   closeModal(id: string) {
     this.modalService.close(id);
