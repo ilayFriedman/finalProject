@@ -1,37 +1,61 @@
 <div>
 <mat-tab-group>
     <mat-tab label="My Maps:">
-        <div class="mapsAndFolders">
-            <mat-list-item *ngFor="let map of myMaps; let idx = index; last as last">
+        <!-- <div class="mapsAndFolders"> -->
+            <!-- <mat-list-item *ngFor="let map of myMaps; let idx = index; last as last">
               <span mat-line><a [routerLink]="['/mapViewer', idx]">{{map.MapName}},{{idx}}</a></span>
               <mat-divider *ngIf="!last"  style="margin: 10px;"></mat-divider>
             </mat-list-item>
-        </div>
-        <div style="padding: 20px;">
+        </div> -->
+        <!-- <div style="padding: 20px;">
             <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
             <button (click)="submitModal()">play</button>
             <button (click)="addNewFolder()">openModal</button>
-        </div>
-            <div>
-                <!-- (selectionChange)="handleSelection($event)" -->
-            <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" 
-            [children]="children"
-            [hasChildren]="hasChildren"
-            [animate]="false"
-            [expandBy]="'text'"
-            [(expandedKeys)]="expandedKeys"
-            (collapse)="handleCollapse($event)"
-            (expand)="handleExpand($event)">
-            <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                <span [ngClass]="iconClass(dataItem)" (click)="getDataIfExpanded(dataItem)"></span>{{dataItem.text}}
-                <span>
-                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder" (click)="handleSelectionButton(dataItem)">+ Map</button>
-                <button style="margin-left: 5px;" *ngIf="dataItem.isFolder" (click)="handleSelectionButton(dataItem)">+ Folder</button>
-                </span>
-            </ng-template>
-        </kendo-treeview>
-        </div>
+        </div> -->
+        <div>
 
+
+                <div>
+                    <!-- (selectionChange)="handleSelection($event)" -->
+                <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" 
+                [children]="children"
+                [hasChildren]="hasChildren"
+                [animate]="true"
+                [expandBy]="'text'"
+                [(expandedKeys)]="expandedKeys"
+                (collapse)="handleCollapse($event)"
+                (expand)="handleExpand($event)">
+                <ng-template kendoTreeViewNodeTemplate let-dataItem>
+                    <span  (mouseenter)="mouseOverNodeChanger(dataItem)" (mouseleave)="mouseOverNodeChanger(null)">
+                        <span [ngClass]="iconClass(dataItem)"></span><!-- ICON-->
+                        <span style="margin-right: 10px;" (click)="activateMapInMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
+                        
+                        <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
+                            <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
+                                <span>
+                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
+                                </span>
+                                <span>
+                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="handleSelectionButton(dataItem)"></span><!-- add subFolder-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-table-insert"></span><!-- addMap-->
+                                </span>     
+
+                            </span>
+                            <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
+                                <span>
+                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
+                                </span>
+                            </span>
+                        </span>
+
+                    </span>
+                </ng-template>
+            </kendo-treeview>
+            </div>
+
+    </div>
         <div class="example-config">
             Selected keys: {{selectedFolder}}
         </div>
@@ -41,33 +65,32 @@
     </mat-tab>
   </mat-tab-group>
 
-<h2>Add New Folder</h2>
-<form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
-    <div>
-        <label>Folder Name: </label>
-        <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
-    </div>  
-    <div>
-    <label>Description: </label>
-    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
-    </div>
-    <input type="submit" value="Add Folder">
-   
-</form>
+<div>
+    
+    <h2>Add New Folder</h2>
+    <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+        <div>
+            <label>Folder Name: </label>
+            <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
+        </div>  
+        <div>
+            <label>Description: </label>
+            <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+        </div>
+        <input type="submit" value="Add Folder">
+    </form>
+</div>
 
-<h2>Add New Map</h2>
-<form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
-    <div>
-        <label>Folder Name: </label>
-        <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
-    </div>  
-    <div>
-    <label>Description: </label>
-    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
-    </div>
-    <input type="submit" value="Add Folder">
-   
-</form>
-
+<div>
+    
+    <h2>Add New Map:</h2>
+    <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap(addMapCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+        <div>
+            <label>Map Name: </label>
+            <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
+        </div>  
+        <input type="submit" value="Add Map">
+    </form>
+</div>
 
 </div>

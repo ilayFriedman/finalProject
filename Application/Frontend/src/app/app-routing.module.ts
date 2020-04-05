@@ -15,7 +15,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'changeUserInfo', component: ChangeUserInfoComponent},
-  {path: 'mapViewer/:id', component: MapViewerComponent},
+  {path: 'mapViewer', component: MapViewerComponent},
   {path: 'groups', component: GroupsComponent}
 ];
 

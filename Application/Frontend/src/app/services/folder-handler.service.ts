@@ -28,4 +28,8 @@ export class FolderHandlerService {
     return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
+  getFolderProperties(folderId: String) {
+    return this.http.post(this.localUrl + '/private/getFolderProperties', {FolderID: folderId},{ headers: { 'token': sessionStorage.token}}).toPromise()
+  }
+
 }

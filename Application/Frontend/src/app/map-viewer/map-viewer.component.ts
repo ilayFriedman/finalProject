@@ -40,11 +40,11 @@ export class MapViewerComponent implements OnInit {
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
 
   ngOnInit() {
-    this.router.params.subscribe(params => {
-      this.currIdx = params['id'];
-    });
-    this.currMap = this.mapHandler.myMaps[this.currIdx]
-    console.log(this.currIdx);
+    // this.router.params.subscribe(params => {
+    //   this.currIdx = params['id'];
+    // });
+    this.currMap = this.mapHandler.currMap_mapViewer
+    // console.log(this.currIdx);
     //console.log("curr map: " + this.currMap.MapName);
     this.init()
 

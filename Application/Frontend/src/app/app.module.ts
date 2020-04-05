@@ -27,6 +27,10 @@ import { MapsfoldersViewerComponent } from './mapsfolders-viewer/mapsfolders-vie
 import { LogedHomeComponent } from './loged-home/loged-home.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { GroupsComponent } from './groups/groups.component';
+import { PopupModule } from '@progress/kendo-angular-popup';
+import { TooltipModule } from '@progress/kendo-angular-tooltip';
+
+
 
 // import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
@@ -68,6 +72,8 @@ import { GroupsComponent } from './groups/groups.component';
     MatFormFieldModule,
     MatInputModule,
     TreeViewModule,
+    PopupModule,
+    TooltipModule,
     // TreeViewModule
   ],
   providers: [
