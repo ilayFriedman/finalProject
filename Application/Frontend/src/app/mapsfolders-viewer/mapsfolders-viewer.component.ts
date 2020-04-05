@@ -34,8 +34,6 @@ export class MapsfoldersViewerComponent implements OnInit {
   public expandedAtLeastOnce: any[] = ["0"] // root: index 0, is already expanded ; REST in saved by _id
   public selectedKeys: any
   mouseOverNode: any;
-  actionInModalIsSuccecs: boolean = false;
-  formErrors: string;
 
 
 
@@ -105,49 +103,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         })
 
     });
-<<<<<<< HEAD
   }
-=======
-}
-
-onSubmit_AddFolder(){
-
-  if (this.addFolderCheckOut.invalid ||this.addFolderCheckOut.controls.folderName.value == "/") {
-    console.log("bad form!")
-    console.log(this.selectedFolder)
-    this.formErrors = "Worng/Missing inputs.<br>Remember: can't create Folder with the name '/'."
-    return;
-  }
-  this.formErrors = ""
-  var self = this
-  console.log(this.addFolderCheckOut.controls.folderName.value)
-  console.log(this.addFolderCheckOut.controls.description.value)
-  console.log(this.selectedFolder);
-  var findDuplicateFolder = false
-  this.selectedFolder.items.forEach(element => {
-    if (self.addFolderCheckOut.controls.folderName.value == element.text){
-      findDuplicateFolder = true
-    }
-  });
-  if(findDuplicateFolder == false){
-    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
-      console.log('======create new folder request OK=====');
-      var jsonRes = JSON.parse(res)
-      self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
-      this.actionInModalIsSuccecs = true
-      setTimeout (() => {this.closeModal_addFolder()}, 3000);
-    }).catch
-      (err=> {
-        console.log("error with creation - promise return");
-        console.log(err)
-      })
-
-    this.addFolderCheckOut.reset();
-  }
-  else{
-    this.formErrors = "A folder with that name already exists in this folder. <br>Give another name please"
-  }
->>>>>>> 1e01352a79eb124fae8b151938004151f311341a
 
   shallowFolderInsert(folderObecjt, rootNode) {
     folderObecjt.SubFolders.forEach(folder => {
@@ -168,17 +124,7 @@ onSubmit_AddFolder(){
 
   }
 
-<<<<<<< HEAD
   onSubmit_AddFolder() {
-=======
-closeModal_addFolder(){
-  this.modalService.close('addFolderModal');
-  this.actionInModalIsSuccecs = false
-  this.formErrors=''
-  this.addFolderCheckOut.reset();
-
-}
->>>>>>> 1e01352a79eb124fae8b151938004151f311341a
 
     if (this.addFolderCheckOut.invalid || this.addFolderCheckOut.controls.folderName.value == "/") {
       console.log("bad form!")
@@ -242,19 +188,19 @@ closeModal_addFolder(){
     this.mouseOverNode = dataItem
   }
 
-  // activateMapInMapViewer(dataItem) {
-  //   this.mapHandler.getMap(dataItem.mapID).then(res => {
-  //     console.log(res);
-  //     this.mapHandler.currMap_mapViewer = res
-  //     this.router.navigate(['/mapViewer']);
-  //   }).catch
-  //     (err => {
-  //       console.log("error with getMap - promise return");
-  //       console.log(err)
-  //     })
+  activateMapInMapViewer(dataItem) {
+    this.mapHandler.getMap(dataItem.mapID).then(res => {
+      console.log(res);
+      this.mapHandler.currMap_mapViewer = res
+      this.router.navigate(['/mapViewer']);
+    }).catch
+      (err => {
+        console.log("error with getMap - promise return");
+        console.log(err)
+      })
 
 
-  // }
+  }
   // ############### modal functionallity ########################
 
   openModal(id: string) {
