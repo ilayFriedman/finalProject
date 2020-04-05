@@ -6,6 +6,7 @@ import { of, Observable } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button'
 import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
@@ -17,62 +18,41 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   // forms validation checkouts
   addFolderCheckOut;
+  addMapCheckOut;
   
-
-  // maps variables
-  myMaps: any;
-
   //folders variables
   public data: any[] = [{
     text: "/",
     folderID: "5e80d535132e0540b827c4cd",
     items: [],
-    isFolder : true
+    isFolder : true,
+    description: "blala"
   }];
   selectedFolder: any;
-  public searchTerm = '';
-  public mouseInside : boolean = false;
   public parsedData: any[] = this.data;
   public expandedKeys: any[] = ['/']; // root: key /, is already expanded 
-  public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded 
+  public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded ; REST in saved by _id
+  public selectedKeys: any
+  mouseOverNode: any;
 
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
+    this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required]});
+    
   }
   
 
 
   ngOnInit() {
-    //maps init
-    console.log("strat index")
-    this.mapHandler.myMapsPromise.then(res => {
-      console.log(res)
-      this.mapHandler.myMaps = res;
-      this.myMaps = res
-      console.log('OK');
-      // console.log("from index: " + this.myMaps);
-
-    }).catch
-      (err => {
-        console.log("error here");
-        console.log(err)
-      })
-
-
-
     // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
 
       console.log('======getRootUserFolder request OK=====');
-      // console.log(res)
-      // console.log('=================')
-      this.insertFoldersToMapTreeViewer(res, this.data[0])
       this.inserMapsToMapTreeViewer(Object(res), this.data[0])
-
-      
+      this.insertFoldersToMapTreeViewer(res, this.data[0])  
 
     }).catch
       (err => {
@@ -106,9 +86,9 @@ inserMapsToMapTreeViewer(folderObject,rootNode){
 insertFoldersToMapTreeViewer(folderObject, rootNode){
   // get all child-folder
   folderObject.SubFolders.forEach(folder=>{
-    var folderNode = {text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true}
+    var folderNode = {text: folder.folderName,folderID: folder.folderID, items: [], isFolder: true}
     rootNode.items.push(folderNode)
-    
+    this.expandedAtLeastOnce.push(folderNode.folderID)
     // get next level of each folder
     this.folderHandler.getFolderContents(folderNode.folderID).then(res => {
           // console.log('======get Content folder request OK=====');
@@ -128,6 +108,7 @@ insertFoldersToMapTreeViewer(folderObject, rootNode){
 shallowFolderInsert(folderObecjt,rootNode){
   folderObecjt.SubFolders.forEach(folder => {
     rootNode.items.push({text: folder.folderName,folderID: folder.folderID,items: [], isFolder: true})
+    // this.expandedAtLeastOnce.push(folder.folderID)
     });
 }
 folderModal(){
@@ -166,16 +147,74 @@ onSubmit_AddFolder(){
 
 }
 
+onSubmit_AddMap(){
 
+  if (this.addMapCheckOut.invalid) {
+    console.log("bad form!")
+    return;
+  }
+  var self = this
+  console.log(this.addMapCheckOut.controls.mapName.value)
+  
+  // this.folderHandler(this.addMapCheckOut.controls.mapName.value,this.addMapCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
+  //   console.log('======create new folder request OK=====');
+  //   var jsonRes = JSON.parse(res)
+  //   self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
+  // }).catch
+  //   (err=> {
+  //     console.log("error with creation - promise return");
+  //     console.log(err)
+  //   })
 
-ngIfManageButtons(dataItem, mouseInside){
-  console.log("inside!");
-  console.log(mouseInside);
-  return dataItem.isFolder && mouseInside
 }
 
 
-// Tree-view functionallity
+getDescription(dataItem){
+  if(dataItem.isFolder){
+    this.folderHandler.getFolderProperties(dataItem.folderID).then(res => {
+      console.log('======GET PROPERTY request OK=====');
+      var jsonRes = JSON.parse(JSON.stringify(res))
+      dataItem.description = JSON.parse(jsonRes.FolderDescription)
+    }).catch
+      (err=> {
+        console.log("error with creation - promise return");
+        console.log(err)
+      })
+      
+  }
+}
+
+mouseOverNodeChanger(dataItem){
+  this.mouseOverNode = dataItem
+}
+
+activateMapInMapViewer(dataItem){
+  this.mapHandler.getMap(dataItem.mapID).then(res => {
+    console.log(res);
+    this.mapHandler.currMap_mapViewer = res
+    this.router.navigate(['/mapViewer']);
+  }).catch
+    (err=> {
+      console.log("error with getMap - promise return");
+      console.log(err)
+    })
+    
+  
+}
+// ############### modal functionallity ########################
+
+openModal(id: string) {
+  // this.nodeModal.loadNodeRefs()
+  this.modalService.open(id);
+}
+
+
+closeModal(id: string) {
+  this.modalService.close(id);
+}
+
+
+// ############### Tree-view functionallity ########################
 
 public handleSelectionButton(dataItem) {
   this.selectedFolder = dataItem
@@ -198,8 +237,31 @@ public handleCollapse(node) {
 * to the collection, expanding the its children.
 */
 public handleExpand(node) {
+  console.log(node);
+  console.log(this.expandedAtLeastOnce)
+  node.dataItem.items.forEach(folder=>{
+    // console.log("=========== "+folder)
+    if(this.expandedAtLeastOnce.indexOf(folder.folderID) == -1){
+      this.expandedAtLeastOnce.push(folder.folderID)
+      // get next level of each folder
+      this.folderHandler.getFolderContents(folder.folderID).then(res => {
+        // console.log('======get Content folder request OK=====');
+        // console.log(res)
+        // console.log(node)
+        // console.log("=======================================")
+        // this.inserMapsToMapTreeViewer(res,node)
+        this.shallowFolderInsert(res,folder)
+        // console.log(res);
+
+      }).catch
+        (err=> {
+          console.log("error with creation - promise return");
+          console.log(err)
+        })
+        
+    }
+  });
   this.expandedKeys = this.expandedKeys.concat(node.index);
-  
 }
 
 public isExpanded = (dataItem: any, index: string) => {
@@ -231,7 +293,6 @@ public search(items: any[], term: string): any[] {
 public contains(text: string, term: string): boolean {
   return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
 }
-
 
 }
 

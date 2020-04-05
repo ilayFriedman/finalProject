@@ -62,7 +62,7 @@ router.get('/private/getMap', async function(req, res) {
             '_id': req.headers._id
         }, function(err, result) {
             if (result) {
-                console.log("i found map!!")
+                // console.log("i found map!!")
                 console.log(result)
                 if (UserHasReadPermissionForMap(result[0], req.decoded._id)) {
                     res.send(result[0]);
