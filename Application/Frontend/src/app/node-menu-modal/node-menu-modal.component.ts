@@ -205,30 +205,49 @@ export class NodeMenuModalComponent implements OnInit {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(type: string) {
-    if (type == "all") {
-      const numSelected = this.allRefSelection.selected.length;
-      const numRows = this.allRefSource.data.length;
-      return numSelected === numRows;
-    }
-    else if (type == "node") {
-      const numSelected = this.nodeRefSelection.selected.length;
-      const numRows = this.nodeRefSource.data.length;
-      return numSelected === numRows;
+    switch (type) {
+      case "allRefs": {
+        const numSelected = this.allRefSelection.selected.length;
+        const numRows = this.allRefSource.data.length;
+        return numSelected === numRows;
+      }
+      case "nodeRefs": {
+        const numSelected = this.nodeRefSelection.selected.length;
+        const numRows = this.nodeRefSource.data.length;
+        return numSelected === numRows;
+      }
+
+      default: {
+        console.log("default");
+
+        break;
+      }
     }
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle(type: string) {
-    if (type == "all") {
-      this.isAllSelected("all") ?
-        this.allRefSelection.clear() :
-        this.allRefSource.data.forEach(row => this.allRefSelection.select(row));
+    switch (type) {
+      case "allRefs": {
+        this.isAllSelected("allRefs") ?
+          this.allRefSelection.clear() :
+          this.allRefSource.data.forEach(row => this.allRefSelection.select(row));
+        break;
+      }
+      case "nodeRefs": {
+        this.isAllSelected("nodeRefs") ?
+          this.nodeRefSelection.clear() :
+          this.nodeRefSource.data.forEach(row => this.nodeRefSelection.select(row));
+        break;
+      }
+
+      default: {
+        console.log("default");
+
+        break;
+      }
     }
-    else if (type == "node") {
-      this.isAllSelected("node") ?
-        this.nodeRefSelection.clear() :
-        this.nodeRefSource.data.forEach(row => this.nodeRefSelection.select(row));
-    }
+
 
   }
 

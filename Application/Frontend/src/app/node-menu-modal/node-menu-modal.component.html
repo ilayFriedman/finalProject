@@ -42,9 +42,9 @@
                         <ng-container matColumnDef="select">
                             <tr>
                                 <th mat-header-cell *matHeaderCellDef>
-                                    <mat-checkbox (change)="$event ? masterToggle('node') : null"
-                                        [checked]="nodeRefSelection.hasValue() && isAllSelected('node')"
-                                        [indeterminate]="nodeRefSelection.hasValue() && !isAllSelected('node')">
+                                    <mat-checkbox (change)="$event ? masterToggle('nodeRefs') : null"
+                                        [checked]="nodeRefSelection.hasValue() && isAllSelected('nodeRefs')"
+                                        [indeterminate]="nodeRefSelection.hasValue() && !isAllSelected('nodeRefs')">
                                     </mat-checkbox>
                                 </th>
                                 <td mat-cell *matCellDef="let row">
@@ -114,9 +114,9 @@
                         <ng-container matColumnDef="select">
                             <tr>
                                 <th mat-header-cell *matHeaderCellDef>
-                                    <mat-checkbox (change)="$event ? masterToggle('all') : null"
-                                        [checked]="allRefSelection.hasValue() && isAllSelected('all')"
-                                        [indeterminate]="allRefSelection.hasValue() && !isAllSelected('all')">
+                                    <mat-checkbox (change)="$event ? masterToggle('allRefs') : null"
+                                        [checked]="allRefSelection.hasValue() && isAllSelected('allRefs')"
+                                        [indeterminate]="allRefSelection.hasValue() && !isAllSelected('allRefs')">
                                     </mat-checkbox>
                                 </th>
                                 <td mat-cell *matCellDef="let row">
@@ -184,7 +184,171 @@
                 </span>
             </div>
         </mat-tab>
-        <mat-tab label="Third"> Content 3 </mat-tab>
+
+        <!-- contexts tab -->
+        <mat-tab label="Contexts">
+            <div class="tab-content" style="width: max-content;">
+                <span id="nodeCtxsSpan" style="float: left;">
+                    <div class="filterAndClear">
+                        <span style="float: left; width: 70%;">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilterNodeRefs($event)">
+                            </mat-form-field>
+                        </span>
+                        <span style="float: right; ">
+                            <button mat-raised-button (click)="this.nodeRefSelection.clear()">Clear
+                                Selection</button>
+                        </span></div>
+                    <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <tr>
+                                <th mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox (change)="$event ? masterToggle('nodeRefs') : null"
+                                        [checked]="nodeRefSelection.hasValue() && isAllSelected('nodeRefs')"
+                                        [indeterminate]="nodeRefSelection.hasValue() && !isAllSelected('nodeRefs')">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? nodeRefSelection.toggle(row) : null"
+                                        [checked]="nodeRefSelection.isSelected(row)">
+                                    </mat-checkbox>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="Title">
+                            <th mat-header-cell *matHeaderCellDef> Title </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="Publication">
+                            <th mat-header-cell *matHeaderCellDef> Publication </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="Link">
+                            <th mat-header-cell *matHeaderCellDef> Link </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="CreationTime">
+                            <th mat-header-cell *matHeaderCellDef> Creation Time </th>
+                            <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            (click)="nodeRefSelection.toggle(row)">
+                        </tr>
+
+
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: left;">
+                            <mat-paginator #nodePaginator [pageSizeOptions]="[1, 10, 20]" showFirstLastButtons>
+                            </mat-paginator>
+                        </span>
+                    </div>
+                </span>
+                <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAll">
+                    <div class="filterAndClear">
+                        <span style="float: left; width: 70%;">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilterAllRefs($event)">
+                            </mat-form-field>
+                        </span>
+                        <span style="float: right; ">
+                            <button mat-raised-button (click)="this.allRefSelection.clear()">Clear
+                                Selection</button>
+                        </span></div>
+
+
+
+                    <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <tr>
+                                <th mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox (change)="$event ? masterToggle('allRefs') : null"
+                                        [checked]="allRefSelection.hasValue() && isAllSelected('allRefs')"
+                                        [indeterminate]="allRefSelection.hasValue() && !isAllSelected('allRefs')">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? allRefSelection.toggle(row) : null"
+                                        [checked]="allRefSelection.isSelected(row)">
+                                    </mat-checkbox>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="Title">
+                            <th mat-header-cell *matHeaderCellDef> Title </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="Publication">
+                            <th mat-header-cell *matHeaderCellDef> Publication </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Publication}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="Link">
+                            <th mat-header-cell *matHeaderCellDef> Link </th>
+                            <td mat-cell *matCellDef="let element"> {{element.Link}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="CreationTime">
+                            <th mat-header-cell *matHeaderCellDef> Creation Time </th>
+                            <td mat-cell *matCellDef="let element"> {{element.CreationTime}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            (click)="allRefSelection.toggle(row)">
+                        </tr>
+
+
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: right;">
+                            <mat-paginator #allPaginator [pageSizeOptions]="[1, 10, 20]" showFirstLastButtons>
+                            </mat-paginator>
+
+                        </span>
+
+                    </div>
+                </span>
+                <span style="float: right; margin: 5px;">
+                    <div class="refBtn"><button mat-raised-button (click)="showAllRefs()">{{btnShowAll}}</button></div>
+                    <div class="refBtn"><button mat-raised-button [disabled]="this.allRefSelection.selected.length == 0"
+                            (click)="addRefToNode()">Add Reference</button></div>
+                    <div class="refBtn"><button mat-raised-button
+                            [disabled]="this.nodeRefSelection.selected.length == 0" (click)="removeRefToNode()">Remove
+                            Reference</button>
+                    </div>
+                    <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
+                            Reference</button></div>
+                    <!-- <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
+                            Reference</button></div> -->
+
+                </span>
+            </div>
+        </mat-tab>
+        <mat-tab label="Third"> Content 5 </mat-tab>
+        <mat-tab label="Third"> Content 6 </mat-tab>
     </mat-tab-group>
 
 
