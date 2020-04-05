@@ -189,17 +189,18 @@ mouseOverNodeChanger(dataItem){
 }
 
 activateMapInMapViewer(dataItem){
-  this.mapHandler.getMap(dataItem.mapID).then(res => {
-    console.log(res);
-    this.mapHandler.currMap_mapViewer = res
-    this.router.navigate(['/mapViewer']);
-  }).catch
-    (err=> {
-      console.log("error with getMap - promise return");
-      console.log(err)
-    })
-    
-  
+  if(!dataItem.isFolder){
+    this.mapHandler.getMap(dataItem.mapID).then(res => {
+      console.log(res);
+      this.mapHandler.currMap_mapViewer = res
+      this.router.navigate(['/mapViewer']);
+    }).catch
+      (err=> {
+        console.log("error with getMap - promise return");
+        console.log(err)
+      })
+      
+  }
 }
 // ############### modal functionallity ########################
 
