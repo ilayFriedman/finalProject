@@ -1,5 +1,5 @@
 <div>
-    <mat-tab-group id="nodeMenu">
+    <mat-tab-group id="nodeMenu" (selectedTabChange)="tabClick($event)">
         <mat-tab label="Details">
             <div class="tab-content">
                 <table id="detailsTable" class="table table-hover borderless table-vcenter">
@@ -8,14 +8,15 @@
                             <td>Text:</td>
                             <td>
                                 <input type="text" id="textFeature" class="form-control" name="objectText"
-                                    [(ngModel)]="this.modalService.currNodeText">
+                                    [(ngModel)]="this.modalService.currNodeData.text">
                             </td>
                         </tr>
                         <tr>
                             <td>Description:</td>
                             <td>
                                 <textarea id="descriptionFeature" name="objectDescription" class="form-control"
-                                    cols="50" rows="5" [(ngModel)]="this.modalService.currNodeDescription"></textarea>
+                                    cols="30" rows="5"
+                                    [(ngModel)]="this.modalService.currNodeData.description"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -25,10 +26,17 @@
         <mat-tab label="References">
             <div class="tab-content" style="width: max-content;">
                 <span id="nodeRefsSpan" style="float: left;">
-                    <mat-form-field>
-                        <mat-label>Filter</mat-label>
-                        <input matInput (keyup)="applyFilterNodeRefs($event)">
-                    </mat-form-field>
+                    <div class="filterAndClear">
+                        <span style="float: left; width: 70%;">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilterNodeRefs($event)">
+                            </mat-form-field>
+                        </span>
+                        <span style="float: right; ">
+                            <button mat-raised-button (click)="this.nodeRefSelection.clear()">Clear
+                                Selection</button>
+                        </span></div>
                     <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -87,10 +95,20 @@
                     </div>
                 </span>
                 <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAll">
-                    <mat-form-field>
-                        <mat-label>Filter</mat-label>
-                        <input matInput (keyup)="applyFilterAllRefs($event)">
-                    </mat-form-field>
+                    <div class="filterAndClear">
+                        <span style="float: left; width: 70%;">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilterAllRefs($event)">
+                            </mat-form-field>
+                        </span>
+                        <span style="float: right; ">
+                            <button mat-raised-button (click)="this.allRefSelection.clear()">Clear
+                                Selection</button>
+                        </span></div>
+
+
+
                     <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -145,6 +163,7 @@
                         <span style="float: right;">
                             <mat-paginator #allPaginator [pageSizeOptions]="[1, 10, 20]" showFirstLastButtons>
                             </mat-paginator>
+
                         </span>
 
                     </div>
@@ -159,6 +178,8 @@
                     </div>
                     <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
                             Reference</button></div>
+                    <!-- <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
+                            Reference</button></div> -->
 
                 </span>
             </div>
@@ -168,3 +189,43 @@
 
 
 </div>
+
+<!-- create new ref modal -->
+<jw-modal class="jw-modal" id="newRefModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeNewRefModal('newRefModal')">&times;</span>
+        <div class="new-ref-modal-form">
+            <form [formGroup]="newRefForm" (ngSubmit)="addNewRef()">
+                <h1>Create New Reference</h1>
+                <mat-form-field appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="title">
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Authors</mat-label>
+                    <input matInput formControlName="authors">
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Publication
+                    </mat-label>
+                    <input matInput formControlName="publication">
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Link
+                    </mat-label>
+                    <input matInput formControlName="link">
+                </mat-form-field>
+                <br>
+                <button type="submit" mat-raised-button>Add</button>
+            </form>
+        </div>
+    </div>
+</jw-modal>

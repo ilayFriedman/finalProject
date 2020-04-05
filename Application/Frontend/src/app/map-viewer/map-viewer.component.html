@@ -71,45 +71,7 @@
 </jw-modal>
 
 
-<!-- create new ref modal -->
-<jw-modal class="jw-modal" id="newRefModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeNewRefModal('newRefModal')">&times;</span>
-        <div class="new-ref-modal-form">
-            <form [formGroup]="newRefForm" (ngSubmit)="addNewRef()">
-                <h1>Create New Reference</h1>
-                <mat-form-field appearance="fill">
-                    <mat-label>Title</mat-label>
-                    <input matInput formControlName="title">
-                </mat-form-field>
-                <br>
-                <mat-form-field appearance="fill">
-                    <mat-label>Authors</mat-label>
-                    <input matInput formControlName="authors">
-                </mat-form-field>
-                <br>
-                <mat-form-field appearance="fill">
-                    <mat-label>Publication
-                    </mat-label>
-                    <input matInput formControlName="publication">
-                </mat-form-field>
-                <br>
-                <mat-form-field appearance="fill">
-                    <mat-label>Description</mat-label>
-                    <textarea matInput formControlName="description"></textarea>
-                </mat-form-field>
-                <br>
-                <mat-form-field appearance="fill">
-                    <mat-label>Link
-                    </mat-label>
-                    <input matInput formControlName="link">
-                </mat-form-field>
-                <br>
-                <button type="submit" mat-raised-button>Add</button>
-            </form>
-        </div>
-    </div>
-</jw-modal>
+
 
 
 

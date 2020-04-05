@@ -111,6 +111,7 @@ body {
     background-color: lightgray;
 }
 
+
 .jw-modal {
     display: none;
     position: fixed;
@@ -130,7 +131,7 @@ body {
 .jw-modal-body {
     text-align: center;
     background-color: #fefefe;
-    margin: 0 auto;
+    margin: 10px auto;
     padding: 20px;
     border: 1px solid #888;
     min-width: max-content;
