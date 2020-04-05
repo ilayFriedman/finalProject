@@ -20,10 +20,6 @@ export class MapsfoldersViewerComponent implements OnInit {
   addFolderCheckOut;
   addMapCheckOut;
   
-
-  // maps variables
-  myMaps: any;
-
   //folders variables
   public data: any[] = [{
     text: "/",
@@ -33,8 +29,6 @@ export class MapsfoldersViewerComponent implements OnInit {
     description: "blala"
   }];
   selectedFolder: any;
-  public searchTerm = '';
-  public mouseInside : boolean = false;
   public parsedData: any[] = this.data;
   public expandedKeys: any[] = ['/']; // root: key /, is already expanded 
   public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded ; REST in saved by _id
@@ -44,7 +38,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
     this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required]});
     
@@ -53,34 +47,12 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
   ngOnInit() {
-    // //maps init
-    // console.log("strat index")
-    // this.mapHandler.myMapsPromise.then(res => {
-    //   console.log(res)
-    //   this.mapHandler.myMaps = res;
-    //   this.myMaps = res
-    //   console.log('OK');
-    //   // console.log("from index: " + this.myMaps);
-
-    // }).catch
-    //   (err => {
-    //     console.log("error here");
-    //     console.log(err)
-    //   })
-
-
-
     // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
 
       console.log('======getRootUserFolder request OK=====');
-      // console.log(res)
-      // console.log('=================')
       this.inserMapsToMapTreeViewer(Object(res), this.data[0])
-      this.insertFoldersToMapTreeViewer(res, this.data[0])
-      
-
-      
+      this.insertFoldersToMapTreeViewer(res, this.data[0])  
 
     }).catch
       (err => {
@@ -211,9 +183,9 @@ getDescription(dataItem){
       
   }
 }
+
 mouseOverNodeChanger(dataItem){
   this.mouseOverNode = dataItem
-  // console.log(this.mouseOverNode)
 }
 
 activateMapInMapViewer(dataItem){
@@ -229,6 +201,18 @@ activateMapInMapViewer(dataItem){
     
   
 }
+// ############### modal functionallity ########################
+
+openModal(id: string) {
+  // this.nodeModal.loadNodeRefs()
+  this.modalService.open(id);
+}
+
+
+closeModal(id: string) {
+  this.modalService.close(id);
+}
+
 
 // ############### Tree-view functionallity ########################
 
@@ -256,18 +240,18 @@ public handleExpand(node) {
   console.log(node);
   console.log(this.expandedAtLeastOnce)
   node.dataItem.items.forEach(folder=>{
-    console.log("=========== "+folder)
+    // console.log("=========== "+folder)
     if(this.expandedAtLeastOnce.indexOf(folder.folderID) == -1){
       this.expandedAtLeastOnce.push(folder.folderID)
       // get next level of each folder
       this.folderHandler.getFolderContents(folder.folderID).then(res => {
-        console.log('======get Content folder request OK=====');
-        console.log(res)
-        console.log(node)
-        console.log("=======================================")
+        // console.log('======get Content folder request OK=====');
+        // console.log(res)
+        // console.log(node)
+        // console.log("=======================================")
         // this.inserMapsToMapTreeViewer(res,node)
         this.shallowFolderInsert(res,folder)
-        console.log(res);
+        // console.log(res);
 
       }).catch
         (err=> {
@@ -276,13 +260,8 @@ public handleExpand(node) {
         })
         
     }
-  
-
-
   });
-  
   this.expandedKeys = this.expandedKeys.concat(node.index);
-  
 }
 
 public isExpanded = (dataItem: any, index: string) => {

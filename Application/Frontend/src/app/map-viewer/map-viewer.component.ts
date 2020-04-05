@@ -23,7 +23,6 @@ export class MapViewerComponent implements OnInit {
   [x: string]: any;
   // @Input('name') mapIdx: any;
   mapModel: any;
-  currIdx: any;
   currMap: any;
   toSave: boolean = false;
   localUrl = 'http://localhost:3000';
@@ -37,15 +36,8 @@ export class MapViewerComponent implements OnInit {
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
 
   ngOnInit() {
-    // this.router.params.subscribe(params => {
-    //   this.currIdx = params['id'];
-    // });
     this.currMap = this.mapHandler.currMap_mapViewer
-    // console.log(this.currIdx);
-    //console.log("curr map: " + this.currMap.MapName);
     this.init()
-
-
   }
 
   init() {

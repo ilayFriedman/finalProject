@@ -37,7 +37,7 @@
                                     <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                                 <span>
-                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="handleSelectionButton(dataItem)"></span><!-- add subFolder-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="modalService.open('addFolderModal')"></span><!-- add subFolder-->
                                     <span style="margin-right: 10px;" class="k-icon k-i-table-insert"></span><!-- addMap-->
                                 </span>     
 
@@ -65,21 +65,30 @@
     </mat-tab>
   </mat-tab-group>
 
-<div>
-    
-    <h2>Add New Folder</h2>
-    <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+
+  <!-- add folder modal -->
+<jw-modal class="jw-modal" id="addFolderModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        hi!
+        <span class="close" (click)="modalService.close('addFolderMoal')">&times;</span>
+        
         <div>
-            <label>Folder Name: </label>
-            <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
-        </div>  
-        <div>
-            <label>Description: </label>
-            <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+            <h2>Add New Folder</h2>
+            <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
+                <div>
+                    <label>Folder Name: </label>
+                    <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
+                </div>  
+                <div>
+                    <label>Description: </label>
+                    <input id="description" type="text" formControlName="description" placeholder="Add some Description">
+                </div>
+                <input type="submit" value="Add Folder">
+            </form>
         </div>
-        <input type="submit" value="Add Folder">
-    </form>
-</div>
+    </div>
+</jw-modal>
+
 
 <div>
     
