@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-export interface ReferenceElement {
-  _id: string,
-  Title: string,
-  CreatorId: string,
-  CreationTime: string,
-  Authors: string,
-  Publication: string,
-  Description: string,
-  Link: string
-}
+// export interface ReferenceElement {
+//   _id: string,
+//   Title: string,
+//   CreatorId: string,
+//   CreationTime: string,
+//   Authors: string,
+//   Publication: string,
+//   Description: string,
+//   Link: string
+// }
 
 
 @Injectable({
@@ -18,7 +18,7 @@ export interface ReferenceElement {
 })
 
 
-export class ReferenceHendlerService {
+export class RefCtxHendlerService {
   localUrl = 'http://localhost:3000';
   constructor(private http: HttpClient) { }
 
@@ -40,6 +40,24 @@ export class ReferenceHendlerService {
     }
     console.log(data);
     return this.http.post(this.localUrl + '/private/createReference', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise()
+
+  }
+  getAllContexts() {
+    return this.http.get(this.localUrl + '/private/getAllContexts', {
+      headers: { 'token': sessionStorage.token }
+    }).toPromise()
+  }
+
+  createNewCtx(fields: any) {
+    console.log(fields.title.value);
+
+    var data = {
+      "Title": fields.title.value
+    }
+    console.log(data);
+    return this.http.post(this.localUrl + '/private/createContext', data, {
       headers: { 'token': sessionStorage.token }, responseType: 'text'
     }).toPromise()
 

@@ -10,7 +10,6 @@ import { TextMapConverterComponent } from '../text-map-converter/text-map-conver
 import { NodeMenuModalComponent } from '../node-menu-modal/node-menu-modal.component';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { ReferenceHendlerService } from '../services/reference-hendler.service';
 
 
 
@@ -33,7 +32,7 @@ export class MapViewerComponent implements OnInit {
 
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
-    private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder, private refService: ReferenceHendlerService) { }
+    private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.currMap = this.mapHandler.currMap_mapViewer

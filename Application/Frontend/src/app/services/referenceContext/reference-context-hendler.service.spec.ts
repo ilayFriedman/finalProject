@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ReferenceHendlerService } from './reference-hendler.service';
+import { RefCtxHendlerService } from './reference-context-hendler.service';
 
 describe('ReferenceHendlerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ReferenceHendlerService = TestBed.get(ReferenceHendlerService);
+    const service: RefCtxHendlerService = TestBed.get(RefCtxHendlerService);
     expect(service).toBeTruthy();
   });
 });
