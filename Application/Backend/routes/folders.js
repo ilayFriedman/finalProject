@@ -3,6 +3,7 @@ const router = express.Router();
 const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
+var mongoose = require('mongoose');
 
 router.post('/private/createFolder', async function(req, res) {
     try {
@@ -54,7 +55,7 @@ router.post('/private/createFolder', async function(req, res) {
     }
 })
 
-router.post('/private/getFolderContents', async function(req, res) {
+router.post('/private/getFolderContentsLists', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
@@ -135,32 +136,30 @@ router.delete('/private/removeMapFromFolder', async function(req, res) {
     }
 });
 
-router.delete('/private/removeFolderFromFolder', async function(req, res) {
-    try {
-        folder.findOneAndUpdate({'_id': req.body.parentID},{$pull:{'SubFolders': {"folderID" : req.body.folderID}}}, function(err, result) {
-            if (err) {
-                console.log(err);
-                res.status(500).send("Server error occurred: while pop from parent folder");
-            } else {
-                try {
-                    folder.deleteOne({'_id': req.body.FolderID}, function(err, result) {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send("Server error occurred: while delete. parent pop was ok!.");
-                        } else {
-                            res.status(200).send("folder removed successfully from DB and Parent.");
-                        }
-                    });
-                }
-                catch (e) {
-                    res.status(400).send(`problem: ${e}`);
-                }
-                // res.status(200).send("map removed successfully from parentFolder.");
-            }
-        });
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
-    }
+router.delete('/private/removeFolderFromFolder/:parentID&:folderID', async function(req, res) {
+    console.log(req.params.folderID);
+    console.log(req.params.parentID);
+    res.status(200).send("ok!")
+    
+    
+    // try {
+    //     folder.findOneAndUpdate({'_id': req.params.parentID},{$pull:{'SubFolders': {"folderID" : req.params.folderID}}}, function(err, result) {
+    //         if (err) {
+    //             console.log(err);
+    //             res.status(500).send("Server error occurred: while pop from parent folder");
+    //         } else {
+    //                 folder.deleteOne({ _id: req.params.FolderID }, function(err) {
+    //                         if (err) {
+    //                             res.status(500).send(`Server error occured.`);
+    //                         } else {
+    //                             res.status(200).send("folder deleted successfully (with update parent).");
+    //                         }
+    //                     });
+    //         }
+    //     });
+    // } catch (e) {
+    //     res.status(400).send(`problem: ${e}`);
+    // }
 
 });
 

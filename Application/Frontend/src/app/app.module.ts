@@ -29,6 +29,9 @@ import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { GroupsComponent } from './groups/groups.component';
 import { PopupModule } from '@progress/kendo-angular-popup';
 import { TooltipModule } from '@progress/kendo-angular-tooltip';
+import { DialogsModule } from '@progress/kendo-angular-dialog';
+import { ButtonsModule } from '@progress/kendo-angular-buttons';
+
 
 
 
@@ -74,6 +77,8 @@ import { TooltipModule } from '@progress/kendo-angular-tooltip';
     TreeViewModule,
     PopupModule,
     TooltipModule,
+    DialogsModule,
+    ButtonsModule,
     // TreeViewModule
   ],
   providers: [

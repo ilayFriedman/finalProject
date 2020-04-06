@@ -1,22 +1,20 @@
 <div>
 <mat-tab-group>
     <mat-tab label="My Maps:">
-        <!-- <div class="mapsAndFolders"> -->
-            <!-- <mat-list-item *ngFor="let map of myMaps; let idx = index; last as last">
-              <span mat-line><a [routerLink]="['/mapViewer', idx]">{{map.MapName}},{{idx}}</a></span>
-              <mat-divider *ngIf="!last"  style="margin: 10px;"></mat-divider>
-            </mat-list-item>
-        </div> -->
-        <!-- <div style="padding: 20px;">
-            <span>Search Folder/Map : </span> <span><input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Folder/Map Name" /></span>
-            <button (click)="submitModal()">play</button>
-            <button (click)="addNewFolder()">openModal</button>
-        </div> -->
         <div>
-
-
                 <div>
-                    <!-- (selectionChange)="handleSelection($event)" -->
+
+                <!-- delelte dialog configuration -->
+                    <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
+                    <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
+                    <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Deleting it will delete all the files inside it as well</p>
+                        <kendo-dialog-actions>
+                        <button kendoButton (click)="closeDialog('no',null)">No</button>
+                        <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This File</button>
+                        </kendo-dialog-actions>
+                    </kendo-dialog>
+
+
                 <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" 
                 [children]="children"
                 [hasChildren]="hasChildren"
@@ -26,15 +24,15 @@
                 (collapse)="handleCollapse($event)"
                 (expand)="handleExpand($event)">
                 <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                    <span  (mouseenter)="mouseOverNodeChanger(dataItem)" (mouseleave)="mouseOverNodeChanger(null)">
+                    <span (mouseenter)="mouseOverNodeChanger(dataItem)" (mouseleave)="mouseOverNodeChanger(null)">
                         <span [ngClass]="iconClass(dataItem)"></span><!-- ICON-->
                         <span style="margin-right: 10px;" (click)="activateMapInMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
                         
                         <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
                             <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
                                 <span>
-                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
-                                    <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span *ngIf="!opened" style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
+                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                                 <span>
                                     <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="handleSelectionButton(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
@@ -45,7 +43,7 @@
                             <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
                                 <span>
                                     <span  style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
-                                    <span style="margin-right: 10px;" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                             </span>
                         </span>
@@ -56,9 +54,9 @@
             </div>
 
     </div>
-        <div class="example-config">
+        <!-- <div class="example-config">
             Selected keys: {{selectedFolder}}
-        </div>
+        </div> -->
     </mat-tab>
     <mat-tab label="Maps Shared With Me:">
         coming soon! :)
@@ -91,7 +89,7 @@
 
         <div *ngIf="actionInModalIsSuccecs">
             <div>The Folder Added Successfully!<br><br></div>
-            <div><span>(window will close in 3 secondes)</span></div>
+            <div><span>(window will close in 2 secondes)</span></div>
 
         </div>
     </div>
