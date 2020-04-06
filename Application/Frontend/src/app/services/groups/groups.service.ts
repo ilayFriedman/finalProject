@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { group } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root'
@@ -30,11 +31,15 @@ export class GroupsService {
    */
   deleteGroup(groupId: string){
     
-    const httpOptions = {
-      headers: new HttpHeaders({ 'token': sessionStorage.token }), body: { _id: groupId }
-    };
-
-    return this.http.delete(this.localUrl + '/private/deleteGroup', httpOptions).toPromise();
+    // const jsonRequest = {
+    //   headers: new HttpHeaders({
+    //     'responseType': 'text',
+    //     'token': sessionStorage.token
+    //   })
+    // };
+    const headers = new HttpHeaders().set('token', sessionStorage.token);
+    
+    return this.http.delete(this.localUrl + '/private/deleteGroup/' + groupId, {headers, 'responseType': 'text'}).toPromise();
   }
 
   /**

@@ -55,15 +55,27 @@ export class GroupsComponent implements OnInit {
   private getGroupsUserMember() {
     this.groupService.getGroupsUserBlongsTo()
      .then(response => {
-      console.log(response);
       this.groupsUserMember = response;
     }, error => {
       console.log(error.error);
       alert(error.error);
     });
   }
+
+  private deleteGroup(dataItem){
+    if (confirm('Are you sure you want to permanently delete this group?')) {
+      // Delete group from DB
+      this.groupService.deleteGroup(dataItem.GroupId);
+
+      // Delete group from array
+      const index = this.data.indexOf(dataItem);
+      if (index > -1) {
+        this.data.splice(index, 1);
+      }
+    }
+  }
   
-  public iconClass({ text, items }: any): any {
+  private iconClass({ text, items }: any): any {
     return {
       'k-i-folder': items !== undefined,
       'k-icon': true

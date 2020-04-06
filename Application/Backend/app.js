@@ -76,7 +76,7 @@ app.post("/private/SetUserPermissionForGroup", groupsRoute);
 app.get("/private/GetGroupsMembers", groupsRoute);
 app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
 app.get("/private/GetGroupsUserOwns", groupsRoute);
-app.delete("/private/deleteGroup", groupsRoute);
+app.delete("/private/deleteGroup/:id", groupsRoute);
 app.delete("/private/RemoveUserFromGroup", groupsRoute);
 
 app.post('/private/createReference', referencesRoute);

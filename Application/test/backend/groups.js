@@ -356,7 +356,7 @@ describe('Groups', function () {
         .then (result => {
             let groupId = result._id.toString();
             return chai.request(serverAddress)
-                .delete('/private/deleteGroup')
+                .delete('/private/deleteGroup/' + groupId)
                 .set('token', testUserToken)
                 .send({_id: groupId})
                 .then((res, err) => {
@@ -369,7 +369,7 @@ describe('Groups', function () {
     it('should not find group to remove', function (done) {
         let groupId = "noSuchID";
         chai.request(serverAddress)
-            .delete('/private/deleteGroup')
+            .delete('/private/deleteGroup/' + groupId)
             .set('token', testUserToken)
             .send({_id: groupId})
             .end(function (err, res) {
@@ -389,13 +389,13 @@ describe('Groups', function () {
 
     it('should not find an _id in deleteGroup', function (done) {
         chai.request(serverAddress)
-            .delete('/private/deleteGroup')
+            .delete('/private/deleteGroup/')
             .set('token', testUserToken)
             .send()
             .end(function (err, res) {
                 try{
-                    res.statusCode.should.equal(400);
-                    res.text.should.equal("Missing group id.");
+                    console.log(res)
+                    res.statusCode.should.equal(404);
 
                     done();
                 }
