@@ -156,12 +156,14 @@ router.post('/private/createGroup', async function (req, res) {
                 Member: []
             },
         });
-        newGroup.save(function (err) {
+        newGroup.save(function (err, saveRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send(`Server error occured.`);
             } else {
-                res.status(200).send('Group created successfully.');
+                res.writeHead(200, {"Content-Type": "application/json"});
+                    res.end(JSON.stringify(saveRes));
+                // res.status(200).send('Group created successfully.');
             }
         });
     } catch (e) {
