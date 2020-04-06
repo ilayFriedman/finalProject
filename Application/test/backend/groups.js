@@ -95,7 +95,6 @@ describe('Groups', function () {
                     .send(testGroupData)
                     .end(function (err, res) {
                         try{
-                            console.log(res);
                             res.statusCode.should.equal(200);
                             res.body.Name.should.equal(testGroupData.groupName);
                             res.body.Description.should.equal(testGroupData.description);
