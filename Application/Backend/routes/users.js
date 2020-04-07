@@ -87,7 +87,8 @@ router.post('/private/changeInfo', async function (req, res) {
 
 router.get('/private/getUsers', async function (req, res) {
     try {
-        await user.find({}, function (err, result) {
+        user.find({}).select('-Password').exec()
+        .then(result => {
             if (result) {
                 console.log(result);
                 res.send(result);
