@@ -87,10 +87,10 @@ router.post('/private/changeInfo', async function (req, res) {
 
 router.get('/private/getUsers', async function (req, res) {
     try {
+        //Find all users, but exclude the Password property
         user.find({}).select('-Password').exec()
         .then(result => {
             if (result) {
-                console.log(result);
                 res.send(result);
             } else {
                 res.status(500).send(`Server error occured.`)

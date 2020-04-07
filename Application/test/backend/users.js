@@ -108,7 +108,6 @@ describe('Users', function () {
     it("Should get all users without passwords", function (done) {
         createUser()
         .then(function(){
-            console.log(testUserToken);
             chai.request(serverAddress)
             .get('/private/getUsers')
             .set('token', testUserToken)
@@ -124,7 +123,7 @@ describe('Users', function () {
 
                     //Ensure result does not contian user's password
                     assert(res.body[0].Password == undefined)
-                    
+
                     done();
                 }
                 catch(e){
