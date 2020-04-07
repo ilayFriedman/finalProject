@@ -25,7 +25,9 @@
         </mat-tab>
         <mat-tab label="References">
             <div class="tab-content" style="width: max-content;">
+                <!-- node refs -->
                 <span id="nodeRefsSpan" style="float: left;">
+                    <!-- filter node refs -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
                             <mat-form-field>
@@ -37,6 +39,7 @@
                             <button mat-raised-button (click)="this.nodeRefSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
+                    <!-- node refs table -->
                     <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -94,7 +97,9 @@
                         </span>
                     </div>
                 </span>
+                <!-- all refs  -->
                 <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAllRefs">
+                    <!-- filter -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
                             <mat-form-field>
@@ -106,9 +111,7 @@
                             <button mat-raised-button (click)="this.allRefSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
-
-
-
+                    <!-- all refs table -->
                     <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -163,11 +166,10 @@
                         <span style="float: right;">
                             <mat-paginator #allRefsPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
                             </mat-paginator>
-
                         </span>
-
                     </div>
                 </span>
+                <!-- menu between tables refs -->
                 <span style="float: right; margin: 5px;">
                     <div class="refBtn"><button mat-raised-button (click)="showAllRefs()">{{btnShowAllRefs}}</button>
                     </div>
@@ -179,8 +181,6 @@
                     </div>
                     <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
                             Reference</button></div>
-                    <!-- <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
-                            Reference</button></div> -->
 
                 </span>
             </div>
@@ -189,7 +189,9 @@
         <!-- contexts tab -->
         <mat-tab label="Contexts">
             <div class="tab-content" style="width: max-content;">
+                <!-- node ctxs -->
                 <span id="nodeCtxsSpan" style="float: left;">
+                    <!-- filter -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
                             <mat-form-field>
@@ -201,6 +203,7 @@
                             <button mat-raised-button (click)="this.nodeCtxsSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
+                    <!-- node ctxs table -->
                     <table id="nodeCtxsTbl" mat-table [dataSource]="nodeCtxsSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -246,6 +249,7 @@
                         </span>
                     </div>
                 </span>
+                <!-- all ctxs -->
                 <span id="allCtxsSpan" style="float: right;" [hidden]="!this.doShowAllCtxs">
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
@@ -258,9 +262,7 @@
                             <button mat-raised-button (click)="this.allCtxsSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
-
-
-
+                    <!-- all ctxs table -->
                     <table id="allCtxsTbl" mat-table [dataSource]="allCtxsSource" class="mat-elevation-z0">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -308,6 +310,7 @@
 
                     </div>
                 </span>
+                <!-- menu between tables ctxs -->
                 <span style="float: right; margin: 5px;">
                     <div class="refBtn"><button mat-raised-button (click)="showAllCtxs()">{{btnShowAllCtxs}}</button>
                     </div>
@@ -326,7 +329,37 @@
                 </span>
             </div>
         </mat-tab>
-        <mat-tab label="Third"> Content 5 </mat-tab>
+        <mat-tab label="Styles">
+            <div>
+                <table (change)="setNodeStyles()">
+                    <tr>
+                        <td>Shape Color:</td>
+                        <td><input type="color" [(ngModel)]="shapeColor" /></td>
+                    </tr>
+                    <tr>
+                        <td>Border Color:</td>
+                        <td><input type="color" [(ngModel)]="borderColor" /></td>
+                    </tr>
+                    <tr>
+                        <td>Border Thickness:</td>
+                        <td>
+                            <!-- <mat-form-field>
+                                <mat-label>Favorite food</mat-label>
+                                <mat-select>
+                                    <mat-option *ngFor="let food of foods" [value]="food.value">
+                                        {{food.viewValue}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field> -->
+                        </td>
+                    </tr>
+                </table>
+
+                <div>{{test}}</div>
+            </div>
+
+            <!-- <input type="button" [(colorPicker)]="color" [style.background]="color" /> -->
+        </mat-tab>
         <mat-tab label="Third"> Content 6 </mat-tab>
     </mat-tab-group>
 

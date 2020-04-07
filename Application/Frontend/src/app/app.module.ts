@@ -73,7 +73,7 @@ import { TooltipModule } from '@progress/kendo-angular-tooltip';
     MatInputModule,
     TreeViewModule,
     PopupModule,
-    TooltipModule,
+    TooltipModule
     // TreeViewModule
   ],
   providers: [
