@@ -53,6 +53,8 @@ export class LoginComponent implements OnInit {
       sessionStorage.setItem('token', response.token);
       // @ts-ignore
       sessionStorage.setItem('userFullName', response.fullName);
+      // @ts-ignore
+      sessionStorage.setItem('userId', response._id);
       this.router.navigate(['/logedHome']);
     }, error => {
       this.submitted = false;

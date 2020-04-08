@@ -63,6 +63,7 @@ app.use('/private', function (req, res, next) {
 app.post('/login', usersRoute);
 app.post('/register', usersRoute);
 app.post('/private/changeInfo', usersRoute);
+app.get('/private/getUsers', usersRoute);
 
 app.get('/private/getMap', mapsRoute);
 app.get('/private/getAllUserMaps', mapsRoute);
@@ -76,7 +77,7 @@ app.post("/private/SetUserPermissionForGroup", groupsRoute);
 app.get("/private/GetGroupsMembers", groupsRoute);
 app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
 app.get("/private/GetGroupsUserOwns", groupsRoute);
-app.delete("/private/deleteGroup", groupsRoute);
+app.delete("/private/deleteGroup/:id", groupsRoute);
 app.delete("/private/RemoveUserFromGroup", groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
@@ -86,10 +87,11 @@ app.post('/private/createContext', contextRoute);
 app.get('/private/getAllContexts', contextRoute);
 
 app.post('/private/createFolder', foldersRoute)
-app.post('/private/getFolderContents', foldersRoute)
+app.post('/private/getFolderContentsLists', foldersRoute)
 app.post('/private/getFolderProperties', foldersRoute)
 app.post('/private/addMapToFolder', foldersRoute)
 app.post('/private/updateFolderProperties', foldersRoute)
 app.delete('/private/removeMapFromFolder', foldersRoute)
 app.get('/private/getRootFolderById', foldersRoute)
+app.delete('/private/removeFolderFromFolder/:parentID&:folderID', foldersRoute)
 
