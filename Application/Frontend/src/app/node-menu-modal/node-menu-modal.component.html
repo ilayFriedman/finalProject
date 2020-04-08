@@ -2,29 +2,27 @@
     <mat-tab-group id="nodeMenu" (selectedTabChange)="tabClick($event)">
         <mat-tab label="Details">
             <div class="tab-content">
-                <table id="detailsTable" class="table table-hover borderless table-vcenter">
-                    <tbody>
-                        <tr>
-                            <td>Text:</td>
-                            <td>
-                                <input type="text" id="textFeature" class="form-control" name="objectText"
-                                    [(ngModel)]="this.modalService.currNodeData.text">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Description:</td>
-                            <td>
-                                <textarea id="descriptionFeature" name="objectDescription" class="form-control"
-                                    cols="30" rows="5"
-                                    [(ngModel)]="this.modalService.currNodeData.description"></textarea>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="detailsTable" style="    width: fit-content; float: inline-end;"
+                    class="table table-hover borderless table-vcenter">
+                    <div class="menu-form-small">
+                        <span class="small-menu-option">Text:</span>
+                        <span>
+                            <input type="text" id="textFeature" class="form-control" name="objectText"
+                                [(ngModel)]="this.modalService.currNodeData.text">
+                        </span>
+                    </div>
+                    <div>
+                        <span class="small-menu-option">Description:</span>
+                        <span>
+                            <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30"
+                                rows="5" [(ngModel)]="this.modalService.currNodeData.description"></textarea>
+                        </span>
+                    </div>
+                </div>
             </div>
         </mat-tab>
         <mat-tab label="References">
-            <div class="tab-content" style="width: max-content;">
+            <div class="tab-content" style="width: max-content; ">
                 <!-- node refs -->
                 <span id="nodeRefsSpan" style="float: left;">
                     <!-- filter node refs -->
@@ -188,7 +186,7 @@
 
         <!-- contexts tab -->
         <mat-tab label="Contexts">
-            <div class="tab-content" style="width: max-content;">
+            <div class="tab-content" style="width: max-content; ">
                 <!-- node ctxs -->
                 <span id="nodeCtxsSpan" style="float: left;">
                     <!-- filter -->
@@ -329,38 +327,39 @@
                 </span>
             </div>
         </mat-tab>
+        <!-- node styles -->
         <mat-tab label="Styles">
-            <div>
-                <table (change)="setNodeStyles()">
-                    <tr>
-                        <td>Shape Color:</td>
-                        <td><input type="color" [(ngModel)]="shapeColor" /></td>
-                    </tr>
-                    <tr>
-                        <td>Border Color:</td>
-                        <td><input type="color" [(ngModel)]="borderColor" /></td>
-                    </tr>
-                    <tr>
-                        <td>Border Thickness:</td>
-                        <td>
-                            <!-- <mat-form-field>
-                                <mat-label>Favorite food</mat-label>
-                                <mat-select>
-                                    <mat-option *ngFor="let food of foods" [value]="food.value">
-                                        {{food.viewValue}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field> -->
-                        </td>
-                    </tr>
-                </table>
-
-                <div>{{test}}</div>
+            <div class="menu-form-small" (change)="setNodeStyles()">
+                <div>
+                    <span class="small-menu-option">Shape Color:</span>
+                    <span><input type="color" [(ngModel)]="shapeColor" /></span>
+                </div>
+                <div>
+                    <span class="small-menu-option">Border Color:</span>
+                    <span><input type="color" [(ngModel)]="borderColor" /></span>
+                </div>
+                <div>
+                    <span class="small-menu-option">Border Thickness:</span>
+                    <!-- <span> -->
+                    <mat-form-field class="node-style-select">
+                        <mat-select (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
+                            <mat-option value="0">0px</mat-option>
+                            <mat-option value="1">1px</mat-option>
+                            <mat-option value="2">2px</mat-option>
+                            <mat-option value="3">3px</mat-option>
+                            <mat-option value="4">4px</mat-option>
+                            <mat-option value="5">5px</mat-option>
+                            <mat-option value="6">6px</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- </span> -->
+                </div>
             </div>
+
 
             <!-- <input type="button" [(colorPicker)]="color" [style.background]="color" /> -->
         </mat-tab>
-        <mat-tab label="Third"> Content 6 </mat-tab>
+        <!-- <mat-tab label="Third"> Content 6 </mat-tab> -->
     </mat-tab-group>
 
 

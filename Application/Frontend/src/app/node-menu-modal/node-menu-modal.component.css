@@ -20,8 +20,8 @@ tbody {
 
 .mat-raised-button {
     /* padding: 10px 100%; */
-    width: min-content;
-    height: min-content;
+    width: max-content;
+    height: fit-content;
 }
 
 .mat-form-field {
@@ -34,7 +34,20 @@ tbody {
 
 #nodeRefsSpan, #allRefsSpan {
     margin-top: 5px;
+    width: max-content;
+}
+
+.menu-form-small {
     width: fit-content;
+    float: inline-end;
+}
+
+.small-menu-option {
+    margin: 5px;
+}
+
+.node-style-select {
+    width: 30%;
 }
 
 .jw-modal {
@@ -61,7 +74,7 @@ tbody {
     border: 1px solid #888;
     min-width: max-content;
     width: max-content;
-    height: max-content;
+    height: fit-content;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
     line-height: 10pt;

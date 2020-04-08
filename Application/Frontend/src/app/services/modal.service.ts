@@ -7,7 +7,7 @@ export class ModalService {
   private modals: any[] = [];
   currNodeData: any = {};
 
-// basic use
+  // basic use
   open(id: string) {
     // open modal specified by id
 
@@ -22,7 +22,7 @@ export class ModalService {
   }
 
 
-// inside component use (dont need to implement)
+  // inside component use (dont need to implement)
   add(modal: any) {
     // add modal to array of active modals
     this.modals.push(modal);
@@ -34,7 +34,7 @@ export class ModalService {
   }
 
 
-// functionality for mapMenu (in map-viwewer component)
+  // functionality for mapMenu (in map-viwewer component)
   openMenu(id: String, currNode) {
     this.currNodeData = currNode
     let modal: any = this.modals.filter(x => x.id === id)[0];

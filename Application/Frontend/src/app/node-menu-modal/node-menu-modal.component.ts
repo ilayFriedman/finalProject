@@ -84,8 +84,10 @@ export class NodeMenuModalComponent implements OnInit {
     title: new FormControl(),
   });
 
+  // #### node styles ####
   shapeColor: string;
   borderColor: string;
+  borderThickness: string;
 
 
   constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
@@ -431,9 +433,18 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   setNodeStyles() {
-    console.log("styles");
-    this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+    console.log(this.borderThickness);
+    // this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+      if (node.key == this.modalService.currNodeData.key) {
+        console.log(node);
 
+        this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "stroke", this.borderColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "strokeWidth", parseInt(this.borderThickness))
+
+      }
+    });
   }
 
 }
