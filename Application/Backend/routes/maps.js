@@ -3,6 +3,7 @@ const router = express.Router();
 const map = require('../models/map');
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
+const folder = require('../models/folder')
 
 function UserHasReadPermissionForMap(resMap, userId) {
     if (resMap.Permission.Owner.userId == userId) {
@@ -95,12 +96,21 @@ router.post('/private/createMap', async function(req, res) {
             Subscribers: [],
             ContainingFolders: []
         });
-        newMap.save(function(err) {
+        newMap.save(function(err,saveRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send(`Server error occured.`);
             } else {
-                res.status(200).send('Map added successfully');
+                // update parent folder
+                folder.findOneAndUpdate({'_id': req.body.folderID},{$addToSet:{'MapsInFolder': {"mapID" : saveRes._id.toString(), "mapName": saveRes.MapName}}}, function(err, result) {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.writeHead(200, {"Content-Type": "application/json"});
+                        res.end(JSON.stringify(saveRes));
+                    }
+                });
             }
         });
     } catch (e) {
@@ -109,16 +119,24 @@ router.post('/private/createMap', async function(req, res) {
     }
 });
 
-router.delete('/private/removeMap', async function(req, res) {
-    if (req.body._id) {
-        map.findOne({ _id: req.body._id }, function(err, result) {
+router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
+    if (req.params.mapID) {
+        map.findOne({ _id: req.params.mapID }, function(err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
                     map.deleteOne({ _id: result._id }, function(err) {
                         if (err) {
                             res.status(500).send(`Server error occured.`);
                         } else {
-                            res.status(200).send("Map deleted successfully.");
+                            // update parent
+                            folder.findOneAndUpdate({_id: req.params.folderID},{$pull:{'MapsInFolder': {"mapID": req.params.mapID}}}, function(err, result) {
+                                if (err) {
+                                    console.log(err);
+                                    res.status(500).send("Server error occurred while pop from parent folder.");
+                                } else {
+                                    res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                }
+                            });
                         }
                     });
                 } else {

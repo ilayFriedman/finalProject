@@ -4,7 +4,7 @@
         <div>
                 <div>
 
-                <!-- delelte dialog configuration -->
+                <!-- delete dialog configuration -->
                     <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
                     <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
                     <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Deleting it will delete all the files inside it as well</p>
@@ -26,7 +26,7 @@
                 <ng-template kendoTreeViewNodeTemplate let-dataItem>
                     <span (mouseenter)="mouseOverNodeChanger(dataItem)" (mouseleave)="mouseOverNodeChanger(null)">
                         <span [ngClass]="iconClass(dataItem)"></span><!-- ICON-->
-                        <span style="margin-right: 10px;" (click)="activateMapInMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
+                        <span style="margin-right: 10px;" (click)="loadSelectedMap_toMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
                         
                         <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
                             <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
@@ -35,8 +35,8 @@
                                     <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                                 <span>
-                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="handleSelectionButton(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
-                                    <span style="margin-right: 10px;" class="k-icon k-i-table-insert"></span><!-- addMap-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-table-insert" (click)="clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span><!-- addMap-->
                                 </span>     
 
                             </span>
@@ -54,9 +54,6 @@
             </div>
 
     </div>
-        <!-- <div class="example-config">
-            Selected keys: {{selectedFolder}}
-        </div> -->
     </mat-tab>
     <mat-tab label="Maps Shared With Me:">
         coming soon! :)
@@ -67,7 +64,7 @@
   <!-- add folder modal -->
 <jw-modal class="jw-modal" id="addFolderModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeModal_addFolder()">&times;</span>
+        <span class="close" (click)="closeModal('addFolderModal')">&times;</span>
         <div *ngIf="!actionInModalIsSuccecs">
             <h2>Add New Folder</h2>
             <div style="font-size: 13px;">Please insert folder name (required. name "/" invalid), and some description (required)</div>
@@ -96,16 +93,34 @@
 </jw-modal>
 
 
-<div>
-    
-    <h2>Add New Map:</h2>
-    <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap(addMapCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
-        <div>
-            <label>Map Name: </label>
-            <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
-        </div>  
-        <input type="submit" value="Add Map">
-    </form>
-</div>
+  <!-- add map modal -->
+  <jw-modal class="jw-modal" id="addMapModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeModal('addMapModal')">&times;</span>
+        <div *ngIf="!actionInModalIsSuccecs">
+            <h2>Add New Map:</h2>
+            <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap(addMapCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+                <div>
+                    <label>Map Name: </label>
+                    <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
+                </div>  
+                <div>
+                    <label>Description: </label>
+                    <textarea id="description" formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
+                </div>
+                <input type="submit" value="Add Map">
+                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+            </form>
+        </div>
+
+        <div *ngIf="actionInModalIsSuccecs">
+            <div>The Folder Added Successfully!<br><br></div>
+            <div><span>(window will close in 2 secondes)</span></div>
+
+        </div>
+    </div>
+</jw-modal>
+
+
 
 </div>

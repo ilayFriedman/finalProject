@@ -67,7 +67,7 @@ app.post('/private/changeInfo', usersRoute);
 app.get('/private/getMap', mapsRoute);
 app.get('/private/getAllUserMaps', mapsRoute);
 app.post('/private/createMap', mapsRoute);
-app.delete('/private/removeMap', mapsRoute);
+app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
 
 app.post("/private/createGroup", groupsRoute);
@@ -88,9 +88,8 @@ app.get('/private/getAllContexts', contextRoute);
 app.post('/private/createFolder', foldersRoute)
 app.post('/private/getFolderContentsLists', foldersRoute)
 app.post('/private/getFolderProperties', foldersRoute)
-app.post('/private/addMapToFolder', foldersRoute)
+// app.post('/private/addMapToFolder', foldersRoute)
 app.post('/private/updateFolderProperties', foldersRoute)
-app.delete('/private/removeMapFromFolder', foldersRoute)
 app.get('/private/getRootFolderById', foldersRoute)
 app.delete('/private/removeFolderFromFolder/:parentID&:folderID', foldersRoute)
 

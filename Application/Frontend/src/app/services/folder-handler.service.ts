@@ -43,7 +43,9 @@ returns subFolders, mapsInFolder lists of given folder
     return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
+
   removeFolderFromFolder(parentID, folderID){
-    return this.http.delete(this.localUrl + '/private/removeFolderFromFolder/'+ parentID+"&"+ folderID ,{ headers: { 'token': sessionStorage.token}}).toPromise()
+    return this.http.delete(this.localUrl + '/private/removeFolderFromFolder/'+ parentID+"&"+ folderID ,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
+
 }
