@@ -8,6 +8,7 @@ import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
+
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
   selector: 'app-mapsfolders-viewer',
@@ -19,23 +20,22 @@ export class MapsfoldersViewerComponent implements OnInit {
   // forms validation checkouts
   addFolderCheckOut;
   addMapCheckOut;
+  editPropertiesCheckOut;
   
   //folders variables
-  public data: any[] = [{
-    text: "/",
-    folderID: "5e80d535132e0540b827c4cd",
-    parentNode: "",
-    items: [],
-    isFolder : true,
-  }];
-  selectedFolder: any;
-  public parsedData: any[] = this.data;
+  public data: any[] = [];
+  selectedNode: any = {text:"", Description: ""};
   public expandedKeys: any[] = ['/']; // root: key /, is already expanded 
-  public expandedAtLeastOnce :any = ['5e80d535132e0540b827c4cd']  // root: index 0, is already expanded ; REST in saved by _id
   mouseOverNode: any;
   actionInModalIsSuccecs: boolean = false;
   formErrors: string;
   fileToDelete: any;
+  totalFolderCounter = 0
+  totalMapsCounter = 0
+
+  // filter on tree
+  public searchTerm = '';
+  public parsedData: any[] = this.data;
 
 
 
@@ -43,19 +43,26 @@ export class MapsfoldersViewerComponent implements OnInit {
   constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
     this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required],description: ['', Validators.required]});
+    this.editPropertiesCheckOut = this.formBuilder.group({fileName: [''],description: ['']});
     
   }
   
 
 
   ngOnInit() {
+
+    //fisrt push by hand
+    this.data.push({
+      text: "/",
+      folderID: "5e80d535132e0540b827c4cd",
+      Description:"",
+      parentNode: "",
+      items: [],
+      isFolder : true,
+    })
     // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
-
-      console.log('======getRootUserFolder request OK=====');
-      this.inserMapsToMapTreeViewer(res, this.data[0])
-      this.insertFoldersToMapTreeViewer(res, this.data[0])  
-
+      this.fillTreeView(res, this.data[0])
     }).catch
       (err => {
         console.log("error here");
@@ -67,53 +74,42 @@ export class MapsfoldersViewerComponent implements OnInit {
   }
 
   // tree-view icon's init
-  public iconClass({ text, items }: any): any {
+  public iconClass(dataItem): any {
+    
     return {
-      'k-i-file-pdf': is(text, 'pdf'),
-      'k-i-folder': items !== undefined,
-      'k-i-table-align-middle-center': items == undefined,
-      'k-i-image': is(text, 'jpg|png'),
+      'k-i-file-pdf': is(dataItem.text, 'pdf'),
+      'k-i-folder': dataItem.items !== undefined,
+      'k-i-table-align-middle-center': dataItem.items == undefined,
+      'k-i-image': is(dataItem.text, 'jpg|png'),
       'k-icon': true
   };
 }
 
-
-inserMapsToMapTreeViewer(folderLists,rootNode){
-  folderLists.MapsInFolder.forEach(map => {
-  rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, isFolder: false})
-  });
-
-}
-
-insertFoldersToMapTreeViewer(folderLists, rootNode){
-  // get all child-folder
-  folderLists.SubFolders.forEach(folder=>{
-    var folderNode = {text: folder.folderName, folderID: folder.folderID, parentNode:rootNode, items: [], isFolder: true}
-    // console.log("inset folder: "+ folderNode.folderID);
-    
-    rootNode.items.push(folderNode)
-    // get next level of each folder
-    this.folderHandler.getFolderContentsLists(folderNode.folderID).then(res => {
-          // console.log('======get Content folder request OK=====');
-          this.inserMapsToMapTreeViewer(res,folderNode)
-          this.nextLevelSubFoldersInsert(res,folderNode)
-          console.log(res);
-
-        }).catch
-          (err=> {
-            console.log("error with creation - promise return");
-            console.log(err)
-          })
-
-  });
-  
-  
-}
-
-nextLevelSubFoldersInsert(folderObecjt,rootNode){
-  folderObecjt.SubFolders.forEach(folder => {
-    rootNode.items.push({text: folder.folderName, folderID: folder.folderID, parentNode: rootNode,  items: [], isFolder: true})
+fillTreeView(folderLists,rootNode){
+  if(folderLists.MapsInFolder.length != 0){
+    folderLists.MapsInFolder.forEach(map => {
+      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, isFolder: false})
+      this.totalMapsCounter++;
     });
+  }
+  if(folderLists.SubFolders.length != 0){
+    folderLists.SubFolders.forEach(subFolder => {
+      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode,isFolder: true}
+      rootNode.items.push(folderNode)
+      this.totalFolderCounter++;
+      
+      this.folderHandler.getFolderContentsLists(subFolder.folderID).then(res => {
+        this.fillTreeView(res,folderNode)
+
+      }).catch
+        (err=> {
+          console.log("error with creation - promise return");
+          console.log(err)
+        })
+
+    });
+
+  }
 }
 
 onSubmit_AddFolder(){
@@ -126,16 +122,16 @@ onSubmit_AddFolder(){
   var self = this
   var findDuplicateFolder = false
   // look for duplicate name
-  this.selectedFolder.items.forEach(element => {
+  this.selectedNode.items.forEach(element => {
     if (self.addFolderCheckOut.controls.folderName.value == element.text){
       findDuplicateFolder = true
     } 
   });
   if(findDuplicateFolder == false){
-    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
+    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedNode.folderID).then(res => {
       console.log('======create new folder request OK=====');
       var jsonRes = JSON.parse(res)
-      self.selectedFolder.items.push({text: jsonRes.Name, folderID: jsonRes._id, parentNode: self.selectedFolder, items: [], isFolder: true})
+      self.selectedNode.items.push({text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true})
       this.actionInModalIsSuccecs = true
       setTimeout (() => {this.closeModal("addFolderModal")}, 1000);
     }).catch
@@ -163,16 +159,15 @@ onSubmit_AddMap(){
   this.formErrors = ""
   var findDuplicateFolder = false
   // look for duplicate name
-  this.selectedFolder.items.forEach(element => {
+  this.selectedNode.items.forEach(element => {
     if (self.addMapCheckOut.controls.mapName.value == element.text){
       findDuplicateFolder = true
     } 
   });
   
   if(findDuplicateFolder == false){
-
     // map creation
-    this.mapHandler.createMap(this.addMapCheckOut.controls.mapName.value,this.addMapCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
+    this.mapHandler.createMap(this.addMapCheckOut.controls.mapName.value,this.addMapCheckOut.controls.description.value,this.selectedNode.folderID).then(res => {
       console.log('======create new map request OK=====');
       var jsonRes = JSON.parse(res)
 
@@ -180,7 +175,7 @@ onSubmit_AddMap(){
       // this.folderHandler.addMapToFolder(this.selectedFolder.folderID,jsonRes._id,jsonRes.MapName).then(res => {
         console.log('======add map to parent folder request OK=====');
         // add to tree-view
-        self.selectedFolder.items.unshift({text: jsonRes.MapName, mapID: jsonRes._id, parentNode:this.selectedFolder, isFolder: false})
+        self.selectedNode.items.unshift({text: jsonRes.MapName, mapID: jsonRes._id, Description: jsonRes.Description, parentNode:this.selectedNode, isFolder: false})
         this.actionInModalIsSuccecs = true
         setTimeout (() => {this.closeModal("addMapModal")}, 1000);
 
@@ -202,6 +197,10 @@ onSubmit_AddMap(){
   }
 }
 
+onSubmit_editProperties(){
+
+}
+
 // getDescription(dataItem){
 //   if(dataItem.isFolder){
 //     this.folderHandler.getFolderProperties(dataItem.folderID).then(res => {
@@ -217,8 +216,17 @@ onSubmit_AddMap(){
 //   }
 // }
 
+
+// listeners
 mouseOverNodeChanger(dataItem){
   this.mouseOverNode = dataItem
+}
+
+
+public clickUpdateDataItem(dataItem) {
+  this.selectedNode = dataItem
+  console.log(this.selectedNode);
+  
 }
 
 loadSelectedMap_toMapViewer(dataItem){
@@ -243,6 +251,7 @@ closeModal(modalId){
   this.formErrors=''
   this.addFolderCheckOut.reset();
   this.addMapCheckOut.reset();
+  this.editPropertiesCheckOut.reset();
 
 }
 
@@ -252,25 +261,25 @@ public deleteDialogOpened = false;
 
 public closeDialog(status, fileToDelete) {
   this.deleteDialogOpened = false;
-  console.log(fileToDelete)
   if(status == "yes"){  // the user choose to delete the file
-    if(fileToDelete.isFolder){  // folder-file
-      if(fileToDelete.items.length != 0){}  // delete all inside
-
-      // delete the folder
-      this.deleteSingleFolder(fileToDelete);
-    }
-    else{ // map-file
-      console.log(fileToDelete)
-      this.deleteSignleMap(fileToDelete);
-    }
+    this.recursiveDelete(fileToDelete)
   }
 }
 
+public recursiveDelete(fileToDelete){
+  if(!fileToDelete.isFolder){
+    return this.deleteSignleMap(fileToDelete)
+  }
+  if(fileToDelete.isFolder && fileToDelete.items.length == 0){
+    return this.deleteSingleFolder(fileToDelete)
+  }
+  for (let item of fileToDelete.items){
+    this.recursiveDelete(item)
+  }
+  return this.deleteSingleFolder(fileToDelete)
+  
+}
   private deleteSignleMap(fileToDelete: any) {
-
-    
-    // this.folderHandler.removeMapFromFolder(fileToDelete.parentNode.folderID, fileToDelete.mapID).then(res => {
       this.mapHandler.deleteMap(fileToDelete).then(res => {
         fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
         this.data = this.data.slice();
@@ -278,9 +287,6 @@ public closeDialog(status, fileToDelete) {
       }).catch(err => {
         console.log(err);
       });
-    // }).catch(err => {
-    //   console.log(err);
-    // });
   }
 
   private deleteSingleFolder(fileToDelete: any) {
@@ -301,12 +307,6 @@ public openDialog(dataItem) {
 
 // ############### Tree-view functionallity ########################
 
-public clickUpdateDataItem(dataItem) {
-  this.selectedFolder = dataItem
-  console.log(this.selectedFolder);
-  
-}
-
 
 public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
 public hasChildren = (dataitem: any): boolean => !!dataitem.items;
@@ -324,25 +324,8 @@ public handleCollapse(node) {
 * An `expand` event handler that will add the node hierarchical index
 * to the collection, expanding the its children.
 */
-public handleExpand(node) {
-  // console.log(node);
-
-  node.dataItem.items.forEach(folder=>{
-    // console.log("=========== "+folder)
-    if(this.expandedAtLeastOnce.indexOf(folder.folderID) == -1){
-      this.expandedAtLeastOnce.push(folder.folderID)
-      // get next level of each folder
-      this.folderHandler.getFolderContentsLists(folder.folderID).then(res => {
-        this.nextLevelSubFoldersInsert(res,folder)
-      }).catch
-        (err=> {
-          console.log("error with getFolderContentsLists - promise return");
-          console.log(err)
-        })
-        
-    }
-  });
-  this.expandedKeys = this.expandedKeys.concat(node.index);
+public handleExpand(expandedNode) {
+  this.expandedKeys = this.expandedKeys.concat(expandedNode.index);
 }
 
 public isExpanded = (dataItem: any, index: string) => {
@@ -352,7 +335,7 @@ public isExpanded = (dataItem: any, index: string) => {
 
 public onkeyup(value: string): void {
   this.parsedData = this.search(this.data, value);
-  console.log(this.parsedData)
+  // console.log(this.parsedData)
 }
 
 public search(items: any[], term: string): any[] {
@@ -368,7 +351,7 @@ public search(items: any[], term: string): any[] {
       }
 
         return acc;
-    },                []);
+    }, []);
 }
 
 public contains(text: string, term: string): boolean {

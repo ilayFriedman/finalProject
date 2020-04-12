@@ -6,9 +6,19 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class FolderHandlerService {
   localUrl = 'http://localhost:3000';
-
   constructor(private http: HttpClient) { }
 
+
+  createFolder(folderName, folderDesc, parentDir) {
+    const bodyReq = {
+      folderName: folderName,
+      Description: folderDesc,
+      ParentDir: parentDir
+    }
+    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
+  }
+
+  
   /*
   return rootFolder of given user
   */
@@ -30,17 +40,7 @@ returns subFolders, mapsInFolder lists of given folder
   returns folder name and properties of given folder
   */  
   getFolderProperties(folderId: String) {
-    return this.http.post(this.localUrl + '/private/getFolderProperties', {FolderID: folderId},{ headers: { 'token': sessionStorage.token}}).toPromise()
-  }
-
-
-  createFolder(folderName, folderDesc, parentDir) {
-    const bodyReq = {
-      folderName: folderName,
-      Description: folderDesc,
-      ParentDir: parentDir
-    }
-    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
+    return this.http.get(this.localUrl + '/private/getFolderProperties/'+folderId,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
 

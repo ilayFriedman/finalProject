@@ -1,9 +1,22 @@
 <div>
 <mat-tab-group>
-    <mat-tab label="My Maps:">
-        <div>
-                <div>
+    <mat-tab label="My Maps & Folders:">
+        <div style="padding-left: 25px; margin: auto;">
+            <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
+                <tr>
+                    <td><span class="k-icon k-i-pencil"></span> Edit properties</td>
+                    <td><span class="k-icon k-i-delete"></span> Delete file</td>
+                    <td><span class="k-icon k-i-plus"></span> Add sub-folder</td>
+                    <td><span class="k-icon k-i-table-insert"></span> Add Map</td>
+                </tr>
+            </table>
+        </div>
+        <!-- <div>
+            <input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Search categories" />
+        </div> -->
+        <div style="padding-top: 5%;">
 
+                <div>
                 <!-- delete dialog configuration -->
                     <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
                     <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
@@ -31,8 +44,8 @@
                         <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
                             <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
                                 <span>
-                                    <span *ngIf="!opened" style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
-                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span *ngIf="!opened" style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
+                                    <span *ngIf="dataItem.text!='/'" style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                                 <span>
                                     <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
@@ -42,18 +55,20 @@
                             </span>
                             <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
                                 <span>
-                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil"></span><!-- update-->
+                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
                                     <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                 </span>
                             </span>
                         </span>
 
-                    </span>
-                </ng-template>
-            </kendo-treeview>
-            </div>
+                        </span>
+                    </ng-template>
+                </kendo-treeview>
+                <div *ngIf="data[0].items.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
+                <br><span style="font-size: 13px; text-align: center;">Click on the folder icon to create some new files</span></div>
+                </div>
 
-    </div>
+        </div>
     </mat-tab>
     <mat-tab label="Maps Shared With Me:">
         coming soon! :)
@@ -61,36 +76,36 @@
   </mat-tab-group>
 
 
-  <!-- add folder modal -->
-<jw-modal class="jw-modal" id="addFolderModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeModal('addFolderModal')">&times;</span>
-        <div *ngIf="!actionInModalIsSuccecs">
-            <h2>Add New Folder</h2>
-            <div style="font-size: 13px;">Please insert folder name (required. name "/" invalid), and some description (required)</div>
-            <br><br>
-            <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
-                <div>
-                    <label>Folder Name: </label>
-                    <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
-                </div>  
-                <div>
-                    <label>Description: </label>
-                    <textarea id="description" formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
-                </div>
+    <!-- add folder modal -->
+    <jw-modal class="jw-modal" id="addFolderModal">
+        <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+            <span class="close" (click)="closeModal('addFolderModal')">&times;</span>
+            <div *ngIf="!actionInModalIsSuccecs">
+                <h2>Add New Folder</h2>
+                <div style="font-size: 13px;">Please insert folder name (required. name "/" invalid), and some description (required)</div>
                 <br><br>
-                <input type="submit" value="Add Folder">
-                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
-            </form>
-        </div>
+                <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
+                    <div>
+                        <label>Folder Name: </label>
+                        <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
+                    </div>  
+                    <div>
+                        <label>Description: </label>
+                        <textarea  formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
+                    </div>
+                    <br><br>
+                    <input type="submit" value="Add Folder">
+                    <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+                </form>
+            </div>
 
-        <div *ngIf="actionInModalIsSuccecs">
-            <div>The Folder Added Successfully!<br><br></div>
-            <div><span>(window will close in 2 secondes)</span></div>
+            <div *ngIf="actionInModalIsSuccecs">
+                <div>The Folder Added Successfully!<br><br></div>
+                <div><span>(window will close in 2 secondes)</span></div>
 
+            </div>
         </div>
-    </div>
-</jw-modal>
+    </jw-modal>
 
 
   <!-- add map modal -->
@@ -106,7 +121,7 @@
                 </div>  
                 <div>
                     <label>Description: </label>
-                    <textarea id="description" formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
+                    <textarea formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
                 </div>
                 <input type="submit" value="Add Map">
                 <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
@@ -121,6 +136,42 @@
     </div>
 </jw-modal>
 
+
+
+  <!-- edit properties modal -->
+  <jw-modal class="jw-modal" id="editPropertiesModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeModal('editPropertiesModal')">&times;</span>
+        <div *ngIf="!actionInModalIsSuccecs">
+
+            <h2 >Edit properties "{{selectedNode.text}}":</h2>
+            <div style="font-size: 13px;">Please check "V" on fields you would like to change.</div>
+            <br><br>
+            <form [formGroup]="editPropertiesCheckOut" (ngSubmit)="onSubmit_editProperties()">
+                <div>
+                    <input type="checkbox" />
+                    <label>File Name: </label>
+                    <input id="fileName" type="text" formControlName="fileName" placeholder="{{selectedNode.text}}">
+                </div>  
+                <div>
+                    <input type="checkbox" ng-model="DescChecked"/>
+                    <label>Description: </label>
+                    <textarea formControlName="description" rows="4" cols="50" placeholder="{{selectedNode.Description}}" ng-disabled="DescChecked"></textarea>
+                </div>
+                <br><br>
+                <input type="submit" value="Update Details">
+                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+            </form>
+
+        </div>
+
+        <div *ngIf="actionInModalIsSuccecs">
+            <div>The Folder Added Successfully!<br><br></div>
+            <div><span>(window will close in 2 secondes)</span></div>
+
+        </div>
+    </div>
+</jw-modal>
 
 
 </div>

@@ -4,7 +4,6 @@ const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
 
-
 router.post('/private/createFolder', async function(req, res) {
     try {
         const CreatorId = req.decoded._id;
@@ -46,20 +45,24 @@ router.post('/private/createFolder', async function(req, res) {
                     res.end(JSON.stringify(saveRes));
                 }
                 }
-
         });
-     
     } catch (e) {
         console.log(e);
         res.status(500).send();
     }
 })
 
+/**
+ * @param FolderID 
+ * @returns mapsInFolder-list and subFolders-list
+ */
 router.post('/private/getFolderContentsLists', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
+
                 var answer = {"MapsInFolder": result.MapsInFolder, "SubFolders" :result.SubFolders}
+                
                 res.writeHead(200, {"Content-Type": "application/json"});
                 res.end(JSON.stringify(answer));
                 res.status(200).send()
@@ -74,9 +77,9 @@ router.post('/private/getFolderContentsLists', async function(req, res) {
 
 
 
-router.post('/private/getFolderProperties', async function(req, res) {
+router.get('/private/getFolderProperties/:FolderID', async function(req, res) {
     try {
-        folder.findOne({'_id': req.body.FolderID}, function(err, result) {
+        folder.findOne({'_id': req.params.FolderID}, function(err, result) {
             if (result) {
                 res.status(200).send({"FolderName": result.Name, "FolderDescription" :result.Description})
             } else {

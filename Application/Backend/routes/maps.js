@@ -126,29 +126,42 @@ router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
                     map.deleteOne({ _id: result._id }, function(err) {
                         if (err) {
-                            res.status(500).send(`Server error occured.`);
+                            // res.status(500).send(`Server error occured.`);
+                            res.statusCode = 500;
                         } else {
                             // update parent
                             folder.findOneAndUpdate({_id: req.params.folderID},{$pull:{'MapsInFolder': {"mapID": req.params.mapID}}}, function(err, result) {
                                 if (err) {
                                     console.log(err);
-                                    res.status(500).send("Server error occurred while pop from parent folder.");
+                                    // res.status(500).send("Server error occurred while pop from parent folder.");
+                                    res.statusCode = 500;
+                                    res.end();
                                 } else {
-                                    res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                    // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                    res.statusCode = 200;
+                                    res.end();
                                 }
                             });
                         }
                     });
                 } else {
-                    res.status(403).send("The user's permissions are insufficient to delete map");
+                    // res.status(403).send("The user's permissions are insufficient to delete map");
+                    res.statusCode = 403;
+                    res.end();
                 }
             } else {
-                res.status(404).send(`Could not find the requested map.`);
+                // res.status(404).send(`Could not find the requested map.`);
+                res.statusCode = 404;
+                res.end();
             }
         })
     } else {
-        res.status(400).send(`Missing map id`);
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
     }
+    
+    
 
 });
 

@@ -87,9 +87,8 @@ app.get('/private/getAllContexts', contextRoute);
 
 app.post('/private/createFolder', foldersRoute)
 app.post('/private/getFolderContentsLists', foldersRoute)
-app.post('/private/getFolderProperties', foldersRoute)
-// app.post('/private/addMapToFolder', foldersRoute)
 app.post('/private/updateFolderProperties', foldersRoute)
+app.get('/private/getFolderProperties/:FolderID', foldersRoute)
 app.get('/private/getRootFolderById', foldersRoute)
 app.delete('/private/removeFolderFromFolder/:parentID&:folderID', foldersRoute)
 
