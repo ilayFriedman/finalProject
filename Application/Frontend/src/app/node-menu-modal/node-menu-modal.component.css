@@ -4,11 +4,18 @@ table {
     /* table-layout:fixed; */
 }
 
+.mat-tab-lable {
+    justify-content: center;
+    /* width: 20%; */
+    display: flex;
+}
+
 .tab-content {
     align-items: center;
     justify-content: space-around;
-    display: flex;
-    width: fit-content;
+    /* display: flex; */
+    width: 100%;
+    margin-right: 15px;
 }
 
 tbody {
@@ -40,7 +47,7 @@ tbody {
 }
 
 .small-menu-option {
-    margin: 5px;
+    margin: 15px;
 }
 
 .jw-modal {
@@ -62,7 +69,7 @@ tbody {
 .jw-modal-body {
     text-align: center;
     background-color: #fefefe;
-    margin: 0 auto;
+    margin: 10 auto;
     padding: 20px;
     border: 1px solid #888;
     min-width: max-content;

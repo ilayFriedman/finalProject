@@ -4,7 +4,7 @@ import { MatTableDataSource, MatPaginator, } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
-import { RefCtxHendlerService } from '../services/referenceContext/reference-context-hendler.service';
+import { RefCtxHendlerService } from '../services/referenceContext/node-menu-hendler.service';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';
 import { MapsHandlerService } from '../services/maps-handler.service';
@@ -25,6 +25,14 @@ export interface ContextElement {
   Title: string,
   CreatorId: string,
   CreationTime: string
+}
+
+export interface CommentElement {
+  Content: string,
+  CreatorId: string,
+  CreationTime: string,
+  LastModificationTime: string,
+  Likes: number
 }
 
 
@@ -89,6 +97,8 @@ export class NodeMenuModalComponent implements OnInit {
   borderColor: string;
   borderThickness: string;
 
+  // #### Comments ####
+  nodeComments: CommentElement[] = []
 
   constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
 
@@ -107,6 +117,8 @@ export class NodeMenuModalComponent implements OnInit {
       title: ['', Validators.required]
     });
     this.loadCtxsFromDB();
+
+
   }
 
 
@@ -119,6 +131,17 @@ export class NodeMenuModalComponent implements OnInit {
         this.loadNodeRefs();
         break;
       }
+      case 2: {
+        console.log("ctx tab");
+        this.loadNodeCtxs();
+        break;
+      }
+      case 4: {
+        console.log("comment tab");
+        this.loadNodeComments();
+        break;
+      }
+
       // case constant_expression2: { 
       //    //statements; 
       //    break; 
@@ -221,6 +244,12 @@ export class NodeMenuModalComponent implements OnInit {
   unloadNodeCtxs() {
     this.nodeCtxsList = [];
     this.nodeCtxsSource = null;
+  }
+
+  loadNodeComments() {
+    this.modalService.currNodeData.comment.forEach(element => {
+      this.nodeComments.push(element);
+    })
   }
 
   loadNodeRefs() {

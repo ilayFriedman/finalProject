@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule,
-  MatTabsModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule
+  MatTabsModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule
 } from "@angular/material";
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { LoginComponent } from './login/login.component';
@@ -79,7 +79,8 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
     TooltipModule,
     DialogsModule,
     ButtonsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatExpansionModule
     // TreeViewModule
   ],
   providers: [
