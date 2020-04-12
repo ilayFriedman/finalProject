@@ -63,6 +63,7 @@ app.use('/private', function (req, res, next) {
 app.post('/login', usersRoute);
 app.post('/register', usersRoute);
 app.post('/private/changeInfo', usersRoute);
+app.get('/private/getUsers', usersRoute);
 
 app.get('/private/getMap', mapsRoute);
 app.get('/private/getAllUserMaps', mapsRoute);

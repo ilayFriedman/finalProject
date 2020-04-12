@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../../Backend/app');
 const should = chai.should();
+const assert = require('assert');
 const dbHandler = require('./db-handler');
 const user = require('../../Backend/models/user')
 const jwt = require('jsonwebtoken');
@@ -101,6 +102,34 @@ describe('Users', function () {
                     done();
                 }
             );
+        });
+    });
+
+    it("Should get all users without passwords", function (done) {
+        createUser()
+        .then(function(){
+            chai.request(serverAddress)
+            .get('/private/getUsers')
+            .set('token', testUserToken)
+            .send()
+            .end(function (err, res) {
+                try{
+                    res.statusCode.should.equal(200);
+                    
+                    res.body.length.should.equal(1);
+                    res.body[0].Username.should.equal(testUserData.Username);
+                    res.body[0].FirstName.should.equal(testUserData.FirstName);
+                    res.body[0].LastName.should.equal(testUserData.LastName);
+
+                    //Ensure result does not contian user's password
+                    assert(res.body[0].Password == undefined)
+
+                    done();
+                }
+                catch(e){
+                    done(e);
+                }
+            });
         });
     });
 

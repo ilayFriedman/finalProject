@@ -14,7 +14,7 @@ router.post('/login', async function (req, res) {
                         let payload = {username: req.body.Username, _id: result[0]._id};
                         let options = {expiresIn: "1d"};
                         const token = jwt.sign(payload, secret, options);
-                        res.send({"token": token, "fullName": result[0].FirstName + " " + result[0].LastName});
+                        res.send({"token": token, "fullName": result[0].FirstName + " " + result[0].LastName, "_id": result[0]._id});
                     } else {
                         res.status(404).send("No such user")
                     }
@@ -87,9 +87,10 @@ router.post('/private/changeInfo', async function (req, res) {
 
 router.get('/private/getUsers', async function (req, res) {
     try {
-        await user.find({}, function (err, result) {
+        //Find all users, but exclude the Password property
+        user.find({}).select('-Password').exec()
+        .then(result => {
             if (result) {
-                console.log(result);
                 res.send(result);
             } else {
                 res.status(500).send(`Server error occured.`)

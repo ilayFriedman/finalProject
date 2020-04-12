@@ -156,12 +156,13 @@ router.post('/private/createGroup', async function (req, res) {
                 Member: []
             },
         });
-        newGroup.save(function (err) {
+        newGroup.save(function (err, saveRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send(`Server error occured.`);
             } else {
-                res.status(200).send('Group created successfully.');
+                res.writeHead(200, {"Content-Type": "application/json"});
+                    res.end(JSON.stringify(saveRes));
             }
         });
     } catch (e) {
@@ -170,37 +171,8 @@ router.post('/private/createGroup', async function (req, res) {
     }
 });
 
-// router.delete('/private/deleteGroup', async function (req, res) {
-//     if (req.body._id) {
-//         group.findOne({ _id: req.body._id }, function (err, result) {
-//             if (result) {
-//                 if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {
-//                     group.deleteOne({ _id: result._id }, function (err) {
-//                         if (err) {
-//                             console.log(err);
-//                             res.status(500).send(`Server error occured.`);
-//                         } else {
-//                             res.status(200).send("Group deleted successfully.");
-//                         }
-//                     });
-//                 }
-//                 else {
-//                     res.status(403).send("The user's permissions are insufficient to delete group.");
-//                 }
-//             }
-//             else {
-//                 res.status(404).send(`Could not find the requested group.`);
-//             }
-//         })
-//     } else {
-//         res.status(400).send(`Missing group id.`);
-//     }
-
-// });
-
 router.delete('/private/deleteGroup/:id', async function (req, res) {
     if(req.params.id){
-        console.log(req.params.id)
         group.findOne({ _id: req.params.id }, function (err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {

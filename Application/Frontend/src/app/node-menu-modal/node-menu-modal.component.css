@@ -4,13 +4,19 @@ table {
     /* table-layout:fixed; */
 }
 
+.tab-content {
+    align-items: center;
+    justify-content: space-around;
+    display: flex;
+    width: fit-content;
+}
+
 tbody {
     margin: 10px;
 }
 
 .mat-header-cell {
     min-width: 60px;
-    /* border: solid; */
     text-align: center;
 }
 
@@ -19,9 +25,8 @@ tbody {
 }
 
 .mat-raised-button {
-    /* padding: 10px 100%; */
-    width: min-content;
-    height: min-content;
+    width: max-content;
+    height: fit-content;
 }
 
 .mat-form-field {
@@ -29,12 +34,13 @@ tbody {
     width: 100%;
 }
 
-/* .filterAndClear {
-} */
-
 #nodeRefsSpan, #allRefsSpan {
     margin-top: 5px;
-    width: fit-content;
+    width: max-content;
+}
+
+.small-menu-option {
+    margin: 5px;
 }
 
 .jw-modal {
@@ -61,7 +67,7 @@ tbody {
     border: 1px solid #888;
     min-width: max-content;
     width: max-content;
-    height: max-content;
+    height: fit-content;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
     line-height: 10pt;

@@ -96,7 +96,9 @@ describe('Groups', function () {
                     .end(function (err, res) {
                         try{
                             res.statusCode.should.equal(200);
-                            res.text.should.equal("Group created successfully.");
+                            res.body.Name.should.equal(testGroupData.groupName);
+                            res.body.Description.should.equal(testGroupData.description);
+                            res.body.Creator.should.equal(testUserId);
 
                             done();
                         }
@@ -394,7 +396,6 @@ describe('Groups', function () {
             .send()
             .end(function (err, res) {
                 try{
-                    console.log(res)
                     res.statusCode.should.equal(404);
 
                     done();

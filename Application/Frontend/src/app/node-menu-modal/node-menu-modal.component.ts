@@ -7,6 +7,7 @@ import { HttpClient } from "@angular/common/http";
 import { RefCtxHendlerService } from '../services/referenceContext/reference-context-hendler.service';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';
+import { MapsHandlerService } from '../services/maps-handler.service';
 
 export interface ReferenceElement {
   _id: string,
@@ -83,7 +84,13 @@ export class NodeMenuModalComponent implements OnInit {
     title: new FormControl(),
   });
 
-  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
+  // #### node styles ####
+  shapeColor: string;
+  borderColor: string;
+  borderThickness: string;
+
+
+  constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
 
   }
   ngOnInit() {
@@ -423,6 +430,21 @@ export class NodeMenuModalComponent implements OnInit {
   applyFilterNodeRefs(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.nodeRefSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  setNodeStyles() {
+    console.log(this.borderThickness);
+    // this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+      if (node.key == this.modalService.currNodeData.key) {
+        console.log(node);
+
+        this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "stroke", this.borderColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "strokeWidth", parseInt(this.borderThickness))
+
+      }
+    });
   }
 
 }
