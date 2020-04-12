@@ -4,13 +4,19 @@ table {
     /* table-layout:fixed; */
 }
 
+.tab-content {
+    align-items: center;
+    justify-content: space-around;
+    display: flex;
+    width: fit-content;
+}
+
 tbody {
     margin: 10px;
 }
 
 .mat-header-cell {
     min-width: 60px;
-    /* border: solid; */
     text-align: center;
 }
 
@@ -19,7 +25,6 @@ tbody {
 }
 
 .mat-raised-button {
-    /* padding: 10px 100%; */
     width: max-content;
     height: fit-content;
 }
@@ -29,25 +34,13 @@ tbody {
     width: 100%;
 }
 
-/* .filterAndClear {
-} */
-
 #nodeRefsSpan, #allRefsSpan {
     margin-top: 5px;
     width: max-content;
 }
 
-.menu-form-small {
-    width: fit-content;
-    float: inline-end;
-}
-
 .small-menu-option {
     margin: 5px;
-}
-
-.node-style-select {
-    width: 30%;
 }
 
 .jw-modal {

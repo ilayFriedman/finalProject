@@ -1,24 +1,21 @@
 <div>
     <mat-tab-group id="nodeMenu" (selectedTabChange)="tabClick($event)">
         <mat-tab label="Details">
-            <div class="tab-content">
-                <div id="detailsTable" style="    width: fit-content; float: inline-end;"
-                    class="table table-hover borderless table-vcenter">
-                    <div class="menu-form-small">
-                        <span class="small-menu-option">Text:</span>
-                        <span>
-                            <input type="text" id="textFeature" class="form-control" name="objectText"
-                                [(ngModel)]="this.modalService.currNodeData.text">
-                        </span>
-                    </div>
-                    <div>
-                        <span class="small-menu-option">Description:</span>
-                        <span>
-                            <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30"
-                                rows="5" [(ngModel)]="this.modalService.currNodeData.description"></textarea>
-                        </span>
-                    </div>
+            <div class="tab-content" style="align-items: center;">
+                <!-- <div id="detailsTable" style="width: fit-content;" class="table table-hover borderless table-vcenter"> -->
+                <div><span class="small-menu-option">Text:</span>
+                    <span>
+                        <input type="text" id="textFeature" class="form-control" name="objectText"
+                            [(ngModel)]="this.modalService.currNodeData.text">
+                    </span></div>
+                <div>
+                    <span class="small-menu-option">Description:</span>
+                    <span>
+                        <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30"
+                            rows="5" [(ngModel)]="this.modalService.currNodeData.description"></textarea>
+                    </span>
                 </div>
+                <!-- </div> -->
             </div>
         </mat-tab>
         <mat-tab label="References">
@@ -329,31 +326,25 @@
         </mat-tab>
         <!-- node styles -->
         <mat-tab label="Styles">
-            <div class="menu-form-small" (change)="setNodeStyles()">
-                <div>
-                    <span class="small-menu-option">Shape Color:</span>
-                    <span><input type="color" [(ngModel)]="shapeColor" /></span>
-                </div>
-                <div>
-                    <span class="small-menu-option">Border Color:</span>
-                    <span><input type="color" [(ngModel)]="borderColor" /></span>
-                </div>
-                <div>
-                    <span class="small-menu-option">Border Thickness:</span>
-                    <!-- <span> -->
-                    <mat-form-field class="node-style-select">
-                        <mat-select (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
-                            <mat-option value="0">0px</mat-option>
-                            <mat-option value="1">1px</mat-option>
-                            <mat-option value="2">2px</mat-option>
-                            <mat-option value="3">3px</mat-option>
-                            <mat-option value="4">4px</mat-option>
-                            <mat-option value="5">5px</mat-option>
-                            <mat-option value="6">6px</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <!-- </span> -->
-                </div>
+            <div class="tab-content" (change)="setNodeStyles()">
+                <span class="small-menu-option">Shape Color:</span>
+                <span><input type="color" [(ngModel)]="shapeColor" /></span>
+
+                <span class="small-menu-option">Border Color:</span>
+                <span><input type="color" [(ngModel)]="borderColor" /></span>
+
+                <span class="small-menu-option">Border Thickness:</span>
+                <mat-form-field class="node-style-select" style="width: 10%;">
+                    <mat-label>1px</mat-label>
+                    <mat-select (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
+                        <mat-option value="1">1px</mat-option>
+                        <mat-option value="2">2px</mat-option>
+                        <mat-option value="3">3px</mat-option>
+                        <mat-option value="4">4px</mat-option>
+                        <mat-option value="5">5px</mat-option>
+                        <mat-option value="6">6px</mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
 
 
