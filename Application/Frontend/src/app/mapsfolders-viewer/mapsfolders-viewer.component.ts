@@ -3,10 +3,10 @@ import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { of, Observable } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button'
 import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import {trigger, style, animate, transition} from '@angular/animations';
 
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
@@ -14,6 +14,14 @@ const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileN
   selector: 'app-mapsfolders-viewer',
   templateUrl: './mapsfolders-viewer.component.html',
   styleUrls: ['./mapsfolders-viewer.component.css']
+  // animations: [
+  //   trigger('fade', [ 
+  //     transition('void => *', [
+  //       style({ opacity: 0 }), 
+  //       animate(500, style({opacity: 1}))
+  //     ]) 
+  //   ])
+  // ]
 })
 export class MapsfoldersViewerComponent implements OnInit {
 
@@ -37,6 +45,10 @@ export class MapsfoldersViewerComponent implements OnInit {
   public searchTerm = '';
   public parsedData: any[] = this.data;
 
+  //chagesProperties vaariables
+  changeFileName = false
+  changeDescription = false
+
 
 
 
@@ -50,6 +62,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
   ngOnInit() {
+
 
     //fisrt push by hand
     this.data.push({
@@ -73,28 +86,16 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   }
 
-  // tree-view icon's init
-  public iconClass(dataItem): any {
-    
-    return {
-      'k-i-file-pdf': is(dataItem.text, 'pdf'),
-      'k-i-folder': dataItem.items !== undefined,
-      'k-i-table-align-middle-center': dataItem.items == undefined,
-      'k-i-image': is(dataItem.text, 'jpg|png'),
-      'k-icon': true
-  };
-}
-
 fillTreeView(folderLists,rootNode){
   if(folderLists.MapsInFolder.length != 0){
     folderLists.MapsInFolder.forEach(map => {
-      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, isFolder: false})
+      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, Description: "", isFolder: false})
       this.totalMapsCounter++;
     });
   }
   if(folderLists.SubFolders.length != 0){
     folderLists.SubFolders.forEach(subFolder => {
-      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode,isFolder: true}
+      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode, Description: "", isFolder: true}
       rootNode.items.push(folderNode)
       this.totalFolderCounter++;
       
@@ -113,9 +114,9 @@ fillTreeView(folderLists,rootNode){
 }
 
 onSubmit_AddFolder(){
-  if (this.addFolderCheckOut.invalid ||this.addFolderCheckOut.controls.folderName.value == "/") {
-    console.log("bad form!")
-    this.formErrors = "Worng/Missing inputs.<br>Remember: can't create Folder with the name '/'."
+  if (this.addFolderCheckOut.invalid) {
+    // console.log("bad form!")
+    this.formErrors = "Worng/Missing inputs.<br> Make sure you filled all the requierd fields"
     return;
   }
   this.formErrors = ""
@@ -197,25 +198,88 @@ onSubmit_AddMap(){
   }
 }
 
-onSubmit_editProperties(){
+preOpen_editPropertiesModal(dataItem){
+  if(dataItem.Description == ""){
+    if(dataItem.isFolder){
+      this.folderHandler.getFolderDescription(dataItem.folderID).then(res => {
+        console.log('======get description folder request OK=====');
+        var jsonRes = JSON.parse(res)
+        console.log(res)
+        console.log(jsonRes.Description)
+        dataItem.Description = jsonRes.Description
+      }).catch
+        (err=> {
+          console.log("error with get description folder - promise return");
+          console.log(err)
+        });
+    }
+    else{
+      this.mapHandler.getMapDescription(dataItem.mapID).then(res => {
+        console.log('======get description map request OK=====');
+        var jsonRes = JSON.parse(res)
+        dataItem.Description = jsonRes.Description
+      }).catch
+        (err=> {
+          console.log("error with get description map - promise return");
+          console.log(err)
+        });
+    }
+  }
 
 }
+onSubmit_editProperties(){
+  var newName, Description
+  if(this.changeFileName){
+    newName = this.editPropertiesCheckOut.controls.fileName.value
+  }
+  else{
+    newName = this.selectedNode.text
+  }
+  if(this.changeDescription){
+    Description = this.editPropertiesCheckOut.controls.description.value
+  }
+  else{
+    this.selectedNode.Description
+  }
 
-// getDescription(dataItem){
-//   if(dataItem.isFolder){
-//     this.folderHandler.getFolderProperties(dataItem.folderID).then(res => {
-//       console.log('======GET PROPERTY request OK=====');
-//       var jsonRes = JSON.parse(JSON.stringify(res))
-//       dataItem.description = JSON.parse(jsonRes.FolderDescription)
-//     }).catch
-//       (err=> {
-//         console.log("error with creation - promise return");
-//         console.log(err)
-//       })
+  if(this.selectedNode.isFolder){
+    console.log(this.selectedNode.folderID,newName,Description);
+    
+    this.folderHandler.updateFolderProperties(this.selectedNode.folderID,newName,Description,this.selectedNode.parentNode.folderID).then(res => {
+      // console.log('======update properties folder request OK=====');
+      this.selectedNode.Description = Description
+      this.selectedNode.text = newName
+      this.actionInModalIsSuccecs = true
+      this.changeDescription = false;
+      this.changeFileName = false;
+      this.editPropertiesCheckOut.reset();
+      setTimeout (() => {this.closeModal("editPropertiesModal")}, 1000);
       
-//   }
-// }
+    }).catch
+      (err=> {
+        console.log("error with update properties folder - promise return");
+        console.log(err)
+      });
+  }
+  else{
+    console.log(this.selectedNode.mapID,newName,Description);
+    this.mapHandler.updateMapDecription(this.selectedNode.mapID,newName,Description,this.selectedNode.parentNode.folderID).then(res => {
+      // console.log('======update properties map request OK=====');
+      this.selectedNode.Description = Description
+      this.selectedNode.text = newName
+      this.actionInModalIsSuccecs = true
+      this.changeDescription = false;
+      this.changeFileName = false;
+      this.editPropertiesCheckOut.reset();
+      setTimeout (() => {this.closeModal("editPropertiesModal")}, 1000);
+    }).catch
+      (err=> {
+        console.log("error with update properties map- promise return");
+        console.log(err)
+      });
+  }
 
+}
 
 // listeners
 mouseOverNodeChanger(dataItem){
@@ -290,13 +354,15 @@ public recursiveDelete(fileToDelete){
   }
 
   private deleteSingleFolder(fileToDelete: any) {
-    this.folderHandler.removeFolderFromFolder(fileToDelete.parentNode.folderID, fileToDelete.folderID).then(res => {
-      fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
-      this.data = this.data.slice();
-      this.parsedData = this.parsedData.slice();
-    }).catch(err => {
-      console.log(err);
-    });
+    if(fileToDelete.parentNode != ""){ // make sure not to delete root folder
+      this.folderHandler.removeFolderFromFolder(fileToDelete.parentNode.folderID, fileToDelete.folderID).then(res => {
+        fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
+        this.data = this.data.slice();
+        this.parsedData = this.parsedData.slice();
+      }).catch(err => {
+        console.log(err);
+      });
+    }
   }
 
 public openDialog(dataItem) {
@@ -358,6 +424,16 @@ public contains(text: string, term: string): boolean {
   return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
 }
 
+  // tree-view icon's init
+  public iconClass(dataItem): any {
+    
+    return {
+      'k-i-file-pdf': is(dataItem.text, 'pdf'),
+      'k-i-folder': dataItem.items !== undefined,
+      'k-i-table-align-middle-center': dataItem.items == undefined,
+      'k-i-image': is(dataItem.text, 'jpg|png'),
+      'k-icon': true
+  };
 }
-
+}
 

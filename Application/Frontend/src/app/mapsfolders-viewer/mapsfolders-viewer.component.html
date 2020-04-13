@@ -8,6 +8,7 @@
                     <td><span class="k-icon k-i-delete"></span> Delete file</td>
                     <td><span class="k-icon k-i-plus"></span> Add sub-folder</td>
                     <td><span class="k-icon k-i-table-insert"></span> Add Map</td>
+                    <td><span  class="k-icon k-i-lock"></span> File Permissions</td>
                 </tr>
             </table>
         </div>
@@ -44,19 +45,22 @@
                         <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
                             <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
                                 <span>
-                                    <span *ngIf="!opened" style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span *ngIf="dataItem.text!='/'" style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span *ngIf="dataItem.text!='/'"  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
+                                    <span *ngIf="dataItem.items.length != 0"style="margin-right: 10px;" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span><!-- Permissions-->
                                 </span>
                                 <span>
-                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
-                                    <span style="margin-right: 10px;" class="k-icon k-i-table-insert" (click)="clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span><!-- addMap-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-plus" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
+                                    <span style="margin-right: 10px;" class="k-icon k-i-table-insert" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span><!-- addMap-->
                                 </span>     
 
                             </span>
                             <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
                                 <span>
-                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
+                                    <span style="margin-right: 10px;" (click)="addFolderCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span><!-- Permissions-->
+                                    
                                 </span>
                             </span>
                         </span>
@@ -81,8 +85,8 @@
         <div ngDraggable [ngResizable]='true' class="jw-modal-body">
             <span class="close" (click)="closeModal('addFolderModal')">&times;</span>
             <div *ngIf="!actionInModalIsSuccecs">
-                <h2>Add New Folder</h2>
-                <div style="font-size: 13px;">Please insert folder name (required. name "/" invalid), and some description (required)</div>
+                <h2>Add New Folder To "{{selectedNode.text}}" Folder:</h2>
+                <div style="font-size: 13px;">Please insert folder name (required), and some description (required)</div>
                 <br><br>
                 <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
                     <div>
@@ -113,18 +117,18 @@
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
         <span class="close" (click)="closeModal('addMapModal')">&times;</span>
         <div *ngIf="!actionInModalIsSuccecs">
-            <h2>Add New Map:</h2>
+            <span class="k-icon k-i-table-insert"></span><h2> Add New Map To "{{selectedNode.text}}" Folder:</h2><br><br>
             <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap(addMapCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
-                <div>
+                <div style="text-align: left;">
                     <label>Map Name: </label>
                     <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
                 </div>  
-                <div>
+                <div style="text-align: left; margin-top: 10px; vertical-align:top;">
                     <label>Description: </label>
                     <textarea formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
                 </div>
                 <input type="submit" value="Add Map">
-                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+                <div *ngIf="formErrors!=''" [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
             </form>
         </div>
 
@@ -144,20 +148,33 @@
         <span class="close" (click)="closeModal('editPropertiesModal')">&times;</span>
         <div *ngIf="!actionInModalIsSuccecs">
 
-            <h2 >Edit properties "{{selectedNode.text}}":</h2>
-            <div style="font-size: 13px;">Please check "V" on fields you would like to change.</div>
+            <h2>Properties "{{selectedNode.text}}":</h2>
+            <div style="font-size: 13px;">Please click on fields you would like to change and press Update.</div>
             <br><br>
             <form [formGroup]="editPropertiesCheckOut" (ngSubmit)="onSubmit_editProperties()">
                 <div>
-                    <input type="checkbox" />
-                    <label>File Name: </label>
-                    <input id="fileName" type="text" formControlName="fileName" placeholder="{{selectedNode.text}}">
+                    <table style="width: 800px;">
+                        <tr>
+                            <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);"><b><label>File Name: </label></b></td>
+                            <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="!changeFileName">{{selectedNode.text}}</td>
+                            <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="changeFileName"><input id="fileName" type="text" formControlName="fileName" placeholder="{{selectedNode.text}}"></td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeFileName"><span (click)="changeFileName= !changeFileName"  [ngClass]="changeFileName ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeFileName"><span (click)="changeFileName= !changeFileName"  [ngClass]="changeFileName ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
+                            
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);"><b><label>File Description: </label></b></td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription">{{selectedNode.Description}}</td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><textarea formControlName="description" rows="4" cols="50" placeholder="{{selectedNode.Description}}"></textarea></td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription"><span (click)="changeDescription= !changeDescription"  [ngClass]="changeDescription ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
+                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><span (click)="changeDescription= !changeDescription"  [ngClass]="changeDescription ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
+                            
+                        </tr>
+                    </table>
+                    
+                    
+                    
                 </div>  
-                <div>
-                    <input type="checkbox" ng-model="DescChecked"/>
-                    <label>Description: </label>
-                    <textarea formControlName="description" rows="4" cols="50" placeholder="{{selectedNode.Description}}" ng-disabled="DescChecked"></textarea>
-                </div>
                 <br><br>
                 <input type="submit" value="Update Details">
                 <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
@@ -166,7 +183,7 @@
         </div>
 
         <div *ngIf="actionInModalIsSuccecs">
-            <div>The Folder Added Successfully!<br><br></div>
+            <div>The Updates Saved Successfully!<br><br></div>
             <div><span>(window will close in 2 secondes)</span></div>
 
         </div>

@@ -57,28 +57,6 @@ function UserHasOwnerPermissionForMap(resMap, userId) {
     return false;
 }
 
-router.get('/private/getMap', async function(req, res) {
-    try {
-        await map.find({
-            '_id': req.headers._id
-        }, function(err, result) {
-            if (result) {
-                // console.log("i found map!!")
-                console.log(result)
-                if (UserHasReadPermissionForMap(result[0], req.decoded._id)) {
-                    res.send(result[0]);
-                } else {
-                    res.status(403).send("The user's permissions are insufficient to retrieve map");
-                }
-            } else {
-                res.status(404).send("Could not find the requested map.");
-            }
-        })
-    } catch (e) {
-        res.status(500).send('Server error occured.');
-    }
-});
-
 router.post('/private/createMap', async function(req, res) {
     try {
         const CreatorId = req.decoded._id;
@@ -118,6 +96,50 @@ router.post('/private/createMap', async function(req, res) {
         res.status(500).send();
     }
 });
+
+router.get('/private/getMap/:mapID', async function(req, res) {
+    try {
+        await map.find({
+            '_id': req.params.mapID
+        }, function(err, result) {
+            if (result) {
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result[0], req.decoded._id)) {
+                    res.send(result[0]);
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                }
+            } else {
+                res.status(404).send("Could not find the requested map.");
+            }
+        })
+    } catch (e) {
+        res.status(500).send('Server error occured.');
+    }
+});
+
+
+router.get('/private/getMapDescription/:mapID', async function(req, res) {
+    try {
+        await map.findOne({'_id': req.params.mapID}, function(err, result) {
+            if (result) {
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
+                    // console.log(result)
+                    res.send({"Description" :result.Description});
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                }
+            } else {
+                res.status(404).send("Could not find the requested map.");
+            }
+        })
+    } catch (e) {
+        res.status(500).send('Server error occured.');
+    }
+});
+
+
 
 router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
     if (req.params.mapID) {
@@ -165,31 +187,6 @@ router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
 
 });
 
-router.get('/private/getAllUserMaps', async function(req, res) {
-    try {
-        user.findOne({
-            '_id': req.decoded._id
-        }, function(err, result) {
-            if (result) {
-                map.find({
-                    'CreatorId': result._id
-                }, function(err, result) {
-                    if (result) {
-                        result = result.filter(mapElem => UserHasReadPermissionForMap(mapElem, req.decoded._id))
-                        res.status(200).send(result);
-                    } else {
-                        res.status(400).send(`problem: ${err}`);
-                    }
-                });
-            } else {
-                res.status(400).send("No such user")
-            }
-        });
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
-    }
-});
-
 router.put('/private/updateMap', async function(req, res) {
     if (req.body._id) {
         map.findOne({
@@ -216,4 +213,63 @@ router.put('/private/updateMap', async function(req, res) {
     }
 });
 
+router.post('/private/updateMapProperties', async function(req, res) {
+    if (req.body.mapID) {
+        // console.log(req.body.mapID)
+        map.findOne({'_id': req.body.mapID}, function(err, result) {
+            if (result) {
+                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
+                    map.updateOne({ '_id': req.body.mapID}, {$set:{'MapName': req.body.mapName,'Description': req.body.Decription}}, function(err, mongoRes) {
+                        if (err) {
+                            res.status(500).send("Server error occurred.");
+                        } else {
+                            folder.updateOne({'_id': req.body.parentFolderID,'MapsInFolder.mapID': req.body.mapID},{$set: {"MapsInFolder.$.mapName": req.body.mapName}}, function(err, result) {
+                                // console.log(result)
+                                if (err) {
+                                    res.status(500).send(`Server error occured.`);
+                                } else {
+                                    res.status(200).send('Map updated successfully.');
+                                }
+                            });
+
+                        }
+                    });
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to update map");
+                }
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
+
+
+// router.get('/private/getAllUserMaps', async function(req, res) {
+//     try {
+//         user.findOne({
+//             '_id': req.decoded._id
+//         }, function(err, result) {
+//             if (result) {
+//                 map.find({
+//                     'CreatorId': result._id
+//                 }, function(err, result) {
+//                     if (result) {
+//                         result = result.filter(mapElem => UserHasReadPermissionForMap(mapElem, req.decoded._id))
+//                         res.status(200).send(result);
+//                     } else {
+//                         res.status(400).send(`problem: ${err}`);
+//                     }
+//                 });
+//             } else {
+//                 res.status(400).send("No such user")
+//             }
+//         });
+//     } catch (e) {
+//         res.status(400).send(`problem: ${e}`);
+//     }
+// });
 module.exports = router;

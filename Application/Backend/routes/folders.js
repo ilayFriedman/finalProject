@@ -77,11 +77,11 @@ router.post('/private/getFolderContentsLists', async function(req, res) {
 
 
 
-router.get('/private/getFolderProperties/:FolderID', async function(req, res) {
+router.get('/private/getFolderDescription/:FolderID', async function(req, res) {
     try {
         folder.findOne({'_id': req.params.FolderID}, function(err, result) {
             if (result) {
-                res.status(200).send({"FolderName": result.Name, "FolderDescription" :result.Description})
+                res.status(200).send({"Description" :result.Description})
             } else {
                 res.status(400).send(`problem: ${err}`);
             }
@@ -94,12 +94,19 @@ router.get('/private/getFolderProperties/:FolderID', async function(req, res) {
 
 router.post('/private/updateFolderProperties', async function(req, res) {
     try {
-        folder.findOneAndUpdate({'_id': req.body.FolderID},{$set:{"Name" : req.body.FolderName, "Description": req.body.Description}}, function(err, result) {
+        folder.findOneAndUpdate({'_id': req.body.folderID},{$set:{"Name" : req.body.folderName, "Description": req.body.Description}}, function(err, result) {
             if (err) {
                 console.log(err);
                 res.status(500).send("Server error occurred.");
             } else {
-                res.status(200).send("Folder properties was update successfully.");
+                folder.updateOne({'_id': req.body.parentFolderID,'SubFolders.folderID': req.body.folderID},{$set: {"SubFolders.$.folderName": req.body.folderName}}, function(err, result) {
+                    // console.log(result)
+                    if (err) {
+                        res.status(500).send(`Server error occured.`);
+                    } else {
+                        res.status(200).send("Folder properties was update successfully.");
+                    }
+                });
             }
         });
     } catch (e) {
@@ -116,8 +123,8 @@ router.delete('/private/removeFolderFromFolder/:parentID&:folderID', async funct
                 res.status(500).send("Server error occurred: while pop from parent folder");
             } else {
                 // res.status(200).send("folder deleted successfully (with update parent).");
-                console.log(req.params.parentID)
-                console.log(result)
+                // console.log(req.params.parentID)
+                // console.log(result)
                     folder.deleteOne({ _id: req.params.folderID }, function(err) {
                             if (err) {
                                 res.status(500).send(`Server error occured.`);

@@ -11,16 +11,16 @@
         <h1 mat-button [routerLink]="'/home'" style="font-size: 20px;">ME-Mapper</h1>
         <span class="menu-spacer"></span>
         <div class="toolbarAddition">
-          <span class="mainMenu"><a mat-button [routerLink]="'/home'"> Home </a></span>
-          <span class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
+          <span *ngIf='isLoggedIn()'class="mainMenu"><a mat-button [routerLink]="'/logedHome'"> Home </a></span>
+          <span *ngIf='!isLoggedIn()'class="mainMenu"><a mat-button [routerLink]="'/login'"> Log In </a></span>
           <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
           <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"> Change user info </a></span>
           <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/groups'"> Groups </a></span>
-          
+          <!-- <span *ngIf='isLoggedIn()' class="mainMenu" (click)="sessionStorage.clear();"> Log out </span> -->
     <!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->
         </div>
         <div>
-          
+           
         </div>
       </mat-toolbar-row>
     </mat-toolbar>
