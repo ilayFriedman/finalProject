@@ -1,23 +1,30 @@
 <div>
-    <mat-tab-group id="nodeMenu" (selectedTabChange)="tabClick($event)">
+    <mat-tab-group dynamicHeight="true" id="nodeMenu" (selectedTabChange)="tabClick($event)">
+        <!-- Details tab -->
         <mat-tab label="Details">
-            <div class="tab-content" style="align-items: center;">
+            <div class="tab-content">
                 <!-- <div id="detailsTable" style="width: fit-content;" class="table table-hover borderless table-vcenter"> -->
+                <br>
                 <div><span class="small-menu-option">Text:</span>
-                    <span>
-                        <input type="text" id="textFeature" class="form-control" name="objectText"
-                            [(ngModel)]="this.modalService.currNodeData.text">
-                    </span></div>
+                    <!-- <span> -->
+                    <input type="text" id="textFeature" class="form-control" name="objectText"
+                        [(ngModel)]="this.modalService.currNodeData.text">
+                    <!-- </span> -->
+                </div>
+                <br>
                 <div>
                     <span class="small-menu-option">Description:</span>
-                    <span>
-                        <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30"
-                            rows="5" [(ngModel)]="this.modalService.currNodeData.description"></textarea>
-                    </span>
+                    <!-- <span> -->
+                    <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30" rows="5"
+                        [(ngModel)]="this.modalService.currNodeData.description"
+                        style="vertical-align: top;"></textarea>
+                    <!-- </span> -->
                 </div>
-                <!-- </div> -->
+                <br>
             </div>
         </mat-tab>
+
+        <!-- references tab -->
         <mat-tab label="References">
             <div class="tab-content" style="width: max-content; ">
                 <!-- node refs -->
@@ -31,7 +38,8 @@
                             </mat-form-field>
                         </span>
                         <span style="float: right; ">
-                            <button mat-raised-button (click)="this.nodeRefSelection.clear()">Clear
+                            <button mat-raised-button [disabled]='this.nodeRefSelection.selected.length == 0'
+                                (click)="this.nodeRefSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
                     <!-- node refs table -->
@@ -103,7 +111,8 @@
                             </mat-form-field>
                         </span>
                         <span style="float: right; ">
-                            <button mat-raised-button (click)="this.allRefSelection.clear()">Clear
+                            <button mat-raised-button [disabled]='this.allRefSelection.selected.length == 0'
+                                (click)="this.allRefSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
                     <!-- all refs table -->
@@ -195,7 +204,8 @@
                             </mat-form-field>
                         </span>
                         <span style="float: right; ">
-                            <button mat-raised-button (click)="this.nodeCtxsSelection.clear()">Clear
+                            <button mat-raised-button [disabled]='this.nodeCtxsSelection.selected.length == 0'
+                                (click)="this.nodeCtxsSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
                     <!-- node ctxs table -->
@@ -254,7 +264,8 @@
                             </mat-form-field>
                         </span>
                         <span style="float: right; ">
-                            <button mat-raised-button (click)="this.allCtxsSelection.clear()">Clear
+                            <button mat-raised-button [disabled]='this.allCtxsSelection.selected.length == 0'
+                                (click)="this.allCtxsSelection.clear()">Clear
                                 Selection</button>
                         </span></div>
                     <!-- all ctxs table -->
@@ -327,12 +338,15 @@
         <!-- node styles -->
         <mat-tab label="Styles">
             <div class="tab-content" (change)="setNodeStyles()">
+                <br>
                 <span class="small-menu-option">Shape Color:</span>
                 <span><input type="color" [(ngModel)]="shapeColor" /></span>
-
+                <br>
+                <br>
                 <span class="small-menu-option">Border Color:</span>
                 <span><input type="color" [(ngModel)]="borderColor" /></span>
-
+                <br>
+                <br>
                 <span class="small-menu-option">Border Thickness:</span>
                 <mat-form-field class="node-style-select" style="width: 10%;">
                     <mat-label>1px</mat-label>
@@ -350,7 +364,9 @@
 
             <!-- <input type="button" [(colorPicker)]="color" [style.background]="color" /> -->
         </mat-tab>
-        <!-- <mat-tab label="Third"> Content 6 </mat-tab> -->
+        <mat-tab label="Comments">
+
+        </mat-tab>
     </mat-tab-group>
 
 

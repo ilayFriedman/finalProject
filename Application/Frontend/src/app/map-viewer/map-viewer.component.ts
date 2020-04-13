@@ -149,7 +149,7 @@ export class MapViewerComponent implements OnInit {
       var node = e.diagram.selection.first();
       node.data.refs = [];
       node.data.ctxs = [];
-      node.data.comment = null;
+      node.data.comment = [];
       if (node.data.category === "Contribution") {
         setElementText(node, "?")
       }
@@ -709,6 +709,8 @@ export class MapViewerComponent implements OnInit {
 
   openModalMenu(id: string) {
     // this.modalService.currNodeData = this.currNode.data
+    console.log(this.currNode._id);
+
     this.modalService.openMenu(id, this.currNode.data);
   }
 
