@@ -6,16 +6,23 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class FolderHandlerService {
   localUrl = 'http://localhost:3000';
-
   constructor(private http: HttpClient) { }
 
+
+  createFolder(folderName, folderDesc, parentDir) {
+    const bodyReq = {
+      folderName: folderName,
+      Description: folderDesc,
+      ParentDir: parentDir
+    }
+    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
+  }
   /*
   return rootFolder of given user
   */
   getRootUserFolder() {
     return this.http.get(this.localUrl + '/private/getRootFolderById', { headers: { 'token': sessionStorage.token } }).toPromise()
   }
-
 /*
 returns subFolders, mapsInFolder lists of given folder
 */
@@ -29,21 +36,23 @@ returns subFolders, mapsInFolder lists of given folder
   /*
   returns folder name and properties of given folder
   */  
-  getFolderProperties(folderId: String) {
-    return this.http.post(this.localUrl + '/private/getFolderProperties', {FolderID: folderId},{ headers: { 'token': sessionStorage.token}}).toPromise()
+  getFolderDescription(folderId: String) {
+    return this.http.get(this.localUrl + '/private/getFolderDescription/'+folderId,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
-
-  createFolder(folderName, folderDesc, parentDir) {
-    const bodyReq = {
-      folderName: folderName,
-      Description: folderDesc,
-      ParentDir: parentDir
-    }
-    return this.http.post(this.localUrl + '/private/createFolder',bodyReq,  {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
-  }
 
   removeFolderFromFolder(parentID, folderID){
-    return this.http.delete(this.localUrl + '/private/removeFolderFromFolder/'+ parentID+"&"+ folderID ,{ headers: { 'token': sessionStorage.token}}).toPromise()
+    return this.http.delete(this.localUrl + '/private/removeFolderFromFolder/'+ parentID+"&"+ folderID ,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
+
+  updateFolderProperties(folderID, newFolderName, newDescription, parentFolderID){
+    const bodyReq = {
+      folderID: folderID,
+      folderName: newFolderName,
+      Description: newDescription,
+      parentFolderID: parentFolderID
+    }
+    return this.http.post(this.localUrl + '/private/updateFolderProperties', bodyReq,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
+  }
+
 }

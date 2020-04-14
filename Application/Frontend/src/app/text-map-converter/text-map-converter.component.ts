@@ -114,33 +114,33 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
       
       // CASE "TO" IS NEW
       if(!!this.nodeSelected_To.category == false){
-        console.log("createNewLInk!!")
+        // console.log("createNewLInk!!")
         this.mapHandler.myDiagram.commit(function(d) {
           
           // create new Node-From
-          console.log(self.nodeSelected_From.key)
-          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          // console.log(self.nodeSelected_From.key)
+          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert),refs: [] ,ctxs: [],comment: []}
           d.model.addNodeData(nodeFrom);
           keyToInsert++
           
           // create new Node-From
-          var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert),refs: [] ,ctxs: [],comment: []}
           d.model.addNodeData(nodeTo);
 
           // create link
-          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key,refs: [] ,ctxs: [],comment: [] } 
           d.model.addLinkData(link);
-          console.log(d.model.linkDataArray)
+          // console.log(d.model.linkDataArray)
         }, "createNewLinkFromTextToGragh");
       }
 
       // CASE "TO" IS EXIST
       else{
-        console.log("'to' is exist , but 'from' is new!!")
+        // console.log("'to' is exist , but 'from' is new!!")
         this.mapHandler.myDiagram.commit(function(d) {
           // create new Node-From
-          console.log(self.nodeSelected_From.key)
-          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+          // console.log(self.nodeSelected_From.key)
+          var nodeFrom = {category: self.nodeSelected_From.key, text: self.name_From, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert),refs: [] ,ctxs: [],comment: []}
           d.model.addNodeData(nodeFrom);
 
           
@@ -148,9 +148,9 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
           var nodeTo = self.nodeSelected_To
 
           // create link
-          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+          var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key ,refs: [] ,ctxs: [],comment: []} 
           d.model.addLinkData(link);
-          console.log(d.model.linkDataArray)
+          // console.log(d.model.linkDataArray)
         }, "fromNew_ToOld");
       }
     }
@@ -159,30 +159,30 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
     else{
             // CASE "TO" IS NEW
             if(!!this.nodeSelected_To.category == false){
-              console.log("'from' is exist but 'to' is new!!!")
+              // console.log("'from' is exist but 'to' is new!!!")
               this.mapHandler.myDiagram.commit(function(d) {
                 // create new Node-From
-                console.log(self.nodeSelected_From.key)
+                // console.log(self.nodeSelected_From.key)
                 var nodeFrom = self.nodeSelected_From
                 
                 // create new Node-From
-                var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert)}
+                var nodeTo = {category: self.nodeSelected_To.key, text: self.name_To, fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description",key: (-1 * keyToInsert),refs: [] ,ctxs: [],comment: []}
                 d.model.addNodeData(nodeTo);
       
                 // create link
-                var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
+                var link = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key ,refs: [] ,ctxs: [],comment: []} 
                 d.model.addLinkData(link);
-                console.log(d.model.linkDataArray)
+                // console.log(d.model.linkDataArray)
               }, "fromOld_ToNew");
             }
       
             // CASE "TO" IS EXIST
             else{
-              console.log("set exsisting link!!!")
-              console.log(this.nodeSelected_From)
-              console.log(this.nodeSelected_To)
-              console.log(this.linkSelected)
-              console.log(this.mapModel.linkDataArray)
+              // console.log("set exsisting link!!!")
+              // console.log(this.nodeSelected_From)
+              // console.log(this.nodeSelected_To)
+              // console.log(this.linkSelected)
+              // console.log(this.mapModel.linkDataArray)
               var modelLinks = this.mapHandler.myDiagram.model.linkDataArray
               var existLink = false
               modelLinks.forEach(link => {
@@ -196,12 +196,12 @@ export class TextMapConverterComponent implements OnInit,OnChanges {
                   return
                 }
               }
-              console.log("ok!")
+              // console.log("ok!")
               this.mapHandler.myDiagram.commit(function(d) {
                 var nodeFrom = self.nodeSelected_From
                 var nodeTo = self.nodeSelected_To
                 var newLinkToInesrt = {category: self.linkSelected.key, text: self.linkSelected.key ,from: nodeFrom.key, to: nodeTo.key } 
-                console.log(modelLinks)
+                // console.log(modelLinks)
                 modelLinks.forEach(link => {
                   if(link.from == nodeFrom.key && link.to == nodeTo.key){
                     d.model.removeLinkData(link)

@@ -3,146 +3,147 @@ import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { of, Observable } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button'
 import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import {trigger, style, animate, transition} from '@angular/animations';
+import { map } from '@progress/kendo-data-query/dist/npm/transducers';
+import { UsersService } from '../services/users/users.service';
+
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
 @Component({
   selector: 'app-mapsfolders-viewer',
   templateUrl: './mapsfolders-viewer.component.html',
   styleUrls: ['./mapsfolders-viewer.component.css']
+  // animations: [
+  //   trigger('fade', [ 
+  //     transition('void => *', [
+  //       style({ opacity: 0 }), 
+  //       animate(500, style({opacity: 1}))
+  //     ]) 
+  //   ])
+  // ]
 })
 export class MapsfoldersViewerComponent implements OnInit {
 
   // forms validation checkouts
   addFolderCheckOut;
   addMapCheckOut;
+  editPropertiesCheckOut;
   
   //folders variables
-  public data: any[] = [{
-    text: "/",
-    folderID: "5e80d535132e0540b827c4cd",
-    parentID: "",
-    items: [],
-    isFolder : true,
-  }];
-  selectedFolder: any;
-  public parsedData: any[] = this.data;
+  public data: any[] = [];
+  selectedNode: any = {text:"", Description: ""};
   public expandedKeys: any[] = ['/']; // root: key /, is already expanded 
-  public expandedAtLeastOnce :any[] = ["0"] // root: index 0, is already expanded ; REST in saved by _id
   mouseOverNode: any;
   actionInModalIsSuccecs: boolean = false;
   formErrors: string;
   fileToDelete: any;
+  totalFolderCounter = 0
+  totalMapsCounter = 0
+
+  // filter on tree
+  public searchTerm = '';
+  public parsedData: any[] = this.data;
+
+  //chagesProperties variables
+  changeFileName = false
+  changeDescription = false
+
+  // permissions variables
+  selectedMapPermissionsList: any;
+  permissionUsersMap: Map<any, any>;
+  allUsersData: any;
 
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
-    this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required]});
+    this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required],description: ['', Validators.required]});
+    this.editPropertiesCheckOut = this.formBuilder.group({fileName: [''],description: ['']});
     
   }
   
 
 
   ngOnInit() {
+    //fisrt push by hand
+    this.data.push({
+      text: "/",
+      folderID: "5e80d535132e0540b827c4cd",
+      Description:"",
+      parentNode: "",
+      items: [],
+      isFolder : true,
+    })
     // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
-
-      console.log('======getRootUserFolder request OK=====');
-      this.inserMapsToMapTreeViewer(Object(res), this.data[0])
-      this.insertFoldersToMapTreeViewer(res, this.data[0])  
-
+      this.fillTreeView(res, this.data[0])
     }).catch
       (err => {
         console.log("error here");
         console.log(err)
       })
-
       this.parsedData = this.data;
+
+      // this.loadPermissionTable()
 
   }
 
-  // tree-view icon's init
-  public iconClass({ text, items }: any): any {
-    return {
-      'k-i-file-pdf': is(text, 'pdf'),
-      'k-i-folder': items !== undefined,
-      'k-i-table-align-middle-center': items == undefined,
-      'k-i-image': is(text, 'jpg|png'),
-      'k-icon': true
-  };
-}
-
-
-inserMapsToMapTreeViewer(folderObject,rootNode){
-  folderObject.MapsInFolder.forEach(map => {
-  rootNode.items.push({text: map.mapName,mapID: map.mapID, isFolder: false})
-  });
-
-}
-
-insertFoldersToMapTreeViewer(folderObject, rootNode){
-  // get all child-folder
-  folderObject.SubFolders.forEach(folder=>{
-    var folderNode = {text: folder.folderName, folderID: folder.folderID, parentID:rootNode.folderID, items: [], isFolder: true}
-    rootNode.items.push(folderNode)
-    this.expandedAtLeastOnce.push(folderNode.folderID)
-    // get next level of each folder
-    this.folderHandler.getFolderContentsLists(folderNode.folderID).then(res => {
-          // console.log('======get Content folder request OK=====');
-          this.inserMapsToMapTreeViewer(res,folderNode)
-          this.shallowFolderInsert(res,folderNode)
-          console.log(res);
-
-        }).catch
-          (err=> {
-            console.log("error with creation - promise return");
-            console.log(err)
-          })
-
-  });
-}
-
-shallowFolderInsert(folderObecjt,rootNode){
-  folderObecjt.SubFolders.forEach(folder => {
-    rootNode.items.push({text: folder.folderName, folderID: folder.folderID, parentID: rootNode.folderID,  items: [], isFolder: true})
-    // this.expandedAtLeastOnce.push(folder.folderID)
+fillTreeView(folderLists,rootNode){
+  if(folderLists.MapsInFolder.length != 0){
+    folderLists.MapsInFolder.forEach(map => {
+      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, Description: "", isFolder: false})
+      this.totalMapsCounter++;
     });
+  }
+  if(folderLists.SubFolders.length != 0){
+    folderLists.SubFolders.forEach(subFolder => {
+      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode, Description: "", isFolder: true}
+      rootNode.items.push(folderNode)
+      this.totalFolderCounter++;
+      
+      this.folderHandler.getFolderContentsLists(subFolder.folderID).then(res => {
+        this.fillTreeView(res,folderNode)
+
+      }).catch
+        (err=> {
+          console.log("error with creation - promise return");
+          console.log(err)
+        })
+
+    });
+
+  }
 }
 
 onSubmit_AddFolder(){
-
-  if (this.addFolderCheckOut.invalid ||this.addFolderCheckOut.controls.folderName.value == "/") {
-    console.log("bad form!")
-    console.log(this.selectedFolder)
-    this.formErrors = "Worng/Missing inputs.<br>Remember: can't create Folder with the name '/'."
+  if (this.addFolderCheckOut.invalid) {
+    // console.log("bad form!")
+    this.formErrors = "Worng/Missing inputs.<br> Make sure you filled all the requierd fields"
     return;
   }
   this.formErrors = ""
   var self = this
-  console.log(this.addFolderCheckOut.controls.folderName.value)
-  console.log(this.addFolderCheckOut.controls.description.value)
-  console.log(this.selectedFolder);
   var findDuplicateFolder = false
-  this.selectedFolder.items.forEach(element => {
+  // look for duplicate name
+  this.selectedNode.items.forEach(element => {
     if (self.addFolderCheckOut.controls.folderName.value == element.text){
       findDuplicateFolder = true
     } 
   });
   if(findDuplicateFolder == false){
-    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
+    this.folderHandler.createFolder(this.addFolderCheckOut.controls.folderName.value,this.addFolderCheckOut.controls.description.value,this.selectedNode.folderID).then(res => {
       console.log('======create new folder request OK=====');
       var jsonRes = JSON.parse(res)
-      self.selectedFolder.items.push({text: jsonRes.Name, folderID: jsonRes._id, parentID: self.selectedFolder.folderID, items: [], isFolder: true})
+      self.selectedNode.items.push({text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true})
       this.actionInModalIsSuccecs = true
-      setTimeout (() => {this.closeModal_addFolder()}, 2000);
+      setTimeout (() => {this.closeModal("addFolderModal")}, 1000);
     }).catch
       (err=> {
-        console.log("error with creation - promise return");
+        console.log("error with folder creation - promise return");
         console.log(err)
       })
 
@@ -155,55 +156,150 @@ onSubmit_AddFolder(){
 }
 
 onSubmit_AddMap(){
-
   if (this.addMapCheckOut.invalid) {
-    console.log("bad form!")
+    // console.log("bad form!")
+    this.formErrors = "Missing inputs.<br>Remember: you must enter some name for the map!"
     return;
   }
   var self = this
   console.log(this.addMapCheckOut.controls.mapName.value)
+  this.formErrors = ""
+  var findDuplicateFolder = false
+  // look for duplicate name
+  this.selectedNode.items.forEach(element => {
+    if (self.addMapCheckOut.controls.mapName.value == element.text){
+      findDuplicateFolder = true
+    } 
+  });
   
-  // this.folderHandler(this.addMapCheckOut.controls.mapName.value,this.addMapCheckOut.controls.description.value,this.selectedFolder.folderID).then(res => {
-  //   console.log('======create new folder request OK=====');
-  //   var jsonRes = JSON.parse(res)
-  //   self.selectedFolder.items.push({text: jsonRes.Name,folderID: jsonRes._id,items: [], isFolder: true})
-  // }).catch
-  //   (err=> {
-  //     console.log("error with creation - promise return");
-  //     console.log(err)
-  //   })
+  if(findDuplicateFolder == false){
+    // map creation
+    this.mapHandler.createMap(this.addMapCheckOut.controls.mapName.value,this.addMapCheckOut.controls.description.value,this.selectedNode.folderID).then(res => {
+      console.log('======create new map request OK=====');
+      var jsonRes = JSON.parse(res)
 
-}
+      // add to parent folder
+      // this.folderHandler.addMapToFolder(this.selectedFolder.folderID,jsonRes._id,jsonRes.MapName).then(res => {
+        console.log('======add map to parent folder request OK=====');
+        // add to tree-view
+        self.selectedNode.items.unshift({text: jsonRes.MapName, mapID: jsonRes._id, Description: jsonRes.Description, parentNode:this.selectedNode, isFolder: false})
+        this.actionInModalIsSuccecs = true
+        setTimeout (() => {this.closeModal("addMapModal")}, 1000);
 
-closeModal_addFolder(){
-  this.modalService.close('addFolderModal');
-  this.actionInModalIsSuccecs = false
-  this.formErrors=''
-  this.addFolderCheckOut.reset();
-
-}
-
-getDescription(dataItem){
-  if(dataItem.isFolder){
-    this.folderHandler.getFolderProperties(dataItem.folderID).then(res => {
-      console.log('======GET PROPERTY request OK=====');
-      var jsonRes = JSON.parse(JSON.stringify(res))
-      dataItem.description = JSON.parse(jsonRes.FolderDescription)
+      // }).catch
+      //   (err=> {
+      //     console.log("error with addto parent folder - promise return");
+      //     console.log(err)
+      //   });
     }).catch
       (err=> {
-        console.log("error with creation - promise return");
+        console.log("error with map creation - promise return");
         console.log(err)
-      })
-      
+      });
+
+    this.addMapCheckOut.reset();
+  }
+  else{
+    this.formErrors = "A folder with that name already exists in this folder. <br>Give another name please"
   }
 }
 
-mouseOverNodeChanger(dataItem){
-  this.mouseOverNode = dataItem
-  console.log(this.mouseOverNode)
+preOpen_editPropertiesModal(dataItem){
+  if(dataItem.Description == ""){
+    if(dataItem.isFolder){
+      this.folderHandler.getFolderDescription(dataItem.folderID).then(res => {
+        console.log('======get description folder request OK=====');
+        var jsonRes = JSON.parse(res)
+        console.log(res)
+        console.log(jsonRes.Description)
+        dataItem.Description = jsonRes.Description
+      }).catch
+        (err=> {
+          console.log("error with get description folder - promise return");
+          console.log(err)
+        });
+    }
+    else{
+      this.mapHandler.getMapDescription(dataItem.mapID).then(res => {
+        console.log('======get description map request OK=====');
+        var jsonRes = JSON.parse(res)
+        dataItem.Description = jsonRes.Description
+      }).catch
+        (err=> {
+          console.log("error with get description map - promise return");
+          console.log(err)
+        });
+    }
+  }
+
+}
+onSubmit_editProperties(){
+  var newName, Description
+  if(this.changeFileName){
+    newName = this.editPropertiesCheckOut.controls.fileName.value
+  }
+  else{
+    newName = this.selectedNode.text
+  }
+  if(this.changeDescription){
+    Description = this.editPropertiesCheckOut.controls.description.value
+  }
+  else{
+    this.selectedNode.Description
+  }
+
+  if(this.selectedNode.isFolder){
+    console.log(this.selectedNode.folderID,newName,Description);
+    
+    this.folderHandler.updateFolderProperties(this.selectedNode.folderID,newName,Description,this.selectedNode.parentNode.folderID).then(res => {
+      // console.log('======update properties folder request OK=====');
+      this.selectedNode.Description = Description
+      this.selectedNode.text = newName
+      this.actionInModalIsSuccecs = true
+      this.changeDescription = false;
+      this.changeFileName = false;
+      this.editPropertiesCheckOut.reset();
+      setTimeout (() => {this.closeModal("editPropertiesModal")}, 1000);
+      
+    }).catch
+      (err=> {
+        console.log("error with update properties folder - promise return");
+        console.log(err)
+      });
+  }
+  else{
+    console.log(this.selectedNode.mapID,newName,Description);
+    this.mapHandler.updateMapDecription(this.selectedNode.mapID,newName,Description,this.selectedNode.parentNode.folderID).then(res => {
+      // console.log('======update properties map request OK=====');
+      this.selectedNode.Description = Description
+      this.selectedNode.text = newName
+      this.actionInModalIsSuccecs = true
+      this.changeDescription = false;
+      this.changeFileName = false;
+      this.editPropertiesCheckOut.reset();
+      setTimeout (() => {this.closeModal("editPropertiesModal")}, 1000);
+    }).catch
+      (err=> {
+        console.log("error with update properties map- promise return");
+        console.log(err)
+      });
+  }
+
 }
 
-activateMapInMapViewer(dataItem){
+// listeners
+mouseOverNodeChanger(dataItem){
+  this.mouseOverNode = dataItem
+}
+
+
+public clickUpdateDataItem(dataItem) {
+  this.selectedNode = dataItem
+  console.log(this.selectedNode);
+  
+}
+
+loadSelectedMap_toMapViewer(dataItem){
   if(!dataItem.isFolder){
     this.mapHandler.getMap(dataItem.mapID).then(res => {
       console.log(res);
@@ -217,36 +313,65 @@ activateMapInMapViewer(dataItem){
       
   }
 }
+
+
 // ############### modal functionallity ########################
 
-openModal(id: string) {
-  // this.nodeModal.loadNodeRefs()
-  this.modalService.open(id);
+closeModal(modalId){
+  this.modalService.close(modalId);
+  this.actionInModalIsSuccecs = false
+  this.formErrors=''
+  this.addFolderCheckOut.reset();
+  this.addMapCheckOut.reset();
+  this.editPropertiesCheckOut.reset();
+
 }
 
 
-closeModal(id: string) {
-  this.modalService.close(id);
-}
-
-// ############### dialog functionallity ########################
+// ############### dialog functionallity (delete files from tree) ########################
 public deleteDialogOpened = false;
 
 public closeDialog(status, fileToDelete) {
   this.deleteDialogOpened = false;
-  if(status == "yes"){
-    if(fileToDelete.isFolder){
-      console.log(fileToDelete.parent)
-      this.folderHandler.removeFolderFromFolder(fileToDelete.parentID,fileToDelete.folderID).then(res => {
-        console.log(res);
-        console.log("bla bla ok")
-      }).catch
-        (err=> {
-          console.log(err)
-        });
-    }
+  if(status == "yes"){  // the user choose to delete the file
+    this.recursiveDelete(fileToDelete)
   }
 }
+
+public recursiveDelete(fileToDelete){
+  if(!fileToDelete.isFolder){
+    return this.deleteSignleMap(fileToDelete)
+  }
+  if(fileToDelete.isFolder && fileToDelete.items.length == 0){
+    return this.deleteSingleFolder(fileToDelete)
+  }
+  for (let item of fileToDelete.items){
+    this.recursiveDelete(item)
+  }
+  return this.deleteSingleFolder(fileToDelete)
+  
+}
+  private deleteSignleMap(fileToDelete: any) {
+      this.mapHandler.deleteMap(fileToDelete).then(res => {
+        fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
+        this.data = this.data.slice();
+        this.parsedData = this.parsedData.slice();
+      }).catch(err => {
+        console.log(err);
+      });
+  }
+
+  private deleteSingleFolder(fileToDelete: any) {
+    if(fileToDelete.parentNode != ""){ // make sure not to delete root folder
+      this.folderHandler.removeFolderFromFolder(fileToDelete.parentNode.folderID, fileToDelete.folderID).then(res => {
+        fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
+        this.data = this.data.slice();
+        this.parsedData = this.parsedData.slice();
+      }).catch(err => {
+        console.log(err);
+      });
+    }
+  }
 
 public openDialog(dataItem) {
   this.fileToDelete = dataItem
@@ -255,10 +380,6 @@ public openDialog(dataItem) {
 
 
 // ############### Tree-view functionallity ########################
-
-public handleSelectionButton(dataItem) {
-  this.selectedFolder = dataItem
-}
 
 
 public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
@@ -270,31 +391,15 @@ public hasChildren = (dataitem: any): boolean => !!dataitem.items;
  */
 public handleCollapse(node) {
   this.expandedKeys = this.expandedKeys.filter(k => k !== node.index);
+
 }
 
 /**
 * An `expand` event handler that will add the node hierarchical index
 * to the collection, expanding the its children.
 */
-public handleExpand(node) {
-  console.log(node);
-  console.log(this.expandedAtLeastOnce)
-  node.dataItem.items.forEach(folder=>{
-    // console.log("=========== "+folder)
-    if(this.expandedAtLeastOnce.indexOf(folder.folderID) == -1){
-      this.expandedAtLeastOnce.push(folder.folderID)
-      // get next level of each folder
-      this.folderHandler.getFolderContentsLists(folder.folderID).then(res => {
-        this.shallowFolderInsert(res,folder)
-      }).catch
-        (err=> {
-          console.log("error with creation - promise return");
-          console.log(err)
-        })
-        
-    }
-  });
-  this.expandedKeys = this.expandedKeys.concat(node.index);
+public handleExpand(expandedNode) {
+  this.expandedKeys = this.expandedKeys.concat(expandedNode.index);
 }
 
 public isExpanded = (dataItem: any, index: string) => {
@@ -304,7 +409,7 @@ public isExpanded = (dataItem: any, index: string) => {
 
 public onkeyup(value: string): void {
   this.parsedData = this.search(this.data, value);
-  console.log(this.parsedData)
+  // console.log(this.parsedData)
 }
 
 public search(items: any[], term: string): any[] {
@@ -320,13 +425,67 @@ public search(items: any[], term: string): any[] {
       }
 
         return acc;
-    },                []);
+    }, []);
 }
 
 public contains(text: string, term: string): boolean {
   return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
 }
 
+// tree-view icon's init
+public iconClass(dataItem): any {
+  
+  return {
+    'k-i-file-pdf': is(dataItem.text, 'pdf'),
+    'k-i-folder': dataItem.items !== undefined,
+    'k-i-table-align-middle-center': dataItem.items == undefined,
+    'k-i-image': is(dataItem.text, 'jpg|png'),
+    'k-icon': true
+};
 }
 
+// ############### permissions functionallity ########################
+
+loadPermissionTable(){
+
+  this.userHandler.getUsers().then(res => {
+    console.log(res)
+    this.allUsersData = res
+    this.selectedMapPermissionsList = res
+    this.check();
+  }).catch(err => {
+    console.log(err);
+    return;
+  });
+
+  
+
+  
+  // this.permissionUsersMap = new Map();
+  // //this.selectedNode.mapID
+  // this.mapHandler.getMapPermission("5e1452c7f512653e88c68c3a").then(res => {
+  //   console.log(res)
+  //   this.selectedMapPermissionsList = res
+  // }).catch(err => {
+  //   console.log(err);
+  //   return;
+  // });
+  
+
+
+  
+  // console.log(this.selectedMapPermissionsList)
+  
+
+
+  // this.selectedMapPermissionsList.forEach(element => {
+  //   console.log(element)
+  // });
+
+}
+
+check(){
+  console.log(this.allUsersData);
+}
+}
 

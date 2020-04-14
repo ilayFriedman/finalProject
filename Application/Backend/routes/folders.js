@@ -3,7 +3,6 @@ const router = express.Router();
 const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
-var mongoose = require('mongoose');
 
 router.post('/private/createFolder', async function(req, res) {
     try {
@@ -23,7 +22,7 @@ router.post('/private/createFolder', async function(req, res) {
                 res.status(500).send(`Server error occured while creation.`);
             } else {
                 if(saveRes.ParentDir != "/"){
-                    folder.findOneAndUpdate({'_id': saveRes.ParentDir},{$addToSet:{'SubFolders': {"folderID" : saveRes._id, "folderName": saveRes.Name}}}, function(err, result) {
+                    folder.findOneAndUpdate({'_id': saveRes.ParentDir},{$addToSet:{'SubFolders': {"folderID" : saveRes._id.toString(), "folderName": saveRes.Name}}}, function(err, result) {
                         if (err) {
                             folder.deleteOne({'_id': saveRes._id}, function (err) {
                                 if (err) {
@@ -46,20 +45,24 @@ router.post('/private/createFolder', async function(req, res) {
                     res.end(JSON.stringify(saveRes));
                 }
                 }
-
         });
-     
     } catch (e) {
         console.log(e);
         res.status(500).send();
     }
 })
 
+/**
+ * @param FolderID 
+ * @returns mapsInFolder-list and subFolders-list
+ */
 router.post('/private/getFolderContentsLists', async function(req, res) {
     try {
         folder.findOne({'_id': req.body.FolderID}, function(err, result) {
             if (result) {
+
                 var answer = {"MapsInFolder": result.MapsInFolder, "SubFolders" :result.SubFolders}
+                
                 res.writeHead(200, {"Content-Type": "application/json"});
                 res.end(JSON.stringify(answer));
                 res.status(200).send()
@@ -72,28 +75,13 @@ router.post('/private/getFolderContentsLists', async function(req, res) {
     }
 });
 
-router.post('/private/addMapToFolder', async function(req, res) {
+
+
+router.get('/private/getFolderDescription/:FolderID', async function(req, res) {
     try {
-        folder.findOneAndUpdate({'_id': req.body.FolderID},{$addToSet:{'MapsInFolder': {"mapID" : req.body.MapID, "mapName": req.body.mapName}}}, function(err, result) {
-            if (err) {
-                console.log(err);
-                res.status(500).send("Server error occurred.");
-            } else {
-                res.status(200).send("Map added successfully To Folder.");
-            }
-        });
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
-    }
-});
-
-
-
-router.post('/private/getFolderProperties', async function(req, res) {
-    try {
-        folder.findOne({'_id': req.body.FolderID}, function(err, result) {
+        folder.findOne({'_id': req.params.FolderID}, function(err, result) {
             if (result) {
-                res.status(200).send({"FolderName": result.Name, "FolderDescription" :result.Description})
+                res.status(200).send({"Description" :result.Description})
             } else {
                 res.status(400).send(`problem: ${err}`);
             }
@@ -106,12 +94,19 @@ router.post('/private/getFolderProperties', async function(req, res) {
 
 router.post('/private/updateFolderProperties', async function(req, res) {
     try {
-        folder.findOneAndUpdate({'_id': req.body.FolderID},{$set:{"Name" : req.body.FolderName, "Description": req.body.Description}}, function(err, result) {
+        folder.findOneAndUpdate({'_id': req.body.folderID},{$set:{"Name" : req.body.folderName, "Description": req.body.Description}}, function(err, result) {
             if (err) {
                 console.log(err);
                 res.status(500).send("Server error occurred.");
             } else {
-                res.status(200).send("Folder properties was update successfully.");
+                folder.updateOne({'_id': req.body.parentFolderID,'SubFolders.folderID': req.body.folderID},{$set: {"SubFolders.$.folderName": req.body.folderName}}, function(err, result) {
+                    // console.log(result)
+                    if (err) {
+                        res.status(500).send(`Server error occured.`);
+                    } else {
+                        res.status(200).send("Folder properties was update successfully.");
+                    }
+                });
             }
         });
     } catch (e) {
@@ -119,47 +114,29 @@ router.post('/private/updateFolderProperties', async function(req, res) {
     }
 });
 
-
-
-router.delete('/private/removeMapFromFolder', async function(req, res) {
-    try {
-        folder.findOneAndUpdate({'_id': req.body.FolderID},{$pull:{'MapsInFolder': {"mapID": req.body.mapID}}}, function(err, result) {
-            if (err) {
-                console.log(err);
-                res.status(500).send("Server error occurred while pop from parent folder.");
-            } else {
-                res.status(200).send("map removed successfully from folder.");
-            }
-        });
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
-    }
-});
 
 router.delete('/private/removeFolderFromFolder/:parentID&:folderID', async function(req, res) {
-    console.log(req.params.folderID);
-    console.log(req.params.parentID);
-    res.status(200).send("ok!")
-    
-    
-    // try {
-    //     folder.findOneAndUpdate({'_id': req.params.parentID},{$pull:{'SubFolders': {"folderID" : req.params.folderID}}}, function(err, result) {
-    //         if (err) {
-    //             console.log(err);
-    //             res.status(500).send("Server error occurred: while pop from parent folder");
-    //         } else {
-    //                 folder.deleteOne({ _id: req.params.FolderID }, function(err) {
-    //                         if (err) {
-    //                             res.status(500).send(`Server error occured.`);
-    //                         } else {
-    //                             res.status(200).send("folder deleted successfully (with update parent).");
-    //                         }
-    //                     });
-    //         }
-    //     });
-    // } catch (e) {
-    //     res.status(400).send(`problem: ${e}`);
-    // }
+    try {
+        folder.findOneAndUpdate({_id: req.params.parentID},{$pull:{'SubFolders': {"folderID" : req.params.folderID}}}, function(err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500).send("Server error occurred: while pop from parent folder");
+            } else {
+                // res.status(200).send("folder deleted successfully (with update parent).");
+                // console.log(req.params.parentID)
+                // console.log(result)
+                    folder.deleteOne({ _id: req.params.folderID }, function(err) {
+                            if (err) {
+                                res.status(500).send(`Server error occured.`);
+                            } else {
+                                res.status(200).send("folder deleted successfully (with update parent).");
+                            }
+                        });
+            }
+        });
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
 
 });
 
