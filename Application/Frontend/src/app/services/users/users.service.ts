@@ -16,8 +16,11 @@ export class UsersService {
    * [{"_id":string, "Username":string, "FirstName":string, "LastName":string}]
    */
   getUsers(){
-    return this.http.get(this.localUrl + '/private/getUsers', { 
-      headers: { 'token': sessionStorage.token }
-     }).toPromise()
+    return this.http.get(this.localUrl + '/private/getUsers', { headers: { 'token': sessionStorage.token }}).toPromise()
   }
+
+  getUserDetailsById(userID: String){
+    return this.http.get(this.localUrl + '/private/getUserDetailsById/'+ userID, { headers: { 'token': sessionStorage.token }}).toPromise()
+  }
+
 }

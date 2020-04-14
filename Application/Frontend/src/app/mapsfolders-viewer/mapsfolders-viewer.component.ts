@@ -7,6 +7,8 @@ import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {trigger, style, animate, transition} from '@angular/animations';
+import { map } from '@progress/kendo-data-query/dist/npm/transducers';
+import { UsersService } from '../services/users/users.service';
 
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
@@ -45,14 +47,19 @@ export class MapsfoldersViewerComponent implements OnInit {
   public searchTerm = '';
   public parsedData: any[] = this.data;
 
-  //chagesProperties vaariables
+  //chagesProperties variables
   changeFileName = false
   changeDescription = false
 
+  // permissions variables
+  selectedMapPermissionsList: any;
+  permissionUsersMap: Map<any, any>;
+  allUsersData: any;
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
+
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient,  private formBuilder: FormBuilder, public router: Router,private modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({folderName: ['', Validators.required],description: ['', Validators.required]});
     this.addMapCheckOut = this.formBuilder.group({mapName: ['', Validators.required],description: ['', Validators.required]});
     this.editPropertiesCheckOut = this.formBuilder.group({fileName: [''],description: ['']});
@@ -62,8 +69,6 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
   ngOnInit() {
-
-
     //fisrt push by hand
     this.data.push({
       text: "/",
@@ -81,8 +86,9 @@ export class MapsfoldersViewerComponent implements OnInit {
         console.log("error here");
         console.log(err)
       })
-
       this.parsedData = this.data;
+
+      // this.loadPermissionTable()
 
   }
 
@@ -307,6 +313,8 @@ loadSelectedMap_toMapViewer(dataItem){
       
   }
 }
+
+
 // ############### modal functionallity ########################
 
 closeModal(modalId){
@@ -424,16 +432,60 @@ public contains(text: string, term: string): boolean {
   return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
 }
 
-  // tree-view icon's init
-  public iconClass(dataItem): any {
-    
-    return {
-      'k-i-file-pdf': is(dataItem.text, 'pdf'),
-      'k-i-folder': dataItem.items !== undefined,
-      'k-i-table-align-middle-center': dataItem.items == undefined,
-      'k-i-image': is(dataItem.text, 'jpg|png'),
-      'k-icon': true
-  };
+// tree-view icon's init
+public iconClass(dataItem): any {
+  
+  return {
+    'k-i-file-pdf': is(dataItem.text, 'pdf'),
+    'k-i-folder': dataItem.items !== undefined,
+    'k-i-table-align-middle-center': dataItem.items == undefined,
+    'k-i-image': is(dataItem.text, 'jpg|png'),
+    'k-icon': true
+};
+}
+
+// ############### permissions functionallity ########################
+
+loadPermissionTable(){
+
+  this.userHandler.getUsers().then(res => {
+    console.log(res)
+    this.allUsersData = res
+    this.selectedMapPermissionsList = res
+    this.check();
+  }).catch(err => {
+    console.log(err);
+    return;
+  });
+
+  
+
+  
+  // this.permissionUsersMap = new Map();
+  // //this.selectedNode.mapID
+  // this.mapHandler.getMapPermission("5e1452c7f512653e88c68c3a").then(res => {
+  //   console.log(res)
+  //   this.selectedMapPermissionsList = res
+  // }).catch(err => {
+  //   console.log(err);
+  //   return;
+  // });
+  
+
+
+  
+  // console.log(this.selectedMapPermissionsList)
+  
+
+
+  // this.selectedMapPermissionsList.forEach(element => {
+  //   console.log(element)
+  // });
+
+}
+
+check(){
+  console.log(this.allUsersData);
 }
 }
 

@@ -139,6 +139,26 @@ router.get('/private/getMapDescription/:mapID', async function(req, res) {
     }
 });
 
+router.get('/private/getMapPermission/:mapID', async function(req, res) {
+    try {
+        await map.findOne({'_id': req.params.mapID}, function(err, result) {
+            if (result) {
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
+                    // console.log(result)
+                    res.send(result.Permission);
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                }
+            } else {
+                res.status(404).send("Could not find the requested map.");
+            }
+        })
+    } catch (e) {
+        res.status(500).send('Server error occured.');
+    }
+});
+
 
 
 router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
@@ -245,6 +265,8 @@ router.post('/private/updateMapProperties', async function(req, res) {
         res.status(400).send("No map ID attached to request.");
     }
 });
+
+
 
 
 

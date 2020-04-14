@@ -31,6 +31,8 @@ import { PopupModule } from '@progress/kendo-angular-popup';
 import { TooltipModule } from '@progress/kendo-angular-tooltip';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
+import { GridModule } from '@progress/kendo-angular-grid';
+
 
 
 
@@ -81,7 +83,8 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
     DialogsModule,
     ButtonsModule,
     MatSelectModule,
-    MatExpansionModule
+    MatExpansionModule,
+    GridModule
     // TreeViewModule
   ],
   providers: [

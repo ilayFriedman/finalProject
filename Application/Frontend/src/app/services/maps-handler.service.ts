@@ -31,6 +31,10 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getMapDescription/'+mapId, {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 
+  getMapPermission(mapId: String){
+    return this.http.get(this.localUrl + '/private/getMapPermission/'+mapId, {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
+  }
+
   deleteMap(mapFileToDelete){
     return this.http.delete(this.localUrl + '/private/removeMap/'+ mapFileToDelete.mapID +"&"+ mapFileToDelete.parentNode.folderID ,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
@@ -42,7 +46,6 @@ export class MapsHandlerService {
       Decription: newDescription,
       parentFolderID: parentFolderID
     }
-    console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/updateMapProperties', bodyReq, {headers: {'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
 

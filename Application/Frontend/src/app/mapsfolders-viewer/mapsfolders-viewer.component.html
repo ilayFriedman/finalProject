@@ -191,4 +191,62 @@
 </jw-modal>
 
 
+<div>
+    <span (click)="loadPermissionTable()">clickHere</span>
+    <h2>Permissions Management for "{{selectedNode.text}}" Map:</h2>
+    <div>
+        <h3>User and Permissions:</h3>
+        <br>
+
+        <kendo-grid [data]="gridData" [height]="310">
+            <kendo-grid-column field="id" title="ID" width="40">
+            </kendo-grid-column>
+            <kendo-grid-column field="userName" title="Name" width="250">
+            </kendo-grid-column>
+            <kendo-grid-column field="ownerPermission" title="Owner" width="80">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input type="checkbox" [checked]="dataItem.Discontinued"/>
+                </ng-template>
+            </kendo-grid-column>
+                        <kendo-grid-column field="writePermission" title="Write" width="80">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input type="checkbox" [checked]="dataItem.Discontinued"/>
+                </ng-template>
+            </kendo-grid-column>
+                        <kendo-grid-column field="readPermission" title="Read" width="80">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input type="checkbox" [checked]="dataItem.Discontinued"/>
+                </ng-template>
+            </kendo-grid-column>
+        </kendo-grid>
+
+    </div>
+
+    <div>
+        <form>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon">
+        <i class="glyphicon glyphicon-search"></i>
+      </div>
+      <input type="text" class="form-control" name="searchString" placeholder="Type to search..." [(ngModel)]="searchString"/>
+    </div>
+  </div>
+</form>
+
+<table class="table">
+  <tr>
+    <th>Name</th>
+    <th>Calories</th>
+    <th class="text-right">Actions</th>
+  </tr>
+<tr>
+<!-- </tr> *ngFor="let food of foods | filter : 'name' : searchString; let i = index"> -->
+    <td class="text-left">blabla</td>
+</tr>
+</table>
+    </div>
+
+</div>
+
 </div>
