@@ -8,6 +8,7 @@ import { RefCtxHendlerService } from '../services/referenceContext/node-menu-hen
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';
 import { MapsHandlerService } from '../services/maps-handler.service';
+import { v4 as uuid } from 'uuid';
 
 export interface ReferenceElement {
   _id: string,
@@ -28,6 +29,8 @@ export interface ContextElement {
 }
 
 export interface CommentElement {
+  _id: string,
+  Title: string,
   Content: string,
   CreatorId: string,
   CreatorName: string,
@@ -101,7 +104,8 @@ export class NodeMenuModalComponent implements OnInit {
   // #### Comments ####
   nodeComments: CommentElement[] = []
   nodeCommentsSource: MatTableDataSource<CommentElement>;
-  displayedColumnsComments: string[] = ['addLike', 'name', 'content', 'lastModified', 'likes', 'action'];
+  displayedColumnsComments: string[] = ['add Like', 'name', 'content', 'lastModified', 'likes', 'action'];
+
 
   constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
 
@@ -123,7 +127,6 @@ export class NodeMenuModalComponent implements OnInit {
 
 
   }
-
 
   tabClick(tabId) {
     console.log(tabId.index);
@@ -157,36 +160,7 @@ export class NodeMenuModalComponent implements OnInit {
     }
   }
 
-  loadCtxsFromDB() {
-    this.allCtxsList = []
-    this, this.refCtxService.getAllContexts().then(res => {
-      console.log(res);
-
-      this.allCtxs = res;
-      if (this.allCtxs.length > 0) {
-        this.allCtxs.forEach(element => {
-          var tmp: ContextElement = {
-            _id: element._id,
-            Title: element.Title,
-            CreatorId: element.CreatorId,
-            CreationTime: new Date(element.CreationTime).toLocaleDateString()
-          }
-
-          this.allCtxsList.push(tmp);
-
-        });
-        this.allCtxsSource = new MatTableDataSource<ContextElement>(this.allCtxsList);
-        this.allCtxsSource.paginator = this.allCtxsPaginator
-      } else {
-        console.log("no ctxs in DB");
-
-      }
-    }).catch
-      (err => {
-        console.log("error ctxs");
-        console.log(err)
-      })
-  }
+  // ######## REFERENCES #########
 
   loadRefsFromDB() {
     this.allRefList = [];
@@ -231,28 +205,9 @@ export class NodeMenuModalComponent implements OnInit {
     else this.btnShowAllRefs = "Show All >"
   }
 
-  showAllCtxs() {
-    this.doShowAllCtxs = !this.doShowAllCtxs;
-    if (this.doShowAllCtxs) {
-      this.btnShowAllCtxs = "< Hide All"
-    }
-    else this.btnShowAllCtxs = "Show All >"
-  }
-
   unloadNodeRefs() {
     this.nodeRefList = [];
     this.nodeRefSource = null;
-  }
-
-  unloadNodeCtxs() {
-    this.nodeCtxsList = [];
-    this.nodeCtxsSource = null;
-  }
-
-  loadNodeComments() {
-    this.modalService.currNodeData.comment.forEach(element => {
-      this.nodeComments.push(element);
-    })
   }
 
   loadNodeRefs() {
@@ -264,14 +219,6 @@ export class NodeMenuModalComponent implements OnInit {
     console.log("node refs loaded");
   }
 
-  loadNodeCtxs() {
-    this.modalService.currNodeData.ctxs.forEach(element => {
-      this.nodeCtxsList.push(element);
-    })
-    this.nodeCtxsSource = new MatTableDataSource<ContextElement>(this.nodeCtxsList);
-    this.nodeCtxsSource.paginator = this.nodeCtxsPaginator
-    console.log("node Ctxs loaded");
-  }
 
   addRefToNode() {
     this.allRefSelection.selected.forEach(element => {
@@ -286,21 +233,6 @@ export class NodeMenuModalComponent implements OnInit {
     this.loadNodeRefs();
     this.allRefSelection.clear()
   }
-
-  addCtxsToNode() {
-    this.allCtxsSelection.selected.forEach(element => {
-      if (this.modalService.currNodeData.ctxs.indexOf(element) == -1) {
-        this.modalService.currNodeData.ctxs.push(element)
-      }
-      else {
-        alert("This context already exist in this node")
-      }
-    });
-    this.unloadNodeCtxs();
-    this.loadNodeCtxs();
-    this.allCtxsSelection.clear()
-  }
-
   removeRefToNode() {
     this.nodeRefSelection.selected.forEach(element => {
       let idx = this.modalService.currNodeData.refs.indexOf(element)
@@ -311,37 +243,14 @@ export class NodeMenuModalComponent implements OnInit {
     // this.masterToggle('node')
     this.nodeRefSelection.clear()
   }
-
-  removeCtxsToNode() {
-    this.nodeCtxsSelection.selected.forEach(element => {
-      let idx = this.modalService.currNodeData.ctxs.indexOf(element)
-      this.modalService.currNodeData.ctxs.splice(idx, 1);
-    });
-    this.unloadNodeCtxs();
-    this.loadNodeCtxs();
-    // this.masterToggle('node')
-    this.nodeCtxsSelection.clear()
-  }
-
   openNewRefModal(id: string) {
     this.loadNodeRefs()
-    this.modalService.open(id);
-  }
-
-  openNewCtxModal(id: string) {
-    this.loadNodeCtxs()
     this.modalService.open(id);
   }
 
   closeNewRefModal(id: string) {
     this.unloadNodeRefs();
     this.newRefForm.reset()
-    this.modalService.close(id);
-  }
-
-  closeNewCtxModal(id: string) {
-    this.unloadNodeCtxs();
-    this.newCtxForm.reset()
     this.modalService.close(id);
   }
 
@@ -360,6 +269,104 @@ export class NodeMenuModalComponent implements OnInit {
       });
   }
 
+  applyFilterAllRefs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.allRefSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilterNodeRefs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.nodeRefSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  // ######## CONTEXTS #########
+  loadCtxsFromDB() {
+    this.allCtxsList = []
+    this, this.refCtxService.getAllContexts().then(res => {
+      console.log(res);
+
+      this.allCtxs = res;
+      if (this.allCtxs.length > 0) {
+        this.allCtxs.forEach(element => {
+          var tmp: ContextElement = {
+            _id: element._id,
+            Title: element.Title,
+            CreatorId: element.CreatorId,
+            CreationTime: new Date(element.CreationTime).toLocaleDateString()
+          }
+
+          this.allCtxsList.push(tmp);
+
+        });
+        this.allCtxsSource = new MatTableDataSource<ContextElement>(this.allCtxsList);
+        this.allCtxsSource.paginator = this.allCtxsPaginator
+      } else {
+        console.log("no ctxs in DB");
+
+      }
+    }).catch
+      (err => {
+        console.log("error ctxs");
+        console.log(err)
+      })
+  }
+
+  showAllCtxs() {
+    this.doShowAllCtxs = !this.doShowAllCtxs;
+    if (this.doShowAllCtxs) {
+      this.btnShowAllCtxs = "< Hide All"
+    }
+    else this.btnShowAllCtxs = "Show All >"
+  }
+
+  unloadNodeCtxs() {
+    this.nodeCtxsList = [];
+    this.nodeCtxsSource = null;
+  }
+  loadNodeCtxs() {
+    this.modalService.currNodeData.ctxs.forEach(element => {
+      this.nodeCtxsList.push(element);
+    })
+    this.nodeCtxsSource = new MatTableDataSource<ContextElement>(this.nodeCtxsList);
+    this.nodeCtxsSource.paginator = this.nodeCtxsPaginator
+    console.log("node Ctxs loaded");
+  }
+  addCtxsToNode() {
+    this.allCtxsSelection.selected.forEach(element => {
+      if (this.modalService.currNodeData.ctxs.indexOf(element) == -1) {
+        this.modalService.currNodeData.ctxs.push(element)
+      }
+      else {
+        alert("This context already exist in this node")
+      }
+    });
+    this.unloadNodeCtxs();
+    this.loadNodeCtxs();
+    this.allCtxsSelection.clear()
+  }
+
+  removeCtxsToNode() {
+    this.nodeCtxsSelection.selected.forEach(element => {
+      let idx = this.modalService.currNodeData.ctxs.indexOf(element)
+      this.modalService.currNodeData.ctxs.splice(idx, 1);
+    });
+    this.unloadNodeCtxs();
+    this.loadNodeCtxs();
+    // this.masterToggle('node')
+    this.nodeCtxsSelection.clear()
+  }
+
+  openNewCtxModal(id: string) {
+    this.loadNodeCtxs()
+    this.modalService.open(id);
+  }
+
+  closeNewCtxModal(id: string) {
+    this.unloadNodeCtxs();
+    this.newCtxForm.reset()
+    this.modalService.close(id);
+  }
+
   addNewCtx() {
     console.log("add");
 
@@ -376,6 +383,62 @@ export class NodeMenuModalComponent implements OnInit {
         console.log(err)
       });
   }
+
+  applyFilterAllCtxs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.allCtxsSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilterNodeCtxs(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.nodeCtxsSource.filter = filterValue.trim().toLowerCase();
+  }
+
+
+  // ######## COMMENTS #########
+  loadNodeComments() {
+    this.modalService.currNodeData.comment.forEach(element => {
+      this.nodeComments.push(element);
+    })
+    let tmp: CommentElement = {
+      '_id': uuid(),
+      'Title': "title",
+      'Content': "content",
+      'CreatorId': "creatorID",
+      'CreatorName': "CreatorName",
+      'CreationTime': "CreationTime",
+      'LastModificationTime': "LastModificationTime",
+      'Likes': 1
+    }
+    this.nodeComments.push(tmp);
+    this.nodeCommentsSource = new MatTableDataSource<CommentElement>(this.nodeComments);
+    console.log(this.nodeCommentsSource);
+
+  }
+
+  AddLikeToComment(element) {
+    element.Likes++;
+    console.log(element);
+
+  }
+
+  // ######## STYLES #########
+  setNodeStyles() {
+    console.log(this.borderThickness);
+    // this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
+      if (node.key == this.modalService.currNodeData.key) {
+        console.log(node);
+
+        this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "stroke", this.borderColor)
+        this.mapHandler.myDiagram.model.setDataProperty(node, "strokeWidth", parseInt(this.borderThickness))
+
+      }
+    });
+  }
+
+
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(type: string) {
@@ -454,29 +517,9 @@ export class NodeMenuModalComponent implements OnInit {
     }
   }
 
-  applyFilterAllRefs(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.allRefSource.filter = filterValue.trim().toLowerCase();
-  }
 
-  applyFilterNodeRefs(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.nodeRefSource.filter = filterValue.trim().toLowerCase();
-  }
 
-  setNodeStyles() {
-    console.log(this.borderThickness);
-    // this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
-    this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
-      if (node.key == this.modalService.currNodeData.key) {
-        console.log(node);
 
-        this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.shapeColor)
-        this.mapHandler.myDiagram.model.setDataProperty(node, "stroke", this.borderColor)
-        this.mapHandler.myDiagram.model.setDataProperty(node, "strokeWidth", parseInt(this.borderThickness))
 
-      }
-    });
-  }
 
 }

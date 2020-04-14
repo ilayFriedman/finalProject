@@ -748,7 +748,7 @@ export class MapViewerComponent implements OnInit {
 
   newMap() {
     this.mapHandler.myDiagram.clear()
-    this.currMap = null
+    // this.currMap = null
 
   }
 
