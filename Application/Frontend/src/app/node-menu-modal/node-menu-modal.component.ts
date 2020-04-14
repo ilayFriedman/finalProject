@@ -30,6 +30,7 @@ export interface ContextElement {
 export interface CommentElement {
   Content: string,
   CreatorId: string,
+  CreatorName: string,
   CreationTime: string,
   LastModificationTime: string,
   Likes: number
@@ -99,6 +100,8 @@ export class NodeMenuModalComponent implements OnInit {
 
   // #### Comments ####
   nodeComments: CommentElement[] = []
+  nodeCommentsSource: MatTableDataSource<CommentElement>;
+  displayedColumnsComments: string[] = ['addLike', 'name', 'content', 'lastModified', 'likes', 'action'];
 
   constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
 
