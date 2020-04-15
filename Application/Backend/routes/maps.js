@@ -57,7 +57,7 @@ function UserHasOwnerPermissionForMap(resMap, userId) {
     return false;
 }
 
-router.post('/private/createMap', async function(req, res) {
+router.post('/private/createMap', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
         const newMap = new map({
@@ -74,18 +74,18 @@ router.post('/private/createMap', async function(req, res) {
             Subscribers: [],
             ContainingFolders: []
         });
-        newMap.save(function(err,saveRes) {
+        newMap.save(function (err, saveRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send(`Server error occured.`);
             } else {
                 // update parent folder
-                folder.findOneAndUpdate({'_id': req.body.folderID},{$addToSet:{'MapsInFolder': {"mapID" : saveRes._id.toString(), "mapName": saveRes.MapName}}}, function(err, result) {
+                folder.findOneAndUpdate({ '_id': req.body.folderID }, { $addToSet: { 'MapsInFolder': { "mapID": saveRes._id.toString(), "mapName": saveRes.MapName } } }, function (err, result) {
                     if (err) {
                         console.log(err);
                         res.status(500).send("Server error occurred.");
                     } else {
-                        res.writeHead(200, {"Content-Type": "application/json"});
+                        res.writeHead(200, { "Content-Type": "application/json" });
                         res.end(JSON.stringify(saveRes));
                     }
                 });
@@ -97,13 +97,14 @@ router.post('/private/createMap', async function(req, res) {
     }
 });
 
-router.get('/private/getMap/:mapID', async function(req, res) {
+router.get('/private/getMap/:mapID', async function (req, res) {
     try {
         await map.find({
             '_id': req.params.mapID
-        }, function(err, result) {
+        }, function (err, result) {
             if (result) {
                 // console.log(result)
+                // console.log(result[0])
                 if (UserHasReadPermissionForMap(result[0], req.decoded._id)) {
                     res.send(result[0]);
                 } else {
@@ -119,14 +120,14 @@ router.get('/private/getMap/:mapID', async function(req, res) {
 });
 
 
-router.get('/private/getMapDescription/:mapID', async function(req, res) {
+router.get('/private/getMapDescription/:mapID', async function (req, res) {
     try {
-        await map.findOne({'_id': req.params.mapID}, function(err, result) {
+        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
                     // console.log(result)
-                    res.send({"Description" :result.Description});
+                    res.send({ "Description": result.Description });
                 } else {
                     res.status(403).send("The user's permissions are insufficient to retrieve map");
                 }
@@ -139,9 +140,9 @@ router.get('/private/getMapDescription/:mapID', async function(req, res) {
     }
 });
 
-router.get('/private/getMapPermission/:mapID', async function(req, res) {
+router.get('/private/getMapPermission/:mapID', async function (req, res) {
     try {
-        await map.findOne({'_id': req.params.mapID}, function(err, result) {
+        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
@@ -161,18 +162,18 @@ router.get('/private/getMapPermission/:mapID', async function(req, res) {
 
 
 
-router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
+router.delete('/private/removeMap/:mapID&:folderID', async function (req, res) {
     if (req.params.mapID) {
-        map.findOne({ _id: req.params.mapID }, function(err, result) {
+        map.findOne({ _id: req.params.mapID }, function (err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
-                    map.deleteOne({ _id: result._id }, function(err) {
+                    map.deleteOne({ _id: result._id }, function (err) {
                         if (err) {
                             // res.status(500).send(`Server error occured.`);
                             res.statusCode = 500;
                         } else {
                             // update parent
-                            folder.findOneAndUpdate({_id: req.params.folderID},{$pull:{'MapsInFolder': {"mapID": req.params.mapID}}}, function(err, result) {
+                            folder.findOneAndUpdate({ _id: req.params.folderID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
                                 if (err) {
                                     console.log(err);
                                     // res.status(500).send("Server error occurred while pop from parent folder.");
@@ -202,23 +203,25 @@ router.delete('/private/removeMap/:mapID&:folderID', async function(req, res) {
         res.statusCode = 400;
         res.end();
     }
-    
-    
+
+
 
 });
 
-router.put('/private/updateMap', async function(req, res) {
+router.put('/private/updateMap', async function (req, res) {
     if (req.body._id) {
         map.findOne({
             '_id': req.body._id
-        }, function(err, result) {
+        }, function (err, result) {
             if (result) {
                 if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': req.body.model }, function(err, mongoRes) {
+                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': req.body.model }, function (err, mongoRes) {
                         if (err) {
                             res.status(500).send("Server error occurred.");
+
                         } else {
                             res.status(200).send('Map updated successfully.');
+
                         }
                     });
                 } else {
@@ -233,17 +236,93 @@ router.put('/private/updateMap', async function(req, res) {
     }
 });
 
-router.post('/private/updateMapProperties', async function(req, res) {
+router.put('/private/addLikeToComment', async function (req, res) {
+    if (req.body.mapId) {
+        map.findOne({
+            '_id': req.body.mapId
+        }, function (err, result) {
+            if (result) {
+                let currModel = JSON.parse(result.Model)
+                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
+                    const element = currModel.nodeDataArray[index];
+                    if (element.id == req.body.nodeId) {
+                        console.log("elementid= " + element.id);
+                        for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
+                            let currComment = currModel.nodeDataArray[index].comment[commentIdx]
+                            if (currComment.id == req.body.commentId) {
+                                currModel.nodeDataArray[index].comment[commentIdx].Likes++;
+                            }
+                        }
+                    }
+                }
+                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': JSON.stringify(currModel) } }, function (err, mongoRes) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.status(200).send("Like added successfully.")
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
+router.put('/private/addNewComment', async function (req, res) {
+    if (req.body.mapId) {
+        map.findOne({
+            '_id': req.body.mapId
+        }, function (err, result) {
+            if (result) {
+                let currModel = JSON.parse(result.Model)
+                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
+                    const element = currModel.nodeDataArray[index];
+                    if (element.id == req.body.nodeId) {
+                        console.log("elementid= " + element.id);
+                        currModel.nodeDataArray[index].comment.push(req.body.comment);
+
+                        // for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
+                        //     let currComment = currModel.nodeDataArray[index].comment[commentIdx]
+                        //     if (currComment.id == req.body.commentId) {
+                        //         console.log("commentID= " + element.id);
+                        //     }
+                        // }
+                    }
+                }
+                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': JSON.stringify(currModel) } }, function (err, mongoRes) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.status(200).send("Comment added successfully.")
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
+
+
+router.post('/private/updateMapProperties', async function (req, res) {
     if (req.body.mapID) {
         // console.log(req.body.mapID)
-        map.findOne({'_id': req.body.mapID}, function(err, result) {
+        map.findOne({ '_id': req.body.mapID }, function (err, result) {
             if (result) {
                 if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.updateOne({ '_id': req.body.mapID}, {$set:{'MapName': req.body.mapName,'Description': req.body.Decription}}, function(err, mongoRes) {
+                    map.updateOne({ '_id': req.body.mapID }, { $set: { 'MapName': req.body.mapName, 'Description': req.body.Decription } }, function (err, mongoRes) {
                         if (err) {
                             res.status(500).send("Server error occurred.");
                         } else {
-                            folder.updateOne({'_id': req.body.parentFolderID,'MapsInFolder.mapID': req.body.mapID},{$set: {"MapsInFolder.$.mapName": req.body.mapName}}, function(err, result) {
+                            folder.updateOne({ '_id': req.body.parentFolderID, 'MapsInFolder.mapID': req.body.mapID }, { $set: { "MapsInFolder.$.mapName": req.body.mapName } }, function (err, result) {
                                 // console.log(result)
                                 if (err) {
                                     res.status(500).send(`Server error occured.`);

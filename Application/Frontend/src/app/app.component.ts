@@ -13,11 +13,18 @@ export class AppComponent {
   constructor(private router: Router) { }
 
   ngOnInit() {
-    this.router.navigate([''])
+    // this.logOut()
+    // this.router.navigate(['/login'])
+
+    this.router.navigate(['/logedHome']) //remove at the end of debug
   }
 
   isLoggedIn() {
     return sessionStorage.userFullName != null;
+  }
+
+  logOut() {
+    sessionStorage.clear()
   }
 
   // @HostListener('window:beforeunload', ['$event'])

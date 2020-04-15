@@ -10,6 +10,8 @@ import { TextMapConverterComponent } from '../text-map-converter/text-map-conver
 import { NodeMenuModalComponent } from '../node-menu-modal/node-menu-modal.component';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { v4 as uuid } from 'uuid';
+
 
 
 
@@ -36,6 +38,9 @@ export class MapViewerComponent implements OnInit {
 
   ngOnInit() {
     this.currMap = this.mapHandler.currMap_mapViewer
+    console.log(this.currMap);
+    console.log(this.mapHandler.getUserPermission());
+    (this.currMap)
     this.init()
   }
 
@@ -147,6 +152,7 @@ export class MapViewerComponent implements OnInit {
 
     self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
       var node = e.diagram.selection.first();
+      node.data.id = uuid();
       node.data.refs = [];
       node.data.ctxs = [];
       node.data.comment = [];
@@ -630,6 +636,10 @@ export class MapViewerComponent implements OnInit {
       this.saveAs()
     }
     else {
+      console.log("map model:");
+
+      console.log(this.mapHandler.myDiagram.model);
+
       let data = {
         '_id': this.currMap._id,
         'model': this.mapHandler.myDiagram.model.toJson()
@@ -709,7 +719,7 @@ export class MapViewerComponent implements OnInit {
 
   openModalMenu(id: string) {
     // this.modalService.currNodeData = this.currNode.data
-    console.log(this.currNode._id);
+    console.log(this.currNode.data);
 
     this.modalService.openMenu(id, this.currNode.data);
   }

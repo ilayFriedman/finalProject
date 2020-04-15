@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RefCtxHendlerService } from './node-menu-hendler.service';
+import { NodeMenuHendlerService } from './node-menu-hendler.service';
 
 describe('ReferenceHendlerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: RefCtxHendlerService = TestBed.get(RefCtxHendlerService);
+    const service: NodeMenuHendlerService = TestBed.get(NodeMenuHendlerService);
     expect(service).toBeTruthy();
   });
 });
