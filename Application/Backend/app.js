@@ -83,7 +83,7 @@ app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
 app.post("/private/createGroup", groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.post("/private/SetUserPermissionForGroup", groupsRoute);
-app.get("/private/GetGroupsMembers", groupsRoute);
+app.get("/private/GetGroupsMembers/:id", groupsRoute);
 app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
 app.get("/private/GetGroupsUserOwns", groupsRoute);
 app.delete("/private/deleteGroup/:id", groupsRoute);

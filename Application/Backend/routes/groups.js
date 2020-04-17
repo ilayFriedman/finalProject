@@ -304,10 +304,10 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
     }
 });
 
-router.get('/private/GetGroupsMembers', async function (req, res) {
-    if(req.body.groupId) {
+router.get('/private/GetGroupsMembers/:id', async function (req, res) {
+    if(req.params.id) {
         group.findOne({
-            '_id': req.body.groupId
+            '_id': req.params.id
         }, function (err, result) {
             if(!result){
                 res.status(404).send("Could not find group.");
