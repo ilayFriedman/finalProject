@@ -64,7 +64,7 @@ app.post('/login', usersRoute);
 app.post('/register', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
-app.get('/private/getUserDetailsById/:userID', usersRoute);
+app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);

@@ -141,12 +141,15 @@ router.get('/private/getMapDescription/:mapID', async function(req, res) {
 
 router.get('/private/getMapPermission/:mapID', async function(req, res) {
     try {
-        await map.findOne({'_id': req.params.mapID}, function(err, result) {
+        await map.findOne({'_id': req.params.mapID}, async function(err, result) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    // console.log(result)
-                    res.send(result.Permission);
+                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Read).exec()
+                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Write).exec()
+                    // console.log(result.Permission.Read)
+                    res.send({read: read, write: write})
+                    // res.send(result.Permission);
                 } else {
                     res.status(403).send("The user's permissions are insufficient to retrieve map");
                 }

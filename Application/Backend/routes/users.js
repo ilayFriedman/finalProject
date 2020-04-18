@@ -102,20 +102,22 @@ router.get('/private/getUsers', async function (req, res) {
 });
 
 
-// TO DO : add Email in answer for send Permissions update
-router.get('/private/getUserDetailsById/:userID', async function (req, res) {
+// Tfor brings names
+router.get('/private/getUsersDetailsByIds/:ids', async function (req, res) {
 
     try {
-        user.findOne({'_id': req.params.userID}, function(err, result) {
-            if (result) {
-                var answer = {"FirstName": result.FirstName, "LastName" :result.LastName}
-                res.writeHead(200, {"Content-Type": "application/json"});
-                res.end(JSON.stringify(answer));
-                res.status(200).send()
-            } else {
-                res.status(400).send(`problem: ${err}`);
-            }
-        })
+        // records = await user.find().where('_id').in(ids).exec();
+        // console.log(records)
+        // user.findOne({'_id': req.params.userID}, function(err, result) {
+        //     if (result) {
+        //         var answer = {"FirstName": result.FirstName, "LastName" :result.LastName}
+        //         res.writeHead(200, {"Content-Type": "application/json"});
+        //         res.end(JSON.stringify(answer));
+        //         res.status(200).send()
+        //     } else {
+        //         res.status(400).send(`problem: ${err}`);
+        //     }
+        // })
     } catch (e) {
         res.status(400).send(`problem: ${e}`);
     }

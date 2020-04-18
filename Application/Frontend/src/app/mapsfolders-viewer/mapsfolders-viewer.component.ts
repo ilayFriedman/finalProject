@@ -2,13 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
-import { of, Observable } from 'rxjs';
+import { of, Observable, Subject, from } from 'rxjs';
 import { ModalService } from '../services/modal.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import {trigger, style, animate, transition} from '@angular/animations';
 import { map } from '@progress/kendo-data-query/dist/npm/transducers';
 import { UsersService } from '../services/users/users.service';
+import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { State, process } from '@progress/kendo-data-query';
+// import { read } from 'fs';
+
 
 
 const is = (fileName: string, ext: string) => new RegExp(`.${ext}\$`).test(fileName);
@@ -52,9 +56,22 @@ export class MapsfoldersViewerComponent implements OnInit {
   changeDescription = false
 
   // permissions variables
-  selectedMapPermissionsList: any;
-  permissionUsersMap: Map<any, any>;
-  allUsersData: any;
+  currPermissionMapDATA: any[]  = [];
+  public buttonCount = 5;
+  public info = true;
+  public type: 'numeric'
+  public pageSizes = true;
+  public previousNext = true;
+  public parsedDataPermissions: GridDataResult;
+  public pageSize = 5;
+  public changes: any = {};
+  public gridState: State = {
+    sort: [],
+    skip: 0,
+    take: 10
+};
+  
+
 
 
 
@@ -88,20 +105,21 @@ export class MapsfoldersViewerComponent implements OnInit {
       })
       this.parsedData = this.data;
 
-      // this.loadPermissionTable()
+      // permissions init
+      // this.view = this.editService.pipe(map(data => process(data, this.gridState)));
 
   }
 
 fillTreeView(folderLists,rootNode){
   if(folderLists.MapsInFolder.length != 0){
     folderLists.MapsInFolder.forEach(map => {
-      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, Description: "", isFolder: false})
+      rootNode.items.push({text: map.mapName, mapID: map.mapID, parentNode:rootNode, Description: "",mapPermission: "" , isFolder: false})
       this.totalMapsCounter++;
     });
   }
   if(folderLists.SubFolders.length != 0){
     folderLists.SubFolders.forEach(subFolder => {
-      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode, Description: "", isFolder: true}
+      var folderNode = {text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode:rootNode, Description: "",mapPermission: "" , isFolder: true}
       rootNode.items.push(folderNode)
       this.totalFolderCounter++;
       
@@ -324,6 +342,7 @@ closeModal(modalId){
   this.addFolderCheckOut.reset();
   this.addMapCheckOut.reset();
   this.editPropertiesCheckOut.reset();
+  
 
 }
 
@@ -336,6 +355,11 @@ public closeDialog(status, fileToDelete) {
   if(status == "yes"){  // the user choose to delete the file
     this.recursiveDelete(fileToDelete)
   }
+}
+
+public openDialog(dataItem) {
+  this.fileToDelete = dataItem
+  this.deleteDialogOpened = true;
 }
 
 public recursiveDelete(fileToDelete){
@@ -372,11 +396,6 @@ public recursiveDelete(fileToDelete){
       });
     }
   }
-
-public openDialog(dataItem) {
-  this.fileToDelete = dataItem
-  this.deleteDialogOpened = true;
-}
 
 
 // ############### Tree-view functionallity ########################
@@ -446,46 +465,133 @@ public iconClass(dataItem): any {
 
 // ############### permissions functionallity ########################
 
-loadPermissionTable(){
+tableChange: boolean = false;
+deleteIdsList = []
+userDeleteDialogOpened = false;
+userToDelete : any;
 
-  this.userHandler.getUsers().then(res => {
-    console.log(res)
-    this.allUsersData = res
-    this.selectedMapPermissionsList = res
-    this.check();
-  }).catch(err => {
-    console.log(err);
-    return;
+
+public closeUserPerimssionDialog(status) {
+  this.userDeleteDialogOpened = false;
+  if(status == "yes"){  // the user choose to delete the file
+    this.removeUserHandler(this.userToDelete)
+  }
+}
+
+public openUserPerimssionDialog({dataItem}) {
+  this.userDeleteDialogOpened = true;
+  this.userToDelete = dataItem
+}
+
+  loadPermissionTable(){
+    this.currPermissionMapDATA = []
+    if(this.selectedNode.mapPermission == ""){
+      var mapPermission = new Map();
+      this.mapHandler.getMapPermission(this.selectedNode.mapID).then(res => {
+        var permissionsList = JSON.parse(res)
+        console.log(permissionsList)
+        //add read-permission users
+        permissionsList.read.forEach(readPermission_user => {
+          mapPermission.set(readPermission_user._id,{username: readPermission_user.Username ,name: readPermission_user.FirstName+" "+readPermission_user.LastName,permission: "read"})
+        });
+
+        //add write-permission users
+        permissionsList.write.forEach(writePermission_user => {
+          if(mapPermission.has(writePermission_user._id)){
+            mapPermission.get(writePermission_user._id).permission = "write"
+          }
+          else{
+            mapPermission.set(writePermission_user._id,{username: writePermission_user.Username ,name: writePermission_user.FirstName+" "+writePermission_user.LastName,permission: "write"})
+          }
+        });
+
+        //add owner-permission users
+        // permissionsList.Owner.forEach(ownerPermission_user => {
+        //   if(mapPermission.has(ownerPermission_user._id)){
+        //     mapPermission.get(ownerPermission_user._id).permission = "owner"
+        //   }
+        //   else{
+        //     mapPermission.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "owner"})
+        //   }
+        // });
+      this.selectedNode.mapPermission = mapPermission
+      console.log(this.selectedNode.mapPermission)
+      for (const [key,value] of this.selectedNode.mapPermission.entries()) { 
+        this.currPermissionMapDATA.push(value);
+      }
+      
+      }).catch(err => {
+        console.log(err);
+      });
+      console.log(this.currPermissionMapDATA);
+    }
+    else{
+      console.log("using with the exist!")
+      for (const [key,value] of this.selectedNode.mapPermission.entries()) { 
+        this.currPermissionMapDATA.push(value);
+      }
+      console.log(this.currPermissionMapDATA);
+      
+    }
+  }
+  
+  public cancelHandler({ sender, rowIndex }) {
+    sender.closeRow(rowIndex);
+}
+
+protected addHandler({sender}) {
+  // define all editable fields validators and default values
+  const group = new FormGroup({
+      'username': new FormControl(""),
+      'read': new FormControl(),
+      'write': new FormControl(),
+      'owner': new FormControl()
   });
-
-  
-
-  
-  // this.permissionUsersMap = new Map();
-  // //this.selectedNode.mapID
-  // this.mapHandler.getMapPermission("5e1452c7f512653e88c68c3a").then(res => {
-  //   console.log(res)
-  //   this.selectedMapPermissionsList = res
-  // }).catch(err => {
-  //   console.log(err);
-  //   return;
-  // });
-  
-
-
-  
-  // console.log(this.selectedMapPermissionsList)
-  
-
-
-  // this.selectedMapPermissionsList.forEach(element => {
-  //   console.log(element)
-  // });
-
+  // show the new row editor, with the `FormGroup` build above
+  sender.addRow(group);
 }
 
-check(){
-  console.log(this.allUsersData);
+protected pageChange({ skip, take }: PageChangeEvent): void {
+  this.gridState.skip = skip;
+  this.pageSize = take;
+  this.loadDataPermssions();
 }
+
+private loadDataPermssions(): void {
+  this.parsedDataPermissions = {
+      data: this.currPermissionMapDATA.slice(this.gridState.skip, this.gridState.skip + this.pageSize),
+      total: this.currPermissionMapDATA.length
+  };
+}
+
+
+public onStateChange(state: State) {
+  this.gridState = state;
+  console.log(this.gridState)
+}
+
+public removeUserHandler(dataItem) {
+  this.deleteIdsList.push(this.getKeyFromValue({dataItem}))
+  this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== dataItem);
+  this.tableChange = true
+}
+
+protected closePermissionModal(modalId){
+  
+    this.modalService.close(modalId);
+    this.currPermissionMapDATA =[]
+}
+// public cellClickHandler({ sender, rowIndex, columnIndex, dataItem, isEdited }) {
+//   console.log("click on:"+ dataItem)
+// }
+
+private getKeyFromValue(dataItem){
+  for (const [key,value] of this.selectedNode.mapPermission.entries()) { 
+    if (value == dataItem){ 
+      return key
+    }
+  }
+}
+
 }
 
