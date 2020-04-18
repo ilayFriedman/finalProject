@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import { ModalService } from '../services/modal.service';
-import { MatTableDataSource, MatPaginator, } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
-import { RefCtxHendlerService } from '../services/referenceContext/node-menu-hendler.service';
+import { NodeMenuHendlerService } from '../services/nodeMenu/node-menu-hendler.service';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';
 import { MapsHandlerService } from '../services/maps-handler.service';
@@ -29,8 +29,7 @@ export interface ContextElement {
 }
 
 export interface CommentElement {
-  _id: string,
-  Title: string,
+  id: string,
   Content: string,
   CreatorId: string,
   CreatorName: string,
@@ -104,10 +103,14 @@ export class NodeMenuModalComponent implements OnInit {
   // #### Comments ####
   nodeComments: CommentElement[] = []
   nodeCommentsSource: MatTableDataSource<CommentElement>;
-  displayedColumnsComments: string[] = ['add Like', 'name', 'content', 'lastModified', 'likes', 'action'];
+  displayedColumnsComments: string[] = ['add Like', 'CreatorName', 'Content', 'LastModificationTime', 'Likes', 'action'];
+  newCommentForm = new FormGroup({
+    content: new FormControl(),
+  });
+  @ViewChild("commentsPaginator", { static: true }) commentsPaginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) commentsSort: MatSort;
 
-
-  constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private refCtxService: RefCtxHendlerService) {
+  constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
 
   }
   ngOnInit() {
@@ -125,6 +128,10 @@ export class NodeMenuModalComponent implements OnInit {
     });
     this.loadCtxsFromDB();
 
+    this.newCommentForm = this.formBuilder.group({
+      content: ['', Validators.required]
+    });
+
 
   }
 
@@ -134,16 +141,19 @@ export class NodeMenuModalComponent implements OnInit {
     switch (tabId.index) {
       case 1: {
         console.log("ref tab");
+        this.unloadNodeRefs();
         this.loadNodeRefs();
         break;
       }
       case 2: {
         console.log("ctx tab");
+        this.unloadNodeCtxs();
         this.loadNodeCtxs();
         break;
       }
       case 4: {
         console.log("comment tab");
+        this.unloadNodeComments();
         this.loadNodeComments();
         break;
       }
@@ -165,7 +175,7 @@ export class NodeMenuModalComponent implements OnInit {
   loadRefsFromDB() {
     this.allRefList = [];
     // this.allRefSource = null;
-    this.refCtxService.getAllReferences().then(res => {
+    this.NodeMenuHendler.getAllReferences().then(res => {
       this.allRefs = res;
       if (this.allRefs.length > 0) {
         this.allRefs.forEach(element => {
@@ -219,7 +229,6 @@ export class NodeMenuModalComponent implements OnInit {
     console.log("node refs loaded");
   }
 
-
   addRefToNode() {
     this.allRefSelection.selected.forEach(element => {
       if (this.modalService.currNodeData.refs.indexOf(element) == -1) {
@@ -233,6 +242,7 @@ export class NodeMenuModalComponent implements OnInit {
     this.loadNodeRefs();
     this.allRefSelection.clear()
   }
+
   removeRefToNode() {
     this.nodeRefSelection.selected.forEach(element => {
       let idx = this.modalService.currNodeData.refs.indexOf(element)
@@ -243,13 +253,14 @@ export class NodeMenuModalComponent implements OnInit {
     // this.masterToggle('node')
     this.nodeRefSelection.clear()
   }
+
   openNewRefModal(id: string) {
-    this.loadNodeRefs()
+    // this.loadNodeRefs()
     this.modalService.open(id);
   }
 
   closeNewRefModal(id: string) {
-    this.unloadNodeRefs();
+    // this.unloadNodeRefs();
     this.newRefForm.reset()
     this.modalService.close(id);
   }
@@ -258,7 +269,7 @@ export class NodeMenuModalComponent implements OnInit {
     if (this.newRefForm.invalid) {
       return;
     }
-    this.refCtxService.createNewRef(this.newRefForm.controls).then(res => {
+    this.NodeMenuHendler.createNewRef(this.newRefForm.controls).then(res => {
       this.loadRefsFromDB()
       this.closeNewRefModal('newRefModal');
       alert(res)
@@ -282,7 +293,7 @@ export class NodeMenuModalComponent implements OnInit {
   // ######## CONTEXTS #########
   loadCtxsFromDB() {
     this.allCtxsList = []
-    this, this.refCtxService.getAllContexts().then(res => {
+    this, this.NodeMenuHendler.getAllContexts().then(res => {
       console.log(res);
 
       this.allCtxs = res;
@@ -357,12 +368,12 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   openNewCtxModal(id: string) {
-    this.loadNodeCtxs()
+    // this.loadNodeCtxs()
     this.modalService.open(id);
   }
 
   closeNewCtxModal(id: string) {
-    this.unloadNodeCtxs();
+    // this.unloadNodeCtxs();
     this.newCtxForm.reset()
     this.modalService.close(id);
   }
@@ -373,7 +384,7 @@ export class NodeMenuModalComponent implements OnInit {
     if (this.newCtxForm.invalid) {
       return;
     }
-    this.refCtxService.createNewCtx(this.newCtxForm.controls).then(res => {
+    this.NodeMenuHendler.createNewCtx(this.newCtxForm.controls).then(res => {
       this.loadCtxsFromDB()
       this.closeNewCtxModal('newCtxModal');
       alert(res)
@@ -400,27 +411,100 @@ export class NodeMenuModalComponent implements OnInit {
     this.modalService.currNodeData.comment.forEach(element => {
       this.nodeComments.push(element);
     })
-    let tmp: CommentElement = {
-      '_id': uuid(),
-      'Title': "title",
-      'Content': "content",
-      'CreatorId': "creatorID",
-      'CreatorName': "CreatorName",
-      'CreationTime': "CreationTime",
-      'LastModificationTime': "LastModificationTime",
-      'Likes': 1
-    }
-    this.nodeComments.push(tmp);
+    // let tmp: CommentElement = {
+    //   'id': uuid(),
+    //   'Content': "content",
+    //   'CreatorId': "creatorID",
+    //   'CreatorName': "CreatorName",
+    //   'CreationTime': "CreationTime",
+    //   'LastModificationTime': "LastModificationTime",
+    //   'Likes': 1
+    // }
+    // this.nodeComments.push(tmp);
+    // this.modalService.currNodeData.comment.push(tmp);
     this.nodeCommentsSource = new MatTableDataSource<CommentElement>(this.nodeComments);
-    console.log(this.nodeCommentsSource);
+    this.nodeCommentsSource.paginator = this.commentsPaginator
+    this.nodeCommentsSource.sort = this.commentsSort
 
+    console.log(this.nodeCommentsSource);
   }
 
-  AddLikeToComment(element) {
+  unloadNodeComments() {
+    this.nodeComments = [];
+    this.nodeCommentsSource = null;
+  }
+
+  addNewComment(element) {
+    if (this.newCommentForm.invalid) {
+      return;
+    }
+    let newComment: CommentElement = {
+      'id': uuid(),
+      'Content': this.newCommentForm.controls.content.value,
+      'CreatorId': sessionStorage.userId,
+      'CreatorName': sessionStorage.userFullName,
+      'CreationTime': new Date().toLocaleString(),
+      'LastModificationTime': new Date().toLocaleString(),
+      'Likes': 0
+    }
+
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      comment: newComment
+    }
+
+    this.NodeMenuHendler.createNewComment(data).then(res => {
+      this.modalService.currNodeData.comment.push(newComment)
+      this.unloadNodeComments()
+      this.loadNodeComments()
+      this.closeNewCommentModal('newCommentModal')
+      console.log(res);
+      (res)
+    }).catch
+      (err => {
+        console.log("error new comment");
+        console.log(err)
+      });
+    // element.comment
+  }
+
+  addLikeToComment(element) {
     element.Likes++;
+    this.unloadNodeComments()
+    this.loadNodeComments();
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      commentId: element.id
+    }
+    this.NodeMenuHendler.addLikeToComment(data).then(res => {
+      console.log("add like");
+      console.log(res)
+    }).catch
+      (err => {
+        console.log("error add like");
+        console.log(err)
+      })
     console.log(element);
 
+
   }
+
+
+  openNewCommentModal(id: string) {
+    // this.loadNodeComments()
+    this.modalService.open(id);
+  }
+
+  closeNewCommentModal(id: string) {
+    // this.unloadNodeComments();
+    this.newCommentForm.reset()
+    this.modalService.close(id);
+  }
+
+
+
 
   // ######## STYLES #########
   setNodeStyles() {

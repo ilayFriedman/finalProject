@@ -3,22 +3,27 @@
         <mat-toolbar-row>
             <span class="menu-spacer"></span>
             <div style="margin: auto; text-align: center;position: relative;" (click)="updateConverterACtivate()">
-                <button class="mapsMenu" title="Open" mat-raised-button [routerLink]="'/login'"> Open </button>
-                <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"> Save As
-                </button>
-                <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"> Save </button>
+                <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Save As </button>
+                <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Save </button>
                 <button class="mapsMenu" title="Print" mat-raised-button> Print </button>
                 <button class="mapsMenu" title="New Map" mat-raised-button (click)="newMap()"> Clear Map </button>
                 <button class="mapsMenu" title="Cut (Ctrl + x)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
+                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Cut </button>
                 <button class="mapsMenu" title="Copy (Ctrl + c)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
+                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Copy </button>
                 <button class="mapsMenu" title="Paste (Ctrl + v)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
+                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Paste </button>
                 <button class="mapsMenu" title="Undo (Ctrl + z)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
+                    (click)="this.mapHandler.myDiagram.commandHandler.undo()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Undo </button>
                 <button class="mapsMenu" title="Redo (Ctrl + y)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
+                    (click)="this.mapHandler.myDiagram.commandHandler.redo()" [disabled]="
+                    mapHandler.getUserPermission() &lt; 2"> Redo </button>
                 <button class="mapsMenu" title="Zoom In (Ctrl + +)" mat-raised-button
                     (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
                 <button class="mapsMenu" title="Zoom Out (Ctrl + -)" mat-raised-button
@@ -26,11 +31,11 @@
                 <button class="mapsMenu" title="Reset Zoom (Ctrl + 0)" mat-raised-button
                     (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset Zoom </button>
                 <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
-                <!-- <span class="mapsMenu"><a mat-menu-item [matMenuTriggerFor]="moreOptions"> more </a></span> -->
 
                 <mat-menu #moreOptions="matMenu">
                     <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
-                    <button mat-button (click)="openModal('import-modal')">Import</button><br>
+                    <button mat-button (click)="openModal('import-modal')"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2">Import</button><br>
                 </mat-menu>
 
                 <mat-menu #Export="matMenu">
@@ -70,22 +75,11 @@
     </div>
 </jw-modal>
 
-
-
-
-
-
-
-<!-- <app-save-as-map [hidden]='!toSave'></app-save-as-map> -->
-
-<!-- <div id="myPalette" style="border: solid"></div> -->
-<!-- <div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
-    <div id="sideBar">
-    </div> -->
+<!-- diagram, sidde bar, overviwe and converter -->
 <div id="block_container">
     <div id="sideBar">
         <div class="titleArea">Map Shapes</div>
-        <div id="myPalette"></div>
+        <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
     </div>
     <div id="myDiagram"></div>
     <div id="rightSideUnknownForFutureUse">
@@ -98,17 +92,3 @@
     <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
 
 </div>
-
-<!-- </div> -->
-<!-- 
-<div id="PaletteAndDiagram" style="width: 77%; height: 70%; float:left;">
-    <div id="sideBar">
-        <div class="handle" style="border: solid">Map Shapes</div>
-        <div id="myPalette" style="border: solid"></div>
-        <div class="handle" style="border: solid">Overview</div>
-        <div id="myOverview" style="border: solid"></div>
-    </div>
-    <div id="mainBar"> -->
-<!-- <div id="myDiagram">sdsdfsdfsdfsdf</div>
-     </div> 
-</div>  -->

@@ -1,6 +1,5 @@
 /* for BPMN.html */
 
-
 /* Diagram and palette area */
 
 body {
@@ -20,7 +19,6 @@ body {
     width: 100%;
 }
 
-
 /* 
 #mainBar {
   float: auto;
@@ -29,7 +27,6 @@ body {
   text-align: center;
   border: 1px solid black;
 } */
-
 
 /* #sideBar {
   float: left;
@@ -49,12 +46,13 @@ body {
 
 #myPalette {
     width: 150px;
-    min-height: 450px;
     background-color: #e6f5ff;
+    min-height: 450px;
     /* Just so it's visible */
 }
 
 #myDiagram {
+    min-height: 450px;
     /* Grow to rest of container */
     /* Just so it's visible */
     flex: 70%;
@@ -111,7 +109,6 @@ body {
     background-color: lightgray;
 }
 
-
 .jw-modal {
     display: none;
     position: fixed;
@@ -150,8 +147,7 @@ body {
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;

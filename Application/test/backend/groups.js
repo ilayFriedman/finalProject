@@ -265,9 +265,9 @@ describe('Groups', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then((result, err) => {
             return chai.request(serverAddress)
-            .get('/private/GetGroupsMembers')
+            .get('/private/GetGroupsMembers/' + result[0]._id)
             .set('token', testUserToken)
-            .send({groupId: result[0].id})
+            .send()
             .then((res, err) => {
                 res.statusCode.should.equal(200);
                 JSON.parse(res.text).should.deep.equal(result[0].Members);

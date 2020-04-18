@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 
-export class RefCtxHendlerService {
+export class NodeMenuHendlerService {
   localUrl = 'http://localhost:3000';
   constructor(private http: HttpClient) { }
 
@@ -64,17 +64,18 @@ export class RefCtxHendlerService {
     }).toPromise()
   }
 
+  createNewComment(data: any) {
+    return this.http.put(this.localUrl + '/private/addNewComment', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
+
+  }
+
   // comments
-  getAllComments() {
-
-    // const httpOptions = {
-    //   headers: new HttpHeaders({ 'token': sessionStorage.token }), 
-    //   body: { _id: groupId }
-    // };
-
-    // return this.http.get(this.localUrl + '/private/GetGroupsMembers', httpOptions).toPromise();
-    return this.http.get(this.localUrl + '/private/getAllComments', {
-      headers: { 'token': sessionStorage.token }
-    }).toPromise()
+  addLikeToComment(data: any) {
+    console.log(data);
+    return this.http.put(this.localUrl + '/private/addLikeToComment', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
   }
 }
