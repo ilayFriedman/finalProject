@@ -471,6 +471,7 @@ deleteUserList = []
 updatePermissionUsers =[]
 userDeleteDialogOpened = false;
 userToDelete : any;
+newUserPermissionChoose: any
 
 
 public closeUserPerimssionDialog(status) {
@@ -480,7 +481,7 @@ public closeUserPerimssionDialog(status) {
   }
 }
 
-public openUserPerimssionDialog({dataItem}) {
+public openUserPerimssionDialog(dataItem) {
   this.userDeleteDialogOpened = true;
   this.userToDelete = dataItem
 }
@@ -508,14 +509,14 @@ public openUserPerimssionDialog({dataItem}) {
         });
 
         //add owner-permission users
-        // permissionsList.Owner.forEach(ownerPermission_user => {
-        //   if(mapPermission.has(ownerPermission_user._id)){
-        //     mapPermission.get(ownerPermission_user._id).permission = "owner"
-        //   }
-        //   else{
-        //     mapPermission.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
-        //   }
-        // });
+        permissionsList.Owner.forEach(ownerPermission_user => {
+          if(mapPermission.has(ownerPermission_user._id)){
+            mapPermission.get(ownerPermission_user._id).permission = "owner"
+          }
+          else{
+            mapPermission.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
+          }
+        });
       this.selectedNode.mapPermission = mapPermission
       console.log(this.selectedNode.mapPermission)
       for (const [key,value] of this.selectedNode.mapPermission.entries()) { 
@@ -542,44 +543,38 @@ public openUserPerimssionDialog({dataItem}) {
   }
   
   public cancelHandler({ sender, rowIndex }) {
+    this.newUserPermissionChoose == null
     sender.closeRow(rowIndex);
 }
 
-protected addHandler({sender}) {
+protected openNewRow(event) {
+  console.log(event)
+
   // console.log(this.parsedDataPermissions)
   // define all editable fields validators and default values
-  const group = new FormGroup({
-      'username': new FormControl(""),
-      'Read': new FormControl(),
-      'Write': new FormControl(),
-      'Owner': new FormControl()
+  const newUser = new FormGroup({
+    'username': new FormControl(""),
+    'permission': new FormControl({"": []})
   });
   // show the new row editor, with the `FormGroup` build above
-  sender.addRow(group);
-
-  // console.log(this.parsedDataPermissions)
-
+  event.sender.addRow(newUser);
 }
 
-// protected pageChange({ skip, take }: PageChangeEvent): void {
-//   this.gridState.skip = skip;
-//   this.pageSize = take;
-//   this.loadDataPermssions();
-// }
+public addNewUserToPermission(event){
+  // ---- seach for username in DB ---  then --//
+  if(this.newUserPermissionChoose != null){
+      this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: "Search result", permission: this.newUserPermissionChoose.target.id})
+      this.newUserPermissionChoose = null
 
-// private loadDataPermssions(): void {
-//   this.parsedDataPermissions = {
-//       data: this.currPermissionMapDATA.slice(this.gridState.skip, this.gridState.skip + this.pageSize),
-//       total: this.currPermissionMapDATA.length
-//   };
-// }
-
-
-// public onStateChange(state: State) {
-//   this.gridState = state;
-//   console.log(this.gridState)
-// }
-
+      // update snapshoorFirst
+      this.snapshootFirst = []
+      this.currPermissionMapDATA.forEach(element => {
+        this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
+      });
+  }
+  console.log(event)
+  this.cancelHandler(event)
+}
 public removeUserHandler(dataItem) {
   console.log(dataItem)
   this.deleteUserList.push(dataItem)
@@ -671,10 +666,8 @@ protected closePermissionModal(modalId){
   
 }
 
-radioButtonsUpdate(event,dataItem){
-  console.log(event)
-  console.log(dataItem)
-if (true){
+radioButtonsUpdate(event,rowIndex){
+if (rowIndex !=-1){
   console.log(this.currPermissionMapDATA)
 
   // update node in currDATA
@@ -702,7 +695,9 @@ if (true){
 
 console.log(this.updatePermissionUsers);
 }
-
+else{   // new row permission tuch
+  this.newUserPermissionChoose = event
+}
 
 }
 
