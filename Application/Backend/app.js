@@ -71,12 +71,14 @@ app.get('/private/getMapDescription/:mapID', mapsRoute);
 app.get('/private/getMapPermission/:mapID', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
+app.post('/private/updateMapProperties', mapsRoute);
+app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
 
 app.put('/private/addLikeToComment', mapsRoute);
 app.put('/private/addNewComment', mapsRoute);
 
-app.post('/private/updateMapProperties', mapsRoute);
-app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
+app.delete('/private/removeUserPermission/:mapID&:userID&:permission',mapsRoute)
+app.post('/private/updateUserPermission',mapsRoute)
 // app.get('/private/getAllUserMaps', mapsRoute);
 
 

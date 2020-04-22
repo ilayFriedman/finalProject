@@ -349,6 +349,50 @@ router.post('/private/updateMapProperties', async function (req, res) {
 });
 
 
+router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
+    if (req.params.mapID && req.params.userID && req.params.permission) {
+        map.findOneAndUpdate({ _id: req.params.mapID}, { $pull: { ["Permission."+ req.params.permission] : req.params.userID}}, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                res.statusCode = 200;
+                res.end();
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
+router.post('/private/updateUserPermission', async function (req, res) {
+    if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
+        map.findOneAndUpdate({ _id: req.body.mapID}, { $pull: { ["Permission."+ req.body.permission_From] : req.body.userID}, $addToSet: { ["Permission."+ req.body.permission_To] : req.body.userID}}, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                res.statusCode = 200;
+                res.end();
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
 
 
 
