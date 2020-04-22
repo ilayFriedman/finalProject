@@ -368,49 +368,78 @@
         <!-- comment tab -->
         <mat-tab label="Comments">
             <div class="container text-center">
+                <div class="filterAndClear">
+                    <span style="float: left; width: 85%;">
+                        <mat-form-field>
+                            <mat-label>Filter</mat-label>
+                            <input matInput (keyup)="applyFilterAComments($event)">
+                        </mat-form-field>
+                    </span>
+                    <span style="float: left; ">
+                        <button mat-raised-button (click)="modalService.open('newCommentModal')">Add
+                            Row</button>
+                    </span></div>
 
-                <button mat-button (click)="openNewCommentModal('newCommentModal')" mat-flat-button>Add
-                    Row</button>
+
 
                 <table mat-table [dataSource]="nodeCommentsSource" class="my-table mat-elevation-z0" matSort>
 
-                    <ng-container matColumnDef="add Like">
-                        <th mat-header-cell *matHeaderCellDef> Add Like </th>
-                        <td mat-cell *matCellDef="let element" class="action-link">
-                            <a (click)="addLikeToComment(element)">Add Like</a>
+                    <!-- Action Column -->
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let element" class="action-link"
+                            style="width: 15%; text-align: left;">
+                            <button mat-icon-button (click)="element.editCommentButton = !element.editCommentButton">
+                                <mat-icon>create</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="addLikeToComment(element)">
+                                <mat-icon>delete_forever</mat-icon>
+                            </button>
                         </td>
                     </ng-container>
 
                     <!-- commentor name Column -->
                     <ng-container matColumnDef="CreatorName">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-                        <td mat-cell *matCellDef="let element"> {{element.CreatorName}} </td>
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Name </th>
+                        <td mat-cell *matCellDef="let element" style="width: 15%; text-align: left;">
+                            {{element.CreatorName}} </td>
                     </ng-container>
 
                     <!-- Content Column -->
                     <ng-container matColumnDef="Content">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Content </th>
-                        <td mat-cell *matCellDef="let element"> {{element.Content}} </td>
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let element" style="width: 50%;">
+                            <span *ngIf="element.editCommentButton">
+                                <mat-form-field floatLabel="never" style="width: 80%;">
+                                    <input matInput placeholder="Content" [value]="element.Content"
+                                        [(ngModel)]="element.Content">
+                                </mat-form-field>
+                                <button mat-icon-button
+                                    (click)="editComment(element); element.editCommentButton = !element.editCommentButton">
+                                    <mat-icon>done</mat-icon>
+                                </button>
+                            </span>
+                            <span *ngIf="!element.editCommentButton"> {{element.Content}} </span>
+                        </td>
+
                     </ng-container>
 
                     <!-- Last Modification Time Column -->
                     <ng-container matColumnDef="LastModificationTime">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Modified </th>
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Last Modified
+                        </th>
                         <td mat-cell *matCellDef="let element"> {{element.LastModificationTime}} </td>
                     </ng-container>
 
-                    <!-- Likes Time Column -->
-                    <ng-container matColumnDef="Likes">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> #Likes </th>
-                        <td mat-cell *matCellDef="let element"> {{element.Likes}} </td>
-                    </ng-container>
 
-                    <!-- Action Column -->
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef> Action </th>
+
+                    <ng-container matColumnDef="Likes">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Likes </th>
                         <td mat-cell *matCellDef="let element" class="action-link">
-                            <a (click)="openDialog('Update',element)">Edit</a> |
-                            <a (click)="openDialog('Delete',element)">Delete</a>
+                            <button mat-icon-button (click)="addLikeToComment(element)">
+                                <mat-icon>thumb_up</mat-icon> {{element.Likes}}
+                            </button>
+
                         </td>
                     </ng-container>
 
@@ -418,8 +447,9 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumnsComments;"></tr>
                 </table>
                 <div style="position: relative; bottom: 0;">
-                    <span style="float: right;">
-                        <mat-paginator #commentsPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                    <span style="float: center; width: 100%;">
+                        <mat-paginator style="float: center; width: 100%;" #commentsPaginator
+                            [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
                         </mat-paginator>
 
                     </span>
@@ -503,6 +533,24 @@
                 </mat-form-field>
                 <br>
                 <button type="submit" mat-raised-button>Add</button>
+            </form>
+        </div>
+    </div>
+</jw-modal>
+
+<!-- edit comment modal -->
+<jw-modal class="jw-modal" id="editCommentModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeEditCommentModal('editCommentModal')">&times;</span>
+        <div class="new-ref-modal-form">
+            <form [formGroup]="editCommentForm" (ngSubmit)="editComment()">
+                <h1>Edit Your Comment</h1>
+                <mat-form-field appearance="fill">
+                    <mat-label>Your Comment</mat-label>
+                    <input matInput formControlName="content">
+                </mat-form-field>
+                <br>
+                <button type="submit" mat-raised-button>Save</button>
             </form>
         </div>
     </div>

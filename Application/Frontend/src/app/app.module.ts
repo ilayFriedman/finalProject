@@ -37,7 +37,6 @@ import { GridModule } from '@progress/kendo-angular-grid';
 
 
 
-
 // import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
 
@@ -85,7 +84,7 @@ import { GridModule } from '@progress/kendo-angular-grid';
     MatSelectModule,
     MatExpansionModule,
     GridModule,
-    MatSortModule
+    MatSortModule,
     // TreeViewModule
   ],
   providers: [

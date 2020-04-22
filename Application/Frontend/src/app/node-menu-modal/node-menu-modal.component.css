@@ -1,11 +1,12 @@
 table {
     width: 100%;
-    text-align-last: center;
+    /* text-align-last: center; */
     /* table-layout:fixed; */
 }
 
 .mat-tab-lable {
     justify-content: center;
+    text-align-last: center;
     /* width: 20%; */
     display: flex;
 }
@@ -20,6 +21,19 @@ table {
 
 tbody {
     margin: 10px;
+}
+
+.mat-header-cell.mat-column-position {
+    direction: rtl;
+}
+
+/* ::ng-deep .mat-sort-header-container {
+    justify-content: center;
+} */
+
+.filterAndClear {
+    margin-top: 15px;
+    width: 100%;
 }
 
 .mat-header-cell {

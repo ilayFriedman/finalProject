@@ -103,10 +103,15 @@ export class NodeMenuModalComponent implements OnInit {
   // #### Comments ####
   nodeComments: CommentElement[] = []
   nodeCommentsSource: MatTableDataSource<CommentElement>;
-  displayedColumnsComments: string[] = ['add Like', 'CreatorName', 'Content', 'LastModificationTime', 'Likes', 'action'];
+  displayedColumnsComments: string[] = ['action', 'CreatorName', 'Content', 'LastModificationTime', 'Likes'];
   newCommentForm = new FormGroup({
     content: new FormControl(),
   });
+
+  editCommentForm = new FormGroup({
+    content: new FormControl(),
+  });
+  editCommentButton: boolean = false;
   @ViewChild("commentsPaginator", { static: true }) commentsPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) commentsSort: MatSort;
 
@@ -131,7 +136,9 @@ export class NodeMenuModalComponent implements OnInit {
     this.newCommentForm = this.formBuilder.group({
       content: ['', Validators.required]
     });
-
+    this.editCommentForm = this.formBuilder.group({
+      content: ['', Validators.required]
+    });
 
   }
 
@@ -434,7 +441,7 @@ export class NodeMenuModalComponent implements OnInit {
     this.nodeCommentsSource = null;
   }
 
-  addNewComment(element) {
+  addNewComment() {
     if (this.newCommentForm.invalid) {
       return;
     }
@@ -490,12 +497,42 @@ export class NodeMenuModalComponent implements OnInit {
 
 
   }
-
-
-  openNewCommentModal(id: string) {
-    // this.loadNodeComments()
-    this.modalService.open(id);
+  update(element, comment: string) {
+    if (comment == null) { return; }
+    // copy and mutate
+    const copy = this.nodeCommentsSource.data.slice()
+    element.Content = comment;
+    this.unloadNodeComments()
+    this.loadNodeComments();
+    // this.nodeCommentsSource.next(copy);
   }
+
+  editComment(element) {
+    console.log(element);
+
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      commentId: element.id,
+      newContent: element.Content
+    }
+
+    this.NodeMenuHendler.updateComment(data).then(res => {
+      console.log(res);
+      (res)
+    }).catch
+      (err => {
+        console.log("error new comment");
+        console.log(err)
+      });
+  }
+
+
+
+  // openNewCommentModal(id: string) {
+  //   // this.loadNodeComments()
+  //   this.modalService.open(id);
+  // }
 
   closeNewCommentModal(id: string) {
     // this.unloadNodeComments();
@@ -503,6 +540,16 @@ export class NodeMenuModalComponent implements OnInit {
     this.modalService.close(id);
   }
 
+  closeEditCommentModal(id: string) {
+    // this.unloadNodeComments();
+    this.editCommentForm.reset()
+    this.modalService.close(id);
+  }
+
+  applyFilterAComments(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.nodeCommentsSource.filter = filterValue.trim().toLowerCase();
+  }
 
 
 
