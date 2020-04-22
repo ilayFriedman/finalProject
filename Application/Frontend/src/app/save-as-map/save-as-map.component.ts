@@ -20,7 +20,7 @@ export class SaveAsMapComponent implements OnInit {
   constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
     // let save = document.getElementById("saveButton");
     // save.addEventListener("click", (e:Event) => this.onSubmit());
-   }
+  }
 
   ngOnInit() {
     this.saveMapForm = this.formBuilder.group({
@@ -34,7 +34,6 @@ export class SaveAsMapComponent implements OnInit {
   }
 
   onSubmit(id: string) {
-    console.log(id)
     this.modalService.close(id);
     this.submitted = true;
     // stop here if form is invalid
@@ -47,6 +46,7 @@ export class SaveAsMapComponent implements OnInit {
       'Model': this.mapHandler.myDiagram.model.toJson(),
       'Description': this.saveMapForm.controls.description.value
     }
+    this.saveMapForm.reset()
     let result = this.http.post(this.localUrl + '/private/createMap', data, {
       headers: { 'token': sessionStorage.token }, responseType: 'text'
     });

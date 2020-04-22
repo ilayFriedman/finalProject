@@ -1,22 +1,21 @@
-
-  <div class="homePage">
-    <div class="welcome">
-        <!-- <span><h2 xmlns="http://www.w3.org/1999/html">{{fullName}}'s Management Page</h2></span>
+<div class="homePage">
+  <div class="welcome">
+    <!-- <span><h2 xmlns="http://www.w3.org/1999/html">{{fullName}}'s Management Page</h2></span>
         <span><h3><b>Serach text:</b> </h3><input type="text" placeholder="Enter text"></span> -->
-        <span style="font-size: 30px; width: 50%; display: inline-block; vertical-align:top;"><b>{{fullName}}'s Management Page</b><br><br></span>
-        <span style="width: 50%; display: inline-block;text-align: right; vertical-align:top; padding-top: 15px;">
-          <input type="text" placeholder="Enter Name For Search..." [(ngModel)]="inputTextSearch" size="30">
-          <input type="submit" value="Go!">
-        </span>
-    </div>
-    <div class="containerMaps_Groups">
-    <div @fade class = "mapsFoldersView">
+    <span style="font-size: 30px; width: 50%; display: inline-block; vertical-align:top;"><b>{{fullName}}'s Management
+        Page</b><br><br></span>
+    <span style="width: 50%; display: inline-block;text-align: right; vertical-align:top; padding-top: 15px;">
+      <input type="text" placeholder="Enter Name For Search..." [(ngModel)]="inputTextSearch" size="30">
+      <input type="submit" value="Go!">
+    </span>
+  </div>
+  <div class="containerMaps_Groups">
+    <div @fade class="mapsFoldersView">
       <app-mapsfolders-viewer></app-mapsfolders-viewer>
     </div>
     <div @fade class = "groups">
         <!-- <app-groups></app-groups> -->
         
     </div>
-</div>
   </div>
-  
+</div>

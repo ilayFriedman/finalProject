@@ -71,6 +71,20 @@ export class NodeMenuHendlerService {
 
   }
 
+  updateComment(data: any) {
+    return this.http.put(this.localUrl + '/private/updateComment', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
+
+  }
+
+  deleteComment(data: any) {
+    return this.http.put(this.localUrl + '/private/deleteComment', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
+
+  }
+
   // comments
   addLikeToComment(data: any) {
     console.log(data);

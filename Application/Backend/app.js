@@ -76,9 +76,11 @@ app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
 
 app.put('/private/addLikeToComment', mapsRoute);
 app.put('/private/addNewComment', mapsRoute);
+app.put('/private/updateComment', mapsRoute);
+app.put('/private/deleteComment', mapsRoute);
 
-app.delete('/private/removeUserPermission/:mapID&:userID&:permission',mapsRoute)
-app.post('/private/updateUserPermission',mapsRoute)
+app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
+app.post('/private/updateUserPermission', mapsRoute)
 // app.get('/private/getAllUserMaps', mapsRoute);
 
 

@@ -39,7 +39,6 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
 
 
 
-
 // import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
 
@@ -87,6 +86,7 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
     MatSelectModule,
     MatExpansionModule,
     GridModule,
+    MatSortModule,
     InputsModule,
     MatSortModule
     // TreeViewModule
