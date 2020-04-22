@@ -64,30 +64,34 @@ app.post('/login', usersRoute);
 app.post('/register', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
-app.get('/private/getUserDetailsById/:userID', usersRoute);
+app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);
 app.get('/private/getMapPermission/:mapID', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
+app.post('/private/updateMapProperties', mapsRoute);
+app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
 
 app.put('/private/addLikeToComment', mapsRoute);
 app.put('/private/addNewComment', mapsRoute);
+app.put('/private/updateComment', mapsRoute);
+app.put('/private/deleteComment', mapsRoute);
 
-app.post('/private/updateMapProperties', mapsRoute);
-app.delete('/private/removeMap/:mapID&:folderID', mapsRoute);
+app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
+app.post('/private/updateUserPermission', mapsRoute)
 // app.get('/private/getAllUserMaps', mapsRoute);
 
 
 app.post("/private/createGroup", groupsRoute);
 app.post("/private/updateGroupProperties", groupsRoute);
 app.post("/private/SetUserPermissionForGroup", groupsRoute);
-app.get("/private/GetGroupsMembers", groupsRoute);
+app.get("/private/GetGroupsMembers/:id", groupsRoute);
 app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
 app.get("/private/GetGroupsUserOwns", groupsRoute);
 app.delete("/private/deleteGroup/:id", groupsRoute);
-app.delete("/private/RemoveUserFromGroup", groupsRoute);
+app.delete("/private/RemoveUserFromGroup/:groupId/:userId", groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);

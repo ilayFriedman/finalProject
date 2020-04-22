@@ -23,13 +23,13 @@ tbody {
     margin: 10px;
 }
 
-.mat-header-cell.mat-column-position {
+/* .mat-header-cell.mat-column-position {
     direction: rtl;
-}
-
-/* ::ng-deep .mat-sort-header-container {
-    justify-content: center;
 } */
+
+::ng-deep .mat-sort-header-container {
+    justify-content: center;
+}
 
 .filterAndClear {
     margin-top: 15px;
@@ -39,6 +39,8 @@ tbody {
 .mat-header-cell {
     min-width: 60px;
     text-align: center;
+    /* display: flex; */
+    justify-content: center;
 }
 
 .refBtn {

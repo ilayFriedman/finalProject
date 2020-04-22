@@ -4,11 +4,11 @@ const group = require('../models/group')
 const jwt = require('jsonwebtoken');
 
 function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactlyMemberPermission = false) {
-    if(!checkIfUserHasExactlyMemberPermission){
+    if (!checkIfUserHasExactlyMemberPermission) {
         if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
             return true;
         }
-    
+
         if (UserHasManagerPermissionForGroup(resGroup, userId)) {
             return true;
         }
@@ -26,8 +26,8 @@ function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactly
     return false;
 }
 
-function UserHasManagerPermissionForGroup(resGroup, userId,checkIfUserHasExactlyManagerPermission = false) {
-    if(!checkIfUserHasExactlyManagerPermission){
+function UserHasManagerPermissionForGroup(resGroup, userId, checkIfUserHasExactlyManagerPermission = false) {
+    if (!checkIfUserHasExactlyManagerPermission) {
         if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
             return true;
         }
@@ -85,11 +85,11 @@ function deleteUserCurrentPermission(group, userId) {
         }
     }
 
-    if (group.Members.Memeber) {
-        for (let i = 0; i < group.Members.Memeber.length; i++) {
-            const element = group.Members.Memeber[i];
+    if (group.Members.Member) {
+        for (let i = 0; i < group.Members.Member.length; i++) {
+            const element = group.Members.Member[i];
             if (element.userId == userId) {
-                group.Members.Memeber.splice(i, 1);
+                group.Members.Member.splice(i, 1);
                 return;
             }
         }
@@ -114,8 +114,8 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Owner) {
                 group.Members.Owner = [];
             }
-            group.Members.Owner.push({"userId": userId});
-            permission = true;
+            group.Members.Owner.push({ "userId": userId });
+            permissionGiven = true;
 
             break;
 
@@ -123,7 +123,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Manager) {
                 group.Members.Manager = [];
             }
-            group.Members.Manager.push({"userId": userId});
+            group.Members.Manager.push({ "userId": userId });
             permissionGiven = true;
 
             break;
@@ -132,7 +132,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
             if (!group.Members.Member) {
                 group.Members.Member = [];
             }
-            group.Members.Member.push({"userId": userId});
+            group.Members.Member.push({ "userId": userId });
             permissionGiven = true;
 
             break;
@@ -161,8 +161,8 @@ router.post('/private/createGroup', async function (req, res) {
                 console.log(err);
                 res.status(500).send(`Server error occured.`);
             } else {
-                res.writeHead(200, {"Content-Type": "application/json"});
-                    res.end(JSON.stringify(saveRes));
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(saveRes));
             }
         });
     } catch (e) {
@@ -172,7 +172,7 @@ router.post('/private/createGroup', async function (req, res) {
 });
 
 router.delete('/private/deleteGroup/:id', async function (req, res) {
-    if(req.params.id){
+    if (req.params.id) {
         group.findOne({ _id: req.params.id }, function (err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {
@@ -229,26 +229,26 @@ router.post('/private/updateGroupProperties', async function (req, res) {
 });
 
 //TODO @Saar Change middleware to work with an array of users.
-router.delete('/private/RemoveUserFromGroup', async function (req, res) {
-    if(req.body._id && req.body.userId) {
+router.delete('/private/RemoveUserFromGroup/:groupId/:userId', async function (req, res) {
+    if (req.params.groupId && req.params.userId) {
         group.findOne({
-            '_id': req.body._id
+            '_id': req.params.groupId
         }, function (err, result) {
-            if(!result){
+            if (!result) {
                 res.status(404).send("Could not find map.");
                 return;
             }
 
-            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.body.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
+            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.params.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
 
-            if (!isUserGivingPermissionHasSufficientPrivileges){
+            if (!isUserGivingPermissionHasSufficientPrivileges) {
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;
             }
 
-            deleteUserCurrentPermission(result, req.body.userId);
+            deleteUserCurrentPermission(result, req.params.userId);
 
-            group.findOneAndUpdate({ _id: req.body._id }, { 'Members': result.Members }, function (err, mongoRes) {
+            group.findOneAndUpdate({ _id: req.params.groupId }, { 'Members': result.Members }, function (err, mongoRes) {
                 if (err) {
                     res.status(500).send("Server error occurred.");
                 } else {
@@ -265,26 +265,26 @@ router.delete('/private/RemoveUserFromGroup', async function (req, res) {
 
 //TODO @Saar Change middleware to work with an array of users.
 router.post('/private/SetUserPermissionForGroup', async function (req, res) {
-    if(req.body._id && req.body.userId && req.body.permission) {
+    if (req.body._id && req.body.userId && req.body.permission) {
         group.findOne({
             '_id': req.body._id
         }, function (err, result) {
-            if(!result){
+            if (!result) {
                 res.status(404).send("Could not find map.");
                 return;
             }
 
             isUserGivingPermissionHasSufficientPrivileges = UserHasOwnerPermissionForGroup(result, req.decoded._id); // Owner can give any permission.
             isUserGivingPermissionHasSufficientPrivileges = isUserGivingPermissionHasSufficientPrivileges // A Manager can give another user Manager or Memeber permissions.
-                                                            || (UserHasManagerPermissionForGroup(result, req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
-            if (!isUserGivingPermissionHasSufficientPrivileges){
+                || (UserHasManagerPermissionForGroup(result, req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
+            if (!isUserGivingPermissionHasSufficientPrivileges) {
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;
             }
 
             deleteUserCurrentPermission(result, req.body.userId);
             let permissionGiven = addUserPermissionOnGroup(result, req.body.userId, req.body.permission);
-            if(!permissionGiven){
+            if (!permissionGiven) {
                 res.status(400).send("Unsupported permission requested. Supported permissions are: 'Member', 'Manager' and 'Owner'.");
                 return;
             }
@@ -304,18 +304,18 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
     }
 });
 
-router.get('/private/GetGroupsMembers', async function (req, res) {
-    if(req.body.groupId) {
+router.get('/private/GetGroupsMembers/:id', async function (req, res) {
+    if (req.params.id) {
         group.findOne({
-            '_id': req.body.groupId
+            '_id': req.params.id
         }, function (err, result) {
-            if(!result){
+            if (!result) {
                 res.status(404).send("Could not find group.");
                 return;
             }
 
             isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id); // Manager can view permissions.
-            if (!isUserGivingPermissionHasSufficientPrivileges){
+            if (!isUserGivingPermissionHasSufficientPrivileges) {
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;
             }
@@ -337,14 +337,14 @@ router.get('/private/GetGroupsUserBlongsTo', async function (req, res) {
         if (err) {
             res.status(500).send("Server error occurred.");
             return;
-        }    
+        }
 
         let responseArray = [];
 
         result.forEach(resGroup => {
             let checkIfUserHasExactlyMemberPermission = true;
-            if(UserHasMemberPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)
-            || UserHasManagerPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)){
+            if (UserHasMemberPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)
+                || UserHasManagerPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)) {
                 responseArray.push({
                     "GroupId": resGroup.id,
                     "GroupName": resGroup.Name,
@@ -353,7 +353,7 @@ router.get('/private/GetGroupsUserBlongsTo', async function (req, res) {
             }
         });
 
-        res.writeHead(200, {"Content-Type": "application/json"});
+        res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(responseArray));
     });
 });
@@ -363,12 +363,12 @@ router.get('/private/GetGroupsUserOwns', async function (req, res) {
         if (err) {
             res.status(500).send("Server error occurred.");
             return;
-        }    
+        }
 
         let responseArray = [];
 
         result.forEach(resGroup => {
-            if(UserHasOwnerPermissionForGroup(resGroup, req.decoded._id)){
+            if (UserHasOwnerPermissionForGroup(resGroup, req.decoded._id)) {
                 responseArray.push({
                     "GroupId": resGroup.id,
                     "GroupName": resGroup.Name,
@@ -377,7 +377,7 @@ router.get('/private/GetGroupsUserOwns', async function (req, res) {
             }
         });
 
-        res.writeHead(200, {"Content-Type": "application/json"});
+        res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(responseArray));
     });
 });

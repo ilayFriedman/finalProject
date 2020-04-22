@@ -6,25 +6,21 @@ const user = require('../models/user');
 const folder = require('../models/folder')
 
 function UserHasReadPermissionForMap(resMap, userId) {
-    if (resMap.Permission.Owner.userId == userId) {
+    if (resMap.Permission.Owner.indexOf(userId) != -1) {
         return true;
     }
 
     if (resMap.Permission.Write) {
-        for (let i = 0; i < resMap.Permission.Write.length; i++) {
-            const element = resMap.Permission.Write[i];
-            if (element.userId == userId) {
-                return true;
-            }
+        if (resMap.Permission.Write.indexOf(userId) != -1) {
+            return true;
         }
+
     }
+    console.log(resMap.Permission.Read);
 
     if (resMap.Permission.Read) {
-        for (let i = 0; i < resMap.Permission.Read.length; i++) {
-            const element = resMap.Permission.Read[i];
-            if (element.userId == userId) {
-                return true;
-            }
+        if (resMap.Permission.Read.indexOf(userId) != -1) {
+            return true;
         }
     }
 
@@ -32,25 +28,22 @@ function UserHasReadPermissionForMap(resMap, userId) {
 }
 
 function UserHasWritePermissionForMap(resMap, userId) {
-    if (resMap.Permission.Owner.userId == userId) {
+    if (resMap.Permission.Owner.indexOf(userId) != -1) {
         return true;
     }
 
     if (resMap.Permission.Write) {
-        for (let i = 0; i < resMap.Permission.Write.length; i++) {
-            const element = resMap.Permission.Write[i];
-            if (element.userId == userId) {
-                return true;
-            }
+        if (resMap.Permission.Write.indexOf(userId) != -1) {
+            return true;
         }
+
     }
 
     return false;
 }
 
 function UserHasOwnerPermissionForMap(resMap, userId) {
-
-    if (resMap.Permission.Owner.userId == userId) {
+    if (resMap.Permission.Owner.indexOf(userId) != -1) {
         return true;
     }
 
@@ -67,7 +60,7 @@ router.post('/private/createMap', async function (req, res) {
             Description: req.body.Description,
             Model: req.body.Model,
             Permission: {
-                Owner: { "userId": CreatorId },
+                Owner: [CreatorId],
                 Write: [],
                 Read: []
             },
@@ -86,7 +79,7 @@ router.post('/private/createMap', async function (req, res) {
                         res.status(500).send("Server error occurred.");
                     } else {
                         res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify(saveRes));
+                        // res.end(JSON.stringify(saveRes));
                     }
                 });
             }
@@ -142,12 +135,15 @@ router.get('/private/getMapDescription/:mapID', async function (req, res) {
 
 router.get('/private/getMapPermission/:mapID', async function (req, res) {
     try {
-        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
+        await map.findOne({ '_id': req.params.mapID }, async function (err, result) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    // console.log(result)
-                    res.send(result.Permission);
+                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Read).exec()
+                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Write).exec()
+                    // console.log(result.Permission.Read)
+                    res.send({ read: read, write: write })
+                    // res.send(result.Permission);
                 } else {
                     res.status(403).send("The user's permissions are insufficient to retrieve map");
                 }
@@ -246,7 +242,6 @@ router.put('/private/addLikeToComment', async function (req, res) {
                 for (let index = 0; index < currModel.nodeDataArray.length; index++) {
                     const element = currModel.nodeDataArray[index];
                     if (element.id == req.body.nodeId) {
-                        console.log("elementid= " + element.id);
                         for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
                             let currComment = currModel.nodeDataArray[index].comment[commentIdx]
                             if (currComment.id == req.body.commentId) {
@@ -282,7 +277,6 @@ router.put('/private/addNewComment', async function (req, res) {
                 for (let index = 0; index < currModel.nodeDataArray.length; index++) {
                     const element = currModel.nodeDataArray[index];
                     if (element.id == req.body.nodeId) {
-                        console.log("elementid= " + element.id);
                         currModel.nodeDataArray[index].comment.push(req.body.comment);
 
                         // for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
@@ -310,6 +304,80 @@ router.put('/private/addNewComment', async function (req, res) {
     }
 });
 
+
+router.put('/private/updateComment', async function (req, res) {
+    if (req.body.mapId) {
+        map.findOne({
+            '_id': req.body.mapId
+        }, function (err, result) {
+            if (result) {
+                let currModel = JSON.parse(result.Model)
+                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
+                    const element = currModel.nodeDataArray[index];
+                    if (element.id == req.body.nodeId) {
+                        for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
+                            let currComment = currModel.nodeDataArray[index].comment[commentIdx]
+                            if (currComment.id == req.body.commentId) {
+                                currModel.nodeDataArray[index].comment[commentIdx].Content = req.body.newContent;
+                            }
+                        }
+                    }
+                }
+                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': JSON.stringify(currModel) } }, function (err, mongoRes) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.status(200).send("Comment edited successfully.")
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
+router.put('/private/deleteComment', async function (req, res) {
+    if (req.body.mapId) {
+        map.findOne({
+            '_id': req.body.mapId
+        }, function (err, result) {
+            if (result) {
+                let currModel = JSON.parse(result.Model)
+                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
+                    const element = currModel.nodeDataArray[index];
+                    if (element.id == req.body.nodeId) {
+                        let idx = currModel.nodeDataArray[index].comment.indexOf(req.body.commentId)
+                        currModel.nodeDataArray[index].comment.splice(idx, 1);
+
+
+                        // for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
+                        //     let currComment = currModel.nodeDataArray[index].comment[commentIdx]
+                        //     if (currComment.id == req.body.commentId) {
+                        //         currModel.nodeDataArray[index].comment[commentIdx].Content = req.body.newContent;
+                        //     }
+                        // }
+                    }
+                }
+                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': JSON.stringify(currModel) } }, function (err, mongoRes) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.status(200).send("Comment deleted successfully.")
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
 
 
 router.post('/private/updateMapProperties', async function (req, res) {
@@ -345,6 +413,50 @@ router.post('/private/updateMapProperties', async function (req, res) {
     }
 });
 
+
+router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
+    if (req.params.mapID && req.params.userID && req.params.permission) {
+        map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + req.params.permission]: req.params.userID } }, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                res.statusCode = 200;
+                res.end();
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
+router.post('/private/updateUserPermission', async function (req, res) {
+    if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
+        map.findOneAndUpdate({ _id: req.body.mapID }, { $pull: { ["Permission." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Permission." + req.body.permission_To]: req.body.userID } }, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                res.statusCode = 200;
+                res.end();
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
 
 
 

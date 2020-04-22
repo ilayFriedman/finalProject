@@ -103,7 +103,7 @@ export class NodeMenuModalComponent implements OnInit {
   // #### Comments ####
   nodeComments: CommentElement[] = []
   nodeCommentsSource: MatTableDataSource<CommentElement>;
-  displayedColumnsComments: string[] = ['action', 'CreatorName', 'Content', 'LastModificationTime', 'Likes'];
+  displayedColumnsComments: string[] = ['action', 'Content', 'CreatorName', 'LastModificationTime', 'Likes'];
   newCommentForm = new FormGroup({
     content: new FormControl(),
   });
@@ -477,15 +477,16 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   addLikeToComment(element) {
-    element.Likes++;
-    this.unloadNodeComments()
-    this.loadNodeComments();
+
     let data = {
       mapId: this.mapHandler.currMap_mapViewer._id,
       nodeId: this.modalService.currNodeData.id,
       commentId: element.id
     }
     this.NodeMenuHendler.addLikeToComment(data).then(res => {
+      element.Likes++;
+      this.unloadNodeComments()
+      this.loadNodeComments();
       console.log("add like");
       console.log(res)
     }).catch
@@ -497,19 +498,19 @@ export class NodeMenuModalComponent implements OnInit {
 
 
   }
-  update(element, comment: string) {
-    if (comment == null) { return; }
-    // copy and mutate
-    const copy = this.nodeCommentsSource.data.slice()
-    element.Content = comment;
-    this.unloadNodeComments()
-    this.loadNodeComments();
-    // this.nodeCommentsSource.next(copy);
-  }
+
+  // update(element, comment: string) {
+  //   if (comment == null) { return; }
+  //   // copy and mutate
+  //   const copy = this.nodeCommentsSource.data.slice()
+  //   element.Content = comment;
+  //   this.unloadNodeComments()
+  //   this.loadNodeComments();
+  //   // this.nodeCommentsSource.next(copy);
+  // }
 
   editComment(element) {
     console.log(element);
-
     let data = {
       mapId: this.mapHandler.currMap_mapViewer._id,
       nodeId: this.modalService.currNodeData.id,
@@ -518,8 +519,6 @@ export class NodeMenuModalComponent implements OnInit {
     }
 
     this.NodeMenuHendler.updateComment(data).then(res => {
-      console.log(res);
-      (res)
     }).catch
       (err => {
         console.log("error new comment");
@@ -527,6 +526,25 @@ export class NodeMenuModalComponent implements OnInit {
       });
   }
 
+  deleteComment(element) {
+    console.log(element);
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      commentId: element.id
+    }
+
+    this.NodeMenuHendler.deleteComment(data).then(res => {
+      let idx = this.modalService.currNodeData.comment.indexOf(element.id)
+      this.modalService.currNodeData.comment.splice(idx, 1);
+      this.unloadNodeComments()
+      this.loadNodeComments();
+    }).catch
+      (err => {
+        console.log("error new comment");
+        console.log(err)
+      });
+  }
 
 
   // openNewCommentModal(id: string) {
@@ -551,7 +569,9 @@ export class NodeMenuModalComponent implements OnInit {
     this.nodeCommentsSource.filter = filterValue.trim().toLowerCase();
   }
 
-
+  isMyComment(element) {
+    return element.CreatorId == sessionStorage.userId
+  }
 
   // ######## STYLES #########
   setNodeStyles() {

@@ -265,9 +265,9 @@ describe('Groups', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then((result, err) => {
             return chai.request(serverAddress)
-            .get('/private/GetGroupsMembers')
+            .get('/private/GetGroupsMembers/' + result[0]._id)
             .set('token', testUserToken)
-            .send({groupId: result[0].id})
+            .send()
             .then((res, err) => {
                 res.statusCode.should.equal(200);
                 JSON.parse(res.text).should.deep.equal(result[0].Members);
@@ -321,9 +321,11 @@ describe('Groups', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then(result => {
             return chai.request(serverAddress)
-                .delete('/private/RemoveUserFromGroup')
+            // /private/RemoveUserFromGroup/:groupId/:userId
+                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "/" +  testUserId)
                 .set('token', otherUserToken)
-                .send({_id: result[0]._id, userId: testUserId})
+                // .send({_id: result[0]._id, userId: testUserId})
+                .send({})
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
@@ -339,9 +341,10 @@ describe('Groups', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then(result => {
             return chai.request(serverAddress)
-                .delete('/private/RemoveUserFromGroup')
+                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "/" + otherUserId)
                 .set('token', testUserToken)
-                .send({_id: result[0]._id, userId: otherUserId})
+                // .send({_id: result[0]._id, userId: otherUserId})
+                .send({})
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {

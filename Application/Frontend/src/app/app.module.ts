@@ -32,6 +32,8 @@ import { TooltipModule } from '@progress/kendo-angular-tooltip';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
+import { InputsModule } from '@progress/kendo-angular-inputs';
+
 
 
 
@@ -85,6 +87,8 @@ import { GridModule } from '@progress/kendo-angular-grid';
     MatExpansionModule,
     GridModule,
     MatSortModule,
+    InputsModule,
+    MatSortModule
     // TreeViewModule
   ],
   providers: [

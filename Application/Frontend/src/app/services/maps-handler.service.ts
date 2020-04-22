@@ -32,10 +32,6 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getMapDescription/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  getMapPermission(mapId: String) {
-    return this.http.get(this.localUrl + '/private/getMapPermission/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
-  }
-
   deleteMap(mapFileToDelete) {
     return this.http.delete(this.localUrl + '/private/removeMap/' + mapFileToDelete.mapID + "&" + mapFileToDelete.parentNode.folderID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
@@ -49,6 +45,28 @@ export class MapsHandlerService {
     }
     return this.http.post(this.localUrl + '/private/updateMapProperties', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
+
+  // PERMISSIONS //
+
+  getMapPermission(mapId: String) {
+    return this.http.get(this.localUrl + '/private/getMapPermission/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
+
+  removeUserPermission(mapId, userId, permission){
+    // console.log(mapId,userId,permission)
+    return this.http.delete(this.localUrl + '/private/removeUserPermission/'+mapId + "&" + userId+ "&" + permission, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
+
+  updateUserPermission(mapID, userId, permission_From, permission_To){
+    const bodyReq = {
+      mapID: mapID,
+      userID: userId,
+      permission_From: permission_From,
+      permission_To: permission_To
+    }
+    return this.http.post(this.localUrl + '/private/updateUserPermission',bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
+
 
   getUserPermission() {
     let permissions = this.currMap_mapViewer.Permission;
@@ -64,5 +82,9 @@ export class MapsHandlerService {
     }
 
   }
+
+  
+
+
 
 }
