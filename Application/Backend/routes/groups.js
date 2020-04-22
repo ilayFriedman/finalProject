@@ -85,11 +85,11 @@ function deleteUserCurrentPermission(group, userId) {
         }
     }
 
-    if (group.Members.Memeber) {
-        for (let i = 0; i < group.Members.Memeber.length; i++) {
-            const element = group.Members.Memeber[i];
+    if (group.Members.Member) {
+        for (let i = 0; i < group.Members.Member.length; i++) {
+            const element = group.Members.Member[i];
             if (element.userId == userId) {
-                group.Members.Memeber.splice(i, 1);
+                group.Members.Member.splice(i, 1);
                 return;
             }
         }
@@ -115,7 +115,7 @@ function addUserPermissionOnGroup(group, userId, permission) {
                 group.Members.Owner = [];
             }
             group.Members.Owner.push({"userId": userId});
-            permission = true;
+            permissionGiven = true;
 
             break;
 
@@ -229,26 +229,26 @@ router.post('/private/updateGroupProperties', async function (req, res) {
 });
 
 //TODO @Saar Change middleware to work with an array of users.
-router.delete('/private/RemoveUserFromGroup', async function (req, res) {
-    if(req.body._id && req.body.userId) {
+router.delete('/private/RemoveUserFromGroup/:groupId/:userId', async function (req, res) {
+    if(req.params.groupId && req.params.userId) {
         group.findOne({
-            '_id': req.body._id
+            '_id': req.params.groupId
         }, function (err, result) {
             if(!result){
                 res.status(404).send("Could not find map.");
                 return;
             }
 
-            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.body.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
+            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.params.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
 
             if (!isUserGivingPermissionHasSufficientPrivileges){
                 res.status(403).send("The user's permissions are insufficient to set requested permission.");
                 return;
             }
 
-            deleteUserCurrentPermission(result, req.body.userId);
+            deleteUserCurrentPermission(result, req.params.userId);
 
-            group.findOneAndUpdate({ _id: req.body._id }, { 'Members': result.Members }, function (err, mongoRes) {
+            group.findOneAndUpdate({ _id: req.params.groupId }, { 'Members': result.Members }, function (err, mongoRes) {
                 if (err) {
                     res.status(500).send("Server error occurred.");
                 } else {

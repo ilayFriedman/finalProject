@@ -4,7 +4,7 @@
         </div> -->
         <span>
             Add a new group
-            <span class="material-icons" title="Create a new group" style="cursor: pointer;"> add </span>
+            <span class="material-icons" (click)="modalService.open('addGroupModal');" title="Create a new group" style="cursor: pointer;"> add </span>
         </span>
         <div>
             <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items">
@@ -12,7 +12,7 @@
                     <span [ngClass]="iconClass(dataItem)"></span>
                     <h4>{{dataItem.text}}</h4>
                     <h5 style="margin-left: 10px;">{{dataItem.GroupDescription}}</h5>
-                    <span class="material-icons"  (click)="console.log('click');" style="margin-left: 30px; cursor: pointer;" > edit </span>
+                    <span class="material-icons" title="Edit group '{{dataItem.text}}'" (click)="this.openEditGroupModal(dataItem);" style="margin-left: 30px; cursor: pointer;" > edit </span>
                     <span class="material-icons" title="Permanently delete group '{{dataItem.text}}'" (click)="deleteGroup(dataItem)" style="margin-left: 10px; cursor: pointer;" > backspace </span>
                 </ng-template>
     
@@ -20,3 +20,125 @@
         </div>
     </mat-tab>
 </mat-tab-group> 
+
+<!-- add group modal -->
+<jw-modal class="jw-modal" id="addGroupModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeModal_addGroup()">&times;</span>
+        <div>
+            <h2>Add New Group</h2>
+            <div style="font-size: 13px;">Please insert group name (required. name "/" invalid), and some description (required)</div>
+            <br><br>
+            <form [formGroup]="addGroupCheckOut" (ngSubmit)="createGroup()">
+                <div>
+                    <label>Group Name: </label>
+                    <input id="groupName" type="text" formControlName="groupName" placeholder="Enter group name">
+                </div>  
+                <div>
+                    <label>Description: </label>
+                    <textarea id="description" formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
+                </div>
+                <br><br>
+                <input type="submit" value="Add Group">
+                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+            </form>
+        </div>
+    </div>
+</jw-modal>
+
+<!--Edit group-->
+
+<jw-modal class="jw-modal" id="editGroupModal">
+    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+        <span class="close" (click)="closeModal_editGroup()">&times;</span>
+            <span><h3>Group Users</h3></span>
+        <table mat-table #permissionTable [dataSource]="this.groupsPermissionList" class="mat-elevation-z8" style="float:left;padding: 5px; margin: 5px;">          
+            <!-- Position Column -->
+            <ng-container matColumnDef="username">
+              <th mat-header-cell *matHeaderCellDef> Username </th>
+              <td mat-cell *matCellDef="let element"> {{element.Username}} </td>
+            </ng-container>
+          
+            <!-- Name Column -->
+            <ng-container matColumnDef="firstname">
+              <th mat-header-cell *matHeaderCellDef> First Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.FirstName}} </td>
+            </ng-container>
+          
+            <!-- Weight Column -->
+            <ng-container matColumnDef="lastname">
+              <th mat-header-cell *matHeaderCellDef> Last Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.LastName}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="permission">
+                <th mat-header-cell *matHeaderCellDef> Permission </th>
+                <td mat-cell *matCellDef="let element"> {{element.Permission}} </td>
+              </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="groupsUsersColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: groupsUsersColumns;"
+                (click)="this.allUsersTableSelection.clear(); groupsUserPermissionTableSelection.toggle(row)">
+            </tr>
+          </table>
+
+           <!-- menu between tables -->
+           <!-- <span style="float: right; margin: 5px;"> -->
+        <span style="padding: 5px; margin: 5px;">
+            <mat-form-field>
+                <mat-select [(value)]="selectedPermission">
+                    <mat-option value="Member">Member</mat-option>
+                    <mat-option value="Manager">Manager</mat-option>
+                    <mat-option value="Owner">Owner</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <div style="padding: 5px; margin: 5px;" class="refBtn"><button mat-raised-button
+                    [disabled]="this.allUsersTableSelection.selected.length == 0" (click)="addUsersToGroup()">Add
+                    Users</button></div>
+            <div style="padding: 5px; margin: 5px;" class="refBtn"><button mat-raised-button
+                    [disabled]="this.groupsUserPermissionTableSelection.selected.length == 0" (click)="removeUsersFromGroup()">Remove
+                    Users</button>
+            </div>
+        </span>
+        <span><h3>All Users</h3></span>
+        <table mat-table #noPermissionTable [dataSource]="this.groupsNoPermissionList" class="mat-elevation-z8" style="float:left;">          
+            <!-- Position Column -->
+            <ng-container matColumnDef="username">
+              <th mat-header-cell *matHeaderCellDef> Username </th>
+              <td mat-cell *matCellDef="let element"> {{element.Username}} </td>
+            </ng-container>
+          
+            <!-- Name Column -->
+            <ng-container matColumnDef="firstname">
+              <th mat-header-cell *matHeaderCellDef> First Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.FirstName}} </td>
+            </ng-container>
+          
+            <!-- Weight Column -->
+            <ng-container matColumnDef="lastname">
+              <th mat-header-cell *matHeaderCellDef> Last Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.LastName}} </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="allUsersColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: allUsersColumns;"
+                (click)="this.groupsUserPermissionTableSelection.clear(); allUsersTableSelection.toggle(row)">
+            </tr>
+          </table>
+
+          <!-- menu between tables -->
+        <br>
+        <br>
+        <span style="padding: 10px; margin: 10px;">
+            <div style="padding: 5px; margin: 5px;" class="refBtn"><button mat-raised-button
+                    [disabled]="!this.isPermissionChanged" (click)="savePermissionChanges()">Save Changes</button></div>
+            <div style="padding: 5px; margin: 5px;" class="refBtn"><button mat-raised-button
+                     (click)="closeModal_editGroup()">Close</button>
+            </div>
+        </span>
+         
+    </div>
+</jw-modal>
+
+

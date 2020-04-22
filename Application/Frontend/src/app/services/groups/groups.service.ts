@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { group } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +12,8 @@ export class GroupsService {
   /**
    * Create a new group. The creating user will be set as the groups owner.
    * @param newGroupName 
-   * @param newGroupDescriptoin 
+   * @param newGroupDescription 
    */
-  // TODO return the new groups ID from backend @Saar
   createNewGroup(newGroupName: string, newGroupDescription: string) {
     const requestBody = {
       groupName: newGroupName,
@@ -30,13 +28,6 @@ export class GroupsService {
    * @param groupId 
    */
   deleteGroup(groupId: string){
-    
-    // const jsonRequest = {
-    //   headers: new HttpHeaders({
-    //     'responseType': 'text',
-    //     'token': sessionStorage.token
-    //   })
-    // };
     const headers = new HttpHeaders().set('token', sessionStorage.token);
     
     return this.http.delete(this.localUrl + '/private/deleteGroup/' + groupId, {headers, 'responseType': 'text'}).toPromise();
@@ -63,12 +54,7 @@ export class GroupsService {
    * @param users 
    */
   removeUserFromGroup(groupId: string, usersId: [string]){
-    
-    const httpOptions = {
-      headers: new HttpHeaders({ 'token': sessionStorage.token }), body: { _id: groupId, userId: usersId[0] }
-    };
-
-    return this.http.delete(this.localUrl + '/private/RemoveUserFromGroup', httpOptions).toPromise();
+    return this.http.delete(this.localUrl + '/private/RemoveUserFromGroup/' + groupId + "/" + usersId[0], { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
   /**
@@ -84,7 +70,7 @@ export class GroupsService {
       permission: permission[0]
     }
 
-    return this.http.post(this.localUrl + '/private/SetUserPermissionForGroup', requestBody, { headers: { 'token': sessionStorage.token } }).toPromise();
+    return this.http.post(this.localUrl + '/private/SetUserPermissionForGroup', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
   /**
@@ -95,15 +81,14 @@ export class GroupsService {
    */
   getGroupsMembers(groupId: string){
     const httpOptions = {
-      headers: new HttpHeaders({ 'token': sessionStorage.token }), 
-      body: { _id: groupId }
+      headers: new HttpHeaders({ 'token': sessionStorage.token })
     };
 
-    return this.http.get(this.localUrl + '/private/GetGroupsMembers', httpOptions).toPromise();
+    return this.http.get(this.localUrl + '/private/GetGroupsMembers/' + groupId, httpOptions).toPromise();
   }
 
   /**
-   * Get all groups in which the logged in user is a Memenr or Manager.
+   * Get all groups in which the logged in user is a Member or a Manager.
    * Returns an object of the form:
    * [{"GroupId":string, "GroupName":string, "GroupDescription":string}]
    */
