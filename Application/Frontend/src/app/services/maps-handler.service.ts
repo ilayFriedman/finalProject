@@ -48,8 +48,18 @@ export class MapsHandlerService {
 
   // PERMISSIONS //
 
-  getMapPermission(mapId: String) {
-    return this.http.get(this.localUrl + '/private/getMapPermission/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  addNewPermission(mapID, username, permission_to){
+    const bodyReq = {
+      mapID: mapID,
+      username: username,
+      permission_To: permission_to
+    }
+    console.log(bodyReq)
+    return this.http.post(this.localUrl + '/private/addNewPermission', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
+
+  getUsersPermissionsMap(mapId: String) {
+    return this.http.get(this.localUrl + '/private/getUsersPermissionsMap/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
   removeUserPermission(mapId, userId, permission){
@@ -81,6 +91,11 @@ export class MapsHandlerService {
       return 1;
     }
 
+  }
+
+  // Shared maps //
+  getSharedMaps(userID){
+    return this.http.get(this.localUrl + '/private/getSharedMaps/' + userID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
   

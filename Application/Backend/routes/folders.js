@@ -166,4 +166,18 @@ router.get('/private/getRootFolderById', async function(req, res) {
 });
 
 
+router.post('/private/addExistMapToFolder', async function(req, res) {
+    try {
+        folder.findOneAndUpdate({'_id': req.body.folderID}, {$addToSet:{'MapsInFolder': {"mapID" : req.body.mapID, "mapName": req.body.mapName}}}, function(err, result) {
+            if (result) {
+                res.status(200).send("existing map was added successfully! ")
+            } else {
+                res.status(400).send(`problem: ${err}`);
+            }
+        })
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
+});
+
 module.exports = router;

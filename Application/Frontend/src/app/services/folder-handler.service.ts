@@ -54,5 +54,12 @@ returns subFolders, mapsInFolder lists of given folder
     }
     return this.http.post(this.localUrl + '/private/updateFolderProperties', bodyReq,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
   }
-
+  addExistMapToFolder(folderID, mapID, mapName){
+    const bodyReq = {
+      folderID: folderID,
+      mapID: mapID,
+      mapName: mapName
+    }
+    return this.http.post(this.localUrl + '/private/addExistMapTOfolder', bodyReq,{ headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise()
+  }
 }

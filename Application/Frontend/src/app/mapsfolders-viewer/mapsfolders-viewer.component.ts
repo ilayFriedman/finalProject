@@ -50,6 +50,7 @@ export class MapsfoldersViewerComponent implements OnInit {
   // filter on tree
   public searchTerm = '';
   public parsedData: any[] = this.data;
+  public folderNamesList = []
 
   //chagesProperties variables
   changeFileName = false
@@ -57,21 +58,12 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   // permissions variables
   currPermissionMapDATA: any[] = [];
-  //   public buttonCount = 5;
-  //   public info = true;
-  //   public type: 'numeric'
-  //   public pageSizes = true;
-  //   public previousNext = true;
-  //   public parsedDataPermissions: GridDataResult;
-  //   public pageSize = 5;
-  //   public changes: any = {};
-  //   public gridState: State = {
-  //     sort: [],
-  //     skip: 0,
-  //     take: 10
-  // };
   snapshootFirst = [];
 
+  // sharedMaps variables
+  sharedMapList_notAssociated = []
+  sharedMapList_Associated = []
+  folderToSelected : Object  
 
 
 
@@ -88,40 +80,78 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   ngOnInit() {
     //fisrt push by hand
-    this.data.push({
-      text: "/",
-      folderID: "5e80d535132e0540b827c4c5",
-      Description: "",
-      parentNode: "",
-      items: [],
-      isFolder: true,
-    })
+    // this.data.push({
+    //   text: "/",
+    //   folderID: "5e80d535132e0540b827c4cd",
+    //   Description: "",
+    //   parentNode: "",
+    //   items: [],
+    //   isFolder: true,
+    // })
+
+
     // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
-      this.fillTreeView(res, this.data[0])
-    }).catch
-      (err => {
-        console.log("error here");
-        console.log(err)
+      
+      var jsonRes = JSON.parse(JSON.stringify(res))
+      this.folderNamesList.push({folderID: jsonRes._id, name: jsonRes.Name})
+      this.data.push({
+        text: "/",
+        folderID: jsonRes._id,
+        Description: "",
+        parentNode: "",
+        items: [],
+        isFolder: true,
       })
-    this.parsedData = this.data;
+      // console.log(this.data)
 
-    // permissions init
-    // this.view = this.editService.pipe(map(data => process(data, this.gridState)));
+      // get all shared maps of user
+      this.mapHandler.getSharedMaps(sessionStorage.userId).then(res => {
+
+        JSON.parse(res).forEach(element => {
+          this.sharedMapList_notAssociated.push(element)
+        });
+
+
+        // fill the treeView : jsonRes= folder in backend, this.data= folder on treeView
+        this.fillTreeView(jsonRes, this.data[0])
+        // console.log(this.data)
+        this.parsedData = this.data;
+
+      }).catch
+        (err => {
+          console.log("error with getShared maps");
+          console.log(err)
+        })
+
+    }).catch
+    (err => {
+      console.log("error with getRoot folder");
+      console.log(err)
+    })
+
 
   }
 
-  fillTreeView(folderLists, rootNode) {
+  public fillTreeView(folderLists, rootNode) {
     if (folderLists.MapsInFolder.length != 0) {
       folderLists.MapsInFolder.forEach(map => {
-        rootNode.items.push({ text: map.mapName, mapID: map.mapID, parentNode: rootNode, Description: "", mapPermission: "", isFolder: false })
+        console.log("newMap:")
+        console.log(map)
+        var specificMapFromShared = JSON.parse(JSON.stringify(this.sharedMapList_notAssociated.filter(elem => elem.mapID == map.mapID)[0])) 
+        console.log("found:")
+        console.log(specificMapFromShared)
+        rootNode.items.push({ text: map.mapName, mapID: map.mapID, parentNode: rootNode, Description: "", usersPermissionsMap: "",permission: specificMapFromShared.permission ,isFolder: false })
+        this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != specificMapFromShared.mapID);
+        this.sharedMapList_Associated.push(specificMapFromShared)
         this.totalMapsCounter++;
       });
     }
     if (folderLists.SubFolders.length != 0) {
       folderLists.SubFolders.forEach(subFolder => {
-        var folderNode = { text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode: rootNode, Description: "", mapPermission: "", isFolder: true }
+        var folderNode = { text: subFolder.folderName, folderID: subFolder.folderID, items: [], parentNode: rootNode, Description: "", usersPermissionsMap: "", isFolder: true }
         rootNode.items.push(folderNode)
+        this.folderNamesList.push({folderID: subFolder.folderID, name: subFolder.folderName})
         this.totalFolderCounter++;
 
         this.folderHandler.getFolderContentsLists(subFolder.folderID).then(res => {
@@ -138,7 +168,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     }
   }
 
-  onSubmit_AddFolder() {
+  public onSubmit_AddFolder() {
     if (this.addFolderCheckOut.invalid) {
       // console.log("bad form!")
       this.formErrors = "Worng/Missing inputs.<br> Make sure you filled all the requierd fields"
@@ -158,8 +188,10 @@ export class MapsfoldersViewerComponent implements OnInit {
         console.log('======create new folder request OK=====');
         var jsonRes = JSON.parse(res)
         self.selectedNode.items.push({ text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true })
+        this.folderNamesList.push({folderID: jsonRes._id, name: jsonRes.Name})
         this.actionInModalIsSuccecs = true
         setTimeout(() => { this.closeModal("addFolderModal") }, 1000);
+        this.totalFolderCounter++;
       }).catch
         (err => {
           console.log("error with folder creation - promise return");
@@ -174,14 +206,14 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   }
 
-  onSubmit_AddMap() {
+  public onSubmit_AddMap() {
     if (this.addMapCheckOut.invalid) {
       // console.log("bad form!")
       this.formErrors = "Missing inputs.<br>Remember: you must enter some name for the map!"
       return;
     }
     var self = this
-    console.log(this.addMapCheckOut.controls.mapName.value)
+    // console.log(this.addMapCheckOut.controls.mapName.value)
     this.formErrors = ""
     var findDuplicateFolder = false
     // look for duplicate name
@@ -197,24 +229,17 @@ export class MapsfoldersViewerComponent implements OnInit {
         console.log('======create new map request OK=====');
         var jsonRes = JSON.parse(res)
 
-        // add to parent folder
-        // this.folderHandler.addMapToFolder(this.selectedFolder.folderID,jsonRes._id,jsonRes.MapName).then(res => {
-        console.log('======add map to parent folder request OK=====');
         // add to tree-view
-        self.selectedNode.items.unshift({ text: jsonRes.MapName, mapID: jsonRes._id, parentNode: this.selectedNode, Description: jsonRes.Description, mapPermission: "", isFolder: false })
+        self.selectedNode.items.unshift({ text: jsonRes.MapName, mapID: jsonRes._id, parentNode: this.selectedNode, Description: jsonRes.Description, usersPermissionsMap: "", permission: "Owner",isFolder: false })
         this.actionInModalIsSuccecs = true
         setTimeout(() => { this.closeModal("addMapModal") }, 1000);
+        this.totalMapsCounter++;
 
-        // }).catch
-        //   (err=> {
-        //     console.log("error with addto parent folder - promise return");
-        //     console.log(err)
-        //   });
       }).catch
         (err => {
           console.log("error with map creation - promise return");
           console.log(err)
-        });
+        })
 
       this.addMapCheckOut.reset();
     }
@@ -222,8 +247,8 @@ export class MapsfoldersViewerComponent implements OnInit {
       this.formErrors = "A folder with that name already exists in this folder. <br>Give another name please"
     }
   }
-
-  preOpen_editPropertiesModal(dataItem) {
+  
+  public preOpen_editPropertiesModal(dataItem) {
     if (dataItem.Description == "") {
       if (dataItem.isFolder) {
         this.folderHandler.getFolderDescription(dataItem.folderID).then(res => {
@@ -252,7 +277,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     }
 
   }
-  onSubmit_editProperties() {
+  public onSubmit_editProperties() {
     var newName, Description
     if (this.changeFileName) {
       newName = this.editPropertiesCheckOut.controls.fileName.value
@@ -264,12 +289,11 @@ export class MapsfoldersViewerComponent implements OnInit {
       Description = this.editPropertiesCheckOut.controls.description.value
     }
     else {
-      this.selectedNode.Description
+      Description = this.selectedNode.Description
     }
 
     if (this.selectedNode.isFolder) {
       console.log(this.selectedNode.folderID, newName, Description);
-
       this.folderHandler.updateFolderProperties(this.selectedNode.folderID, newName, Description, this.selectedNode.parentNode.folderID).then(res => {
         // console.log('======update properties folder request OK=====');
         this.selectedNode.Description = Description
@@ -307,10 +331,9 @@ export class MapsfoldersViewerComponent implements OnInit {
   }
 
   // listeners
-  mouseOverNodeChanger(dataItem) {
+  public mouseOverNodeChanger(dataItem) {
     this.mouseOverNode = dataItem
   }
-
 
   public clickUpdateDataItem(dataItem) {
     this.selectedNode = dataItem
@@ -318,7 +341,8 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   }
 
-  loadSelectedMap_toMapViewer(dataItem) {
+  // update clicked map before move to MapViewer Component
+  public loadSelectedMap_toMapViewer(dataItem) {
     if (!dataItem.isFolder) {
       this.mapHandler.getMap(dataItem.mapID).then(res => {
         console.log(res);
@@ -343,10 +367,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     this.addFolderCheckOut.reset();
     this.addMapCheckOut.reset();
     this.editPropertiesCheckOut.reset();
-
-
   }
-
 
   // ############### dialog functionallity (delete files from tree) ########################
   public deleteDialogOpened = false;
@@ -365,7 +386,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
   public recursiveDelete(fileToDelete) {
     if (!fileToDelete.isFolder) {
-      return this.deleteSignleMap(fileToDelete)
+      return this.deleteSingleMap(fileToDelete)
     }
     if (fileToDelete.isFolder && fileToDelete.items.length == 0) {
       return this.deleteSingleFolder(fileToDelete)
@@ -374,13 +395,14 @@ export class MapsfoldersViewerComponent implements OnInit {
       this.recursiveDelete(item)
     }
     return this.deleteSingleFolder(fileToDelete)
-
   }
-  private deleteSignleMap(fileToDelete: any) {
+
+  private deleteSingleMap(fileToDelete: any) {
     this.mapHandler.deleteMap(fileToDelete).then(res => {
       fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
       this.data = this.data.slice();
       this.parsedData = this.parsedData.slice();
+      this.totalMapsCounter--;
     }).catch(err => {
       console.log(err);
     });
@@ -390,8 +412,10 @@ export class MapsfoldersViewerComponent implements OnInit {
     if (fileToDelete.parentNode != "") { // make sure not to delete root folder
       this.folderHandler.removeFolderFromFolder(fileToDelete.parentNode.folderID, fileToDelete.folderID).then(res => {
         fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
+        this.folderNamesList = this.folderNamesList.filter(item => item.folderID != fileToDelete.folderID);
         this.data = this.data.slice();
         this.parsedData = this.parsedData.slice();
+        this.totalFolderCounter--;
       }).catch(err => {
         console.log(err);
       });
@@ -411,7 +435,6 @@ export class MapsfoldersViewerComponent implements OnInit {
    */
   public handleCollapse(node) {
     this.expandedKeys = this.expandedKeys.filter(k => k !== node.index);
-
   }
 
   /**
@@ -464,7 +487,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     };
   }
 
-  // ############### permissions functionallity ########################
+// ############### permissions functionallity ########################
 
 deleteUsersChange: boolean = false;
 deleteUserList = []
@@ -481,45 +504,45 @@ newUserPermissionChoose: any
     }
   }
 
-public openUserPerimssionDialog(dataItem) {
-  this.userDeleteDialogOpened = true;
-  this.userToDelete = dataItem
-}
+  public openUserPerimssionDialog(dataItem) {
+    this.userDeleteDialogOpened = true;
+    this.userToDelete = dataItem
+  }
 
-  loadPermissionTable() {
+  public loadPermissionTable() {
     this.currPermissionMapDATA = []
-    if (this.selectedNode.mapPermission == "") {
-      var mapPermission = new Map();
-      this.mapHandler.getMapPermission(this.selectedNode.mapID).then(res => {
+    if (this.selectedNode.usersPermissionsMap == "") {
+      var usersPermissionsMap = new Map();
+      this.mapHandler.getUsersPermissionsMap(this.selectedNode.mapID).then(res => {
         var permissionsList = JSON.parse(res)
         console.log(permissionsList)
         //add read-permission users
         permissionsList.read.forEach(readPermission_user => {
-          mapPermission.set(readPermission_user._id, { username: readPermission_user.Username, name: readPermission_user.FirstName + " " + readPermission_user.LastName, permission: "Read" })
+          usersPermissionsMap.set(readPermission_user._id, { username: readPermission_user.Username, name: readPermission_user.FirstName + " " + readPermission_user.LastName, permission: "Read" })
         });
 
         //add write-permission users
         permissionsList.write.forEach(writePermission_user => {
-          if (mapPermission.has(writePermission_user._id)) {
-            mapPermission.get(writePermission_user._id).permission = "Write"
+          if (usersPermissionsMap.has(writePermission_user._id)) {
+            usersPermissionsMap.get(writePermission_user._id).permission = "Write"
           }
           else {
-            mapPermission.set(writePermission_user._id, { username: writePermission_user.Username, name: writePermission_user.FirstName + " " + writePermission_user.LastName, permission: "Write" })
+            usersPermissionsMap.set(writePermission_user._id, { username: writePermission_user.Username, name: writePermission_user.FirstName + " " + writePermission_user.LastName, permission: "Write" })
           }
         });
 
         //add owner-permission users
-        permissionsList.Owner.forEach(ownerPermission_user => {
-          if(mapPermission.has(ownerPermission_user._id)){
-            mapPermission.get(ownerPermission_user._id).permission = "owner"
+        permissionsList.owner.forEach(ownerPermission_user => {
+          if(usersPermissionsMap.has(ownerPermission_user._id)){
+            usersPermissionsMap.get(ownerPermission_user._id).permission = "Owner"
           }
           else{
-            mapPermission.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
+            usersPermissionsMap.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
           }
         });
-      this.selectedNode.mapPermission = mapPermission
-      console.log(this.selectedNode.mapPermission)
-      for (const [key,value] of this.selectedNode.mapPermission.entries()) { 
+      this.selectedNode.usersPermissionsMap = usersPermissionsMap
+      console.log(this.selectedNode.usersPermissionsMap)
+      for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
         this.currPermissionMapDATA.push(value);
       }
       // snapShot of permissions
@@ -532,7 +555,7 @@ public openUserPerimssionDialog(dataItem) {
     }
     else {
       console.log("using with the exist!")
-      for (const [key, value] of this.selectedNode.mapPermission.entries()) {
+      for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
         this.currPermissionMapDATA.push(value);
       }
       console.log(this.currPermissionMapDATA);
@@ -542,64 +565,86 @@ public openUserPerimssionDialog(dataItem) {
     }
   }
 
+
   public cancelHandler({ sender, rowIndex }) {
     this.newUserPermissionChoose == null
     sender.closeRow(rowIndex);
   }
 
-protected openNewRow(event) {
-  console.log(event)
+  public openNewRow(event) {
+    console.log(event)
 
-  // console.log(this.parsedDataPermissions)
-  // define all editable fields validators and default values
-  const newUser = new FormGroup({
-    'username': new FormControl(""),
-    'permission': new FormControl({"": []})
-  });
-  // show the new row editor, with the `FormGroup` build above
-  event.sender.addRow(newUser);
-}
+    // console.log(this.parsedDataPermissions)
+    // define all editable fields validators and default values
+    const newUser = new FormGroup({
+      'username': new FormControl(""),
+      'permission': new FormControl({"": []})
+    });
+    // show the new row editor, with the `FormGroup` build above
+    event.sender.addRow(newUser);
+  }
 
-public addNewUserToPermission(event){
-  // ---- seach for username in DB ---  then --//
-  if(this.newUserPermissionChoose != null){
-      this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: "Search result", permission: this.newUserPermissionChoose.target.id})
-      this.newUserPermissionChoose = null
+  public addNewUserToPermission(event){
+    this.mapHandler.addNewPermission(this.selectedNode.mapID,  this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
+      var jsonRes = JSON.parse(res)
+        // ---- seach for username in DB ---  then --//
+    if(this.newUserPermissionChoose != null){
+      this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
+      
 
       // update snapshoorFirst
       this.snapshootFirst = []
       this.currPermissionMapDATA.forEach(element => {
         this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
       });
+
+      console.log(res)
+      // update usersPermissionsMap
+      this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
+      this.newUserPermissionChoose = null
+    }
+    console.log(event)
+    this.cancelHandler(event)
+
+    // HANDLE WITH NO FIND USER!!!! //
+      }).catch(err => {
+        if(err.status == 404)
+          console.log("theres no such user!!")
+        // console.log(err);
+      });
   }
-  console.log(event)
-  this.cancelHandler(event)
-}
-public removeUserHandler(dataItem) {
-  console.log(dataItem)
-  this.deleteUserList.push(dataItem)
-  this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== dataItem);
-  this.deleteUsersChange = true
-}
+
+  public removeUserHandler(event) {
+    console.log(event.dataItem)
+    console.log(this.currPermissionMapDATA)
+    // this.currPermissionMapDATA.forEach(element => {
+    //   if(element == dataItem)
+    //     console.log(true)
+    // });
+    this.deleteUserList.push(event.dataItem)
+    this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== event.dataItem);
+    this.deleteUsersChange = true
+  }
 
 
   public saveAllChangesClick() {
     console.log("selectNode map: ")
-    console.log(this.selectedNode.mapPermission);
+    console.log(this.selectedNode.usersPermissionsMap);
 
     let promises = [];
     // ---- delete all remove users -------
     this.deleteUserList.forEach(deleteUser => {
       var userID = this.getKeyFromValue(deleteUser)
-      promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.mapPermission.get(userID).permission))
+      promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
       this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
-      this.selectedNode.mapPermission.delete(userID)
+      this.selectedNode.usersPermissionsMap.delete(userID)
     });
 
     // ----- update all radiobuttons -------
     this.updatePermissionUsers.forEach(element => {
       promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, element.userID, element.old, element.new))
-      for (const [key, value] of this.selectedNode.mapPermission.entries()) {
+      // update mapPermission on selectedMap
+      for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
         if (key == element.userID) {
           value.permission = element.new;
         }
@@ -609,7 +654,7 @@ public removeUserHandler(dataItem) {
     Promise.all(promises.map(p => p.catch(e => e)))
       .then(results => {
         // console.log("currPermissionMapDATA: "+this.currPermissionMapDATA)
-        console.log("selectNode map: " + this.selectedNode.mapPermission)
+        console.log("selectNode map: " + this.selectedNode.usersPermissionsMap)
         // users Reset
         this.deleteUserList = []
         this.deleteUsersChange = false
@@ -642,14 +687,12 @@ public removeUserHandler(dataItem) {
     });
     this.currPermissionMapDATA = this.currPermissionMapDATA.slice()
     this.updatePermissionUsers = []
-
-
   }
 
   protected openPermissionsModal() {
     this.deleteUsersChange = false
     this.deleteUserList = []
-    this.modalService.open('mapPermissionsModal')
+    this.modalService.open('usersPermissionsModal')
     this.snapshootFirst = []
     this.currPermissionMapDATA.forEach(element => {
       this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
@@ -698,19 +741,63 @@ public removeUserHandler(dataItem) {
 
       console.log(this.updatePermissionUsers);
     }
-    else{   // new row permission tuch
+    else{   // new row permission touch
       this.newUserPermissionChoose = event
+      // var unique = true;
+      // this.currPermissionMapDATA.forEach(element => {
+      //   if (element.username == event.target.name)
+      //     unique = false;
+      // });
+      // if(unique)
+       
+      // else{
+      //   console.log("elrady thereIs!!!")
+      // }
       }
 }
 
-
   private getKeyFromValue(dataItem) {
-    for (const [key, value] of this.selectedNode.mapPermission.entries()) {
+    for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
       if (value.username == dataItem.username) {
         return key
       }
     }
   }
+
+
+// ############### permissions- not Associated  functionallity ########################
+
+getNodeFromTree(currNode,folderID){
+  if(currNode.isFolder && currNode.folderID == folderID){
+    return currNode
+  }
+    if(currNode.items != null){
+      for (let item of currNode.items) {
+        if(item.isFolder)
+          return this.getNodeFromTree(item, folderID)
+      }
+  }
+
+}
+AssociatedMap(sharedMap){
+  // console.log(sharedMap)
+  // console.log(this.folderToSelected)
+  var folderToSelected = JSON.parse(JSON.stringify(this.folderToSelected))
+  this.folderHandler.addExistMapToFolder(folderToSelected.folderID,sharedMap.mapID,sharedMap.MapName).then(res => {
+    this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != sharedMap.mapID);
+    this.sharedMapList_Associated.push(sharedMap)
+
+    var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected .folderID)
+    parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
+    // console.log(parentFolder)
+
+  }).catch
+    (err => {
+      console.log("error with creation - promise return");
+      console.log(err)
+    })
+}
+  
 
 }
 

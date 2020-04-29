@@ -33,6 +33,8 @@ import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { InputsModule } from '@progress/kendo-angular-inputs';
+import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+
 
 
 
@@ -88,7 +90,8 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
     GridModule,
     MatSortModule,
     InputsModule,
-    MatSortModule
+    MatSortModule,
+    DropDownsModule
     // TreeViewModule
   ],
   providers: [

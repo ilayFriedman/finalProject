@@ -21,7 +21,7 @@
                 <!-- delete dialog configuration -->
                     <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
                     <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
-                    <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Deleting it will delete all the files inside it as well</p>
+                    <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Removal will delete all the files inside and your permissions about them as well</p>
                         <kendo-dialog-actions>
                         <button kendoButton (click)="closeDialog('no',null)">No</button>
                         <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This File</button>
@@ -46,7 +46,7 @@
                             <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
                                 <span>
                                     <span *ngIf="dataItem.text!='/'"  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span *ngIf="dataItem.text!='/'" style="margin-right: 10px;" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span *ngIf="dataItem.text!='/' || (dataItem.text=='/' && dataItem.items.length!=0)" style="margin-right: 10px;" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                     <!-- <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span>Permissions -->
                                 </span>
                                 <span>
@@ -57,24 +57,53 @@
                             </span>
                             <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
                                 <span>
-                                    <span  style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span style="margin-right: 10px;" (click)="addFolderCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
-                                    <span style="margin-right: 10px;" (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();" class="k-icon k-i-lock"></span><!-- Permissions-->
-                                    
+                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
+                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" (click)="addFolderCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
+                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();" class="k-icon k-i-lock"></span><!-- Permissions-->
+                                    <span style="font-size: 12px;"><i><b>{{dataItem.permission}}</b></i></span>
                                 </span>
                             </span>
                         </span>
                         </span>
                     </ng-template>
                 </kendo-treeview>
-                <div *ngIf="data[0].items.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
+                <div  style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
                 <br><span style="font-size: 13px; text-align: center;">Click on the folder icon to create some new files</span></div>
                 </div>
+                <!-- *ngIf="data[0].items.length == 0" -->
+    </div>
 
-        </div>
+
     </mat-tab>
-    <mat-tab label="Maps Shared With Me:">
-        coming soon! :)
+    <mat-tab label="Shared Maps (Not Associated In Your Tree):">
+        <!-- SHARED MAPS -->
+
+        <div style="font-size: 14px; padding-top : 15px;">
+            <table style="width: 100%;">
+                <tr style="color: rgb(196, 196, 196);">
+                    <td></td>
+                    <td>Map Name:</td>
+                    <td>Your Permission:</td>
+                    <td>Move to Folder:</td>
+                    <td>Action:</td>
+                </tr>
+                <tr *ngFor="let sharedMap of sharedMapList_notAssociated">
+                    <td class="k-icon k-i-table-align-middle-center"></td>
+                    <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
+                    <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
+                    <td style="vertical-align:center; font-size: 13px;"><kendo-dropdownlist [data]="folderNamesList" [textField]="'name'" [valueField]="'folderID'" [(ngModel)]="folderToSelected">
+                    </kendo-dropdownlist></td>
+                    <td><button (click)="AssociatedMap(sharedMap)">Move to Folder!</button></td>
+                </tr>
+            </table>
+        </div>
+
+        <div *ngIf="sharedMapList_notAssociated.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Shared Maps Folder Is Empty.</i></span>
+            <br><span style="font-size: 13px; text-align: center;">Noting to show. Ask for share request</span>
+            </div>
+            <div>
+                <button (click)="getNodeFromTree(data[0],'5ea70417dcb24435cc92a50b')">click ME</button>
+            </div>
     </mat-tab>
   </mat-tab-group>
 
@@ -105,7 +134,6 @@
             <div *ngIf="actionInModalIsSuccecs">
                 <div>The Folder Added Successfully!<br><br></div>
                 <div><span>(window will close in 2 secondes)</span></div>
-
             </div>
         </div>
     </jw-modal>
@@ -117,7 +145,7 @@
         <span class="close" (click)="closeModal('addMapModal')">&times;</span>
         <div *ngIf="!actionInModalIsSuccecs">
             <span class="k-icon k-i-table-insert"></span><h2> Add New Map To "{{selectedNode.text}}" Folder:</h2><br><br>
-            <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap(addMapCheckOut.value)">    <!-- required pattern="[a-zA-Z ]*"> -->
+            <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap()">    <!-- required pattern="[a-zA-Z ]*"> -->
                 <div style="text-align: left;">
                     <label>Map Name: </label>
                     <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
@@ -192,9 +220,9 @@
 
 
   <!-- Permisssions modal -->
-  <jw-modal class="jw-modal" id="mapPermissionsModal">
+  <jw-modal class="jw-modal" id="usersPermissionsModal">
     <div ngDraggable class="jw-modal-body">
-        <span class="close" (click)="undoAllChangesClick();closePermissionModal('mapPermissionsModal')">&times;</span>
+        <span class="close" (click)="undoAllChangesClick();closePermissionModal('usersPermissionsModal')">&times;</span>
         <span><h2>Permissions Management for "{{selectedNode.text}}" Map:</h2></span>
         <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!</span>
         <br><br>

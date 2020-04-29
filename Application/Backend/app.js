@@ -68,7 +68,7 @@ app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);
-app.get('/private/getMapPermission/:mapID', mapsRoute);
+app.get('/private/getUsersPermissionsMap/:mapID', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
 app.post('/private/updateMapProperties', mapsRoute);
@@ -81,6 +81,9 @@ app.put('/private/deleteComment', mapsRoute);
 
 app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
 app.post('/private/updateUserPermission', mapsRoute)
+app.post('/private/addNewPermission',mapsRoute)
+app.get('/private/getSharedMaps/:userID', mapsRoute);
+
 // app.get('/private/getAllUserMaps', mapsRoute);
 
 
@@ -104,5 +107,7 @@ app.post('/private/getFolderContentsLists', foldersRoute)
 app.post('/private/updateFolderProperties', foldersRoute)
 app.get('/private/getFolderDescription/:FolderID', foldersRoute)
 app.get('/private/getRootFolderById', foldersRoute)
+app.post('/private/addExistMapToFolder', foldersRoute)
 app.delete('/private/removeFolderFromFolder/:parentID&:folderID', foldersRoute)
+
 

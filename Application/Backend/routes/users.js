@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const user = require('../models/user')
+const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async function (req, res) {
@@ -46,12 +47,31 @@ router.post('/register', async function (req, res) {
                             LastName: req.body.LastName,
                             Password: req.body.pwd
                         });
-                        newUser.save(function (err) {
+                        newUser.save(function (err,saveRes) {
                             if (err) {
                                 console.log(err)
                                 res.status(500).send(`Server error occured.`)
                             } else {
-                                res.status(200).send("User successfully registered")
+                                // create user Root folder
+
+
+                                const rootFolder = new folder({
+                                    Name: "userRootFolder",
+                                    MapsInFolder: [],
+                                    SubFolder: [],
+                                    Creator: saveRes._id.toString(),
+                                    CreationTime: new Date(),
+                                    Description: "rootFolder",
+                                    ParentDir: "/",
+                                });
+                                rootFolder.save(function(err,saveRes) {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send(`Server error occured while creation root folder.`);
+                                    } else {
+                                        res.status(200).send("User successfully registered")
+                                    }
+                                });   
                             }
                         });
                 }
