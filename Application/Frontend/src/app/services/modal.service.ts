@@ -37,7 +37,6 @@ export class ModalService {
   // functionality for mapMenu (in map-viwewer component)
   openMenu(id: String, currNode) {
     this.currNodeData = currNode
-
     let modal: any = this.modals.filter(x => x.id === id)[0];
     modal.open();
   }

@@ -31,7 +31,8 @@ export class MapViewerComponent implements OnInit {
   updateConverter: boolean = false
   currNode: any;
   obj: any;
-
+  isSaved: boolean = true;
+  initialModel: boolean = true;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -47,7 +48,6 @@ export class MapViewerComponent implements OnInit {
   init() {
     let self = this;
     var $ = go.GraphObject.make;  // for conciseness in defining templates
-
     self.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
         initialContentAlignment: go.Spot.Center,
@@ -150,19 +150,7 @@ export class MapViewerComponent implements OnInit {
         //      { click: function (e, obj) { showModal(obj); } })
       );
 
-    self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
-      var node = e.diagram.selection.first();
-      node.data.id = uuid();
-      node.data.refs = [];
-      node.data.ctxs = [];
-      node.data.comment = [];
-      if (node.data.category === "Contribution") {
-        setElementText(node, "?")
-      }
-      if (node.data.category === "Association") {
-        setElementText(node, "")
-      }
-    });
+
 
     // ##########   SET NODES AND LINK PROPERTIES ###########
     var qualityTemplate =
@@ -509,8 +497,25 @@ export class MapViewerComponent implements OnInit {
 
 
     self.mapHandler.myDiagram.model = go.Model.fromJson(self.currMap.Model);
-
     self.mapHandler.myDiagram.model.addChangedListener(self.updateConverterACtivate);
+    self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+      var node = e.diagram.selection.first();
+      node.data.id = uuid();
+      node.data.refs = [];
+      node.data.ctxs = [];
+      node.data.comment = [];
+      if (node.data.category === "Contribution") {
+        setElementText(node, "?")
+      }
+      if (node.data.category === "Association") {
+        setElementText(node, "")
+      }
+    });
+
+    self.mapHandler.myDiagram.addModelChangedListener(function (e) {
+      console.log("modified");
+
+    })
 
 
     var myPalette =
@@ -601,6 +606,14 @@ export class MapViewerComponent implements OnInit {
   updateConverterACtivate = (e) => {
     if (e != null) {    // firing from touch the model
       if (e.af == "CommittingTransaction") {
+        console.log("issaved: " + this.isSaved);
+        if (this.initialModel) {
+          console.log("changeeeeee");
+          this.isSaved = true;
+          this.initialModel = false;
+        } else {
+          this.isSaved = false;
+        }
         if (e.Uo != "Move" && e.Uo != "Initial Layout") {
           // this.child.convertMapToText()
           if (this.updateConverter == false)
@@ -626,6 +639,7 @@ export class MapViewerComponent implements OnInit {
 
   saveAs() {
     this.modalService.open('save-as-modal');
+    this.isSaved = true;
     // this.saveDiagramProperties();
     // this.toSave = true;
     // this.mapHandler.myDiagram.isModified = false;
@@ -650,6 +664,7 @@ export class MapViewerComponent implements OnInit {
       });
 
       result.subscribe(response => {
+        this.isSaved = true;
         alert("Map Updated Successfully")
 
       }, error => {
@@ -733,6 +748,7 @@ export class MapViewerComponent implements OnInit {
   }
 
   saveChanges() {
+    console.log("save changes");
     this.currNode.data.text = this.modalService.currNodeData.text
     this.currNode.data.description = this.modalService.currNodeData.description
     var changedModel = this.mapHandler.myDiagram.model.toJson()
@@ -762,6 +778,9 @@ export class MapViewerComponent implements OnInit {
 
   }
 
+  chengesInTheModelListener() {
+    this.isSaved = false;
+  }
 
 
 }// component

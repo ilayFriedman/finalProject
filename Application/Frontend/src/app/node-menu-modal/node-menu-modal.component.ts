@@ -245,6 +245,7 @@ export class NodeMenuModalComponent implements OnInit {
         alert("This reference already referened to this node")
       }
     });
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
     this.unloadNodeRefs();
     this.loadNodeRefs();
     this.allRefSelection.clear()
@@ -255,6 +256,7 @@ export class NodeMenuModalComponent implements OnInit {
       let idx = this.modalService.currNodeData.refs.indexOf(element)
       this.modalService.currNodeData.refs.splice(idx, 1);
     });
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
     this.unloadNodeRefs();
     this.loadNodeRefs();
     // this.masterToggle('node')
@@ -358,6 +360,7 @@ export class NodeMenuModalComponent implements OnInit {
         alert("This context already exist in this node")
       }
     });
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
     this.unloadNodeCtxs();
     this.loadNodeCtxs();
     this.allCtxsSelection.clear()
@@ -368,6 +371,7 @@ export class NodeMenuModalComponent implements OnInit {
       let idx = this.modalService.currNodeData.ctxs.indexOf(element)
       this.modalService.currNodeData.ctxs.splice(idx, 1);
     });
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
     this.unloadNodeCtxs();
     this.loadNodeCtxs();
     // this.masterToggle('node')
@@ -463,6 +467,7 @@ export class NodeMenuModalComponent implements OnInit {
 
     this.NodeMenuHendler.createNewComment(data).then(res => {
       this.modalService.currNodeData.comment.push(newComment)
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
       this.unloadNodeComments()
       this.loadNodeComments()
       this.closeNewCommentModal('newCommentModal')
@@ -485,6 +490,7 @@ export class NodeMenuModalComponent implements OnInit {
     }
     this.NodeMenuHendler.addLikeToComment(data).then(res => {
       element.Likes++;
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
       this.unloadNodeComments()
       this.loadNodeComments();
       console.log("add like");
@@ -537,6 +543,7 @@ export class NodeMenuModalComponent implements OnInit {
     this.NodeMenuHendler.deleteComment(data).then(res => {
       let idx = this.modalService.currNodeData.comment.indexOf(element.id)
       this.modalService.currNodeData.comment.splice(idx, 1);
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
       this.unloadNodeComments()
       this.loadNodeComments();
     }).catch
