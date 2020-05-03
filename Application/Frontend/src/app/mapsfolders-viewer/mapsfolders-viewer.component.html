@@ -22,6 +22,7 @@
                     <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
                     <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
                     <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Removal will delete all the files inside and your permissions about them as well</p>
+                    <p *ngIf="!fileToDelete.isFolder" style="margin: 30px; text-align: center; color:red">Note! All permissions granted for this map will also disappear and the map will be deleted for all users</p>
                         <kendo-dialog-actions>
                         <button kendoButton (click)="closeDialog('no',null)">No</button>
                         <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This File</button>
@@ -57,7 +58,7 @@
                             </span>
                             <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
                                 <span>
-                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
+                                    <span *ngIf="dataItem.permission != 'Read'" style="margin-right: 10px;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
                                     <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" (click)="addFolderCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
                                     <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px;" (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();" class="k-icon k-i-lock"></span><!-- Permissions-->
                                     <span style="font-size: 12px;"><i><b>{{dataItem.permission}}</b></i></span>
@@ -67,15 +68,15 @@
                         </span>
                     </ng-template>
                 </kendo-treeview>
-                <div  style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
+                <div *ngIf="totalMapsCounter == 0 && totalFolderCounter == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
                 <br><span style="font-size: 13px; text-align: center;">Click on the folder icon to create some new files</span></div>
                 </div>
-                <!-- *ngIf="data[0].items.length == 0" -->
     </div>
-
 
     </mat-tab>
     <mat-tab label="Shared Maps (Not Associated In Your Tree):">
+
+
         <!-- SHARED MAPS -->
 
         <div style="font-size: 14px; padding-top : 15px;">
@@ -87,7 +88,7 @@
                     <td>Move to Folder:</td>
                     <td>Action:</td>
                 </tr>
-                <tr *ngFor="let sharedMap of sharedMapList_notAssociated">
+                <tr *ngFor="let sharedMap of sharedMapList_notAssociated; index as i">
                     <td class="k-icon k-i-table-align-middle-center"></td>
                     <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
                     <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
@@ -98,12 +99,10 @@
             </table>
         </div>
 
-        <div *ngIf="sharedMapList_notAssociated.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Shared Maps Folder Is Empty.</i></span>
+        <div *ngIf="sharedMapList_notAssociated.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Shared Maps Area Is Empty.</i></span>
             <br><span style="font-size: 13px; text-align: center;">Noting to show. Ask for share request</span>
             </div>
-            <div>
-                <button (click)="getNodeFromTree(data[0],'5ea70417dcb24435cc92a50b')">click ME</button>
-            </div>
+
     </mat-tab>
   </mat-tab-group>
 
@@ -258,7 +257,8 @@
          -->
          
         <ng-template kendoGridToolbarTemplate>
-            <button kendoGridAddCommand>Add new Permission</button>
+            <button kendoGridAddCommand>Add Permission To User</button>
+            <button class='k-button'>Add Permission To Group</button>
             <button class='k-button' (click)="saveAllChangesClick()" [disabled] = "!deleteUsersChange && updatePermissionUsers.length == 0"><span [ngStyle]="deleteUsersChange?{'font-weight': 'bold'} : {'font-weight': 'normal'}">Save Changes</span></button>
             <button class='k-button' (click)="undoAllChangesClick()" [disabled] = "!deleteUsersChange && updatePermissionUsers.length == 0">Undo All Changes</button>
             <p *ngIf="deleteUsersChange || updatePermissionUsers.length != 0" style="text-align: center; color:green"><b><i>Some Changes Are waiting To Been Saved! dont Forget to save them before you leave</i></b></p>   
@@ -296,8 +296,8 @@
 
       <!-- dialog of remove user -->
       <kendo-dialog title="Please confirm" *ngIf="userDeleteDialogOpened" (close)="closeUserPerimssionDialog('cancel')" [minWidth]="250" [width]="450">
-        <p style="margin: 30px; text-align: center;">Are you sure you want to delete User {{ userToDelete.username }}?</p>
-        <p style="margin: 30px; text-align: center; color:red">All permissions on "{{selectedNode.text}}" map will be removed!</p>
+        <p style="margin: 30px; text-align: center;">Are you sure you want to delete User {{ userToDelete.username }} from permission list?</p>
+        <p style="margin: 30px; text-align: center; color:red">Note! his permission and the map: "{{selectedNode.text}}" itself will be removed from his management page!</p>
         <kendo-dialog-actions>
             <button class='k-button' (click)="closeUserPerimssionDialog('no')">No</button>
             <button class='k-button k-primary' (click)="closeUserPerimssionDialog('yes')" primary="true">Yes. Remove This User {{userToDelete.username}}</button>

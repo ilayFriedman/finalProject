@@ -16,7 +16,7 @@ function UserHasReadPermissionForMap(resMap, userId) {
         }
 
     }
-    console.log(resMap.Permission.Read);
+    // console.log(resMap.Permission.Read);
 
     if (resMap.Permission.Read) {
         if (resMap.Permission.Read.indexOf(userId) != -1) {
@@ -159,17 +159,20 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
 
 
 
-router.delete('/private/removeMap/:mapID&:folderID', async function (req, res) {
+router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async function (req, res) {
     if (req.params.mapID) {
         map.findOne({ _id: req.params.mapID }, function (err, result) {
             if (result) {
+                // owner permission: can delete map from DB
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
                     map.deleteOne({ _id: result._id }, function (err) {
                         if (err) {
                             // res.status(500).send(`Server error occured.`);
                             res.statusCode = 500;
-                        } else {
-                            // update parent
+                            res.end();
+                        }
+                        else{
+                            // update all parent
                             folder.updateMany({},{ $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
                                 if (err) {
                                     console.log(err);
@@ -184,11 +187,33 @@ router.delete('/private/removeMap/:mapID&:folderID', async function (req, res) {
                             });
                         }
                     });
-                } else {
-                    // res.status(403).send("The user's permissions are insufficient to delete map");
-                    res.statusCode = 403;
-                    res.end();
+                    // write/read permission on map: remove my ID from permission but not delete map
+                } else{
+                    map.updateOne({ _id: result._id }, { $pull: { ["Permission." + req.params.userPermission]: req.decoded._id } }, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                            // res.status(500).send("Server error occurred while pop from parent folder.");
+                            res.statusCode = 500;
+                            res.end();
+                        }
+                        else{
+                            //update only my parent
+                            folder.updateOne({ _id: req.params.folderID },{ $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+                                if (err) {
+                                    console.log(err);
+                                    // res.status(500).send("Server error occurred while pop from parent folder.");
+                                    res.statusCode = 500;
+                                    res.end();
+                                } else {
+                                    // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                    res.statusCode = 200;
+                                    res.end();
+                                }
+                            });
+                        }
+                    });
                 }
+            
             } else {
                 // res.status(404).send(`Could not find the requested map.`);
                 res.statusCode = 404;
@@ -232,6 +257,158 @@ router.put('/private/updateMap', async function (req, res) {
         res.status(400).send("No map ID attached to request.");
     }
 });
+
+
+router.post('/private/updateMapProperties', async function (req, res) {
+    if (req.body.mapID) {
+        // console.log(req.body.mapID)
+        map.findOne({ '_id': req.body.mapID }, function (err, result) {
+            if (result) {
+                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
+                    map.updateOne({ '_id': req.body.mapID }, { $set: { 'MapName': req.body.mapName, 'Description': req.body.Decription } }, function (err, mongoRes) {
+                        if (err) {
+                            res.status(500).send("Server error occurred.");
+                        } else {
+                            folder.updateMany({'MapsInFolder.mapID': req.body.mapID }, { $set: { "MapsInFolder.$.mapName": req.body.mapName } }, function (err, result) {
+                                // console.log(result)
+                                if (err) {
+                                    res.status(500).send(`Server error occured.`);
+                                } else {
+                                    res.status(200).send('Map updated successfully.');
+                                }
+                            });
+
+                        }
+                    });
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to update map");
+                }
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
+
+router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
+    if (req.params.mapID && req.params.userID && req.params.permission) {
+        map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + req.params.permission]: req.params.userID } }, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // delete from otherUser folders
+                folder.updateMany({'Creator': req.params.userID, 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                        // res.status(500).send("Server error occurred while pop from parent folder.");
+                        res.statusCode = 500;
+                        res.end();
+                    } else {
+                        // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                        res.statusCode = 200;
+                        res.end();
+                    }
+                });
+
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
+router.post('/private/updateUserPermission', async function (req, res) {
+    if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
+        map.findOneAndUpdate({ _id: req.body.mapID }, { $pull: { ["Permission." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Permission." + req.body.permission_To]: req.body.userID } }, function (err, result) {
+            if (err) {
+                console.log(err);
+                // res.status(500).send("Server error occurred while pop from parent folder.");
+                res.statusCode = 500;
+                res.end();
+            } else {
+                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                res.statusCode = 200;
+                res.end();
+            }
+        });
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
+router.post('/private/addNewPermission', async function (req, res) {
+    if (req.body.mapID && req.body.username && req.body.permission_To) {
+        // console.log("here")
+        user.findOne({'Username': req.body.username}, function (err, result) {
+            if (result) {
+                // user exist!
+                map.findOneAndUpdate({ _id: req.body.mapID }, {$addToSet: { ["Permission." + req.body.permission_To]: result._id.toString() } }, function (err, resultUpadte) {
+                    if (err) {
+                        console.log(err);
+                        // res.status(500).send("Server error occurred while pop from parent folder.");
+                        res.statusCode = 500;
+                        res.end();
+                    } else {
+                        // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify(result));
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find the requested User.");
+            }
+        })
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
+
+router.get('/private/getSharedMaps/:userID', async function (req, res) {
+    try {
+        map.find( { $or:[ {'Permission.Owner' : req.params.userID}, {'Permission.Write': req.params.userID}, {'Permission.Read': req.params.userID} ]} , async function (err, result) {
+             if (result) {
+                 var sharedUserMap = []
+                // {id: result._id, Owner: result.Permission.Owner, Write: result.Permission.Write, Read: result.Permission.Read}
+                result.forEach(map => {
+                    if(map.Permission.Owner.indexOf(req.params.userID) > -1){
+                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Owner"})
+                    } else if (map.Permission.Write.indexOf(req.params.userID) > -1){
+                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Write"})
+                    } else{
+                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Read"})
+                    }
+                });
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(sharedUserMap))
+             }else {
+                res.status(403).send("Theres not such user");
+            }
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).send('Server error occured.');
+    }
+});
+
+
+
+// comments
 
 router.put('/private/addLikeToComment', async function (req, res) {
     if (req.body.mapId) {
@@ -379,146 +556,6 @@ router.put('/private/deleteComment', async function (req, res) {
         res.status(400).send("No map ID attached to request.");
     }
 });
-
-
-router.post('/private/updateMapProperties', async function (req, res) {
-    if (req.body.mapID) {
-        // console.log(req.body.mapID)
-        map.findOne({ '_id': req.body.mapID }, function (err, result) {
-            if (result) {
-                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.updateOne({ '_id': req.body.mapID }, { $set: { 'MapName': req.body.mapName, 'Description': req.body.Decription } }, function (err, mongoRes) {
-                        if (err) {
-                            res.status(500).send("Server error occurred.");
-                        } else {
-                            folder.updateOne({ '_id': req.body.parentFolderID, 'MapsInFolder.mapID': req.body.mapID }, { $set: { "MapsInFolder.$.mapName": req.body.mapName } }, function (err, result) {
-                                // console.log(result)
-                                if (err) {
-                                    res.status(500).send(`Server error occured.`);
-                                } else {
-                                    res.status(200).send('Map updated successfully.');
-                                }
-                            });
-
-                        }
-                    });
-                } else {
-                    res.status(403).send("The user's permissions are insufficient to update map");
-                }
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-
-router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
-    if (req.params.mapID && req.params.userID && req.params.permission) {
-        map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + req.params.permission]: req.params.userID } }, function (err, result) {
-            if (err) {
-                console.log(err);
-                // res.status(500).send("Server error occurred while pop from parent folder.");
-                res.statusCode = 500;
-                res.end();
-            } else {
-                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                res.statusCode = 200;
-                res.end();
-            }
-        });
-    } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
-        res.end();
-    }
-
-});
-
-router.post('/private/updateUserPermission', async function (req, res) {
-    if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
-        map.findOneAndUpdate({ _id: req.body.mapID }, { $pull: { ["Permission." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Permission." + req.body.permission_To]: req.body.userID } }, function (err, result) {
-            if (err) {
-                console.log(err);
-                // res.status(500).send("Server error occurred while pop from parent folder.");
-                res.statusCode = 500;
-                res.end();
-            } else {
-                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                res.statusCode = 200;
-                res.end();
-            }
-        });
-    } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
-        res.end();
-    }
-
-});
-
-router.post('/private/addNewPermission', async function (req, res) {
-    if (req.body.mapID && req.body.username && req.body.permission_To) {
-        // console.log("here")
-        user.findOne({'Username': req.body.username}, function (err, result) {
-            if (result) {
-                // user exist!
-                map.findOneAndUpdate({ _id: req.body.mapID }, {$addToSet: { ["Permission." + req.body.permission_To]: result._id.toString() } }, function (err, resultUpadte) {
-                    if (err) {
-                        console.log(err);
-                        // res.status(500).send("Server error occurred while pop from parent folder.");
-                        res.statusCode = 500;
-                        res.end();
-                    } else {
-                        // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify(result));
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find the requested User.");
-            }
-        })
-    } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
-        res.end();
-    }
-
-});
-
-router.get('/private/getSharedMaps/:userID', async function (req, res) {
-    try {
-        map.find( { $or:[ {'Permission.Owner' : req.params.userID}, {'Permission.Write': req.params.userID}, {'Permission.Read': req.params.userID} ]} , async function (err, result) {
-             if (result) {
-                 var sharedUserMap = []
-                // {id: result._id, Owner: result.Permission.Owner, Write: result.Permission.Write, Read: result.Permission.Read}
-                result.forEach(map => {
-                    if(map.Permission.Owner.indexOf(req.params.userID) > -1){
-                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Owner"})
-                    } else if (map.Permission.Write.indexOf(req.params.userID) > -1){
-                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Write"})
-                    } else{
-                        sharedUserMap.push({mapID: map._id, MapName: map.MapName, permission: "Read"})
-                    }
-                });
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify(sharedUserMap))
-             }else {
-                res.status(403).send("Theres not such user");
-            }
-        })
-    } catch (e) {
-        console.log(e)
-        res.status(500).send('Server error occured.');
-    }
-});
-
-
-
 
 
 // router.get('/private/getAllUserMaps', async function(req, res) {

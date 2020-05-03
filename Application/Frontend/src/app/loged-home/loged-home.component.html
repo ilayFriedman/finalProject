@@ -8,10 +8,47 @@
       <input type="text" placeholder="Enter Name For Search..." [(ngModel)]="inputTextSearch" size="30">
       <input type="submit" value="Go!">
     </span>
+
+
+
+
+<!-- 
+    <span>Total folders: {{child.totalFolderCounter}} </span>
+    <br>
+    <span>Total maps: {{child.totalMapsCounter + child.sharedMapList_notAssociated.length}}</span>
+    <br>
+    <span>Associated maps : {{child.totalMapsCounter}}</span>
+    <br>
+    <span>Shared - Not Associated : {{child.sharedMapList_notAssociated.length}}</span>
+ -->
+
+
+
+
+
+    <div>
+      <table style="width:100%; text-align: center;">
+        <tr>
+          <td>Total Folders:</td>
+          <td>Total Maps:</td>
+          <td>Total Groups:</td>
+          <td>Associated Maps:</td>
+          <td>Not Associated Maps:</td>
+        </tr>
+        <tr>
+          <td>{{child.totalFolderCounter}}</td>
+          <td>{{child.totalMapsCounter + child.sharedMapList_notAssociated.length}}</td>
+          <td>0</td>
+          <td>{{child.totalMapsCounter}}</td>
+          <td>{{child.sharedMapList_notAssociated.length}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
+
   <div class="containerMaps_Groups">
     <div @fade class="mapsFoldersView">
-      <app-mapsfolders-viewer></app-mapsfolders-viewer>
+      <app-mapsfolders-viewer  #child></app-mapsfolders-viewer>
     </div>
     <div @fade class = "groups">
         <!-- <app-groups></app-groups> -->

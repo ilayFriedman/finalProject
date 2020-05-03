@@ -33,15 +33,14 @@ export class MapsHandlerService {
   }
 
   deleteMap(mapFileToDelete) {
-    return this.http.delete(this.localUrl + '/private/removeMap/' + mapFileToDelete.mapID + "&" + mapFileToDelete.parentNode.folderID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+    return this.http.delete(this.localUrl + '/private/removeMap/' + mapFileToDelete.mapID +"&"+ mapFileToDelete.permission + "&" + mapFileToDelete.parentNode.folderID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  updateMapDecription(mapID, newName, newDescription, parentFolderID) {
+  updateMapDecription(mapID, newName, newDescription) {
     const bodyReq = {
       mapID: mapID,
       mapName: newName,
       Decription: newDescription,
-      parentFolderID: parentFolderID
     }
     return this.http.post(this.localUrl + '/private/updateMapProperties', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }

@@ -136,11 +136,7 @@ export class MapsfoldersViewerComponent implements OnInit {
   public fillTreeView(folderLists, rootNode) {
     if (folderLists.MapsInFolder.length != 0) {
       folderLists.MapsInFolder.forEach(map => {
-        console.log("newMap:")
-        console.log(map)
         var specificMapFromShared = JSON.parse(JSON.stringify(this.sharedMapList_notAssociated.filter(elem => elem.mapID == map.mapID)[0])) 
-        console.log("found:")
-        console.log(specificMapFromShared)
         rootNode.items.push({ text: map.mapName, mapID: map.mapID, parentNode: rootNode, Description: "", usersPermissionsMap: "",permission: specificMapFromShared.permission ,isFolder: false })
         this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != specificMapFromShared.mapID);
         this.sharedMapList_Associated.push(specificMapFromShared)
@@ -312,7 +308,7 @@ export class MapsfoldersViewerComponent implements OnInit {
     }
     else {
       console.log(this.selectedNode.mapID, newName, Description);
-      this.mapHandler.updateMapDecription(this.selectedNode.mapID, newName, Description, this.selectedNode.parentNode.folderID).then(res => {
+      this.mapHandler.updateMapDecription(this.selectedNode.mapID, newName, Description).then(res => {
         // console.log('======update properties map request OK=====');
         this.selectedNode.Description = Description
         this.selectedNode.text = newName
@@ -398,6 +394,7 @@ export class MapsfoldersViewerComponent implements OnInit {
   }
 
   private deleteSingleMap(fileToDelete: any) {
+    console.log(fileToDelete)
     this.mapHandler.deleteMap(fileToDelete).then(res => {
       fileToDelete.parentNode.items = fileToDelete.parentNode.items.filter(item => item !== fileToDelete);
       this.data = this.data.slice();
@@ -543,7 +540,10 @@ newUserPermissionChoose: any
       this.selectedNode.usersPermissionsMap = usersPermissionsMap
       console.log(this.selectedNode.usersPermissionsMap)
       for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
-        this.currPermissionMapDATA.push(value);
+        if(key != sessionStorage.userId)  // not showe myself
+        {
+          this.currPermissionMapDATA.push(value);
+        }
       }
       // snapShot of permissions
       this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({username: val.username, name: val.name, permission: val.permission}));
@@ -556,7 +556,10 @@ newUserPermissionChoose: any
     else {
       console.log("using with the exist!")
       for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
-        this.currPermissionMapDATA.push(value);
+        if(key != sessionStorage.userId)  // not showe myself
+        {
+          this.currPermissionMapDATA.push(value);
+        }
       }
       console.log(this.currPermissionMapDATA);
       // snapShot of permissions
@@ -786,10 +789,13 @@ AssociatedMap(sharedMap){
   this.folderHandler.addExistMapToFolder(folderToSelected.folderID,sharedMap.mapID,sharedMap.MapName).then(res => {
     this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != sharedMap.mapID);
     this.sharedMapList_Associated.push(sharedMap)
+    this.folderToSelected == ''
 
+    // add to tree
     var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected .folderID)
     parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
     // console.log(parentFolder)
+    this.totalMapsCounter++;
 
   }).catch
     (err => {
