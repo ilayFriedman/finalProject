@@ -46,6 +46,25 @@
             </div>
         </mat-toolbar-row>
     </mat-toolbar>
+    <div *ngIf='!isSaved'>There are changes that hasen't saved</div>
+</div>
+
+<!-- diagram, sidde bar, overviwe and converter -->
+<div id="block_container">
+    <div id="sideBar">
+        <div class="titleArea">Map Shapes</div>
+        <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
+    </div>
+    <div id="myDiagram"></div>
+    <div id="rightSideUnknownForFutureUse">
+        <div class="handle">Overview</div>
+        <div id="myOverview"></div>
+
+    </div>
+</div>
+<div id="textConverter">
+    <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
+
 </div>
 
 <!-- save map as modal -->
@@ -69,26 +88,8 @@
 
 <!-- references modal -->
 <jw-modal class="jw-modal" id="nodeMenuModal">
-    <div ngDraggable class="jw-modal-body" (change)="saveChanges()">
+    <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal></app-node-menu-modal>
+        <app-node-menu-modal (change)="saveChanges()"></app-node-menu-modal>
     </div>
 </jw-modal>
-
-<!-- diagram, sidde bar, overviwe and converter -->
-<div id="block_container">
-    <div id="sideBar">
-        <div class="titleArea">Map Shapes</div>
-        <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
-    </div>
-    <div id="myDiagram"></div>
-    <div id="rightSideUnknownForFutureUse">
-        <div class="handle">Overview</div>
-        <div id="myOverview"></div>
-
-    </div>
-</div>
-<div id="textConverter">
-    <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
-
-</div>

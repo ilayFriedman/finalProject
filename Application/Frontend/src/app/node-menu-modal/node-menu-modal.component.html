@@ -177,10 +177,12 @@
                 <span style="float: right; margin: 5px;">
                     <div class="refBtn"><button mat-raised-button (click)="showAllRefs()">{{btnShowAllRefs}}</button>
                     </div>
-                    <div class="refBtn"><button mat-raised-button [disabled]="this.allRefSelection.selected.length == 0"
-                            (click)="addRefToNode()">Add Reference</button></div>
                     <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.nodeRefSelection.selected.length == 0" (click)="removeRefToNode()">Remove
+                            [disabled]="this.allRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                            (click)=" addRefToNode()">Add Reference</button></div>
+                    <div class="refBtn"><button mat-raised-button
+                            [disabled]="this.nodeRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                            (click)="removeRefToNode()">Remove
                             Reference</button>
                     </div>
                     <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
@@ -321,11 +323,11 @@
                     <div class="refBtn"><button mat-raised-button (click)="showAllCtxs()">{{btnShowAllCtxs}}</button>
                     </div>
                     <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.allCtxsSelection.selected.length == 0" (click)="addCtxsToNode()">Add
-                            Contexts</button></div>
+                            [disabled]="this.allCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                            (click)="addCtxsToNode()">Add Contexts</button></div>
                     <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.nodeCtxsSelection.selected.length == 0" (click)="removeCtxsToNode()">Remove
-                            Contexts</button>
+                            [disabled]="this.nodeCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                            (click)="removeCtxsToNode()">Remove Contexts</button>
                     </div>
                     <div class="refBtn"><button mat-raised-button (click)="openNewCtxModal('newCtxModal')">Create New
                             Contexts</button></div>
