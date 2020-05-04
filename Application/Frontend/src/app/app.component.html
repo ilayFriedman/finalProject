@@ -18,7 +18,7 @@
         <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
         <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"> Change user info
           </a></span>
-        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/groups'"> Groups </a></span>
+        <!-- <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/groups'"> Groups </a></span> -->
         <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/login'"> Log out
           </a></span>
         <!--      <span class="mainMenu"><a mat-button [routerLink]="'/mapViewer'"> oren </a></span>-->

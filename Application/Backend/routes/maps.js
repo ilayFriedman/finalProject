@@ -557,29 +557,4 @@ router.put('/private/deleteComment', async function (req, res) {
     }
 });
 
-
-// router.get('/private/getAllUserMaps', async function(req, res) {
-//     try {
-//         user.findOne({
-//             '_id': req.decoded._id
-//         }, function(err, result) {
-//             if (result) {
-//                 map.find({
-//                     'CreatorId': result._id
-//                 }, function(err, result) {
-//                     if (result) {
-//                         result = result.filter(mapElem => UserHasReadPermissionForMap(mapElem, req.decoded._id))
-//                         res.status(200).send(result);
-//                     } else {
-//                         res.status(400).send(`problem: ${err}`);
-//                     }
-//                 });
-//             } else {
-//                 res.status(400).send("No such user")
-//             }
-//         });
-//     } catch (e) {
-//         res.status(400).send(`problem: ${e}`);
-//     }
-// });
 module.exports = router;

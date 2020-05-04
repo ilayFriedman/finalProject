@@ -31,7 +31,7 @@ export class GroupsComponent implements OnInit {
   groupsUserOwns;
   groupsUserMember;
 
-  allUsersList;
+  allUsersList: any;
   groupsPermissionList;
   groupsNoPermissionList;
 
@@ -51,6 +51,7 @@ export class GroupsComponent implements OnInit {
   
   @ViewChild(MatTable,  {static: true}) 
   noPermissionTable: MatTable<any>;
+  totalGroupsNumber =  0;
 
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
               private usersService: UsersService, private modalService: ModalService, 
@@ -72,7 +73,8 @@ export class GroupsComponent implements OnInit {
 
     this.usersService.getUsers()
     .then(response =>{
-      this.allUsersList = response;
+      console.log(response)
+      this.allUsersList = JSON.parse(response);
       
       // Remove the user currently logged in from the list
       this.allUsersList = this.allUsersList.filter(obj => obj._id !== sessionStorage.userId);      
@@ -100,6 +102,7 @@ export class GroupsComponent implements OnInit {
           GroupDescription: element.GroupDescription,
           items: [],
         })
+        this.totalGroupsNumber++
       }
     }, error => {
       console.log(error.error);
@@ -127,6 +130,7 @@ export class GroupsComponent implements OnInit {
       if (index > -1) {
         this.data.splice(index, 1);
       }
+      this.totalGroupsNumber--;
     }
   }
 
@@ -149,6 +153,7 @@ export class GroupsComponent implements OnInit {
 
       this.addGroupToArray(res, this.data);
       this.closeModal_addGroup();
+      this.totalGroupsNumber++;
 
     });
   }
@@ -298,10 +303,10 @@ export class GroupsComponent implements OnInit {
     this.noPermissionTable.renderRows();
   }
 
-  private iconClass({ text, items }: any): any {
-    return {
-      'k-i-folder': items !== undefined,
-      'k-icon': true
-    };
-  }
+  // private iconClass({ text, items }: any): any {
+  //   return {
+  //     'k-i-folder': items !== undefined,
+  //     'k-icon': true
+  //   };
+  // }
 }

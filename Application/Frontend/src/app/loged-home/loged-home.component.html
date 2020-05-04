@@ -1,30 +1,11 @@
 <div class="homePage">
   <div class="welcome">
-    <!-- <span><h2 xmlns="http://www.w3.org/1999/html">{{fullName}}'s Management Page</h2></span>
-        <span><h3><b>Serach text:</b> </h3><input type="text" placeholder="Enter text"></span> -->
     <span style="font-size: 30px; width: 50%; display: inline-block; vertical-align:top;"><b>{{fullName}}'s Management
         Page</b><br><br></span>
     <span style="width: 50%; display: inline-block;text-align: right; vertical-align:top; padding-top: 15px;">
       <input type="text" placeholder="Enter Name For Search..." [(ngModel)]="inputTextSearch" size="30">
       <input type="submit" value="Go!">
     </span>
-
-
-
-
-<!-- 
-    <span>Total folders: {{child.totalFolderCounter}} </span>
-    <br>
-    <span>Total maps: {{child.totalMapsCounter + child.sharedMapList_notAssociated.length}}</span>
-    <br>
-    <span>Associated maps : {{child.totalMapsCounter}}</span>
-    <br>
-    <span>Shared - Not Associated : {{child.sharedMapList_notAssociated.length}}</span>
- -->
-
-
-
-
 
     <div>
       <table style="width:100%; text-align: center;">
@@ -36,11 +17,11 @@
           <td>Not Associated Maps:</td>
         </tr>
         <tr>
-          <td>{{child.totalFolderCounter}}</td>
-          <td>{{child.totalMapsCounter + child.sharedMapList_notAssociated.length}}</td>
-          <td>0</td>
-          <td>{{child.totalMapsCounter}}</td>
-          <td>{{child.sharedMapList_notAssociated.length}}</td>
+          <td>{{folders_child.totalFolderCounter}}</td>
+          <td>{{folders_child.totalMapsCounter + folders_child.sharedMapList_notAssociated.length}}</td>
+          <td>{{groups_child.totalGroupsNumber}}</td>
+          <td>{{folders_child.totalMapsCounter}}</td>
+          <td>{{folders_child.sharedMapList_notAssociated.length}}</td>
         </tr>
       </table>
     </div>
@@ -48,11 +29,10 @@
 
   <div class="containerMaps_Groups">
     <div @fade class="mapsFoldersView">
-      <app-mapsfolders-viewer  #child></app-mapsfolders-viewer>
+      <app-mapsfolders-viewer  #folders_child></app-mapsfolders-viewer>
     </div>
     <div @fade class = "groups">
-        <!-- <app-groups></app-groups> -->
-        
+        <app-groups #groups_child></app-groups>
     </div>
   </div>
 </div>

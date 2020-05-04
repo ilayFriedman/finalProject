@@ -1,27 +1,42 @@
-<mat-tab-group>
-    <mat-tab label="Group Owner">
-        <!-- <div style="padding: 20px;">
-        </div> -->
-        <span>
-            Add a new group
-            <span class="material-icons" (click)="modalService.open('addGroupModal');" title="Create a new group" style="cursor: pointer;"> add </span>
-        </span>
-        <div>
-            <kendo-treeview [nodes]="data" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items">
-                <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                    <span [ngClass]="iconClass(dataItem)"></span>
-                    <h4>{{dataItem.text}}</h4>
-                    <h5 style="margin-left: 10px;">{{dataItem.GroupDescription}}</h5>
-                    <span class="material-icons" title="Edit group '{{dataItem.text}}'" (click)="this.openEditGroupModal(dataItem);" style="margin-left: 30px; cursor: pointer;" > edit </span>
-                    <span class="material-icons" title="Permanently delete group '{{dataItem.text}}'" (click)="deleteGroup(dataItem)" style="margin-left: 10px; cursor: pointer;" > backspace </span>
-                </ng-template>
-    
-            </kendo-treeview>
+<div>
+    <div>
+        <mat-tab-group>
+        <mat-tab label="My Groups:">
+        </mat-tab>
+        </mat-tab-group>
+        
+    </div>
+        <div style="padding-left: 25px; margin: auto; text-align: center;">
+            <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
+                <tr>
+                    <td><span class="k-icon k-i-pencil"></span> Edit Group</td>
+                    <td><span class="k-icon k-i-delete"></span> Delete file</td>
+                    <td (click)="modalService.open('addGroupModal');"><span class="k-icon k-i-plus" style="cursor: pointer;"></span> Add new group</td>
+                </tr>
+            </table>
         </div>
-    </mat-tab>
-</mat-tab-group> 
+        <!-- <div style="width: 100%; ;padding-top: 5%; text-align: left;">
+            <button  (click)="modalService.open('addGroupModal');">
+                <span class="k-icon k-i-plus" title="Create a new group" style="cursor: pointer;"></span> Add new group</button>
+        </div> -->
+        <div>
+            <kendo-treeview [nodes]="data" textField="text" childrenField="items" [animate]="true">
+                <ng-template kendoTreeViewNodeTemplate let-dataItem>
+                    <span class="k-icon k-i-myspace"></span><!-- ICON-->
+                    <span style="margin-right: 10px;">{{dataItem.text}}</span><!-- text-->
+                    <span style="margin-right: 10px; font-size: 10px;"><i>{{dataItem.GroupDescription}}</i></span><!-- description-->
+                    <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil" title="Edit group '{{dataItem.text}}'" (click)="this.openEditGroupModal(dataItem);"></span><!-- edit-->
+                    <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-delete" title="Permanently delete group '{{dataItem.text}}'" (click)="deleteGroup(dataItem);" ></span><!-- delete-->
+                </ng-template>
+            </kendo-treeview>
 
-<!-- add group modal -->
+            <div *ngIf="totalGroupsNumber == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>You Don't Have Any Group.</i></span>
+                <br><span style="font-size: 13px; text-align: center;">Click on add button to create one</span></div>
+                
+                
+        </div>
+
+<!-- add group modal-->
 <jw-modal class="jw-modal" id="addGroupModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
         <span class="close" (click)="closeModal_addGroup()">&times;</span>
@@ -140,5 +155,6 @@
          
     </div>
 </jw-modal>
+</div>
 
 
