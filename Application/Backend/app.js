@@ -65,6 +65,7 @@ app.post('/register', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
 app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
+app.post('/private/sendMailToUser', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);

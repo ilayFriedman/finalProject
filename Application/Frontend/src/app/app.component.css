@@ -1,12 +1,14 @@
 body{
-  background-color: #E9EAED;
-}
-.mat-toolbar.mat-primary {
-  /* background: #014464; */
-  background-image: -webkit-linear-gradient(135deg, #d2e1e7, #0272a7)
-/* background-image: -webkit-radial-gradient(10% 30%, rgb(181, 182, 185), #0272a7) */
-
-  
+  background-color: rgb(248, 248, 248);
+  font-family: 'Calibri', ssans-seif;
+ }
+.toolbar {
+  background-image: -webkit-linear-gradient(135deg, #2CB5E8, rgb(29, 103, 172));
+  height: 10%;
+  min-height: 30px;
+  box-shadow: 0px 0px 53px -12px rgba(0,0,0,0.75);
+  padding: 0.4%;
+  color: white
 }
 .toolbarAddition{
   text-shadow: 1px 1px black;

@@ -11,6 +11,7 @@ import { map } from '@progress/kendo-data-query/dist/npm/transducers';
 import { UsersService } from '../services/users/users.service';
 import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { State, process } from '@progress/kendo-data-query';
+import { windowWhen } from 'rxjs/operators';
 // import { read } from 'fs';
 
 
@@ -588,6 +589,7 @@ newUserPermissionChoose: any
   }
 
   public addNewUserToPermission(event){
+    // console.log(this.selectedNode)
     this.mapHandler.addNewPermission(this.selectedNode.mapID,  this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
       var jsonRes = JSON.parse(res)
         // ---- seach for username in DB ---  then --//
@@ -601,14 +603,26 @@ newUserPermissionChoose: any
         this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
       });
 
-      console.log(res)
+      // console.log(res)
       // update usersPermissionsMap
       this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
+      
+      // send email about new permission:
+      var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
+      "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+      this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text).then(res =>  {
+
+      }).catch(err => {
+          console.log("error with sending mail!")
+        // console.log(err);
+      });
+      
       this.newUserPermissionChoose = null
     }
     console.log(event)
     this.cancelHandler(event)
 
+    
     // HANDLE WITH NO FIND USER!!!! //
       }).catch(err => {
         if(err.status == 404)

@@ -17,6 +17,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    getPermissionUpdate: {
+        type: Boolean,
+        required: true
+    }
 });
 
 module.exports = mongoose.model('Users', UserSchema, 'Users');
