@@ -608,14 +608,16 @@ newUserPermissionChoose: any
       this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
       
       // send email about new permission:
-      var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
-      "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
-      this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text).then(res =>  {
-
-      }).catch(err => {
-          console.log("error with sending mail!")
-        // console.log(err);
-      });
+      if(jsonRes.getPermissionUpdate){
+        var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
+        "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+        this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text).then(res =>  {
+  
+        }).catch(err => {
+            console.log("error with sending mail!")
+          // console.log(err);
+        });
+      }
       
       this.newUserPermissionChoose = null
     }
@@ -658,12 +660,21 @@ newUserPermissionChoose: any
     });
 
     // ----- update all radiobuttons -------
-    this.updatePermissionUsers.forEach(element => {
-      promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, element.userID, element.old, element.new))
+    this.updatePermissionUsers.forEach(user => {
+      promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
+      
+      // // send email about new permission:
+      // if(jsonRes.getPermissionUpdate){
+      //   var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
+      //   "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+      //   this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text)
+      // }
+
+
       // update mapPermission on selectedMap
       for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
-        if (key == element.userID) {
-          value.permission = element.new;
+        if (key == user.userID) {
+          value.permission = user.new;
         }
       }
     });

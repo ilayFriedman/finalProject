@@ -13,9 +13,9 @@
       <span>
          <a mat-button [routerLink]="'/home'" style="font-size: 20px; vertical-align: middle">ME-Mapper</a></span>
       <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/logedHome'"> Home </a></span>
-      <span style="position: absolute;right:0;top:0; padding: 0.4%;"> <!--right side buttons-->
-        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'">Log In </a></span>
-        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"> Register </a></span>
+      <span @fade style="position: absolute;right:0;top:0; padding: 0.4%;"> <!--right side buttons-->
+        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"><span class="k-icon k-i-user"></span> Register </a></span>
+        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'"><span class="k-icon k-i-login"></span> Log In </a></span>
         <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span> Change user info</a></span>
         <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/login'"><span class="k-icon k-i-logout"></span>  Log out</a></span>
       </span>
