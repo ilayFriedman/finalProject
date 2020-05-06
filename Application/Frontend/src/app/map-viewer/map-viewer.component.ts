@@ -35,7 +35,7 @@ export class MapViewerComponent implements OnInit {
   initialModel: boolean = true;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
-    private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
+    public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.currMap = this.mapHandler.currMap_mapViewer

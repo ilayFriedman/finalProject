@@ -70,7 +70,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, public router: Router, private modalService: ModalService) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, public router: Router, public modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({ folderName: ['', Validators.required], description: ['', Validators.required] });
     this.addMapCheckOut = this.formBuilder.group({ mapName: ['', Validators.required], description: ['', Validators.required] });
     this.editPropertiesCheckOut = this.formBuilder.group({ fileName: [''], description: [''] });
@@ -717,7 +717,7 @@ newUserPermissionChoose: any
     this.updatePermissionUsers = []
   }
 
-  protected openPermissionsModal() {
+  public openPermissionsModal() {
     this.deleteUsersChange = false
     this.deleteUserList = []
     this.modalService.open('usersPermissionsModal')
@@ -729,7 +729,7 @@ newUserPermissionChoose: any
 
 
   }
-  protected closePermissionModal(modalId) {
+  public closePermissionModal(modalId) {
     this.deleteUsersChange = false
     this.deleteUserList = []
     this.modalService.close(modalId);

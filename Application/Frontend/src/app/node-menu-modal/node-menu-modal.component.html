@@ -352,7 +352,7 @@
                 <span class="small-menu-option">Border Thickness:</span>
                 <mat-form-field class="node-style-select" style="width: 10%;">
                     <mat-label>1px</mat-label>
-                    <mat-select (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
+                    <mat-select (selectionChange)="setNodeStyles()" [(value)]="borderThickness">
                         <mat-option value="1">1px</mat-option>
                         <mat-option value="2">2px</mat-option>
                         <mat-option value="3">3px</mat-option>
@@ -539,24 +539,6 @@
                 </mat-form-field>
                 <br>
                 <button type="submit" mat-raised-button>Add</button>
-            </form>
-        </div>
-    </div>
-</jw-modal>
-
-<!-- edit comment modal -->
-<jw-modal class="jw-modal" id="editCommentModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeEditCommentModal('editCommentModal')">&times;</span>
-        <div class="new-ref-modal-form">
-            <form [formGroup]="editCommentForm" (ngSubmit)="editComment()">
-                <h1>Edit Your Comment</h1>
-                <mat-form-field appearance="fill">
-                    <mat-label>Your Comment</mat-label>
-                    <input matInput formControlName="content">
-                </mat-form-field>
-                <br>
-                <button type="submit" mat-raised-button>Save</button>
             </form>
         </div>
     </div>

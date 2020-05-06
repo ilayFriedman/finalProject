@@ -115,7 +115,7 @@ export class NodeMenuModalComponent implements OnInit {
   @ViewChild("commentsPaginator", { static: true }) commentsPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) commentsSort: MatSort;
 
-  constructor(private mapHandler: MapsHandlerService, private modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
+  constructor(public mapHandler: MapsHandlerService, public modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
 
   }
   ngOnInit() {

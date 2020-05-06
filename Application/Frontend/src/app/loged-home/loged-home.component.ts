@@ -23,6 +23,8 @@ export class LogedHomeComponent implements OnInit {
   localUrl = 'http://localhost:3000';
   myMaps: any;
   name: any;
+  public inputTextSearch;
+  
   constructor(private formBuilder: FormBuilder) {
     
     this.fullName = sessionStorage.userFullName;
