@@ -17,58 +17,52 @@
             {{getUserPermission()}}
         </span>
     </div>
-    <!-- <div id="mapMenu"> -->
-    <mat-toolbar style="background-color: inherit; margin: auto;">
+    <!-- <div id="mapMenu" style="float: left;"> -->
+    <mat-toolbar style="background-color: inherit; ">
         <mat-toolbar-row>
-            <!-- <span class="menu-spacer"></span> -->
+            <div style="margin: auto; text-align: center; width: 100%; ">
+                <button class="mapsMenu" matTooltip="Save As" mat-raised-button (click)="openModal('save-as-modal')"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2">
+                    <!-- <span class="k-icon  k-i-save" style="width: min-content; font-size: 20px;"></span> -->
+                    Save As
+                </button>
+                <button class="mapsMenu" matTooltip="Save Changes" mat-raised-button (click)="save()"
+                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Save </button>
+                <button class="mapsMenu" matTooltip="Print" mat-raised-button (click)="printOption()"> Print
+                </button>
+                <button class="mapsMenu" matTooltip="New Map" mat-raised-button (click)="newMap()"> Clear Map
+                </button>
+                <button class="mapsMenu" matTooltip="Cut (Ctrl + x)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
+                <button class="mapsMenu" matTooltip="Copy (Ctrl + c)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
+                <button class="mapsMenu" matTooltip="Paste (Ctrl + v)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
+                <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
+                <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
+                <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
+                <button class="mapsMenu" matTooltip="Zoom Out (Ctrl + -)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
+                <button class="mapsMenu" matTooltip="Reset Zoom (Ctrl + 0)" mat-raised-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset Zoom </button>
+                <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
+
+                <mat-menu #moreOptions="matMenu">
+                    <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
+                    <button mat-button (click)="openModal('import-modal')"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2">Import</button><br>
+                </mat-menu>
+
+                <mat-menu #Export="matMenu">
+                    <button mat-button (click)="saveAsImg('image/png', '.png')">PNG Image</button><br>
+                    <button mat-button (click)="saveAsImg('image/jpeg', '.jpg')">JPEG Image</button><br>
+                    <button mat-button (click)="saveAsJSON('', '.json')">JSON File</button>
+                </mat-menu>
+            </div>
             <br>
-            <div style="margin: auto; float: left;">
-                <span class="menu-spacer"></span>
-                <div style="margin: auto; text-align: center;position: relative;">
-                    <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2" style="width: 30px;">
-                        <span class="k-icon  k-i-save" style="width: min-content; font-size: 20px;"></span>
-                    </button>
-                    <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Save </button>
-                    <button class="mapsMenu" title="Print" mat-raised-button (click)="printOption()"> Print </button>
-                    <button class="mapsMenu" title="New Map" mat-raised-button (click)="newMap()"> Clear Map </button>
-                    <button class="mapsMenu" title="Cut (Ctrl + x)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Cut </button>
-                    <button class="mapsMenu" title="Copy (Ctrl + c)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Copy </button>
-                    <button class="mapsMenu" title="Paste (Ctrl + v)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Paste </button>
-                    <button class="mapsMenu" title="Undo (Ctrl + z)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.undo()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Undo </button>
-                    <button class="mapsMenu" title="Redo (Ctrl + y)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.redo()" [disabled]="
-                    mapHandler.getUserPermission() &lt; 2"> Redo </button>
-                    <button class="mapsMenu" title="Zoom In (Ctrl + +)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
-                    <button class="mapsMenu" title="Zoom Out (Ctrl + -)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
-                    <button class="mapsMenu" title="Reset Zoom (Ctrl + 0)" mat-raised-button
-                        (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset Zoom </button>
-                    <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
-
-                    <mat-menu #moreOptions="matMenu">
-                        <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
-                        <button mat-button (click)="openModal('import-modal')"
-                            [disabled]="mapHandler.getUserPermission() &lt; 2">Import</button><br>
-                    </mat-menu>
-
-                    <mat-menu #Export="matMenu">
-                        <button mat-button (click)="saveAsImg('image/png', '.png')">PNG Image</button><br>
-                        <button mat-button (click)="saveAsImg('image/jpeg', '.jpg')">JPEG Image</button><br>
-                        <button mat-button (click)="saveAsJSON('', '.json')">JSON File</button>
-                    </mat-menu>
-                </div>
-                <br>
         </mat-toolbar-row>
     </mat-toolbar>
     <div *ngIf='!isSaved'>There are changes that hasen't saved</div>

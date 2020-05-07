@@ -8,11 +8,11 @@ import { trigger, transition, style, animate } from '@angular/animations';
   styleUrls: ['./app.component.css'],
   encapsulation: ViewEncapsulation.None,
   animations: [
-    trigger('fade', [ 
+    trigger('fade', [
       transition('void => *', [
-        style({ opacity: 0 }), 
-        animate(500, style({opacity: 1}))
-      ]) 
+        style({ opacity: 0 }),
+        animate(500, style({ opacity: 1 }))
+      ])
     ])
   ]
 })

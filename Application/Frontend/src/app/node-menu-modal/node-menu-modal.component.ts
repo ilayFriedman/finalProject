@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import { ModalService } from '../services/modal.service';
-import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort, MatListOption } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
@@ -114,6 +114,14 @@ export class NodeMenuModalComponent implements OnInit {
   editCommentButton: boolean = false;
   @ViewChild("commentsPaginator", { static: true }) commentsPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) commentsSort: MatSort;
+
+  // #### Conncetions ####
+  nodeToSearch: string = "";
+  containingMapsList: any[] = [];
+  connectedMapsList: any[] = [];
+  mapsSelectedOptions: any;
+  connectedMapsSelected: any;
+  // selectedMapsOptions: SelectionModel<MatListOption>
 
   constructor(public mapHandler: MapsHandlerService, public modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
 
@@ -505,15 +513,6 @@ export class NodeMenuModalComponent implements OnInit {
 
   }
 
-  // update(element, comment: string) {
-  //   if (comment == null) { return; }
-  //   // copy and mutate
-  //   const copy = this.nodeCommentsSource.data.slice()
-  //   element.Content = comment;
-  //   this.unloadNodeComments()
-  //   this.loadNodeComments();
-  //   // this.nodeCommentsSource.next(copy);
-  // }
 
   editComment(element) {
     console.log(element);
@@ -554,10 +553,6 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
 
-  // openNewCommentModal(id: string) {
-  //   // this.loadNodeComments()
-  //   this.modalService.open(id);
-  // }
 
   closeNewCommentModal(id: string) {
     // this.unloadNodeComments();
@@ -594,6 +589,40 @@ export class NodeMenuModalComponent implements OnInit {
 
       }
     });
+  }
+
+  // ######## CONNECTIONS  #########
+
+  searchNodes() {
+    this.containingMapsList = []
+    this.mapHandler.searchNodes(this.nodeToSearch).then(res => {
+      let mapResults: any = res;
+      if (mapResults) {
+        mapResults.forEach(map => {
+          this.containingMapsList.push(map)
+        })
+      }
+    }).catch
+      (err => {
+        console.log("error new comment");
+        console.log(err)
+      });
+
+  }
+
+  addConnectionToNoda() {
+    console.log(this.mapsSelectedOptions);
+    this.mapsSelectedOptions.forEach(element => {
+      this.connectedMapsList.push(element)
+    });
+  }
+
+  moveToConnectedMap(map) {
+    console.log(map);
+
+    // let currModel = JSON.parse(self.fileToImport)
+    // this.newMap()
+    // this.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
   }
 
 

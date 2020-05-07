@@ -97,7 +97,9 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getSharedMaps/' + userID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-
+  searchNodes(nodeName) {
+    return this.http.get(this.localUrl + '/private/searchNodes/' + nodeName, { headers: { 'token': sessionStorage.token } }).toPromise()
+  }
 
 
 
