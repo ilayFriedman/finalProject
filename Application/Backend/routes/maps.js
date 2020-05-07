@@ -421,13 +421,23 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
                 var containingMaps = []
                 result.forEach(map => {
                     if (UserHasReadPermissionForMap(map, req.decoded._id)) {
+                        let nodeId;
+                        for (let index = 0; index < map.Model.nodeDataArray.length; index++) {
+                            const element = map.Model.nodeDataArray[index];
+                            if (element.text == req.params.nodeName) {
+                                nodeId = element.id
+                            }
+                        }
                         let currInfo = {
                             mapID: map._id,
-                            MapName: map.MapName
+                            MapName: map.MapName,
+                            nodeId: nodeId
                         }
                         containingMaps.push(currInfo)
                     }
+
                 });
+                console.log(containingMaps)
                 res.status(200).send(containingMaps)
             } else {
                 res.status(403).send("This node doesn't exist in DB");
