@@ -3,12 +3,21 @@ import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { HttpClient } from "@angular/common/http";
 import { Router } from '@angular/router';
 import { MapsHandlerService } from '../services/maps-handler.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations: [
+    trigger('fade', [ 
+      transition('void => *', [
+        style({ opacity: 0 }), 
+        animate(500, style({opacity: 1}))
+      ]) 
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
   localUrl = 'http://localhost:3000';

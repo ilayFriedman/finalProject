@@ -3,6 +3,7 @@ const router = express.Router();
 const user = require('../models/user')
 const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
+var nodemailer = require('nodemailer');
 
 router.post('/login', async function (req, res) {
         try {
@@ -45,7 +46,8 @@ router.post('/register', async function (req, res) {
                             Username: req.body.email,
                             FirstName: req.body.FirstName,
                             LastName: req.body.LastName,
-                            Password: req.body.pwd
+                            getPermissionUpdate: req.body.getPermissionUpdate,
+                            Password: req.body.pwd,
                         });
                         newUser.save(function (err,saveRes) {
                             if (err) {
@@ -144,5 +146,38 @@ router.get('/private/getUsersDetailsByIds/:ids', async function (req, res) {
 });
 
 
+router.post('/private/sendMailToUser', async function (req, res) {
 
+    try {
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'me.maps.system',
+              pass: 'memaps123'
+            }
+          });
+          
+          var mailOptions = {
+            from: 'me.maps.system@gmail.com',
+            to: req.body.reciever_mail,
+            subject: req.body.subject,
+            html: req.body.text
+          };
+        //   console.log(mailOptions)
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+              res.status(500).send(`Server error occured while send email`)
+              
+            } else {
+              res.status(200).send('Email sent: ' + info.response)
+            }
+          });
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
+});
+
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;

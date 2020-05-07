@@ -11,6 +11,7 @@ import { map } from '@progress/kendo-data-query/dist/npm/transducers';
 import { UsersService } from '../services/users/users.service';
 import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { State, process } from '@progress/kendo-data-query';
+import { windowWhen } from 'rxjs/operators';
 // import { read } from 'fs';
 
 
@@ -69,7 +70,7 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, public router: Router, private modalService: ModalService) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, public router: Router, public modalService: ModalService) {
     this.addFolderCheckOut = this.formBuilder.group({ folderName: ['', Validators.required], description: ['', Validators.required] });
     this.addMapCheckOut = this.formBuilder.group({ mapName: ['', Validators.required], description: ['', Validators.required] });
     this.editPropertiesCheckOut = this.formBuilder.group({ fileName: [''], description: [''] });
@@ -588,6 +589,7 @@ newUserPermissionChoose: any
   }
 
   public addNewUserToPermission(event){
+    // console.log(this.selectedNode)
     this.mapHandler.addNewPermission(this.selectedNode.mapID,  this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
       var jsonRes = JSON.parse(res)
         // ---- seach for username in DB ---  then --//
@@ -601,14 +603,28 @@ newUserPermissionChoose: any
         this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
       });
 
-      console.log(res)
+      // console.log(res)
       // update usersPermissionsMap
       this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
+      
+      // send email about new permission:
+      if(jsonRes.getPermissionUpdate){
+        var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
+        "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+        this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text).then(res =>  {
+  
+        }).catch(err => {
+            console.log("error with sending mail!")
+          // console.log(err);
+        });
+      }
+      
       this.newUserPermissionChoose = null
     }
     console.log(event)
     this.cancelHandler(event)
 
+    
     // HANDLE WITH NO FIND USER!!!! //
       }).catch(err => {
         if(err.status == 404)
@@ -644,12 +660,21 @@ newUserPermissionChoose: any
     });
 
     // ----- update all radiobuttons -------
-    this.updatePermissionUsers.forEach(element => {
-      promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, element.userID, element.old, element.new))
+    this.updatePermissionUsers.forEach(user => {
+      promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
+      
+      // // send email about new permission:
+      // if(jsonRes.getPermissionUpdate){
+      //   var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
+      //   "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+      //   this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text)
+      // }
+
+
       // update mapPermission on selectedMap
       for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
-        if (key == element.userID) {
-          value.permission = element.new;
+        if (key == user.userID) {
+          value.permission = user.new;
         }
       }
     });
@@ -692,7 +717,7 @@ newUserPermissionChoose: any
     this.updatePermissionUsers = []
   }
 
-  protected openPermissionsModal() {
+  public openPermissionsModal() {
     this.deleteUsersChange = false
     this.deleteUserList = []
     this.modalService.open('usersPermissionsModal')
@@ -704,7 +729,7 @@ newUserPermissionChoose: any
 
 
   }
-  protected closePermissionModal(modalId) {
+  public closePermissionModal(modalId) {
     this.deleteUsersChange = false
     this.deleteUserList = []
     this.modalService.close(modalId);

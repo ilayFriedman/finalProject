@@ -10,8 +10,6 @@
   font-family: 'Calibri', ssans-seif;
   /* -webkit-background-clip: text; */
   font-size: 300%;
-  font-weight: bold;
-  color: #0099ff;
   text-shadow: rgba(238, 238, 238, 0.84) 2px 3px 3px
 }
 .form-lbl{
@@ -96,17 +94,17 @@
   padding: 19px 39px 18px 39px;
   color: #FFF;
   margin: 0 auto;
-  background: #0099ff;
+  background: #2CB5E8;
   font-size: 18px;
   text-align: center;
   font-style: normal;
   width: 100%;
-  border: 1px solid #0099ff;
+  border: 1px solid #2CB5E8;
   border-width: 1px 1px 3px;
   margin-bottom: 10px;
 }
 .form-style-5 input[type="submit"]:hover,
 .form-style-5 input[type="button"]:hover
 {
-  background: #0283da;
+  background: rgb(36, 153, 196);
 }

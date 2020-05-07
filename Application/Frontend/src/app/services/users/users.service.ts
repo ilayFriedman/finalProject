@@ -18,6 +18,14 @@ export class UsersService {
   getUsers(){
     return this.http.get(this.localUrl + '/private/getUsers', { headers: { 'token': sessionStorage.token },responseType: 'text'}).toPromise()
   }
+  sendMailToUser(reciever_mail, subject, text){
+    const bodyReq = {
+      reciever_mail: reciever_mail,
+      subject: subject,
+      text: text,
+    }
+    return this.http.post(this.localUrl + '/private/sendMailToUser', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
 
   // getUserDetailsById(userID: String){
   //   return this.http.get(this.localUrl + '/private/getUserDetailsById/'+ userID, { headers: { 'token': sessionStorage.token }}).toPromise()
