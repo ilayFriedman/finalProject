@@ -2,7 +2,7 @@
     <mat-toolbar>
         <mat-toolbar-row>
             <span class="menu-spacer"></span>
-            <div style="margin: auto; text-align: center;position: relative;" (click)="updateConverterACtivate()">
+            <div style="margin: auto; text-align: center;position: relative;">
                 <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"
                     [disabled]="mapHandler.getUserPermission() &lt; 2"> Save As </button>
                 <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"

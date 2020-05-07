@@ -34,6 +34,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { InputsModule } from '@progress/kendo-angular-inputs';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+import { OpenPageComponent } from './open-page/open-page.component';
 
 
 
@@ -57,7 +58,8 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
     NodeMenuModalComponent,
     MapsfoldersViewerComponent,
     LogedHomeComponent,
-    GroupsComponent
+    GroupsComponent,
+    OpenPageComponent
   ],
   imports: [
     BrowserModule,

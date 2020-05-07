@@ -5,44 +5,65 @@
 </head>
 
 <body>
+  <!-- <div class="background"></div> -->
   <div>
     <!-- toolbar -->
     <div class="toolbar">
       <!-- <img style= "-webkit-filter: grayscale(1) invert(1); filter: grayscale(1) invert(1);" 
         src="https://cdn2.iconfinder.com/data/icons/navigation-location/512/map_examine_enlarge_zoom_locate_location_navigate_navigation_plan-512.png" width="2%"> -->
-      <span>
-         <a mat-button [routerLink]="'/home'" style="font-size: 20px; vertical-align: middle">ME-Mapper</a></span>
-      <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/logedHome'"> Home </a></span>
-      <span @fade style="position: absolute;right:0;top:0; padding: 0.4%;"> <!--right side buttons-->
-        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"><span class="k-icon k-i-user"></span> Register </a></span>
-        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'"><span class="k-icon k-i-login"></span> Log In </a></span>
-        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span> Change user info</a></span>
-        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/login'"><span class="k-icon k-i-logout"></span>  Log out</a></span>
+      <span style="float: left; position: relative;"><a mat-button [routerLink]="'/openPage'"
+          style="font-size: 20px; vertical-align: middle">ME-Mapper</a></span>
+      <span @fade *ngIf='!isLoggedIn()'>
+        <!-- Login -->
+        <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <span style="float: left; position: relative; padding-right: 5px;">
+            <div>
+              <div>
+                <span><input type="text" class="form-control" formControlName="username" placeholder="User Name"></span>
+              </div>
+            </div>
+          </span>
+
+          <span style="float: left; position: relative;  padding-right: 5px;">
+            <div>
+              <div>
+                <span><input type="text" class="form-control" formControlName="password" placeholder="Passowrd"></span>
+              </div>
+                
+            </div>
+          </span>
+          <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In"
+              class="form-control"></span>
+          <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;"><b>Password is required</b></span>
+          <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback"><b>userName is required</b></span>
+        </form>
+      </span>
+
+      <!-- <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/logedHome'"> Home </a></span> -->
+
+
+      <span @fade style="position: absolute;right:0;top:0; padding: 0.4%;">
+        <!--right side buttons-->
+        <!-- <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"><span
+              class="k-icon k-i-user"></span> Register </a></span>
+        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'"><span
+              class="k-icon k-i-login"></span> Log In </a></span> -->
+        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span
+              class="k-icon k-i-user"></span> Change user info</a></span>
+        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/openPage'"><span
+              class="k-icon k-i-logout"></span> Log out</a></span>
       </span>
     </div>
-
-    <!-- context -->
-    <router-outlet style="position:fixed; top:0;"></router-outlet>
-
   </div>
 
-  <!-- <mat-toolbar> -->
 
-      <!--    <button mat-icon-button>-->
-      <!--      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>-->
-      <!--    </button>-->
-      
-      <!-- <div class="toolbarAddition">
 
-      </div>
-      <div>
 
-      </div>
+  <div>
+    <!-- content -->
+    <router-outlet></router-outlet>
+  </div>
 
-  </mat-toolbar> -->
-  
-
-  <!-- <i class="fab fa-airbnb"></i> -->
 
 </body>
 

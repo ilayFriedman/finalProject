@@ -80,18 +80,10 @@ export class MapsfoldersViewerComponent implements OnInit {
 
 
   ngOnInit() {
-    //fisrt push by hand
-    // this.data.push({
-    //   text: "/",
-    //   folderID: "5e80d535132e0540b827c4cd",
-    //   Description: "",
-    //   parentNode: "",
-    //   items: [],
-    //   isFolder: true,
-    // })
+    // check user connected
+    if(sessionStorage.token != null){
 
-
-    // folders init : find the root Folder
+          // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
       
       var jsonRes = JSON.parse(JSON.stringify(res))
@@ -131,6 +123,8 @@ export class MapsfoldersViewerComponent implements OnInit {
       console.log(err)
     })
 
+
+    }
 
   }
 
@@ -662,7 +656,7 @@ newUserPermissionChoose: any
     // ----- update all radiobuttons -------
     this.updatePermissionUsers.forEach(user => {
       promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
-      
+
       // // send email about new permission:
       // if(jsonRes.getPermissionUpdate){
       //   var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+

@@ -19,12 +19,12 @@
 
                 <div>
                 <!-- delete dialog configuration -->
-                    <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel')" [minWidth]="250" [width]="450">
+                    <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel',null)" [minWidth]="250" [width]="450">
                     <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
                     <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Removal will delete all the files inside and your permissions about them as well</p>
                     <p *ngIf="!fileToDelete.isFolder" style="margin: 30px; text-align: center; color:red">Note! All permissions granted for this map will also disappear and the map will be deleted for all users</p>
                         <kendo-dialog-actions>
-                        <button kendoButton (click)="closeDialog('no',null)">No</button>
+                        <button kendoButton (click)="closeDialog('no',f)">No</button>
                         <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This File</button>
                         </kendo-dialog-actions>
                     </kendo-dialog>

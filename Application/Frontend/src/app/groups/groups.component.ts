@@ -63,10 +63,12 @@ export class GroupsComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.ensureUserIsLoggedIn();
+    // check user connected
+    if(sessionStorage.token != null){
     this.getGroupsUserOwns();
     this.getGroupsUserMember();
     this.getUsers();
+    }
   }
 
   private getUsers() {
@@ -79,14 +81,6 @@ export class GroupsComponent implements OnInit {
       // Remove the user currently logged in from the list
       this.allUsersList = this.allUsersList.filter(obj => obj._id !== sessionStorage.userId);      
     });
-  }
-
-  private ensureUserIsLoggedIn() {
-    let isLoggedIn = sessionStorage.token != null;
-    if (!isLoggedIn) {
-      this.router.navigate(['/login']);
-      alert("Please log in to view this page.");
-    }
   }
 
   private getGroupsUserOwns() {
