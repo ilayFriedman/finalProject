@@ -1,13 +1,35 @@
-<div id="mapMenu">
-    <mat-toolbar>
+<div id="welcomeAndMenu">
+    <br>
+    <div class="welcome">
+        <span style="font-size: 25px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
+            <b>{{currMap.MapName}}</b>
+            <br>
+        </span>
+        <span style="font-size: 18px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
+            {{currMap.Description}}
+        </span>
+        <span style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
+            <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
+            {{getMapCreationTime()}}
+        </span>
+        <span style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
+            <span class="k-icon k-i-lock" style="font-size: 15px"></span>
+            {{getUserPermission()}}
+        </span>
+    </div>
+    <!-- <div id="mapMenu"> -->
+    <mat-toolbar style="background-color: inherit; margin: auto;">
         <mat-toolbar-row>
-            <span class="menu-spacer"></span>
-            <div style="margin: auto; text-align: center;position: relative;" (click)="updateConverterACtivate()">
+            <!-- <span class="menu-spacer"></span> -->
+            <br>
+            <div style="margin: auto; float: left;" (click)="updateConverterACtivate()">
                 <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"
-                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Save As </button>
+                    [disabled]="mapHandler.getUserPermission() &lt; 2" style="width: 30px;">
+                    <span class="k-icon  k-i-save" style="width: min-content; font-size: 20px;"></span>
+                </button>
                 <button class="mapsMenu" title="Save Changes" mat-raised-button (click)="save()"
                     [disabled]="mapHandler.getUserPermission() &lt; 2"> Save </button>
-                <button class="mapsMenu" title="Print" mat-raised-button> Print </button>
+                <button class="mapsMenu" title="Print" mat-raised-button (click)="printOption()"> Print </button>
                 <button class="mapsMenu" title="New Map" mat-raised-button (click)="newMap()"> Clear Map </button>
                 <button class="mapsMenu" title="Cut (Ctrl + x)" mat-raised-button
                     (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"
@@ -44,11 +66,12 @@
                     <button mat-button (click)="saveAsJSON('', '.json')">JSON File</button>
                 </mat-menu>
             </div>
+            <br>
         </mat-toolbar-row>
     </mat-toolbar>
     <div *ngIf='!isSaved'>There are changes that hasen't saved</div>
+    <!-- </div> -->
 </div>
-
 <!-- diagram, sidde bar, overviwe and converter -->
 <div id="block_container">
     <div id="sideBar">
@@ -56,17 +79,21 @@
         <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
     </div>
     <div id="myDiagram"></div>
-    <div id="rightSideUnknownForFutureUse">
+    <!-- <div id="rightSideUnknownForFutureUse">
         <div class="handle">Overview</div>
         <div id="myOverview"></div>
 
-    </div>
+    </div> -->
 </div>
-<div id="textConverter">
-    <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
-
+<div>
+    <span id="textConverter" style='float: left; width: 70%;'>
+        <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
+    </span>
+    <span style='float: left; width: 30%; height: inherit;'>
+        <div class="handle">Overview</div>
+        <div id="myOverview"></div>
+    </span>
 </div>
-
 <!-- save map as modal -->
 <jw-modal class="jw-modal" id="save-as-modal">
     <div class="jw-modal-body">

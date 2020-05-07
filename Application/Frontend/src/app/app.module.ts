@@ -34,7 +34,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { InputsModule } from '@progress/kendo-angular-inputs';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
-
+import { NgxPrintModule } from 'ngx-print';
 
 
 
@@ -91,7 +91,8 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
     MatSortModule,
     InputsModule,
     MatSortModule,
-    DropDownsModule
+    DropDownsModule,
+    NgxPrintModule
     // TreeViewModule
   ],
   providers: [

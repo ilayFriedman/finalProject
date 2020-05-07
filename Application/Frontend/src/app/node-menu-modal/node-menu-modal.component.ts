@@ -233,7 +233,7 @@ export class NodeMenuModalComponent implements OnInit {
     })
     this.nodeRefSource = new MatTableDataSource<ReferenceElement>(this.nodeRefList);
     this.nodeRefSource.paginator = this.nodeRefsPaginator
-    console.log("node refs loaded");
+    // console.log("node refs loaded");
   }
 
   addRefToNode() {
@@ -349,7 +349,7 @@ export class NodeMenuModalComponent implements OnInit {
     })
     this.nodeCtxsSource = new MatTableDataSource<ContextElement>(this.nodeCtxsList);
     this.nodeCtxsSource.paginator = this.nodeCtxsPaginator
-    console.log("node Ctxs loaded");
+    // console.log("node Ctxs loaded");
   }
   addCtxsToNode() {
     this.allCtxsSelection.selected.forEach(element => {
@@ -490,11 +490,11 @@ export class NodeMenuModalComponent implements OnInit {
     }
     this.NodeMenuHendler.addLikeToComment(data).then(res => {
       element.Likes++;
-      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model);
       this.unloadNodeComments()
       this.loadNodeComments();
-      console.log("add like");
-      console.log(res)
+      // console.log("add like");
+      // console.log(res)
     }).catch
       (err => {
         console.log("error add like");

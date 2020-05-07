@@ -32,7 +32,8 @@ export class MapViewerComponent implements OnInit {
   currNode: any;
   obj: any;
   isSaved: boolean = true;
-  initialModel: boolean = true;
+  isInitialModel: boolean = true;
+  initialModel: any = {}
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     private mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -40,9 +41,16 @@ export class MapViewerComponent implements OnInit {
   ngOnInit() {
     this.currMap = this.mapHandler.currMap_mapViewer
     console.log(this.currMap);
-    console.log(this.mapHandler.getUserPermission());
-    (this.currMap)
+    // (this.currMap)
     this.init()
+  }
+
+  getMapCreationTime() {
+    return new Date(this.currMap.CreationTime).toLocaleString();
+  }
+
+  printOption() {
+    window.print()
   }
 
   init() {
@@ -497,6 +505,7 @@ export class MapViewerComponent implements OnInit {
 
 
     self.mapHandler.myDiagram.model = go.Model.fromJson(self.currMap.Model);
+    self.initialModel = go.Model.fromJson(self.currMap.Model);
     self.mapHandler.myDiagram.model.addChangedListener(self.updateConverterACtivate);
     self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
       var node = e.diagram.selection.first();
@@ -513,7 +522,11 @@ export class MapViewerComponent implements OnInit {
     });
 
     self.mapHandler.myDiagram.addModelChangedListener(function (e) {
-      console.log("modified");
+      // console.log(self.mapHandler.myDiagram.model.nodeDataArray);
+      // console.log(self.initialModel.nodeDataArray);
+      if (self.mapHandler.myDiagram.model.nodeDataArray === self.initialModel.nodeDataArray) {
+        console.log("modified");
+      }
 
     })
 
@@ -582,7 +595,7 @@ export class MapViewerComponent implements OnInit {
 
     var myOverview =
       $(go.Overview, "myOverview",
-        { observed: self.mapHandler.myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+        { observed: self.mapHandler.myDiagram, maxScale: 10, contentAlignment: go.Spot.Center });
 
 
 
@@ -607,10 +620,10 @@ export class MapViewerComponent implements OnInit {
     if (e != null) {    // firing from touch the model
       if (e.af == "CommittingTransaction") {
         console.log("issaved: " + this.isSaved);
-        if (this.initialModel) {
+        if (this.isInitialModel) {
           console.log("changeeeeee");
           this.isSaved = true;
-          this.initialModel = false;
+          this.isInitialModel = false;
         } else {
           this.isSaved = false;
         }
@@ -656,7 +669,7 @@ export class MapViewerComponent implements OnInit {
 
       let data = {
         '_id': this.currMap._id,
-        'model': this.mapHandler.myDiagram.model.toJson()
+        'Model': this.mapHandler.myDiagram.model
       }
 
       let result = this.http.put(this.localUrl + '/private/updateMap', data, {
@@ -782,5 +795,17 @@ export class MapViewerComponent implements OnInit {
     this.isSaved = false;
   }
 
+  getUserPermission() {
+    let userPermission = this.mapHandler.getUserPermission();
+    if (userPermission == 3) {
+      return "Owner";
+    }
+    else if (userPermission == 2) {
+      return 'Write';
+    }
+    else if (userPermission == 1) {
+      return 'Read';
+    }
+  }
 
 }// component
