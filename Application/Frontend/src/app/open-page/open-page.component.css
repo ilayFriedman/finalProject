@@ -1,0 +1,19 @@
+
+.container_login_register{
+    /* display: flex; */
+    /* justify-content: center; */
+    margin-top: 1%;
+    padding: 1%;
+    height: 100%;
+   
+}
+
+.loginBox{
+    text-align: center;
+    display:inline-block;
+    width: 50%;
+}
+.registerBox{
+    display:inline-block;
+    width: 50%;
+}

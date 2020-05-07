@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit {
       'Password': this.loginForm.controls.password.value
     }
     let result = this.http.post(this.localUrl + '/login', data);
-
     result.subscribe(response => {
       this.submitted = false;
       // @ts-ignore
