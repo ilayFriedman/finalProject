@@ -63,25 +63,125 @@
 
 <!--Edit group-->
 
+<!-- Permisssions modal -->
 <jw-modal class="jw-modal" id="editGroupModal">
+    <div ngDraggable class="jw-modal-body">
+        <span class="close" (click)="closeModal_editGroup()">&times;</span>
+        <!-- <span><h2>Permissions Management for "{{selectedNode.text}}" Group:</h2></span> -->
+        <!-- <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!</span> -->
+        <br><br>
+        <div>
+            <!-- <kendo-grid 
+          [data]="this.groupsPermissionList"
+          [height]="533"
+          [sortable]="true"
+
+          (cancel)="cancelHandler($event)"
+          (add)="openNewRow($event)"
+          (save)="addNewUserToPermission($event)"
+          (remove)="openUserPerimssionDialog($event)"
+          [navigable]="true"
+          [resizable]="true"
+            style="max-width:inherit;"> -->
+            <kendo-grid 
+            [data]="this.groupsPermissionList"
+            [height]="533"
+            [sortable]="true"
+            [navigable]="true"
+            [resizable]="true"
+            style="max-width:inherit;"
+
+            (add)="AddNewRow($event)"
+            (save)="addNewUserPermission($event)"
+            (remove)="openUserPerimssionDialog($event)"
+            (cancel)="cancelHandler($event)"
+            >
+        <!-- 
+                      [pageSize]="pageSize" [skip]="gridState.skip" 
+          [pageable]="{
+            buttonCount: buttonCount,
+            info: info,
+            type: type,
+            pageSizes: pageSizes,
+            previousNext: previousNext
+          }"
+          (pageChange)="pageChange($event)"
+          (dataStateChange)="onStateChange($event)"
+            (cellClick)="cellClickHandler($event)"
+        (cellClose)="cellCloseHandler($event)"
+        
+        
+        
+         -->
+         
+        <ng-template kendoGridToolbarTemplate>
+            <button kendoGridAddCommand>Add User To Group</button>
+            <button class='k-button' (click)="savePermissionChanges()" [disabled] = "!this.isPermissionChanged"><span [ngStyle]="isPermissionChanged?{'font-weight': 'bold'} : {'font-weight': 'normal'}">Save Changes</span></button>
+            <!-- <button class='k-button' (click)="undoAllChangesClick()" [disabled] = "!isPermissionChanged">Undo Changes</button> -->
+            <p *ngIf="isPermissionChanged" style="text-align: center; color:green"><b><i>You have unsaved changes.</i></b></p>   
+        </ng-template>
+        
+        <kendo-grid-column field="Username" title="Username (E-mail)" [width]="120" [minResizableWidth]="100"></kendo-grid-column> <!--userName column-->
+        <kendo-grid-column field="FullName" title="Full name" [width]="120" [minResizableWidth]="100"></kendo-grid-column> <!--name column-->
+
+        <kendo-grid-column field="read" title="Member" [width]="70" [minResizableWidth]="50"> 
+            <ng-template kendoGridCellTemplate let-dataItem let let-rowIndex="rowIndex">
+                <input type="radio"  [checked]="dataItem.Permission=='Member'" [disabled] = "dataItem.Username == '' " name="{{dataItem.Username}}" id="Member" (change)="radioButtonsUpdate($event,rowIndex)"/>
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="write" title="Manager" [width]="70" [minResizableWidth]="50"> 
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                <input type="radio" [checked]="dataItem.Permission=='Manager'"  [disabled] = "dataItem.Username == '' " name="{{dataItem.Username}}" id="Manager" (change)="radioButtonsUpdate($event,rowIndex)" />
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="owner" title="Owner" [width]="70" [minResizableWidth]="50"> 
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+
+                <input type="radio" [checked]="dataItem.Permission=='Owner'"  [disabled] = "dataItem.Username == '' " name="{{dataItem.Username}}" id="Owner" (change)="radioButtonsUpdate($event,rowIndex)"/>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column title="Actions" width="160"> 
+            <ng-template kendoGridCellTemplate let-isNew="isNew">
+                <button kendoGridRemoveCommand>Remove User From List</button>
+                <button kendoGridSaveCommand [disabled]="this.newUserPermissionChoice == null">Add</button>
+                <button kendoGridCancelCommand>Cancel</button>
+            </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+
+      <!-- dialog of remove user -->
+      <kendo-dialog title="Please confirm" *ngIf="this.userDeleteDialogOpened" (close)="closeUserPerimssionDialog('no')" [minWidth]="250" [width]="450">
+        <p style="margin: 30px; text-align: center;">Are you sure you want to remove {{ userToDelete.dataItem.Username }} from group?</p>
+        <kendo-dialog-actions>
+            <button class='k-button' (click)="closeUserPerimssionDialog('no')">No</button>
+            <button class='k-button k-primary' (click)="closeUserPerimssionDialog('yes')" primary="true">Yes. Remove {{userToDelete.dataItem.Username}} from group.</button>
+        </kendo-dialog-actions>
+    </kendo-dialog>
+        </div>
+    </div>
+</jw-modal>
+
+<!-- <jw-modal class="jw-modal" id="editGroupModal">
     <div ngDraggable [ngResizable]='true' class="jw-modal-body">
         <span class="close" (click)="closeModal_editGroup()">&times;</span>
             <span><h3>Group Users</h3></span>
         <table mat-table #permissionTable [dataSource]="this.groupsPermissionList" class="mat-elevation-z8" style="float:left;padding: 5px; margin: 5px;">          
-            <!-- Position Column -->
-            <ng-container matColumnDef="username">
+            Position Column -->
+            <!-- <ng-container matColumnDef="username">
               <th mat-header-cell *matHeaderCellDef> Username </th>
               <td mat-cell *matCellDef="let element"> {{element.Username}} </td>
-            </ng-container>
+            </ng-container> -->
           
             <!-- Name Column -->
-            <ng-container matColumnDef="firstname">
+            <!-- <ng-container matColumnDef="firstname">
               <th mat-header-cell *matHeaderCellDef> First Name </th>
               <td mat-cell *matCellDef="let element"> {{element.FirstName}} </td>
-            </ng-container>
+            </ng-container> -->
           
             <!-- Weight Column -->
-            <ng-container matColumnDef="lastname">
+            <!-- <ng-container matColumnDef="lastname">
               <th mat-header-cell *matHeaderCellDef> Last Name </th>
               <td mat-cell *matCellDef="let element"> {{element.LastName}} </td>
             </ng-container>
@@ -95,11 +195,11 @@
             <tr mat-row *matRowDef="let row; columns: groupsUsersColumns;"
                 (click)="this.allUsersTableSelection.clear(); groupsUserPermissionTableSelection.toggle(row)">
             </tr>
-          </table>
+          </table> -->
 
            <!-- menu between tables -->
            <!-- <span style="float: right; margin: 5px;"> -->
-        <span style="padding: 5px; margin: 5px;">
+        <!-- <span style="padding: 5px; margin: 5px;">
             <mat-form-field>
                 <mat-select [(value)]="selectedPermission">
                     <mat-option value="Member">Member</mat-option>
@@ -118,20 +218,20 @@
         </span>
         <span><h3>All Users</h3></span>
         <table mat-table #noPermissionTable [dataSource]="this.groupsNoPermissionList" class="mat-elevation-z8" style="float:left;">          
-            <!-- Position Column -->
-            <ng-container matColumnDef="username">
+            Position Column -->
+            <!-- <ng-container matColumnDef="username">
               <th mat-header-cell *matHeaderCellDef> Username </th>
               <td mat-cell *matCellDef="let element"> {{element.Username}} </td>
-            </ng-container>
+            </ng-container> -->
           
             <!-- Name Column -->
-            <ng-container matColumnDef="firstname">
+            <!-- <ng-container matColumnDef="firstname">
               <th mat-header-cell *matHeaderCellDef> First Name </th>
               <td mat-cell *matCellDef="let element"> {{element.FirstName}} </td>
-            </ng-container>
+            </ng-container> -->
           
             <!-- Weight Column -->
-            <ng-container matColumnDef="lastname">
+            <!-- <ng-container matColumnDef="lastname">
               <th mat-header-cell *matHeaderCellDef> Last Name </th>
               <td mat-cell *matCellDef="let element"> {{element.LastName}} </td>
             </ng-container>
@@ -140,10 +240,10 @@
             <tr mat-row *matRowDef="let row; columns: allUsersColumns;"
                 (click)="this.groupsUserPermissionTableSelection.clear(); allUsersTableSelection.toggle(row)">
             </tr>
-          </table>
+          </table> -->
 
           <!-- menu between tables -->
-        <br>
+        <!-- <br>
         <br>
         <span style="padding: 10px; margin: 10px;">
             <div style="padding: 5px; margin: 5px;" class="refBtn"><button mat-raised-button
@@ -154,7 +254,7 @@
         </span>
          
     </div>
-</jw-modal>
+</jw-modal> -->
 </div>
 
 
