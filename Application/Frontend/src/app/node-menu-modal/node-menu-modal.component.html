@@ -352,7 +352,7 @@
                 <span class="small-menu-option">Border Thickness:</span>
                 <mat-form-field class="node-style-select" style="width: 10%;">
                     <mat-label>1px</mat-label>
-                    <mat-select (selectionChange)="setNodeStyles()" [(value)]="borderThickness">
+                    <mat-select (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
                         <mat-option value="1">1px</mat-option>
                         <mat-option value="2">2px</mat-option>
                         <mat-option value="3">3px</mat-option>
@@ -467,7 +467,46 @@
             </div>
         </mat-tab>
 
+        <!-- connections tab -->
+        <mat-tab label="Connections">
+            <div id="addConnectionDiv" style="width: 50%; float: left;">
+                <h2 style="font-family:  'Calibri', ssans-seif;">Add Connection</h2>
+                <div style="margin: auto; position: relative;">
+                    <span style="width: 80%; float: left;">
+                        <mat-form-field>
+                            <mat-label>Node Text</mat-label>
+                            <input matInput [(ngModel)]="nodeToSearch">
+                        </mat-form-field>
+                    </span>
+                    <span style="width: 20%;">
+                        <button mat-raised-button (click)="searchNodes()">Search</button>
+                    </span>
+                </div>
 
+                <div style=" width: max-content;">
+                    <mat-selection-list [(ngModel)]="mapsSelectedOptions">
+                        <mat-list-option checkboxPosition="before" *ngFor="let map of containingMapsList" [value]="map">
+                            {{map.MapName}}
+                        </mat-list-option>
+                        <button mat-raised-button (click)="addConnectionToNoda()"> Connect </button>
+                    </mat-selection-list>
+                </div>
+            </div>
+
+            <div id="chooseConnectionDiv" style="width: 50%; float: right;">
+                <h2 style="font-family:  'Calibri', ssans-seif;">Connected Maps</h2>
+                <div style=" width: max-content;">
+                    <mat-selection-list>
+                        <button mat-list-item (click)="moveToConnectedMap(map)" *ngFor="let map of connectedMapsList">
+                            {{map.MapName}} </button>
+                        <!-- <mat-list-option checkboxPosition="before" *ngFor="let map of connectedMapsList" [value]="map"> -->
+
+                        <!-- </mat-list-option> -->
+                    </mat-selection-list>
+                </div>
+            </div>
+
+        </mat-tab>
     </mat-tab-group>
 
 
