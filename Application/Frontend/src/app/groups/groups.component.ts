@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import { GroupsService } from '../services/groups/groups.service';
 import { UsersService } from '../services/users/users.service';
 import { ModalService } from '../services/modal.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import { MatTable } from '@angular/material';
 
@@ -31,10 +31,13 @@ export class GroupsComponent implements OnInit {
   groupsUserOwns;
   groupsUserMember;
   formErrors: string;
+  newUserPermissionChoice: any = null;
+  userDeleteDialogOpened: boolean = false;
+  userToDelete: any;
 
   allUsersList: any;
-  groupsPermissionList;
-  groupsNoPermissionList;
+  groupsPermissionList: any[] = [];
+  groupsNoPermissionList: any[] = [];
 
   public data: any[] = [];
   addGroupCheckOut;
@@ -66,17 +69,17 @@ export class GroupsComponent implements OnInit {
   ngOnInit() {
     // check user connected
     if(sessionStorage.token != null){
-    this.getGroupsUserOwns();
-    this.getGroupsUserMember();
-    this.getUsers();
-    }
+      this.getGroupsUserOwns();
+      this.getGroupsUserMember();
+      this.getUsers();
+      }
   }
 
+  //USING
   private getUsers() {
 
     this.usersService.getUsers()
     .then(response =>{
-      console.log(response)
       this.allUsersList = JSON.parse(response);
       
       // Remove the user currently logged in from the list
@@ -84,6 +87,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
+  //USING
   private getGroupsUserOwns() {
     this.groupsService.getGroupsUserOwns()
      .then(response => {
@@ -105,6 +109,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
+  //USING
   private getGroupsUserMember() {
     this.groupsService.getGroupsUserBlongsTo()
      .then(response => {
@@ -129,6 +134,7 @@ export class GroupsComponent implements OnInit {
     }
   }
 
+  //USING
   private addGroupToArray(res, arr){
     arr.push({
         text: res.Name,
@@ -139,6 +145,7 @@ export class GroupsComponent implements OnInit {
       })
   }
 
+  //USING
   public createGroup(){
     const newGroupName = this.addGroupCheckOut.controls.groupName.value;
     const newGroupDescription = this.addGroupCheckOut.controls.description.value;    
@@ -157,6 +164,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
+  //USING
   openEditGroupModal(dataItem){
     this.currentlyEditedGroupId = dataItem.GroupId;
 
@@ -168,13 +176,14 @@ export class GroupsComponent implements OnInit {
     });
   }
   
+  //USING
   private populateGroupsPermissionList(permissions){
     let ans = [];
-
     permissions.Member.forEach(elem => {
       let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
       if(userDetails){
         userDetails.Permission = 'Member';
+        userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
         ans.push(userDetails);
       }
     });
@@ -183,6 +192,7 @@ export class GroupsComponent implements OnInit {
       let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
       if(userDetails){
         userDetails.Permission = 'Manager';
+        userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
         ans.push(userDetails);
       }
       
@@ -192,6 +202,7 @@ export class GroupsComponent implements OnInit {
       let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
       if(userDetails){
         userDetails.Permission = 'Owner';
+        userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
         ans.push(userDetails);
       }
     });
@@ -199,6 +210,83 @@ export class GroupsComponent implements OnInit {
     this.groupsPermissionList = ans;
   }
 
+  //USING
+  AddNewRow(event) {
+    console.log(event)
+
+    // console.log(this.parsedDataPermissions)
+    // define all editable fields validators and default values
+    const newUser = new FormGroup({
+      'Username': new FormControl(""),
+      'Permission': new FormControl({"": []})
+    });
+    // show the new row editor, with the `FormGroup` build above
+    event.sender.addRow(newUser);
+  }
+
+  //USING
+  public addNewUserPermission(event){
+    // [{"_id":string, "Username":string, "FirstName":string, "LastName":string}]
+    if(this.newUserPermissionChoice != null){
+
+      let userDetails = this.allUsersList.filter(obj => obj.Username === this.newUserPermissionChoice.target.name)[0];
+
+      if(userDetails){
+        userDetails.Permission = this.newUserPermissionChoice.target.id;
+        userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
+
+        this.groupsPermissionList = [userDetails].concat(this.groupsPermissionList);
+
+        var userInNoPermissionList = this.groupsNoPermissionList.filter(item => item === event.dataItem)
+        if(this.groupsNoPermissionList.filter(item => item === event.dataItem).length != 0){
+          const index = this.groupsNoPermissionList.indexOf(userInNoPermissionList[0]);
+          if(index > -1){
+            this.groupsNoPermissionList.splice(index, 1);
+          }
+        }
+
+        this.changesMadeToPermission();
+      }
+    }
+
+    this.cancelHandler(event)
+
+    //TODO handle the case where the user is not found.
+  }
+  
+  //USING
+  public openUserPerimssionDialog(dataItem) {
+    this.userDeleteDialogOpened = true;
+    this.userToDelete = dataItem;
+    console.log(dataItem);
+  }
+
+  //USING
+  public closeUserPerimssionDialog(status) {
+    this.userDeleteDialogOpened = false;
+    if (status == "yes") {  // the user choose to delete the file
+      this.removeUserHandler(this.userToDelete)
+    }
+  }
+
+  //USING
+  public removeUserHandler(event) {
+    console.log(this.groupsNoPermissionList);
+    this.groupsNoPermissionList.push(event.dataItem);
+    console.log(this.groupsNoPermissionList);
+    console.log(this.groupsPermissionList);
+    this.groupsPermissionList = this.groupsPermissionList.filter(item => item !== event.dataItem);
+    console.log(this.groupsPermissionList);
+    this.changesMadeToPermission();
+  }
+
+  //USING
+  public cancelHandler({ sender, rowIndex }) {
+    this.newUserPermissionChoice = null;
+    sender.closeRow(rowIndex);
+  }
+
+  //USING
   populateGroupsNoPermissionList(){
     this.groupsNoPermissionList = [];
     this.allUsersList.forEach(allUser => {
@@ -211,7 +299,8 @@ export class GroupsComponent implements OnInit {
   closeModal_addGroup(){
     this.modalService.close('addGroupModal');
   }
-
+  
+  //USING
   closeModal_editGroup(){
     if(!this.isPermissionChanged || confirm("Discard permission changes?")){
         this.groupsPermissionList = [];
@@ -243,33 +332,13 @@ export class GroupsComponent implements OnInit {
     .then(results => alert(results))
     .catch(e => alert(e));
   }
-  
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.allUsersTableSelection.selected.length;
-    const numRows = this.allUsersList.data.length;
-    return numSelected === numRows;
-  }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected() ?
-        this.allUsersTableSelection.clear() :
-        this.allUsersList.data.forEach(row => this.allUsersTableSelection.select(row));
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
-    }
-    return `${this.allUsersTableSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
-
+  //USING
   changesMadeToPermission(){
       this.isPermissionChanged = true;
   }
 
+  //NOT USING
   addUsersToGroup(){
     this.allUsersTableSelection.selected.forEach(element => {
         element.Permission = this.selectedPermission;
@@ -281,10 +350,12 @@ export class GroupsComponent implements OnInit {
     this.endTablesEdit();
   }
 
+  //NOT USING
   removeUsersFromGroup(){
     this.groupsUserPermissionTableSelection.selected.forEach(element => {
       element.Permission = undefined;
       this.groupsPermissionList = this.groupsPermissionList.filter(item => item._id !== element._id);
+
 
       this.groupsNoPermissionList.push(element);
     });
@@ -292,6 +363,7 @@ export class GroupsComponent implements OnInit {
     this.endTablesEdit();
   }
 
+  //NOT USING
   private endTablesEdit() {
     this.changesMadeToPermission();
     
@@ -302,10 +374,14 @@ export class GroupsComponent implements OnInit {
     this.noPermissionTable.renderRows();
   }
 
-  // private iconClass({ text, items }: any): any {
-  //   return {
-  //     'k-i-folder': items !== undefined,
-  //     'k-icon': true
-  //   };
-  // }
+  //USING
+  radioButtonsUpdate(event, rowIndex) {
+    if (rowIndex !=-1){
+      this.groupsPermissionList.find(item => item.Username == event.target.name).Permission = event.target.id;
+      this.changesMadeToPermission();
+    }
+    else{ //This is a new user
+      this.newUserPermissionChoice = event;
+    }
+  }
 }

@@ -25,14 +25,29 @@ table {
     line-height: 10pt;
 }
 
+/* .jw-modal-body {
+    text-align: center;
+    background-color: #fefefe;
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid #888;
+    min-width: 40%;
+    width: max-content;
+    max-width: 50%;
+    height: max-content;
+    font-family: 'Calibri', sans-seif;
+    border-radius: 25px;
+    line-height: 10pt;
+}  */
 .jw-modal-body {
     text-align: center;
     background-color: #fefefe;
     margin: 10px auto;
     padding: 20px;
     border: 1px solid #888;
-    min-width: max-content;
+    min-width: 40%;
     width: max-content;
+    max-width: 50%;
     height: max-content;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
