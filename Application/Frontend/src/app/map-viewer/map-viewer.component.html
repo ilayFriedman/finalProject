@@ -23,7 +23,7 @@
             <!-- <span class="menu-spacer"></span> -->
             <br>
             <div style="margin: auto; float: left;">
-                <span class="menu-spacer"></span>
+                <!-- <span class="menu-spacer"></span> -->
                 <div style="margin: auto; text-align: center;position: relative;">
                     <button class="mapsMenu" title="Save As" mat-raised-button (click)="openModal('save-as-modal')"
                         [disabled]="mapHandler.getUserPermission() &lt; 2" style="width: 30px;">
@@ -69,6 +69,7 @@
                     </mat-menu>
                 </div>
                 <br>
+                </div>
         </mat-toolbar-row>
     </mat-toolbar>
     <div *ngIf='!isSaved'>There are changes that hasen't saved</div>
