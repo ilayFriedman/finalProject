@@ -82,8 +82,10 @@ app.put('/private/deleteComment', mapsRoute);
 
 app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
 app.post('/private/updateUserPermission', mapsRoute)
-app.post('/private/addNewPermission',mapsRoute)
+app.post('/private/addNewPermission', mapsRoute)
 app.get('/private/getSharedMaps/:userID', mapsRoute);
+
+app.get('/private/searchNodes/:nodeName', mapsRoute);
 
 // app.get('/private/getAllUserMaps', mapsRoute);
 

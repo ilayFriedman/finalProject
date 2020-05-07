@@ -115,7 +115,7 @@
                 <h2>Add New Folder To "{{selectedNode.text}}" Folder:</h2>
                 <div style="font-size: 13px;">Please insert folder name (required), and some description (required)</div>
                 <br><br>
-                <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder(addFolderCheckOut.value)">
+                <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder()">
                     <div>
                         <label>Folder Name: </label>
                         <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">

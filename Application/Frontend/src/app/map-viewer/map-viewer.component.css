@@ -1,4 +1,23 @@
-/* for BPMN.html */
+#welcomeAndMenu {
+    background-color: #E9EAED
+}
+
+.welcome {
+    /* float: ce; */
+    /* text-align: left; */
+    background-color: rgb(251, 252, 255);
+    border-radius: 15px;
+    padding: 10px;
+    max-width: 50%;
+    margin: auto;
+    box-shadow: -9px -12px 48px -21px rgba(0, 0, 0, 0.57);
+    /* box-shadow: 0px 1px 20px 2px rgba(145, 145, 145, 0.41); */
+    /* box-shadow: 4px 6px 16px -1px rgba(0, 0, 0, 0.75); */
+}
+
+.mapsMenu {
+    width: 20px !important;
+}
 
 /* Diagram and palette area */
 
@@ -82,6 +101,7 @@ body {
     width: 100%;
     height: 160px;
     border-top: 1px solid gray;
+    float: right;
 }
 
 #myTabs {

@@ -17,7 +17,7 @@ export class MapsHandlerService {
     const bodyReq = {
       MapName: mapName,
       Description: description,
-      Model: { "class": "GraphLinksModel", "modelData": {}, "nodeDataArray": [], "linkDataArray": [] },
+      Model: '{ "class": "GraphLinksModel", "modelData": {}, "nodeDataArray": [], "linkDataArray": [] }',
       folderID: folderID
     }
     return this.http.post(this.localUrl + '/private/createMap', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
@@ -33,7 +33,7 @@ export class MapsHandlerService {
   }
 
   deleteMap(mapFileToDelete) {
-    return this.http.delete(this.localUrl + '/private/removeMap/' + mapFileToDelete.mapID +"&"+ mapFileToDelete.permission + "&" + mapFileToDelete.parentNode.folderID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+    return this.http.delete(this.localUrl + '/private/removeMap/' + mapFileToDelete.mapID + "&" + mapFileToDelete.permission + "&" + mapFileToDelete.parentNode.folderID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
   updateMapDecription(mapID, newName, newDescription) {
@@ -47,7 +47,7 @@ export class MapsHandlerService {
 
   // PERMISSIONS //
 
-  addNewPermission(mapID, username, permission_to){
+  addNewPermission(mapID, username, permission_to) {
     const bodyReq = {
       mapID: mapID,
       username: username,
@@ -61,43 +61,43 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getUsersPermissionsMap/' + mapId, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  removeUserPermission(mapId, userId, permission){
+  removeUserPermission(mapId, userId, permission) {
     // console.log(mapId,userId,permission)
-    return this.http.delete(this.localUrl + '/private/removeUserPermission/'+mapId + "&" + userId+ "&" + permission, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+    return this.http.delete(this.localUrl + '/private/removeUserPermission/' + mapId + "&" + userId + "&" + permission, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  updateUserPermission(mapID, userId, permission_From, permission_To){
+  updateUserPermission(mapID, userId, permission_From, permission_To) {
     const bodyReq = {
       mapID: mapID,
       userID: userId,
       permission_From: permission_From,
       permission_To: permission_To
     }
-    return this.http.post(this.localUrl + '/private/updateUserPermission',bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+    return this.http.post(this.localUrl + '/private/updateUserPermission', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
 
   getUserPermission() {
     let permissions = this.currMap_mapViewer.Permission;
     let currUserId = sessionStorage.userId
-    if (permissions.Owner.userId == currUserId) {
+    if (permissions.Owner.indexOf(currUserId) > -1) {
       return 3;
     }
-    else if (permissions.Write.indexOf(currUserId) != -1) {
+    else if (permissions.Write.indexOf(currUserId) > -1) {
       return 2;
     }
-    else if (permissions.Read.indexOf(currUserId) != -1) {
+    else if (permissions.Read.indexOf(currUserId) > -1) {
       return 1;
     }
 
   }
 
   // Shared maps //
-  getSharedMaps(userID){
+  getSharedMaps(userID) {
     return this.http.get(this.localUrl + '/private/getSharedMaps/' + userID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  
+
 
 
 

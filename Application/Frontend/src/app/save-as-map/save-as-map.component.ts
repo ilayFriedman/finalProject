@@ -41,9 +41,12 @@ export class SaveAsMapComponent implements OnInit {
       return;
     }
     // this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
+    console.log(this.mapHandler.myDiagram.model);
+
     let data = {
       'MapName': this.saveMapForm.controls.mapName.value,
-      'Model': this.mapHandler.myDiagram.model.toJson(),
+      // 'Model': this.mapHandler.myDiagram.model.toJson(),
+      'Model': this.mapHandler.myDiagram.model,
       'Description': this.saveMapForm.controls.description.value
     }
     this.saveMapForm.reset()

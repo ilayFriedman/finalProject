@@ -30,6 +30,7 @@ export class GroupsComponent implements OnInit {
   error: string;
   groupsUserOwns;
   groupsUserMember;
+  formErrors: string;
 
   allUsersList: any;
   groupsPermissionList;
@@ -54,7 +55,7 @@ export class GroupsComponent implements OnInit {
   totalGroupsNumber =  0;
 
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
-              private usersService: UsersService, private modalService: ModalService, 
+              private usersService: UsersService, public modalService: ModalService, 
               private formBuilder: FormBuilder) {
 
     this.addGroupCheckOut = this.formBuilder.group({groupName: ['', Validators.required],
@@ -114,7 +115,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
-  private deleteGroup(dataItem){
+  public deleteGroup(dataItem){
     if (confirm('Are you sure you want to permanently delete this group?')) {
       // Delete group from DB
       this.groupsService.deleteGroup(dataItem.GroupId);
@@ -138,9 +139,13 @@ export class GroupsComponent implements OnInit {
       })
   }
 
-  private createGroup(){
+  public createGroup(){
     const newGroupName = this.addGroupCheckOut.controls.groupName.value;
     const newGroupDescription = this.addGroupCheckOut.controls.description.value;    
+
+    if(!(newGroupName && newGroupDescription)){
+      this.formErrors = "Worng/Missing inputs.<br> Make sure you filled all the requierd fields."
+    }
 
     this.groupsService.createNewGroup(newGroupName, newGroupDescription)
     .then(res => {

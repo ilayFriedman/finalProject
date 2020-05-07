@@ -36,6 +36,7 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { OpenPageComponent } from './open-page/open-page.component';
 
+import { NgxPrintModule } from 'ngx-print';
 
 
 
@@ -93,7 +94,8 @@ import { OpenPageComponent } from './open-page/open-page.component';
     MatSortModule,
     InputsModule,
     MatSortModule,
-    DropDownsModule
+    DropDownsModule,
+    NgxPrintModule
     // TreeViewModule
   ],
   providers: [
