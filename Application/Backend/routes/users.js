@@ -13,7 +13,7 @@ router.post('/login', async function (req, res) {
             }, function (err, result) {
                 if (result) {
                     if (result.length > 0) {
-                        let payload = {username: req.body.Username, _id: result[0]._id};
+                        let payload = {username: req.body.Username, _id: result[0]._id, fullName: result[0].FirstName + " " + result[0].LastName};
                         let options = {expiresIn: "1d"};
                         const token = jwt.sign(payload, secret, options);
                         res.send({"token": token, "fullName": result[0].FirstName + " " + result[0].LastName, "_id": result[0]._id});

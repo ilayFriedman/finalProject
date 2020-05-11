@@ -1,110 +1,146 @@
 <div>
-<mat-tab-group>
-    <mat-tab label="My Maps & Folders:">
-        <div style="padding-left: 25px; margin: auto;">
-            <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
-                <tr>
-                    <td><span class="k-icon k-i-pencil"></span> Edit properties</td>
-                    <td><span class="k-icon k-i-delete"></span> Delete file</td>
-                    <td><span class="k-icon k-i-plus"></span> Add sub-folder</td>
-                    <td><span class="k-icon k-i-table-insert"></span> Add Map</td>
-                    <td><span  class="k-icon k-i-lock"></span> File Permissions</td>
-                </tr>
-            </table>
-        </div>
-        <!-- <div>
+    <mat-tab-group>
+        <mat-tab label="My Maps & Folders:">
+            <div style="padding-left: 25px; margin: auto;">
+                <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
+                    <tr>
+                        <td><span class="k-icon k-i-pencil"></span> Edit properties</td>
+                        <td><span class="k-icon k-i-delete"></span> Delete file</td>
+                        <td><span class="k-icon k-i-plus"></span> Add sub-folder</td>
+                        <td><span class="k-icon k-i-table-insert"></span> Add Map</td>
+                        <td><span class="k-icon k-i-lock"></span> File Permissions</td>
+                    </tr>
+                </table>
+            </div>
+            <!-- <div>
             <input [(ngModel)]="searchTerm" #category (keyup)='onkeyup(category.value)' placeholder="Search categories" />
         </div> -->
-        <div style="padding-top: 5%;">
+            <div style="padding-top: 5%;">
 
                 <div>
-                <!-- delete dialog configuration -->
-                    <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel',null)" [minWidth]="250" [width]="450">
-                    <p style="margin: 30px; text-align: center;">Are you sure you want to Delete "{{fileToDelete.text}}"?</p>
-                    <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0" style="margin: 30px; text-align: center; color:red">This Folder contains files! Removal will delete all the files inside and your permissions about them as well</p>
-                    <p *ngIf="!fileToDelete.isFolder" style="margin: 30px; text-align: center; color:red">Note! All permissions granted for this map will also disappear and the map will be deleted for all users</p>
+                    <!-- delete dialog configuration -->
+                    <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="closeDialog('cancel',null)"
+                        [minWidth]="250" [width]="450">
+                        <p style="margin: 30px; text-align: center;">Are you sure you want to Delete
+                            "{{fileToDelete.text}}"?</p>
+                        <p *ngIf="fileToDelete.isFolder && fileToDelete.items.length != 0"
+                            style="margin: 30px; text-align: center; color:red">This Folder contains files! Removal will
+                            delete all the files inside and your permissions about them as well</p>
+                        <p *ngIf="!fileToDelete.isFolder" style="margin: 30px; text-align: center; color:red">Note! All
+                            permissions granted for this map will also disappear and the map will be deleted for all
+                            users</p>
                         <kendo-dialog-actions>
-                        <button kendoButton (click)="closeDialog('no',f)">No</button>
-                        <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This File</button>
+                            <button kendoButton (click)="closeDialog('no',f)">No</button>
+                            <button kendoButton (click)="closeDialog('yes',fileToDelete)" primary="true">Delete This
+                                File</button>
                         </kendo-dialog-actions>
                     </kendo-dialog>
 
 
-                <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" 
-                [children]="children"
-                [hasChildren]="hasChildren"
-                [animate]="true"
-                [expandBy]="'text'"
-                [(expandedKeys)]="expandedKeys"
-                (collapse)="handleCollapse($event)"
-                (expand)="handleExpand($event)">
-                <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                    <span (mouseenter)="mouseOverNodeChanger(dataItem)" (mouseleave)="mouseOverNodeChanger(null)">
-                        <span [ngClass]="iconClass(dataItem)"></span><!-- ICON-->
-                        <span style="margin-right: 10px; cursor: pointer;" (click)="loadSelectedMap_toMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
-                        
-                        <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
-                            <span *ngIf="dataItem.isFolder"> <!-- folderNode options-->
-                                <span>
-                                    <span *ngIf="dataItem.text!='/'"  style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil" (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span *ngIf="dataItem.text!='/' || (dataItem.text=='/' && dataItem.items.length!=0)" style="margin-right: 10px; cursor: pointer;" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
-                                    <!-- <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span>Permissions -->
-                                </span>
-                                <span>
-                                    <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-plus" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span><!-- add subFolder-->
-                                    <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-table-insert" (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span><!-- addMap-->
-                                </span>     
+                    <kendo-treeview [nodes]="parsedData" textField="text" kendoTreeViewExpandable
+                        kendoTreeViewHierarchyBinding childrenField="items" [children]="children"
+                        [hasChildren]="hasChildren" [animate]="true" [expandBy]="'text'" [(expandedKeys)]="expandedKeys"
+                        (collapse)="handleCollapse($event)" (expand)="handleExpand($event)">
+                        <ng-template kendoTreeViewNodeTemplate let-dataItem>
+                            <span (mouseenter)="mouseOverNodeChanger(dataItem)"
+                                (mouseleave)="mouseOverNodeChanger(null)">
+                                <span [ngClass]="iconClass(dataItem)"></span><!-- ICON-->
+                                <span style="margin-right: 10px; cursor: pointer;"
+                                    (click)="loadSelectedMap_toMapViewer(dataItem)">{{dataItem.text}}</span><!-- text-->
 
-                            </span>
-                            <span *ngIf="!dataItem.isFolder"> <!-- MapNode options-->
-                                <span>
-                                    <span *ngIf="dataItem.permission != 'Read'" style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil" (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span><!-- update-->
-                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px; cursor: pointer;" (click)="addFolderCheckOut.reset();openDialog(dataItem)" class="k-icon k-i-delete"></span><!-- delete-->
-                                    <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px; cursor: pointer;" (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();" class="k-icon k-i-lock"></span><!-- Permissions-->
-                                    <span style="font-size: 12px;"><i><b>{{dataItem.permission}}</b></i></span>
+                                <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
+                                    <span *ngIf="dataItem.isFolder">
+                                        <!-- folderNode options-->
+                                        <span>
+                                            <span *ngIf="dataItem.text!='/'"
+                                                style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
+                                                (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span>
+                                            <!-- update-->
+                                            <span
+                                                *ngIf="dataItem.text!='/' || (dataItem.text=='/' && dataItem.items.length!=0)"
+                                                style="margin-right: 10px; cursor: pointer;"
+                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)"
+                                                class="k-icon k-i-delete"></span><!-- delete-->
+                                            <!-- <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span>Permissions -->
+                                        </span>
+                                        <span>
+                                            <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-plus"
+                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span>
+                                            <!-- add subFolder-->
+                                            <span style="margin-right: 10px; cursor: pointer;"
+                                                class="k-icon k-i-table-insert"
+                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span>
+                                            <!-- addMap-->
+                                        </span>
+
+                                    </span>
+                                    <span *ngIf="!dataItem.isFolder">
+                                        <!-- MapNode options-->
+                                        <span>
+                                            <span *ngIf="dataItem.permission != 'Read'"
+                                                style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
+                                                (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span>
+                                            <!-- update-->
+                                            <span *ngIf="dataItem.permission == 'Owner'"
+                                                style="margin-right: 10px; cursor: pointer;"
+                                                (click)="addFolderCheckOut.reset();openDialog(dataItem)"
+                                                class="k-icon k-i-delete"></span><!-- delete-->
+                                            <span *ngIf="dataItem.permission == 'Owner'"
+                                                style="margin-right: 10px; cursor: pointer;"
+                                                (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();"
+                                                class="k-icon k-i-lock"></span><!-- Permissions-->
+                                            <span style="font-size: 12px;"><i><b>{{dataItem.permission}}</b></i></span>
+                                        </span>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
-                        </span>
-                    </ng-template>
-                </kendo-treeview>
-                <div *ngIf="totalMapsCounter == 0 && totalFolderCounter == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Root Folder Is Empty.</i></span>
-                <br><span style="font-size: 13px; text-align: center;">Click on the folder icon to create some new files</span></div>
+                        </ng-template>
+                    </kendo-treeview>
+                    <div *ngIf="totalMapsCounter == 0 && totalFolderCounter == 0"
+                        style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;">
+                        <span><i>Your Root Folder Is Empty.</i></span>
+                        <br><span style="font-size: 13px; text-align: center;">Click on the folder icon to create some
+                            new files</span></div>
                 </div>
-    </div>
-
-    </mat-tab>
-    <mat-tab label="Shared Maps (Not Associated In Your Tree):">
-
-
-        <!-- SHARED MAPS -->
-
-        <div style="font-size: 14px; padding-top : 15px;">
-            <table style="width: 100%;">
-                <tr style="color: rgb(196, 196, 196);">
-                    <td></td>
-                    <td>Map Name:</td>
-                    <td>Your Permission:</td>
-                    <td>Move to Folder:</td>
-                    <td>Action:</td>
-                </tr>
-                <tr *ngFor="let sharedMap of sharedMapList_notAssociated; index as i">
-                    <td class="k-icon k-i-table-align-middle-center"></td>
-                    <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
-                    <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
-                    <td style="vertical-align:center; font-size: 13px;"><kendo-dropdownlist [data]="folderNamesList" [textField]="'name'" [valueField]="'folderID'" [(ngModel)]="folderToSelected">
-                    </kendo-dropdownlist></td>
-                    <td><button (click)="AssociatedMap(sharedMap)">Move to Folder!</button></td>
-                </tr>
-            </table>
-        </div>
-
-        <div *ngIf="sharedMapList_notAssociated.length == 0" style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;"><span><i>Your Shared Maps Area Is Empty.</i></span>
-            <br><span style="font-size: 13px; text-align: center;">Noting to show. Ask for share request</span>
             </div>
 
-    </mat-tab>
-  </mat-tab-group>
+        </mat-tab>
+        <mat-tab label="Shared Maps (Not Associated In Your Tree):">
+
+
+            <!-- SHARED MAPS -->
+
+            <div style="font-size: 14px; padding-top : 15px;">
+                <table style="width: 100%;">
+                    <tr style="color: rgb(196, 196, 196);">
+                        <td></td>
+                        <td>Map Name:</td>
+                        <td>Your Permission:</td>
+                        <td>Move to Folder:</td>
+                        <td>Action:</td>
+                    </tr>
+                    <tr *ngFor="let sharedMap of sharedMapList_notAssociated; index as i">
+                        <td class="k-icon k-i-table-align-middle-center"></td>
+                        <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
+                        <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
+                        <td style="vertical-align:center; font-size: 13px;">
+                            <kendo-dropdownlist [data]="folderNamesList" [textField]="'name'" [valueField]="'folderID'"
+                                [(ngModel)]="folderToSelected">
+                            </kendo-dropdownlist>
+                        </td>
+                        <td><button (click)="AssociatedMap(sharedMap)">Move to Folder!</button></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div *ngIf="sharedMapList_notAssociated.length == 0"
+                style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;">
+                <span><i>Your Shared Maps Area Is Empty.</i></span>
+                <br><span style="font-size: 13px; text-align: center;">Noting to show. Ask for share request</span>
+            </div>
+
+        </mat-tab>
+    </mat-tab-group>
 
 
     <!-- add folder modal -->
@@ -113,16 +149,18 @@
             <span class="close" (click)="closeModal('addFolderModal')">&times;</span>
             <div *ngIf="!actionInModalIsSuccecs">
                 <h2>Add New Folder To "{{selectedNode.text}}" Folder:</h2>
-                <div style="font-size: 13px;">Please insert folder name (required), and some description (required)</div>
+                <div style="font-size: 13px;">Please insert folder name (required), and some description (required)
+                </div>
                 <br><br>
                 <form [formGroup]="addFolderCheckOut" (ngSubmit)="onSubmit_AddFolder()">
                     <div>
                         <label>Folder Name: </label>
                         <input id="folderName" type="text" formControlName="folderName" placeholder="Enter folder name">
-                    </div>  
+                    </div>
                     <div>
                         <label>Description: </label>
-                        <textarea  formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
+                        <textarea formControlName="description" rows="4" cols="50"
+                            placeholder="Add some Description"></textarea>
                     </div>
                     <br><br>
                     <input type="submit" value="Add Folder">
@@ -138,107 +176,125 @@
     </jw-modal>
 
 
-  <!-- add map modal -->
-  <jw-modal class="jw-modal" id="addMapModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeModal('addMapModal')">&times;</span>
-        <div *ngIf="!actionInModalIsSuccecs">
-            <span class="k-icon k-i-table-insert"></span><h2> Add New Map To "{{selectedNode.text}}" Folder:</h2><br><br>
-            <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap()">    <!-- required pattern="[a-zA-Z ]*"> -->
-                <div style="text-align: left;">
-                    <label>Map Name: </label>
-                    <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
-                </div>  
-                <div style="text-align: left; margin-top: 10px; vertical-align:top;">
-                    <label>Description: </label>
-                    <textarea formControlName="description" rows="4" cols="50" placeholder="Add some Description"></textarea>
-                </div>
-                <input type="submit" value="Add Map">
-                <div *ngIf="formErrors!=''" [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
-            </form>
+    <!-- add map modal -->
+    <jw-modal class="jw-modal" id="addMapModal">
+        <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+            <span class="close" (click)="closeModal('addMapModal')">&times;</span>
+            <div *ngIf="!actionInModalIsSuccecs">
+                <span class="k-icon k-i-table-insert"></span>
+                <h2> Add New Map To "{{selectedNode.text}}" Folder:</h2><br><br>
+                <form [formGroup]="addMapCheckOut" (ngSubmit)="onSubmit_AddMap()">
+                    <!-- required pattern="[a-zA-Z ]*"> -->
+                    <div style="text-align: left;">
+                        <label>Map Name: </label>
+                        <input id="mapName" type="text" formControlName="mapName" placeholder="Enter Map name">
+                    </div>
+                    <div style="text-align: left; margin-top: 10px; vertical-align:top;">
+                        <label>Description: </label>
+                        <textarea formControlName="description" rows="4" cols="50"
+                            placeholder="Add some Description"></textarea>
+                    </div>
+                    <input type="submit" value="Add Map">
+                    <div *ngIf="formErrors!=''" [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+                </form>
+            </div>
+
+            <div *ngIf="actionInModalIsSuccecs">
+                <div>The Folder Added Successfully!<br><br></div>
+                <div><span>(window will close in 2 secondes)</span></div>
+
+            </div>
         </div>
-
-        <div *ngIf="actionInModalIsSuccecs">
-            <div>The Folder Added Successfully!<br><br></div>
-            <div><span>(window will close in 2 secondes)</span></div>
-
-        </div>
-    </div>
-</jw-modal>
+    </jw-modal>
 
 
 
-  <!-- edit properties modal -->
-  <jw-modal class="jw-modal" id="editPropertiesModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
-        <span class="close" (click)="closeModal('editPropertiesModal')">&times;</span>
-        <div *ngIf="!actionInModalIsSuccecs">
+    <!-- edit properties modal -->
+    <jw-modal class="jw-modal" id="editPropertiesModal">
+        <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+            <span class="close" (click)="closeModal('editPropertiesModal')">&times;</span>
+            <div *ngIf="!actionInModalIsSuccecs">
 
-            <h2>Properties "{{selectedNode.text}}":</h2>
-            <div style="font-size: 13px;">Please click on fields you would like to change and press Update.</div>
-            <br><br>
-            <form [formGroup]="editPropertiesCheckOut" (ngSubmit)="onSubmit_editProperties()">
-                <div>
-                    <table style="width: 800px;">
-                        <tr>
-                            <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);"><b><label>File Name: </label></b></td>
-                            <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="!changeFileName">{{selectedNode.text}}</td>
-                            <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="changeFileName"><input id="fileName" type="text" formControlName="fileName" placeholder="{{selectedNode.text}}"></td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeFileName"><span (click)="changeFileName= !changeFileName"  [ngClass]="changeFileName ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeFileName"><span (click)="changeFileName= !changeFileName"  [ngClass]="changeFileName ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
-                            
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);"><b><label>File Description: </label></b></td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription">{{selectedNode.Description}}</td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><textarea formControlName="description" rows="4" cols="50" placeholder="{{selectedNode.Description}}"></textarea></td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription"><span (click)="changeDescription= !changeDescription"  [ngClass]="changeDescription ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
-                            <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><span (click)="changeDescription= !changeDescription"  [ngClass]="changeDescription ? 'true' : 'false'" style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
-                            
-                        </tr>
-                    </table>
-                    
-                    
-                    
-                </div>  
+                <h2>Properties "{{selectedNode.text}}":</h2>
+                <div style="font-size: 13px;">Please click on fields you would like to change and press Update.</div>
                 <br><br>
-                <input type="submit" value="Update Details">
-                <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
-            </form>
+                <form [formGroup]="editPropertiesCheckOut" (ngSubmit)="onSubmit_editProperties()">
+                    <div>
+                        <table style="width: 800px;">
+                            <tr>
+                                <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);">
+                                    <b><label>File Name: </label></b></td>
+                                <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="!changeFileName">
+                                    {{selectedNode.text}}</td>
+                                <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="changeFileName">
+                                    <input id="fileName" type="text" formControlName="fileName"
+                                        placeholder="{{selectedNode.text}}"></td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeFileName"><span
+                                        (click)="changeFileName= !changeFileName"
+                                        [ngClass]="changeFileName ? 'true' : 'false'"
+                                        style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="changeFileName"><span
+                                        (click)="changeFileName= !changeFileName"
+                                        [ngClass]="changeFileName ? 'true' : 'false'"
+                                        style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
 
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);">
+                                    <b><label>File Description: </label></b></td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription">
+                                    {{selectedNode.Description}}</td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><textarea
+                                        formControlName="description" rows="4" cols="50"
+                                        placeholder="{{selectedNode.Description}}"></textarea></td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription"><span
+                                        (click)="changeDescription= !changeDescription"
+                                        [ngClass]="changeDescription ? 'true' : 'false'"
+                                        style="cursor: pointer;"><i><u>(Click To Change)</u></i></span></td>
+                                <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><span
+                                        (click)="changeDescription= !changeDescription"
+                                        [ngClass]="changeDescription ? 'true' : 'false'"
+                                        style="cursor: pointer;"><i><u>(Don't Change)</u></i></span></td>
+
+                            </tr>
+                        </table>
+
+
+
+                    </div>
+                    <br><br>
+                    <input type="submit" value="Update Details">
+                    <div [innerHTML]="formErrors" style="font-size: 12px; color: red;"></div>
+                </form>
+
+            </div>
+
+            <div *ngIf="actionInModalIsSuccecs">
+                <div>The Updates Saved Successfully!<br><br></div>
+                <div><span>(window will close in 2 secondes)</span></div>
+
+            </div>
         </div>
-
-        <div *ngIf="actionInModalIsSuccecs">
-            <div>The Updates Saved Successfully!<br><br></div>
-            <div><span>(window will close in 2 secondes)</span></div>
-
-        </div>
-    </div>
-</jw-modal>
+    </jw-modal>
 
 
 
-  <!-- Permisssions modal -->
-  <jw-modal class="jw-modal" id="usersPermissionsModal">
-    <div ngDraggable class="jw-modal-body">
-        <span class="close" (click)="undoAllChangesClick();closePermissionModal('usersPermissionsModal')">&times;</span>
-        <span><h2>Permissions Management for "{{selectedNode.text}}" Map:</h2></span>
-        <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!</span>
-        <br><br>
-        <div>
-            <kendo-grid 
-          [data]="currPermissionMapDATA"
-          [height]="533"
-          [sortable]="true"
-
-          (cancel)="cancelHandler($event)"
-          (add)="openNewRow($event)"
-          (save)="addNewUserToPermission($event)"
-          (remove)="openUserPerimssionDialog($event)"
-          [navigable]="true"
-          [resizable]="true"
-            style="max-width:inherit;">
-        <!-- 
+    <!-- Permisssions modal -->
+    <jw-modal class="jw-modal" id="usersPermissionsModal">
+            <div ngDraggable class="jw-modal-body">
+                <div class="close" [class.disabled]="dbAction" (click)="undoAllChangesClick();closePermissionModal('usersPermissionsModal')">&times;</div>
+                <div class="grid-wrapper">
+                <span>
+                    <h2>Permissions Management for "{{selectedNode.text}}" Map:</h2>
+                </span>
+                <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!</span>
+                <br><br>
+                <div>
+                    <kendo-grid [data]="currPermissionMapDATA" [height]="533" [sortable]="true"
+                        (cancel)="cancelHandler($event)" (add)="openNewRow($event)"
+                        (save)="addNewUserToPermission($event)" (remove)="openUserPerimssionDialog($event)"
+                        [navigable]="true" [resizable]="true" style="max-width:inherit;">
+                        <!-- 
                       [pageSize]="pageSize" [skip]="gridState.skip" 
           [pageable]="{
             buttonCount: buttonCount,
@@ -255,56 +311,87 @@
         
         
          -->
-         
-        <ng-template kendoGridToolbarTemplate>
-            <button kendoGridAddCommand>Add Permission To User</button>
-            <button class='k-button'>Add Permission To Group</button>
-            <button class='k-button' (click)="saveAllChangesClick()" [disabled] = "!deleteUsersChange && updatePermissionUsers.length == 0"><span [ngStyle]="deleteUsersChange?{'font-weight': 'bold'} : {'font-weight': 'normal'}">Save Changes</span></button>
-            <button class='k-button' (click)="undoAllChangesClick()" [disabled] = "!deleteUsersChange && updatePermissionUsers.length == 0">Undo All Changes</button>
-            <p *ngIf="deleteUsersChange || updatePermissionUsers.length != 0" style="text-align: center; color:green"><b><i>Some Changes Are waiting To Been Saved! dont Forget to save them before you leave</i></b></p>   
-        </ng-template>
-        
-        <kendo-grid-column field="username" title="Username (E-mail)" [width]="180" [minResizableWidth]="100"></kendo-grid-column> <!--userName column-->
-        <kendo-grid-column field="name" title="Full name" [width]="180" [minResizableWidth]="100"></kendo-grid-column> <!--name column-->
 
-        <kendo-grid-column field="read" title="Read" [width]="70" [minResizableWidth]="50"> <!--Read column-->
-            <ng-template kendoGridCellTemplate let-dataItem let let-rowIndex="rowIndex">
-                <input type="radio"  [checked]="dataItem.permission=='Read'" [disabled] = "dataItem.username == '' " name="{{dataItem.username}}" id="Read" (change)="radioButtonsUpdate($event,rowIndex)"/>
-            </ng-template>
-        </kendo-grid-column>
+                        <ng-template kendoGridToolbarTemplate>
+                            <button kendoGridAddCommand>Add Permission To User</button>
+                            <button class='k-button'>Add Permission To Group</button>
+                            <button class='k-button' (click)="saveAllChangesClick()"
+                                [disabled]="!deleteUsersChange && updatePermissionUsers.length == 0"><span
+                                    [ngStyle]="deleteUsersChange?{'font-weight': 'bold'} : {'font-weight': 'normal'}">Save
+                                    Changes</span></button>
+                            <button class='k-button' (click)="undoAllChangesClick()"
+                                [disabled]="!deleteUsersChange && updatePermissionUsers.length == 0">Undo All
+                                Changes</button>
+                            <p *ngIf="deleteUsersChange || updatePermissionUsers.length != 0"
+                                style="text-align: center; color:green"><b><i>Some Changes Are waiting To Been Saved!
+                                        dont Forget to save them before you leave</i></b></p>
+                        </ng-template>
 
-        <kendo-grid-column field="write" title="Write" [width]="70" [minResizableWidth]="50"> <!--write column-->
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                <input type="radio" [checked]="dataItem.permission=='Write'"  [disabled] = "dataItem.username == '' " name="{{dataItem.username}}" id="Write" (change)="radioButtonsUpdate($event,rowIndex)" />
-            </ng-template>
-        </kendo-grid-column>
+                        <kendo-grid-column field="username" title="Username (E-mail)" [width]="180"
+                            [minResizableWidth]="100"></kendo-grid-column>
+                        <!--userName column-->
+                        <kendo-grid-column field="name" title="Full name" [width]="180" [minResizableWidth]="100">
+                        </kendo-grid-column>
+                        <!--name column-->
 
-        <kendo-grid-column field="owner" title="Owner" [width]="70" [minResizableWidth]="50"> <!--owner column-->
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <kendo-grid-column field="read" title="Read" [width]="70" [minResizableWidth]="50">
+                            <!--Read column-->
+                            <ng-template kendoGridCellTemplate let-dataItem let let-rowIndex="rowIndex">
+                                <input type="radio" [checked]="dataItem.permission=='Read'"
+                                    [disabled]="dataItem.username == '' " name="{{dataItem.username}}" id="Read"
+                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                            </ng-template>
+                        </kendo-grid-column>
 
-                <input type="radio" [checked]="dataItem.permission=='Owner'"  [disabled] = "dataItem.username == '' " name="{{dataItem.username}}" id="Owner" (change)="radioButtonsUpdate($event,rowIndex)"/>
-            </ng-template>
-        </kendo-grid-column>
-        <kendo-grid-command-column title="Actions" width="160"> <!--actions column-->
-            <ng-template kendoGridCellTemplate let-isNew="isNew">
-                <button kendoGridRemoveCommand>Remove User From List</button>
-                <button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null">Add</button>
-                <button kendoGridCancelCommand>Cancel</button>
-            </ng-template>
-        </kendo-grid-command-column>
-      </kendo-grid>
+                        <kendo-grid-column field="write" title="Write" [width]="70" [minResizableWidth]="50">
+                            <!--write column-->
+                            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                <input type="radio" [checked]="dataItem.permission=='Write'"
+                                    [disabled]="dataItem.username == '' " name="{{dataItem.username}}" id="Write"
+                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                            </ng-template>
+                        </kendo-grid-column>
 
-      <!-- dialog of remove user -->
-      <kendo-dialog title="Please confirm" *ngIf="userDeleteDialogOpened" (close)="closeUserPerimssionDialog('cancel')" [minWidth]="250" [width]="450">
-        <p style="margin: 30px; text-align: center;">Are you sure you want to delete User {{ userToDelete.username }} from permission list?</p>
-        <p style="margin: 30px; text-align: center; color:red">Note! his permission and the map: "{{selectedNode.text}}" itself will be removed from his management page!</p>
-        <kendo-dialog-actions>
-            <button class='k-button' (click)="closeUserPerimssionDialog('no')">No</button>
-            <button class='k-button k-primary' (click)="closeUserPerimssionDialog('yes')" primary="true">Yes. Remove This User {{userToDelete.username}}</button>
-        </kendo-dialog-actions>
-    </kendo-dialog>
-        </div>
-    </div>
-</jw-modal>
+                        <kendo-grid-column field="owner" title="Owner" [width]="70" [minResizableWidth]="50">
+                            <!--owner column-->
+                            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+
+                                <input type="radio" [checked]="dataItem.permission=='Owner'"
+                                    [disabled]="dataItem.username == '' " name="{{dataItem.username}}" id="Owner"
+                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-command-column title="Actions" width="160">
+                            <!--actions column-->
+                            <ng-template kendoGridCellTemplate let-isNew="isNew">
+                                <button kendoGridRemoveCommand>Remove User From List</button>
+                                <button kendoGridSaveCommand
+                                    [disabled]="this.newUserPermissionChoose == null">Add</button>
+                                <button kendoGridCancelCommand>Cancel</button>
+                            </ng-template>
+                        </kendo-grid-command-column>
+                    </kendo-grid>
+
+                    <!-- dialog of remove user -->
+                    <kendo-dialog title="Please confirm" *ngIf="userDeleteDialogOpened"
+                        (close)="closeUserPerimssionDialog('cancel')" [minWidth]="250" [width]="450">
+                        <p style="margin: 30px; text-align: center;">Are you sure you want to delete User
+                            {{ userToDelete.username }} from permission list?</p>
+                        <p style="margin: 30px; text-align: center; color:red">Note! his permission and the map:
+                            "{{selectedNode.text}}" itself will be removed from his management page!</p>
+                        <kendo-dialog-actions>
+                            <button class='k-button' (click)="closeUserPerimssionDialog('no')">No</button>
+                            <button class='k-button k-primary' (click)="closeUserPerimssionDialog('yes')"
+                                primary="true">Yes. Remove This User {{userToDelete.username}}</button>
+                        </kendo-dialog-actions>
+                    </kendo-dialog>
+                </div>
+                <div *ngIf="dbAction" class="k-i-loading"></div>
+            </div>
+            </div>
+
+
+
+    </jw-modal>
 
 </div>

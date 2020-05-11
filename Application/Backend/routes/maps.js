@@ -3,7 +3,8 @@ const router = express.Router();
 const map = require('../models/map');
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
-const folder = require('../models/folder')
+const folder = require('../models/folder');
+var nodemailer = require('nodemailer');
 
 function UserHasReadPermissionForMap(resMap, userId) {
     if (resMap.Permission.Owner.indexOf(userId) != -1) {
@@ -304,29 +305,80 @@ router.post('/private/updateMapProperties', async function (req, res) {
 
 router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
     if (req.params.mapID && req.params.userID && req.params.permission) {
-        map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + req.params.permission]: req.params.userID } }, function (err, result) {
-            if (err) {
-                console.log(err);
-                // res.status(500).send("Server error occurred while pop from parent folder.");
-                res.statusCode = 500;
-                res.end();
-            } else {
-                // delete from otherUser folders
-                folder.updateMany({ 'Creator': req.params.userID, 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+        user.findOne({ '_id':req.params.userID }, function (err, userResult) {
+            if (userResult) {
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + req.params.permission]: req.params.userID } }, function (err, mapResult) {
                     if (err) {
                         console.log(err);
                         // res.status(500).send("Server error occurred while pop from parent folder.");
                         res.statusCode = 500;
                         res.end();
                     } else {
-                        // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                        res.statusCode = 200;
-                        res.end();
+                        // delete from otherUser folders
+                        folder.updateMany({ 'Creator': req.params.userID, 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+                            if (err) {
+                                console.log(err);
+                                // res.status(500).send("Server error occurred while pop from parent folder.");
+                                res.statusCode = 500;
+                                res.end();
+                            } else {
+                                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+        
+                                if (userResult.getPermissionUpdate) {
+                                    var mailSubject = "Map Permission Revocation"
+                                    var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
+                                     + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='www.ynet.co.il'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+                                    try {
+                                        var transporter = nodemailer.createTransport({
+                                            service: 'gmail',
+                                            auth: {
+                                                user: 'me.maps.system',
+                                                pass: 'memaps123'
+                                            }
+                                        });
+        
+                                        var mailOptions = {
+                                            from: 'me.maps.system@gmail.com',
+                                            to: userResult.Username,
+                                            subject: mailSubject,
+                                            html: text
+                                        };
+                                        //   console.log(mailOptions)
+        
+                                        transporter.sendMail(mailOptions, function (error, info) {
+                                            if (error) {
+                                                console.log(error);
+                                                res.status(500).send(`Server error occured while send email`)
+                                                res.end()
+                                            } else {
+                                                // res.status(200).send('Email sent: ' + info.response)
+                                                res.statusCode = 200;
+                                                res.end();
+        
+                                            }
+                                        });
+                                    } catch (e) {
+                                        
+                                        res.status(400).send(`problem: ${e}`);
+                                        res.end()
+                                    }
+                                }
+                                else{
+                                    res.statusCode = 200;
+                                    res.end();
+                                }
+                            }
+                        });
+        
                     }
                 });
-
+            }
+            else{
+                res.statusCode = 400;
+                res.end();
             }
         });
+        
     } else {
         // res.status(400).send(`Missing map id`);
         res.statusCode = 400;
@@ -337,15 +389,64 @@ router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async 
 
 router.post('/private/updateUserPermission', async function (req, res) {
     if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
-        map.findOneAndUpdate({ _id: req.body.mapID }, { $pull: { ["Permission." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Permission." + req.body.permission_To]: req.body.userID } }, function (err, result) {
-            if (err) {
-                console.log(err);
-                // res.status(500).send("Server error occurred while pop from parent folder.");
-                res.statusCode = 500;
-                res.end();
-            } else {
-                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                res.statusCode = 200;
+        user.findOne({ '_id':req.body.userID }, function (err, userResult) {
+            if (userResult) {
+                map.findOneAndUpdate({ _id: req.body.mapID }, { $pull: { ["Permission." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Permission." + req.body.permission_To]: req.body.userID } }, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                        // res.status(500).send("Server error occurred while pop from parent folder.");
+                        res.statusCode = 500;
+                        res.end();
+                    } else {
+                        // change - now send mail
+                        if (userResult.getPermissionUpdate) {
+                            var mailSubject = "Map Permission Updates"
+                            var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
+                             + " changed your permission for map: <b>" + result.MapName + "</b> from <b>"+req.body.permission_From +"</b> to <b>"+req.body.permission_To+ "</b>.<br><br>Please log in for more details in <a href='www.ynet.co.il'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+                            try {
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: 'me.maps.system',
+                                        pass: 'memaps123'
+                                    }
+                                });
+        
+                                var mailOptions = {
+                                    from: 'me.maps.system@gmail.com',
+                                    to: userResult.Username,
+                                    subject: mailSubject,
+                                    html: text
+                                };
+                                //   console.log(mailOptions)
+        
+                                transporter.sendMail(mailOptions, function (error, info) {
+                                    if (error) {
+                                        console.log(error);
+                                        res.status(500).send(`Server error occured while send email`)
+                                        res.end()
+                                    } else {
+                                        // res.status(200).send('Email sent: ' + info.response)
+                                        res.statusCode = 200;
+                                        res.end();
+        
+                                    }
+                                });
+                            } catch (e) {
+                                
+                                res.status(400).send(`problem: ${e}`);
+                                res.end()
+                            }
+                        }
+                        else{
+                            res.statusCode = 200;
+                            res.end();
+                        }
+                    }
+                });
+            }
+            else{
+                res.statusCode = 400;
                 res.end();
             }
         });
@@ -370,9 +471,56 @@ router.post('/private/addNewPermission', async function (req, res) {
                         res.statusCode = 500;
                         res.end();
                     } else {
+                        // console.log("he wants mail!!")
+
+                        // success - the user want a email
+                        if (result.getPermissionUpdate) {
+                            var mailSubject = "New Permission Request Has Arrived!"
+                            var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + result.FirstName + " " + result.LastName + "!</h3>\n\n" + req.decoded.fullName + " has given you a " +
+                                "<b>" + req.body.permission_To + "</b>" + ' permission for map "<b>' + resultUpadte.MapName + '</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+                            try {
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: 'me.maps.system',
+                                        pass: 'memaps123'
+                                    }
+                                });
+
+                                var mailOptions = {
+                                    from: 'me.maps.system@gmail.com',
+                                    to: req.body.username,
+                                    subject: mailSubject,
+                                    html: text
+                                };
+                                //   console.log(mailOptions)
+
+                                transporter.sendMail(mailOptions, function (error, info) {
+                                    if (error) {
+                                        console.log(error);
+                                        res.status(500).send(`Server error occured while send email`)
+                                        res.end()
+                                    } else {
+                                        // res.status(200).send('Email sent: ' + info.response)
+                                        res.writeHead(200, { "Content-Type": "application/json" });
+                                        res.end(JSON.stringify(result));
+
+                                    }
+                                });
+                            } catch (e) {
+
+                                res.status(400).send(`problem: ${e}`);
+                                res.end()
+                            }
+                        }
+                        else {
+                            //user dont want to recieve mail
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify(result));
+                        }
+
                         // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify(result));
+
                     }
                 });
 
@@ -453,7 +601,7 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
 });
 
 
-// comments
+// ############ COMMENTS #####################
 
 router.put('/private/addLikeToComment', async function (req, res) {
     if (req.body.mapId) {
@@ -586,5 +734,5 @@ router.put('/private/deleteComment', async function (req, res) {
         res.status(400).send("No map ID attached to request.");
     }
 });
-
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;
