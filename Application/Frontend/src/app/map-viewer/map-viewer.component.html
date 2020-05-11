@@ -2,11 +2,11 @@
     <br>
     <div class="welcome">
         <span style="font-size: 25px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
-            <b>{{currMap.MapName}}</b>
+            <b>{{this.mapHandler.currMap_mapViewer.MapName}}</b>
             <br>
         </span>
         <span style="font-size: 18px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
-            {{currMap.Description}}
+            {{this.mapHandler.currMap_mapViewer.Description}}
         </span>
         <span style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
             <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
@@ -17,10 +17,14 @@
             {{getUserPermission()}}
         </span>
     </div>
+
     <!-- <div id="mapMenu" style="float: left;"> -->
     <mat-toolbar style="background-color: inherit; ">
         <mat-toolbar-row>
             <div style="margin: auto; text-align: center; width: 100%; ">
+                <mat-slide-toggle class="example-margin" [color]="color" [(ngModel)]="subscribeCurrMap"
+                    (change)="subscribe()" [disabled]="disabled" #toggle>
+                    Subscribe</mat-slide-toggle>
                 <button class="mapsMenu" matTooltip="Save As" mat-raised-button (click)="openModal('save-as-modal')"
                     [disabled]="mapHandler.getUserPermission() &lt; 2">
                     <!-- <span class="k-icon  k-i-save" style="width: min-content; font-size: 20px;"></span> -->
@@ -48,7 +52,7 @@
                     (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
                 <button class="mapsMenu" matTooltip="Reset Zoom (Ctrl + 0)" mat-raised-button
                     (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset Zoom </button>
-                <button mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
+                <button class="mapsMenu" mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
 
                 <mat-menu #moreOptions="matMenu">
                     <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
@@ -113,6 +117,6 @@
 <jw-modal class="jw-modal" id="nodeMenuModal">
     <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal (change)="saveChanges()"></app-node-menu-modal>
+        <app-node-menu-modal (reInit)="initNewMap()" (change)="saveChanges()"></app-node-menu-modal>
     </div>
 </jw-modal>

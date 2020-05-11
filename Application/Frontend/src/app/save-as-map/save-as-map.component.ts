@@ -56,7 +56,7 @@ export class SaveAsMapComponent implements OnInit {
 
     result.subscribe(response => {
       this.submitted = false;
-      alert(response)
+      alert("Map Added Succsessfully!")
 
     }, error => {
       this.submitted = false;

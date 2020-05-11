@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewChild, QueryList, Output, EventEmitter, Input } from '@angular/core';
 import { ModalService } from '../services/modal.service';
-import { MatTableDataSource, MatPaginator, MatSort, MatListOption } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient } from "@angular/common/http";
@@ -38,6 +38,12 @@ export interface CommentElement {
   Likes: number
 }
 
+export interface ConnectionElement {
+  mapID: string,
+  MapName: string,
+  nodeId: string
+}
+
 
 
 @Component({
@@ -46,7 +52,9 @@ export interface CommentElement {
   styleUrls: ['./node-menu-modal.component.css']
 })
 export class NodeMenuModalComponent implements OnInit {
-  pageSizeOptions: number[] = [1, 10, 25, 100];
+  @Output("reInit") reInitMapViewer: EventEmitter<any> = new EventEmitter();
+  tabNum: number = 0
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   // ##### refs variables #####
   allRefs: any;
@@ -118,7 +126,7 @@ export class NodeMenuModalComponent implements OnInit {
   // #### Conncetions ####
   nodeToSearch: string = "";
   containingMapsList: any[] = [];
-  connectedMapsList: any[] = [];
+  connectedMapsList: ConnectionElement[] = [];
   mapsSelectedOptions: any;
   connectedMapsSelected: any;
   // selectedMapsOptions: SelectionModel<MatListOption>
@@ -155,19 +163,20 @@ export class NodeMenuModalComponent implements OnInit {
 
     switch (tabId.index) {
       case 1: {
-        console.log("ref tab");
+        console.log(this.tabNum);
         this.unloadNodeRefs();
         this.loadNodeRefs();
         break;
       }
       case 2: {
-        console.log("ctx tab");
+        console.log(this.tabNum);
         this.unloadNodeCtxs();
         this.loadNodeCtxs();
         break;
       }
       case 4: {
-        console.log("comment tab");
+        console.log("tab num: " + this.tabNum);
+
         this.unloadNodeComments();
         this.loadNodeComments();
         break;
@@ -233,6 +242,7 @@ export class NodeMenuModalComponent implements OnInit {
   unloadNodeRefs() {
     this.nodeRefList = [];
     this.nodeRefSource = null;
+    // this.tabNum = 0;
   }
 
   loadNodeRefs() {
@@ -350,6 +360,7 @@ export class NodeMenuModalComponent implements OnInit {
   unloadNodeCtxs() {
     this.nodeCtxsList = [];
     this.nodeCtxsSource = null;
+    // this.tabNum = 0;
   }
   loadNodeCtxs() {
     this.modalService.currNodeData.ctxs.forEach(element => {
@@ -430,17 +441,6 @@ export class NodeMenuModalComponent implements OnInit {
     this.modalService.currNodeData.comment.forEach(element => {
       this.nodeComments.push(element);
     })
-    // let tmp: CommentElement = {
-    //   'id': uuid(),
-    //   'Content': "content",
-    //   'CreatorId': "creatorID",
-    //   'CreatorName': "CreatorName",
-    //   'CreationTime': "CreationTime",
-    //   'LastModificationTime': "LastModificationTime",
-    //   'Likes': 1
-    // }
-    // this.nodeComments.push(tmp);
-    // this.modalService.currNodeData.comment.push(tmp);
     this.nodeCommentsSource = new MatTableDataSource<CommentElement>(this.nodeComments);
     this.nodeCommentsSource.paginator = this.commentsPaginator
     this.nodeCommentsSource.sort = this.commentsSort
@@ -595,10 +595,15 @@ export class NodeMenuModalComponent implements OnInit {
 
   searchNodes() {
     this.containingMapsList = []
+    if (this.nodeToSearch == '') {
+      return;
+    }
     this.mapHandler.searchNodes(this.nodeToSearch).then(res => {
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
+          console.log(map);
+
           this.containingMapsList.push(map)
         })
       }
@@ -615,16 +620,74 @@ export class NodeMenuModalComponent implements OnInit {
     this.mapsSelectedOptions.forEach(element => {
       this.connectedMapsList.push(element)
     });
+    console.log(this.connectedMapsList);
+
   }
 
   moveToConnectedMap(map) {
     console.log(map);
+    // let selectedMap;
+    this.mapHandler.getMap(map.mapID).then(res => {
+      console.log(res);
+      this.mapHandler.currMap_mapViewer = res
+      this.mapHandler.myDiagram.div = null;
+      this.mapHandler.myDiagram = null;
+      this.unloadConnections();
+      this.nodeToSearch = ""
+      this.tabNum = 0;
+      this.modalService.closeMenu('nodeMenuModal')
+      this.reInitMapViewer.emit();
+    }).catch
+      (err => {
+        console.log("error with getMap - promise return");
+        console.log(err)
+      })
+
 
     // let currModel = JSON.parse(self.fileToImport)
     // this.newMap()
     // this.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
   }
 
+  unloadConnections() {
+    this.containingMapsList = [];
+    this.connectedMapsList = [];
+  }
+
+  loadConnections() {
+    this.modalService.currNodeData.connections.forEach(element => {
+      this.connectedMapsList.push(element);
+    })
+  }
+
+  addNewConnection() {
+    this.mapsSelectedOptions.forEach(element => {
+      // let newConnection: ConnectionElement = {
+      //   mapID: this.mapHandler.currMap_mapViewer._id,
+      //   MapName: this.mapHandler.currMap_mapViewer.MapName,
+      //   nodeId: this.modalService.currNodeData.id
+      // }
+
+      let data = {
+        mapId: this.mapHandler.currMap_mapViewer._id,
+        nodeId: this.modalService.currNodeData.id,
+        connection: element
+      }
+
+      this.NodeMenuHendler.createNewConnection(data).then(res => {
+        this.modalService.currNodeData.connections.push(element)
+        this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+        this.connectedMapsList = [];
+        this.loadConnections()
+        console.log(res);
+      }).catch
+        (err => {
+          console.log("error new connection");
+          console.log(err)
+        });
+    });
+    // element.comment
+  }
 
 
   /** Whether the number of selected elements matches the total number of rows. */

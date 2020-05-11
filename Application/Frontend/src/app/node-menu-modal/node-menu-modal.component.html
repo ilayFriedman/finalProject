@@ -1,5 +1,8 @@
-<div>
-    <mat-tab-group dynamicHeight="true" id="nodeMenu" (selectedTabChange)="tabClick($event)">
+<h1> Properties of "{{modalService.currNodeData.text}}"</h1>
+<div style="width: 100%;">
+    <mat-tab-group dynamicHeight="true" id="nodeMenu" (selectedTabChange)="tabClick($event)" [selectedIndex]="tabNum"
+        (selectedIndexChange)="tabNum=$event">
+
         <!-- Details tab -->
         <mat-tab label="Details">
             <div class="tab-content">
@@ -469,42 +472,75 @@
 
         <!-- connections tab -->
         <mat-tab label="Connections">
-            <div id="addConnectionDiv" style="width: 50%; float: left;">
-                <h2 style="font-family:  'Calibri', ssans-seif;">Add Connection</h2>
-                <div style="margin: auto; position: relative;">
-                    <span style="width: 80%; float: left;">
-                        <mat-form-field>
-                            <mat-label>Node Text</mat-label>
-                            <input matInput [(ngModel)]="nodeToSearch">
-                        </mat-form-field>
-                    </span>
-                    <span style="width: 20%;">
-                        <button mat-raised-button (click)="searchNodes()">Search</button>
-                    </span>
-                </div>
+            <!-- <div id="addConnectionDiv"> -->
+            <table style="float: left; position: relative; width: 50%;">
+                <ng-container>
+                    <th style="font-family:  'Calibri', ssans-seif;">Add Connection</th>
+                    <tr>
+                        <div style="margin: auto; position: relative;">
+                            <span style="width: 80%; float: left;">
+                                <mat-form-field style="width: 85%;">
+                                    <mat-label>Node Text</mat-label>
+                                    <input matInput [(ngModel)]="nodeToSearch">
+                                </mat-form-field>
+                                <button mat-icon-button (click)=" containingMapsList = [] && nodeToSearch = ''">
+                                    <span class="k-icon k-i-close" style="font-size: 20px"></span>
+                                </button>
+                            </span>
+                            <span style="margin: auto; width: 20%;">
+                                <button mat-raised-button (click)="searchNodes()">Search</button>
+                            </span>
 
-                <div style=" width: max-content;">
-                    <mat-selection-list [(ngModel)]="mapsSelectedOptions">
-                        <mat-list-option checkboxPosition="before" *ngFor="let map of containingMapsList" [value]="map">
-                            {{map.MapName}}
-                        </mat-list-option>
-                        <button mat-raised-button (click)="addConnectionToNoda()"> Connect </button>
-                    </mat-selection-list>
-                </div>
-            </div>
+                        </div>
+                    </tr>
+                    <tr>
+                        <div style=" width: max-content;" *ngIf="containingMapsList.length > 0">
+                            <mat-selection-list [(ngModel)]="mapsSelectedOptions">
+                                <mat-list-option checkboxPosition="before" *ngFor="let map of containingMapsList"
+                                    [value]="map">
+                                    {{map.MapName}}
+                                </mat-list-option>
+                                <button mat-raised-button (click)="addNewConnection()"> Connect </button>
+                            </mat-selection-list>
+                        </div>
+                    </tr>
+                </ng-container>
+            </table>
+            <table style="float: right; position: relative; width: 50%;">
+                <ng-container>
+                    <th style="font-family:  'Calibri', ssans-seif;"> Connected Maps </th>
+                    <tr>
+                        <div style=" width: max-content;">
+                            <mat-selection-list>
+                                <button mat-list-item (click)="moveToConnectedMap(map)"
+                                    *ngFor="let map of connectedMapsList">
+                                    {{map.MapName}} </button>
+                                <!-- <mat-list-option checkboxPosition="before" *ngFor="let map of connectedMapsList" [value]="map"> -->
 
-            <div id="chooseConnectionDiv" style="width: 50%; float: right;">
+                                <!-- </mat-list-option> -->
+                            </mat-selection-list>
+                        </div>
+                    </tr>
+                </ng-container>
+
+
+            </table>
+            <!-- <h2 style="font-family:  'Calibri', ssans-seif;">Add Connection</h2> -->
+
+
+
+            <!-- </div> -->
+
+            <!-- <div id="chooseConnectionDiv" style="width: 50%; float: right;">
                 <h2 style="font-family:  'Calibri', ssans-seif;">Connected Maps</h2>
                 <div style=" width: max-content;">
                     <mat-selection-list>
                         <button mat-list-item (click)="moveToConnectedMap(map)" *ngFor="let map of connectedMapsList">
                             {{map.MapName}} </button>
-                        <!-- <mat-list-option checkboxPosition="before" *ngFor="let map of connectedMapsList" [value]="map"> -->
 
-                        <!-- </mat-list-option> -->
                     </mat-selection-list>
                 </div>
-            </div>
+            </div> -->
 
         </mat-tab>
     </mat-tab-group>

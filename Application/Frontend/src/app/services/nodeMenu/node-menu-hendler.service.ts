@@ -92,4 +92,13 @@ export class NodeMenuHendlerService {
       headers: { 'token': sessionStorage.token }, responseType: 'text'
     }).toPromise();
   }
+
+  createNewConnection(data: any) {
+    return this.http.put(this.localUrl + '/private/addNewConnection', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
+
+  }
+
+
 }

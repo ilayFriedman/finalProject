@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule,
   MatTabsModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatSortModule, MatTooltipModule,
-
+  MatSlideToggleModule
 } from "@angular/material";
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { LoginComponent } from './login/login.component';
@@ -97,8 +97,8 @@ import { NgxPrintModule } from 'ngx-print';
     MatSortModule,
     DropDownsModule,
     NgxPrintModule,
-    MatTooltipModule
-    // TreeViewModule
+    MatTooltipModule,
+    MatSlideToggleModule
   ],
   providers: [
     MapsHandlerService,
