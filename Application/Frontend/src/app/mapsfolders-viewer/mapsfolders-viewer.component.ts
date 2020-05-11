@@ -583,7 +583,8 @@ newUserPermissionChoose: any
   }
 
   public addNewUserToPermission(event){
-    // console.log(this.selectedNode)
+    console.log(this.selectedNode)
+    console.log(event)
     this.mapHandler.addNewPermission(this.selectedNode.mapID,  this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
       var jsonRes = JSON.parse(res)
         // ---- seach for username in DB ---  then --//
@@ -623,6 +624,7 @@ newUserPermissionChoose: any
       }).catch(err => {
         if(err.status == 404)
           console.log("theres no such user!!")
+          event.dataItem['username'] = ""
         // console.log(err);
       });
   }
@@ -642,12 +644,24 @@ newUserPermissionChoose: any
 
   public saveAllChangesClick() {
     console.log("selectNode map: ")
-    console.log(this.selectedNode.usersPermissionsMap);
-
+    // console.log(this.selectedNode.usersPermissionsMap);
+    console.log("delete list:")
+    
+    console.log( this.deleteUserList)
+    console.log("update list:")
+    console.log( this.updatePermissionUsers)
     let promises = [];
     // ---- delete all remove users -------
     this.deleteUserList.forEach(deleteUser => {
       var userID = this.getKeyFromValue(deleteUser)
+
+      // look if user changed on radiobuttons
+      var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
+      if(duplicateUser!= null){
+        // take the old permission to delete and delete from updateButtonsList
+        promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+      }
       promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
       this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
       this.selectedNode.usersPermissionsMap.delete(userID)

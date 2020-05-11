@@ -17,8 +17,7 @@ const testUserData = {
     Password: "a",
     FirstName: "FirstName",
     LastName: "LastName",
-    City: "City",
-    Country: "Country"
+    getPermissionUpdate: true
 }
 
 const testGroupData = {
@@ -136,12 +135,11 @@ describe('Groups', function () {
     
     it('should disallow update group description due to insufficient permissions', function () {
         const newUserData = {
-            Username: "b",
-            Password: "b",
+            Username: "a",
+            Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
-            City: "City",
-            Country: "Country"
+            getPermissionUpdate: true
         }
         const newUser = new user(newUserData);
         let newUserToken;
@@ -180,12 +178,11 @@ describe('Groups', function () {
 
     it('should disallow update group memebrs due to insufficient permissions', function () {
         const newUserData = {
-            Username: "c",
-            Password: "c",
+            Username: "a",
+            Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
-            City: "City",
-            Country: "Country"
+            getPermissionUpdate: true
         }
         const newUser = new user(newUserData);
         let newUserToken;
@@ -221,12 +218,11 @@ describe('Groups', function () {
 
     it('should allow update group memebrs', function () {
         const newUserData = {
-            Username: "d",
-            Password: "d",
+            Username: "a",
+            Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
-            City: "City",
-            Country: "Country"
+            getPermissionUpdate: true
         }
         const newUser = new user(newUserData);
 

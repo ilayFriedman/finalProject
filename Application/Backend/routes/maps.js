@@ -53,9 +53,10 @@ function UserHasOwnerPermissionForMap(resMap, userId) {
 router.post('/private/createMap', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
+        console.log(req.body.Model)
         let new_model = JSON.parse(req.body.Model)
         new_model['class'] = 'go.GraphLinksModel'
-        console.log(new_model);
+        // console.log(new_model);
 
         const newMap = new map({
             MapName: req.body.MapName,
@@ -237,7 +238,7 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
 router.put('/private/updateMap', async function (req, res) {
     let new_model = JSON.parse(req.body.Model)
     new_model['class'] = 'go.GraphLinksModel'
-    console.log(new_model);
+    // console.log(new_model);
 
     if (req.body._id) {
         map.findOne({

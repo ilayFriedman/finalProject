@@ -20,8 +20,7 @@ const testUserData = {
     Password: "a",
     FirstName: "FirstName",
     LastName: "LastName",
-    City: "City",
-    Country: "Country"
+    getPermissionUpdate: true
 }
 
 function createUser(userData = testUserData) {
