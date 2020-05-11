@@ -39,22 +39,22 @@ export class GroupsComponent implements OnInit {
   groupsPermissionList: any[] = [];
   groupsNoPermissionList: any[] = [];
 
-  public data: any[] = [];
+  public groupsArray: any[] = [];
   addGroupCheckOut;
   
-  allUsersTableSelection = new SelectionModel<Iuser>(true, []);
-  groupsUserPermissionTableSelection = new SelectionModel<Iuser>(true, []);
+  // allUsersTableSelection = new SelectionModel<Iuser>(true, []);
+  // groupsUserPermissionTableSelection = new SelectionModel<Iuser>(true, []);
 
 
-  allUsersColumns = ['username', 'firstname', 'lastname'];
-  groupsUsersColumns = ['username', 'firstname', 'lastname', 'permission'];
+  // allUsersColumns = ['username', 'firstname', 'lastname'];
+  // groupsUsersColumns = ['username', 'firstname', 'lastname', 'permission'];
 
 
-  @ViewChild(MatTable,  {static: true}) 
-  permissionTable: MatTable<any>;
+  // @ViewChild(MatTable,  {static: true}) 
+  // permissionTable: MatTable<any>;
   
-  @ViewChild(MatTable,  {static: true}) 
-  noPermissionTable: MatTable<any>;
+  // @ViewChild(MatTable,  {static: true}) 
+  // noPermissionTable: MatTable<any>;
   totalGroupsNumber =  0;
 
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
@@ -72,6 +72,7 @@ export class GroupsComponent implements OnInit {
       this.getGroupsUserOwns();
       this.getGroupsUserMember();
       this.getUsers();
+      console.log(this.groupsArray);
       }
   }
 
@@ -95,7 +96,7 @@ export class GroupsComponent implements OnInit {
 
       for (let index = 0; index < this.groupsUserOwns.length; index++) {
         const element = this.groupsUserOwns[index];
-        this.data.push({
+        this.groupsArray.push({
           text: element.GroupName,
           GroupId: element.GroupId,
           GroupDescription: element.GroupDescription,
@@ -126,9 +127,9 @@ export class GroupsComponent implements OnInit {
       this.groupsService.deleteGroup(dataItem.GroupId);
 
       // Delete group from array
-      const index = this.data.indexOf(dataItem);
+      const index = this.groupsArray.indexOf(dataItem);
       if (index > -1) {
-        this.data.splice(index, 1);
+        this.groupsArray.splice(index, 1);
       }
       this.totalGroupsNumber--;
     }
@@ -157,7 +158,7 @@ export class GroupsComponent implements OnInit {
     this.groupsService.createNewGroup(newGroupName, newGroupDescription)
     .then(res => {
 
-      this.addGroupToArray(res, this.data);
+      this.addGroupToArray(res, this.groupsArray);
       this.closeModal_addGroup();
       this.totalGroupsNumber++;
 
@@ -212,9 +213,7 @@ export class GroupsComponent implements OnInit {
 
   //USING
   AddNewRow(event) {
-    console.log(event)
 
-    // console.log(this.parsedDataPermissions)
     // define all editable fields validators and default values
     const newUser = new FormGroup({
       'Username': new FormControl(""),
@@ -224,9 +223,7 @@ export class GroupsComponent implements OnInit {
     event.sender.addRow(newUser);
   }
 
-  //USING
   public addNewUserPermission(event){
-    // [{"_id":string, "Username":string, "FirstName":string, "LastName":string}]
     if(this.newUserPermissionChoice != null){
 
       let userDetails = this.allUsersList.filter(obj => obj.Username === this.newUserPermissionChoice.target.name)[0];
@@ -236,9 +233,8 @@ export class GroupsComponent implements OnInit {
         userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
 
         this.groupsPermissionList = [userDetails].concat(this.groupsPermissionList);
-
-        var userInNoPermissionList = this.groupsNoPermissionList.filter(item => item === event.dataItem)
-        if(this.groupsNoPermissionList.filter(item => item === event.dataItem).length != 0){
+        var userInNoPermissionList = this.groupsNoPermissionList.filter(item => item.Username === event.dataItem.Username)
+        if(userInNoPermissionList.length != 0){
           const index = this.groupsNoPermissionList.indexOf(userInNoPermissionList[0]);
           if(index > -1){
             this.groupsNoPermissionList.splice(index, 1);
@@ -253,15 +249,12 @@ export class GroupsComponent implements OnInit {
 
     //TODO handle the case where the user is not found.
   }
-  
-  //USING
+
   public openUserPerimssionDialog(dataItem) {
     this.userDeleteDialogOpened = true;
     this.userToDelete = dataItem;
-    console.log(dataItem);
   }
 
-  //USING
   public closeUserPerimssionDialog(status) {
     this.userDeleteDialogOpened = false;
     if (status == "yes") {  // the user choose to delete the file
@@ -269,24 +262,19 @@ export class GroupsComponent implements OnInit {
     }
   }
 
-  //USING
   public removeUserHandler(event) {
-    console.log(this.groupsNoPermissionList);
     this.groupsNoPermissionList.push(event.dataItem);
-    console.log(this.groupsNoPermissionList);
-    console.log(this.groupsPermissionList);
+
     this.groupsPermissionList = this.groupsPermissionList.filter(item => item !== event.dataItem);
-    console.log(this.groupsPermissionList);
+
     this.changesMadeToPermission();
   }
 
-  //USING
   public cancelHandler({ sender, rowIndex }) {
     this.newUserPermissionChoice = null;
     sender.closeRow(rowIndex);
   }
 
-  //USING
   populateGroupsNoPermissionList(){
     this.groupsNoPermissionList = [];
     this.allUsersList.forEach(allUser => {
@@ -300,7 +288,6 @@ export class GroupsComponent implements OnInit {
     this.modalService.close('addGroupModal');
   }
   
-  //USING
   closeModal_editGroup(){
     if(!this.isPermissionChanged || confirm("Discard permission changes?")){
         this.groupsPermissionList = [];
@@ -329,52 +316,14 @@ export class GroupsComponent implements OnInit {
     });
 
     Promise.all(promises.map(p => p.catch(e => e)))
-    .then(results => alert(results))
+    .then(results => alert("Permission changes were successfully saved."))
     .catch(e => alert(e));
   }
 
-  //USING
   changesMadeToPermission(){
       this.isPermissionChanged = true;
   }
 
-  //NOT USING
-  addUsersToGroup(){
-    this.allUsersTableSelection.selected.forEach(element => {
-        element.Permission = this.selectedPermission;
-        this.groupsPermissionList.push(element);
-
-        this.groupsNoPermissionList = this.groupsNoPermissionList.filter(item => item._id !== element._id);
-    });
-
-    this.endTablesEdit();
-  }
-
-  //NOT USING
-  removeUsersFromGroup(){
-    this.groupsUserPermissionTableSelection.selected.forEach(element => {
-      element.Permission = undefined;
-      this.groupsPermissionList = this.groupsPermissionList.filter(item => item._id !== element._id);
-
-
-      this.groupsNoPermissionList.push(element);
-    });
-
-    this.endTablesEdit();
-  }
-
-  //NOT USING
-  private endTablesEdit() {
-    this.changesMadeToPermission();
-    
-    this.groupsUserPermissionTableSelection.clear();
-    this.allUsersTableSelection.clear();
-
-    this.permissionTable.renderRows();
-    this.noPermissionTable.renderRows();
-  }
-
-  //USING
   radioButtonsUpdate(event, rowIndex) {
     if (rowIndex !=-1){
       this.groupsPermissionList.find(item => item.Username == event.target.name).Permission = event.target.id;
