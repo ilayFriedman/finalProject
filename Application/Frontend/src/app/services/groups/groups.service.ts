@@ -1,3 +1,4 @@
+import {environment} from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -5,7 +6,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class GroupsService {
-  localUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) { }
 
@@ -20,7 +20,7 @@ export class GroupsService {
       description: newGroupDescription,
     }
 
-    return this.http.post(this.localUrl + '/private/createGroup', requestBody, { headers: { 'token': sessionStorage.token } }).toPromise()
+    return this.http.post(environment.backendUrl + '/private/createGroup', requestBody, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
 
   /**
@@ -30,7 +30,7 @@ export class GroupsService {
   deleteGroup(groupId: string){
     const headers = new HttpHeaders().set('token', sessionStorage.token);
     
-    return this.http.delete(this.localUrl + '/private/deleteGroup/' + groupId, {headers, 'responseType': 'text'}).toPromise();
+    return this.http.delete(environment.backendUrl + '/private/deleteGroup/' + groupId, {headers, 'responseType': 'text'}).toPromise();
   }
 
   /**
@@ -45,7 +45,7 @@ export class GroupsService {
       description: description,
     }
 
-    return this.http.post(this.localUrl + '/private/updateGroupProperties', requestBody, { headers: { 'token': sessionStorage.token } }).toPromise()
+    return this.http.post(environment.backendUrl + '/private/updateGroupProperties', requestBody, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
 
   /**
@@ -54,7 +54,7 @@ export class GroupsService {
    * @param users 
    */
   removeUserFromGroup(groupId: string, usersId: [string]){
-    return this.http.delete(this.localUrl + '/private/RemoveUserFromGroup/' + groupId + "/" + usersId[0], { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
+    return this.http.delete(environment.backendUrl + '/private/RemoveUserFromGroup/' + groupId + "/" + usersId[0], { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
   /**
@@ -70,7 +70,7 @@ export class GroupsService {
       permission: permission[0]
     }
 
-    return this.http.post(this.localUrl + '/private/SetUserPermissionForGroup', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
+    return this.http.post(environment.backendUrl + '/private/SetUserPermissionForGroup', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
   /**
@@ -84,7 +84,7 @@ export class GroupsService {
       headers: new HttpHeaders({ 'token': sessionStorage.token })
     };
 
-    return this.http.get(this.localUrl + '/private/GetGroupsMembers/' + groupId, httpOptions).toPromise();
+    return this.http.get(environment.backendUrl + '/private/GetGroupsMembers/' + groupId, httpOptions).toPromise();
   }
 
   /**
@@ -93,7 +93,7 @@ export class GroupsService {
    * [{"GroupId":string, "GroupName":string, "GroupDescription":string}]
    */
   getGroupsUserBlongsTo(){
-    return this.http.get(this.localUrl + '/private/GetGroupsUserBlongsTo', { 
+    return this.http.get(environment.backendUrl + '/private/GetGroupsUserBlongsTo', { 
       headers: { 'token': sessionStorage.token }
      }).toPromise()
   }
@@ -104,7 +104,7 @@ export class GroupsService {
    * [{"GroupId":string, "GroupName":string, "GroupDescription":string}]
    */
   getGroupsUserOwns(){
-    return this.http.get(this.localUrl + '/private/GetGroupsUserOwns', { 
+    return this.http.get(environment.backendUrl + '/private/GetGroupsUserOwns', { 
       headers: { 'token': sessionStorage.token }
      }).toPromise()
   }
