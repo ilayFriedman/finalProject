@@ -3,7 +3,6 @@ const router = express.Router();
 const reference = require('../models/reference');
 const jwt = require('jsonwebtoken');
 
-//TODO
 router.get('/private/getAllReferences', async function(req, res) {
     try {
         reference.find({}, function(err, result) {
@@ -18,7 +17,6 @@ router.get('/private/getAllReferences', async function(req, res) {
     }
 });
 
-//TODO
 router.post('/private/createReference', async function(req, res) {
     try {
         const CreatorId = req.decoded._id;
