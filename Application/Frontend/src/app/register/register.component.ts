@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import {HttpClient} from "@angular/common/http";
-import { first } from 'rxjs/operators';
 import { trigger, transition, animate, style } from '@angular/animations';
+import { UsersService } from '../services/users/users.service';
 
 
 @Component({ 
@@ -29,7 +29,8 @@ export class RegisterComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
-        private http: HttpClient
+        private http: HttpClient,
+        public usersService: UsersService
     ){}
 
     ngOnInit() {
@@ -53,14 +54,9 @@ export class RegisterComponent implements OnInit {
             return;
         }
 
-        var data = {
-          'email': this.registerForm.controls.email.value,
-          'pwd': this.registerForm.controls.password.value,
-          'FirstName': this.registerForm.controls.firstName.value,
-          'LastName': this.registerForm.controls.lastName.value,
-          'getPermissionUpdate': this.registerForm.controls.getPermissionUpdate.value
-        }
-        let result = this.http.post(this.localUrl + '/register', data, { responseType: 'text' });
+        var data = this.getFormData()
+
+        let result = this.usersService.registerUser(data.email, data.pwd, data.FirstName, data.LastName, data.getPermissionUpdate);
     
         result.subscribe(response => {
             this.submitted = false;
@@ -73,4 +69,14 @@ export class RegisterComponent implements OnInit {
           }
         );
     }
+
+  private getFormData() {
+    return {
+      'email': this.registerForm.controls.email.value,
+      'pwd': this.registerForm.controls.password.value,
+      'FirstName': this.registerForm.controls.firstName.value,
+      'LastName': this.registerForm.controls.lastName.value,
+      'getPermissionUpdate': this.registerForm.controls.getPermissionUpdate.value
+    };
+  }
 }

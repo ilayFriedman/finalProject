@@ -18,6 +18,27 @@ export class UsersService {
   getUsers(){
     return this.http.get(this.localUrl + '/private/getUsers', { headers: { 'token': sessionStorage.token },responseType: 'text'}).toPromise()
   }
+
+  /**
+   * Register a new user. The function transform email address to lowercase.
+   * @param email 
+   * @param pwd 
+   * @param firstName 
+   * @param lastname 
+   * @param getPermissionUpdate
+   */
+  registerUser(email, pwd, firstName, lastname, getPermissionUpdate){
+    var data = {
+      'email': email.toLowerCase(),
+      'pwd': pwd,
+      'FirstName': firstName,
+      'LastName': lastname,
+      'getPermissionUpdate': getPermissionUpdate
+    }
+
+    return this.http.post(this.localUrl + '/register', data, { responseType: 'text' });
+  }
+
   sendMailToUser(reciever_mail, subject, text){
     const bodyReq = {
       reciever_mail: reciever_mail,

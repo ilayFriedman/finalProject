@@ -35,7 +35,7 @@ router.post('/login', async function (req, res) {
 router.post('/register', async function (req, res) {
     try {
         await user.find({
-            'Username': req.body.email
+            'Username': req.body.email.toLowerCase()
         }, function (err, result) {
             if (result) {
                 // Enforce email address in Users' collection is unique
@@ -43,7 +43,7 @@ router.post('/register', async function (req, res) {
                     res.status(409).send(`Email address is already registered`)
                 } else {
                         const newUser = new user({
-                            Username: req.body.email,
+                            Username: req.body.email.toLowerCase(),
                             FirstName: req.body.FirstName,
                             LastName: req.body.LastName,
                             getPermissionUpdate: req.body.getPermissionUpdate,
