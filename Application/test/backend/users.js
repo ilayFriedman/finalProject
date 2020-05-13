@@ -20,7 +20,7 @@ const testUserData = {
     Password: "a",
     FirstName: "FirstName",
     LastName: "LastName",
-    getPermissionUpdate: true
+    getPermissionUpdate: false
 }
 
 function createUser(userData = testUserData) {
@@ -68,7 +68,8 @@ describe('Users', function () {
                 email: testUserData.Username,
                 FirstName: testUserData.FirstName,
                 LastName: testUserData.LastName,
-                pwd: testUserData.Password
+                pwd: testUserData.Password,
+                getPermissionUpdate: false
             })
             .end(function (err, res, body) {
                     res.statusCode.should.equal(200);
@@ -90,7 +91,8 @@ describe('Users', function () {
                 email: testUserData.Username,
                 FirstName: testUserData.FirstName,
                 LastName: testUserData.LastName,
-                pwd: testUserData.Password
+                pwd: testUserData.Password,
+                getPermissionUpdate: false
             })
             .end(function (err, res, body) {
                     res.statusCode.should.equal(409);
