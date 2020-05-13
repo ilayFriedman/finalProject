@@ -2,28 +2,27 @@
 <div style="width: 100%;">
     <mat-tab-group dynamicHeight="true" id="nodeMenu" (selectedTabChange)="tabClick($event)" [selectedIndex]="tabNum"
         (selectedIndexChange)="tabNum=$event">
-
         <!-- Details tab -->
         <mat-tab label="Details">
-            <div class="tab-content">
+            <div class="tab-content" style="justify-content: center; position: relative;">
                 <!-- <div id="detailsTable" style="width: fit-content;" class="table table-hover borderless table-vcenter"> -->
-                <br>
-                <div><span class="small-menu-option">Text:</span>
+                <div style="margin: 5%;">
                     <!-- <span> -->
-                    <input type="text" id="textFeature" class="form-control" name="objectText"
-                        [(ngModel)]="this.modalService.currNodeData.text">
+                    <mat-form-field style="width: 50%;">
+                        <mat-label style="font-size: 20px;">Node's text:</mat-label>
+                        <input matInput type="text" id="textFeature" class="form-control" name="objectText"
+                            [(ngModel)]="this.modalService.currNodeData.text" style="text-align: center;">
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field style="width: 50%;">
+                        <mat-label style="font-size: 20px;">Node's description:</mat-label>
+                        <textarea matInput id="descriptionFeature" name="objectDescription" class="form-control"
+                            [(ngModel)]="this.modalService.currNodeData.description"
+                            style="vertical-align: top; text-align: center;" rows="3"></textarea>
+                    </mat-form-field>
+
                     <!-- </span> -->
                 </div>
-                <br>
-                <div>
-                    <span class="small-menu-option">Description:</span>
-                    <!-- <span> -->
-                    <textarea id="descriptionFeature" name="objectDescription" class="form-control" cols="30" rows="5"
-                        [(ngModel)]="this.modalService.currNodeData.description"
-                        style="vertical-align: top;"></textarea>
-                    <!-- </span> -->
-                </div>
-                <br>
             </div>
         </mat-tab>
 
@@ -32,6 +31,7 @@
             <div class="tab-content" style="width: max-content; ">
                 <!-- node refs -->
                 <span id="nodeRefsSpan" style="float: left;">
+                    <h3> The references of "{{modalService.currNodeData.text}}" </h3>
                     <!-- filter node refs -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
@@ -105,6 +105,7 @@
                 </span>
                 <!-- all refs  -->
                 <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAllRefs">
+                    <h3>All references</h3>
                     <!-- filter -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
@@ -200,6 +201,7 @@
             <div class="tab-content" style="width: max-content; ">
                 <!-- node ctxs -->
                 <span id="nodeCtxsSpan" style="float: left;">
+                    <h3> The contexts of "{{modalService.currNodeData.text}}"</h3>
                     <!-- filter -->
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
@@ -261,6 +263,7 @@
                 </span>
                 <!-- all ctxs -->
                 <span id="allCtxsSpan" style="float: right;" [hidden]="!this.doShowAllCtxs">
+                    <h3>All contexts</h3>
                     <div class="filterAndClear">
                         <span style="float: left; width: 70%;">
                             <mat-form-field>
@@ -343,6 +346,7 @@
         <!-- node styles -->
         <mat-tab label="Styles">
             <div class="tab-content" (change)="setNodeStyles()">
+                <h3>Change the appearance of "{{modalService.currNodeData.text}}"</h3>
                 <br>
                 <span class="small-menu-option">Shape Color:</span>
                 <span><input type="color" [(ngModel)]="shapeColor" /></span>
@@ -383,7 +387,8 @@
                     <span style="float: left; ">
                         <button mat-raised-button (click)="modalService.open('newCommentModal')">Add
                             New Comment</button>
-                    </span></div>
+                    </span>
+                </div>
 
 
 
@@ -472,59 +477,138 @@
 
         <!-- connections tab -->
         <mat-tab label="Connections">
-            <!-- <div id="addConnectionDiv"> -->
-            <table style="float: left; position: relative; width: 50%;">
-                <ng-container>
-                    <th style="font-family:  'Calibri', ssans-seif;">Add Connection</th>
-                    <tr>
-                        <div style="margin: auto; position: relative;">
-                            <span style="width: 80%; float: left;">
-                                <mat-form-field style="width: 85%;">
-                                    <mat-label>Node Text</mat-label>
-                                    <input matInput [(ngModel)]="nodeToSearch">
-                                </mat-form-field>
-                                <button mat-icon-button (click)=" containingMapsList = [] && nodeToSearch = ''">
-                                    <span class="k-icon k-i-close" style="font-size: 20px"></span>
-                                </button>
-                            </span>
-                            <span style="margin: auto; width: 20%;">
-                                <button mat-raised-button (click)="searchNodes()">Search</button>
-                            </span>
 
-                        </div>
+            <div id="connectionsTable" style="float: left; position: relative; width: 40%;">
+                <h3> The connections from "{{modalService.currNodeData.text}}"</h3>
+                <div class="filterAndClear">
+                    <span style="float: left; width: 100%;">
+                        <mat-form-field>
+                            <mat-label>Filter</mat-label>
+                            <input matInput (keyup)="applyFilterAConnections($event)">
+                        </mat-form-field>
+                    </span>
+                </div>
+
+                <table mat-table [dataSource]="nodeConnectionSource" class="my-table mat-elevation-z0" matSort>
+
+                    <!-- Action Column -->
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let map" class="action-link" style="width: 40%;">
+                            <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
+                                (click)="deleteConnection(map)" matTooltip="Delete connection">
+                                <span class="k-icon k-i-delete"></span>
+                            </button>
+                            <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
+                                (click)="moveToConnectedMap(map)" matTooltip="Go to map">
+                                <span class="k-icon k-i-hyperlink-open"></span>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <!-- connected map name Column -->
+                    <ng-container matColumnDef="mapName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Map </th>
+                        <td mat-cell *matCellDef="let map">
+                            {{map.MapName}}
+                        </td>
+                    </ng-container>
+
+                    <!-- connected node name Column -->
+                    <ng-container matColumnDef="nodeName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Node </th>
+                        <td mat-cell *matCellDef="let map">
+                            {{map.nodeText}}
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsConnections"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsConnections;"></tr>
+                </table>
+
+                <div style="position: relative; bottom: 0;">
+                    <span style="float: center; width: 100%;">
+                        <mat-paginator style="float: center; width: 100%;" #connectedPaginator
+                            [pageSizeOptions]="[5, 10, 20]">
+                        </mat-paginator>
+                    </span>
+                </div>
+            </div>
+            <mat-divider [vertical]="true"></mat-divider>
+
+            <span id="addConnectionTable" style="float: right; position: relative; width: 50%; margin-bottom: 10px;">
+                <h3 style="width: 100%;"> Add new connections to "{{modalService.currNodeData.text}}"</h3>
+                <div class="filterAndClear">
+                    <span style="float: left; width: 80%;">
+                        <mat-form-field>
+                            <mat-label>Node Text</mat-label>
+                            <input matInput [(ngModel)]="nodeToSearch" (keyup.enter)="searchNodes()">
+                        </mat-form-field>
+                    </span>
+                    <span style="float: left; width: fit-content;">
+                        <button mat-icon-button (click)="clearSearches()" matTooltip="Clear search">
+                            <span class="k-icon k-i-close" style="font-size: 20px"></span>
+                        </button>
+
+                        <button mat-icon-button (click)="searchNodes()" matTooltip="Search">
+                            <span class="k-icon k-i-search" style="font-size: 20px"></span>
+                        </button>
+                    </span>
+                    <!-- <span style="float: right; ">
+                        <button mat-raised-button [disabled]='mapsSelectedOptions.selected.length == 0'
+                            (click)="mapsSelectedOptions.clear()">Clear
+                            Selection</button>
+                    </span> -->
+                </div>
+
+                <table mat-table [dataSource]="containingMapsList" class="mat-elevation-z0">
+                    <!-- Checkbox Column -->
+                    <ng-container matColumnDef="select">
+                        <tr>
+                            <th mat-header-cell *matHeaderCellDef style="width: 5%;">
+                                <mat-checkbox style=" float: left; position: relative;"
+                                    (change)="$event ? masterToggle('addConnection') : null"
+                                    [checked]="mapsSelectedOptions.hasValue() && isAllSelected('addConnection')"
+                                    [indeterminate]="mapsSelectedOptions.hasValue() && !isAllSelected('addConnection')">
+                                </mat-checkbox>
+                            </th>
+                            <td mat-cell *matCellDef="let row" style="width: 5%;">
+                                <mat-checkbox style="float: left; position: relative;"
+                                    (click)="$event.stopPropagation()"
+                                    (change)="$event ? mapsSelectedOptions.toggle(row) : null"
+                                    [checked]="mapsSelectedOptions.isSelected(row)">
+                                </mat-checkbox>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="mapName">
+                        <th mat-header-cell *matHeaderCellDef> Map </th>
+                        <td mat-cell *matCellDef="let map"> {{map.MapName}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsConnectionsSearchResults"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsConnectionsSearchResults;"
+                        (click)="mapsSelectedOptions.toggle(row)">
                     </tr>
-                    <tr>
-                        <div style=" width: max-content;" *ngIf="containingMapsList.length > 0">
-                            <mat-selection-list [(ngModel)]="mapsSelectedOptions">
-                                <mat-list-option checkboxPosition="before" *ngFor="let map of containingMapsList"
-                                    [value]="map">
-                                    {{map.MapName}}
-                                </mat-list-option>
-                                <button mat-raised-button (click)="addNewConnection()"> Connect </button>
-                            </mat-selection-list>
-                        </div>
-                    </tr>
-                </ng-container>
-            </table>
-            <table style="float: right; position: relative; width: 50%;">
-                <ng-container>
-                    <th style="font-family:  'Calibri', ssans-seif;"> Connected Maps </th>
-                    <tr>
-                        <div style=" width: max-content;">
-                            <mat-selection-list>
-                                <button mat-list-item (click)="moveToConnectedMap(map)"
-                                    *ngFor="let map of connectedMapsList">
-                                    {{map.MapName}} </button>
-                                <!-- <mat-list-option checkboxPosition="before" *ngFor="let map of connectedMapsList" [value]="map"> -->
-
-                                <!-- </mat-list-option> -->
-                            </mat-selection-list>
-                        </div>
-                    </tr>
-                </ng-container>
 
 
-            </table>
+                </table>
+                <div style="position: relative; bottom: 0;">
+                    <span style="float: center; width: 100%;">
+                        <mat-paginator style="float: center; width: 100%;" #addConnectionPaginator
+                            [pageSizeOptions]="[5, 10, 20]">
+                        </mat-paginator>
+                    </span>
+                </div>
+                <br>
+                <button mat-raised-button (click)="addNewConnection()"> Connect </button>
+
+            </span>
+
+
+
             <!-- <h2 style="font-family:  'Calibri', ssans-seif;">Add Connection</h2> -->
 
 

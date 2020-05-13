@@ -41,7 +41,8 @@ export interface CommentElement {
 export interface ConnectionElement {
   mapID: string,
   MapName: string,
-  nodeId: string
+  nodeId: string,
+  nodetext: string
 }
 
 
@@ -53,7 +54,7 @@ export interface ConnectionElement {
 })
 export class NodeMenuModalComponent implements OnInit {
   @Output("reInit") reInitMapViewer: EventEmitter<any> = new EventEmitter();
-  tabNum: number = 0
+  @Input() tabNum: number;
   pageSizeOptions: number[] = [5, 10, 25, 100];
 
   // ##### refs variables #####
@@ -125,11 +126,23 @@ export class NodeMenuModalComponent implements OnInit {
 
   // #### Conncetions ####
   nodeToSearch: string = "";
-  containingMapsList: any[] = [];
+  // containingMapsList: any[] = [];
   connectedMapsList: ConnectionElement[] = [];
-  mapsSelectedOptions: any;
+  // mapsSelectedOptions: any;
   connectedMapsSelected: any;
   // selectedMapsOptions: SelectionModel<MatListOption>
+  nodeConnectionSource: MatTableDataSource<ConnectionElement>;
+  displayedColumnsConnections: string[] = ['action', 'mapName', 'nodeName'];
+  @ViewChild("connectedPaginator", { static: true }) connectedPaginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) connectionsSort: MatSort;
+
+  containingMapsList: MatTableDataSource<ConnectionElement>;
+  displayedColumnsConnectionsSearchResults: string[] = ['select', 'mapName'];
+  mapsSelectedOptions = new SelectionModel<ConnectionElement>(true, []);
+  @ViewChild("addConnectionPaginator", { static: true }) addConnectionPaginator: MatPaginator;
+
+
+
 
   constructor(public mapHandler: MapsHandlerService, public modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
 
@@ -159,27 +172,25 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   tabClick(tabId) {
-    console.log(tabId.index);
-
     switch (tabId.index) {
       case 1: {
-        console.log(this.tabNum);
         this.unloadNodeRefs();
         this.loadNodeRefs();
         break;
       }
       case 2: {
-        console.log(this.tabNum);
         this.unloadNodeCtxs();
         this.loadNodeCtxs();
         break;
       }
       case 4: {
-        console.log("tab num: " + this.tabNum);
-
         this.unloadNodeComments();
         this.loadNodeComments();
         break;
+      }
+      case 5: {
+        this.unloadConnections();
+        this.loadConnections();
       }
 
       // case constant_expression2: { 
@@ -193,6 +204,7 @@ export class NodeMenuModalComponent implements OnInit {
       }
     }
   }
+
 
   // ######## REFERENCES #########
 
@@ -594,30 +606,35 @@ export class NodeMenuModalComponent implements OnInit {
   // ######## CONNECTIONS  #########
 
   searchNodes() {
-    this.containingMapsList = []
+    console.log(this.nodeToSearch);
+    let tmpContainingList = []
     if (this.nodeToSearch == '') {
       return;
     }
     this.mapHandler.searchNodes(this.nodeToSearch).then(res => {
+      console.log(res);
+
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
-          console.log(map);
-
-          this.containingMapsList.push(map)
+          tmpContainingList.push(map)
         })
+        this.containingMapsList = new MatTableDataSource<ConnectionElement>(tmpContainingList);
+        this.containingMapsList.paginator = this.addConnectionPaginator;
+
       }
     }).catch
       (err => {
-        console.log("error new comment");
+        console.log("error searching node");
         console.log(err)
       });
+    console.log(this.containingMapsList);
 
   }
 
   addConnectionToNoda() {
     console.log(this.mapsSelectedOptions);
-    this.mapsSelectedOptions.forEach(element => {
+    this.mapsSelectedOptions.selected.forEach(element => {
       this.connectedMapsList.push(element)
     });
     console.log(this.connectedMapsList);
@@ -650,45 +667,91 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   unloadConnections() {
-    this.containingMapsList = [];
+    this.containingMapsList = new MatTableDataSource<ConnectionElement>();
     this.connectedMapsList = [];
   }
 
   loadConnections() {
-    this.modalService.currNodeData.connections.forEach(element => {
-      this.connectedMapsList.push(element);
-    })
+    if (this.modalService.currNodeData.connections) {
+      this.modalService.currNodeData.connections.forEach(element => {
+        if (this.connectedMapsList.findIndex(conn => conn.mapID === element.mapID) < 0)
+          this.connectedMapsList.push(element);
+      })
+      this.nodeConnectionSource = new MatTableDataSource<ConnectionElement>(this.connectedMapsList);
+      this.nodeConnectionSource.paginator = this.connectedPaginator
+      this.nodeConnectionSource.sort = this.connectionsSort
+    }
   }
 
   addNewConnection() {
-    this.mapsSelectedOptions.forEach(element => {
-      // let newConnection: ConnectionElement = {
-      //   mapID: this.mapHandler.currMap_mapViewer._id,
-      //   MapName: this.mapHandler.currMap_mapViewer.MapName,
-      //   nodeId: this.modalService.currNodeData.id
-      // }
+    let newConnections = [];
+    if (this.mapsSelectedOptions) {
+      this.mapsSelectedOptions.selected.forEach(element => {
+        if (element.mapID != this.mapHandler.currMap_mapViewer._id)
+          newConnections.push(element);
+      });
+    }
+    if (newConnections.length == 0) {
+      return;
+    }
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      connections: newConnections
+    }
+    console.log(data);
+    this.NodeMenuHendler.createNewConnection(data).then(res => {
+      this.mapsSelectedOptions.selected.forEach(element => {
+        if (element.mapID != this.mapHandler.currMap_mapViewer._id)
+          this.modalService.currNodeData.connections.push(element)
+      });
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+      console.log(res);
+      this.connectedMapsList = [];
+      this.loadConnections()
+    }).catch
+      (err => {
+        console.log("error new connection");
+        console.log(err)
+      });
 
-      let data = {
-        mapId: this.mapHandler.currMap_mapViewer._id,
-        nodeId: this.modalService.currNodeData.id,
-        connection: element
-      }
 
-      this.NodeMenuHendler.createNewConnection(data).then(res => {
-        this.modalService.currNodeData.connections.push(element)
-        this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
-        this.connectedMapsList = [];
-        this.loadConnections()
-        console.log(res);
-      }).catch
-        (err => {
-          console.log("error new connection");
-          console.log(err)
-        });
-    });
-    // element.comment
+
   }
 
+  deleteConnection(element) {
+    console.log(element);
+    let data = {
+      mapId: this.mapHandler.currMap_mapViewer._id,
+      nodeId: this.modalService.currNodeData.id,
+      MapName: element.MapName
+    }
+
+    this.NodeMenuHendler.deleteConnection(data).then(res => {
+      let idx = this.modalService.currNodeData.connections.indexOf(element)
+
+      this.modalService.currNodeData.connections.splice(idx, 1);
+      this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+      this.connectedMapsList = [];
+      this.loadConnections()
+    }).catch
+      (err => {
+        console.log("error delete connection");
+        console.log(err)
+      });
+  }
+
+  applyFilterAConnections(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.nodeConnectionSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  clearSearches() {
+    this.mapsSelectedOptions.clear();
+    this.containingMapsList = null;
+    this.nodeToSearch = '';
+
+  }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(type: string) {
@@ -709,8 +772,13 @@ export class NodeMenuModalComponent implements OnInit {
         return numSelected === numRows;
       }
       case "nodeCtxs": {
-        const numSelected = this.nodeRefSelection.selected.length;
+        const numSelected = this.nodeCtxsSelection.selected.length;
         const numRows = this.nodeCtxsSource.data.length;
+        return numSelected === numRows;
+      }
+      case "addConnection": {
+        const numSelected = this.mapsSelectedOptions.selected.length;
+        const numRows = this.containingMapsList.data.length;
         return numSelected === numRows;
       }
 
@@ -748,6 +816,12 @@ export class NodeMenuModalComponent implements OnInit {
         this.isAllSelected("nodeCtxs") ?
           this.nodeCtxsSelection.clear() :
           this.nodeCtxsSource.data.forEach(row => this.nodeCtxsSelection.select(row));
+        break;
+      }
+      case "addConnection": {
+        this.isAllSelected("addConnection") ?
+          this.mapsSelectedOptions.clear() :
+          this.containingMapsList.data.forEach(row => this.mapsSelectedOptions.select(row));
         break;
       }
 

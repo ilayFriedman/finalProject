@@ -100,5 +100,11 @@ export class NodeMenuHendlerService {
 
   }
 
+  deleteConnection(data: any) {
+    return this.http.put(this.localUrl + '/private/deleteConnection', data, {
+      headers: { 'token': sessionStorage.token }, responseType: 'text'
+    }).toPromise();
+
+  }
 
 }

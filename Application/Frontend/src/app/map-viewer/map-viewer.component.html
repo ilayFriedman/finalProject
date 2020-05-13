@@ -117,6 +117,7 @@
 <jw-modal class="jw-modal" id="nodeMenuModal">
     <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal (reInit)="initNewMap()" (change)="saveChanges()"></app-node-menu-modal>
+        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="initNewMap()" (change)="saveChanges()">
+        </app-node-menu-modal>
     </div>
 </jw-modal>

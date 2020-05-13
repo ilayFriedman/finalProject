@@ -6,7 +6,7 @@ import * as go from 'gojs';
 import { HttpClient } from '@angular/common/http';
 import { ModalService } from '../services/modal.service';
 import { TextMapConverterComponent } from '../text-map-converter/text-map-converter.component';
-import { NodeMenuModalComponent } from '../node-menu-modal/node-menu-modal.component';
+import { NodeMenuModalComponent, } from '../node-menu-modal/node-menu-modal.component';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
@@ -24,7 +24,7 @@ export class MapViewerComponent implements OnInit {
   [x: string]: any;
   // @Input('name') mapIdx: any;
   mapModel: any;
-  // currMap: any;
+  tabNum: number;
   toSave: boolean = false;
   localUrl = 'http://localhost:3000';
   fileToImport: any;
@@ -36,6 +36,8 @@ export class MapViewerComponent implements OnInit {
   initialModel: any = {}
   subscribeCurrMap: boolean = false;
   color: ThemePalette = 'primary';
+  @ViewChild(NodeMenuModalComponent, { static: true }) nodeMenu: NodeMenuModalComponent;
+
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -1230,6 +1232,7 @@ export class MapViewerComponent implements OnInit {
 
   openModalMenu(id: string) {
     console.log(this.currNode.data);
+    this.nodeMenu.tabNum = 0;
 
     this.modalService.openMenu(id, this.currNode.data);
   }

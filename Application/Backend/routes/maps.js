@@ -563,22 +563,26 @@ router.get('/private/getSharedMaps/:userID', async function (req, res) {
 
 router.get('/private/searchNodes/:nodeName', async function (req, res) {
     try {
-        map.find({ $or: [{ 'Model.nodeDataArray.text': req.params.nodeName }] }, async function (err, result) {
+        let texeReg = new RegExp(`^${req.params.nodeName}$`, 'i');
+        map.find({ $or: [{ 'Model.nodeDataArray.text': texeReg }] }, async function (err, result) {
             if (result) {
                 var containingMaps = []
                 result.forEach(map => {
                     if (UserHasReadPermissionForMap(map, req.decoded._id)) {
-                        let nodeId;
+                        let nodeId, nodeText;
                         for (let index = 0; index < map.Model.nodeDataArray.length; index++) {
                             const element = map.Model.nodeDataArray[index];
-                            if (element.text == req.params.nodeName) {
+                            if (element.text.toLowerCase() == req.params.nodeName) {
                                 nodeId = element.id
+                                nodeText = element.text
                             }
                         }
                         let currInfo = {
                             mapID: map._id,
                             MapName: map.MapName,
-                            nodeId: nodeId
+                            nodeId: nodeId,
+                            nodeText: nodeText
+
                         }
                         containingMaps.push(currInfo)
                     }
@@ -609,11 +613,16 @@ router.put('/private/addNewConnection', async function (req, res) {
                 for (let index = 0; index < currModel.nodeDataArray.length; index++) {
                     const element = currModel.nodeDataArray[index];
                     if (element.id == req.body.nodeId) {
-                        if (currModel.nodeDataArray[index].connections.findIndex(conn => conn.MapName === req.body.connection.MapName) > -1)
-                            // if (currModel.nodeDataArray[index].connections.indexOf(req.body.connection.MapName) > 0)
-                            return;
-                        else
-                            currModel.nodeDataArray[index].connections.push(req.body.connection);
+                        req.body.connections.forEach(newConn => {
+                            if (currModel.nodeDataArray[index].connections.findIndex(conn => conn.MapName == newConn.MapName) > -1) {
+                                return;
+                            }
+                            else {
+                                currModel.nodeDataArray[index].connections.push(newConn);
+                            }
+                        });
+
+
                     }
                 }
                 map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
@@ -633,6 +642,36 @@ router.put('/private/addNewConnection', async function (req, res) {
     }
 });
 
+router.put('/private/deleteConnection', async function (req, res) {
+    if (req.body.mapId) {
+        map.findOne({
+            '_id': req.body.mapId
+        }, function (err, result) {
+            if (result) {
+                let currModel = result.Model
+                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
+                    const element = currModel.nodeDataArray[index];
+                    if (element.id == req.body.nodeId) {
+                        let idx = currModel.nodeDataArray[index].connections.findIndex(conn => conn.MapName === req.body.MapName)
+                        currModel.nodeDataArray[index].connections.splice(idx, 1);
+                    }
+                }
+                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                    } else {
+                        res.status(200).send("Connection deleted successfully.")
+                    }
+                });
+
+            } else {
+                res.status(404).send("Could not find map.");
+            }
+        })
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
 
 // ############ COMMENTS #####################
 

@@ -31,6 +31,12 @@ tbody {
     justify-content: center;
 }
 
+h3 {
+    text-align: center;
+    line-height: 20px;
+    font-size: medium;
+}
+
 .filterAndClear {
     margin-top: 15px;
     width: 100%;
@@ -41,6 +47,7 @@ tbody {
     text-align: center;
     /* display: flex; */
     justify-content: center;
+    font-size: 15px;
 }
 
 .refBtn {
