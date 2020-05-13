@@ -1,0 +1,60 @@
+How To Update NodeJS + Angular Project On Server:
+
+	a. MSTSC or RDP into the server, at 132.72.65.112   (From now on, unless otherwise stated, actions should be performed on the server)
+		You must either have a working VPN conneciton, or be connected to the BGU network.
+	
+	b. Download project from github as a zip file. The link is: https://github.com/ilayFriedman/finalProject/archive/master.zip
+	
+	c. Open the Copmonent Services, and stop ME-Maps Nodejs Service.
+	
+	d. Uninstall ME-Maps Nodejs Service:
+		Run CMD As Administrator, and run the following command:		node c:\ME-Maps\Application\Backend\uninstall-service.js
+		if a 'cannot find module node-windows' error pops up: 
+			1. Close CMD.
+			2. In Run (Win+R), execute the following:		control.exe sysdm.cpl,System,3  
+			3. Click Environment Variables
+			4. If missing, add a new System Variable named NODE_PATH and set it to:		C:\Users\saarzeev\AppData\Roaming\npm\node_modules
+			5. Open a new CMD As Administrator, and try:		node c:\ME-Maps\Application\Backend\uninstall-service.js
+		
+	e. Update the backend files:
+		From the project zip file, extract Backend folder contents into C:\ME-Maps\Application\Backend
+		MAKE SURE you do not delete the following:
+			05/06/2020  01:17 PM    <DIR>          daemon
+			03/11/2020  03:02 PM               908 install-service.js
+			03/11/2020  03:15 PM               248 Readme - Service installation how-to.txt
+			05/06/2020  01:16 PM               464 uninstall-service.js
+		MAKE SURE to replace conflicting files with the new files from the zip.
+			
+	f. Reinstall the ME-Maps Nodejs Service:
+		In CMD run the following command:		node c:\ME-Maps\Application\Backend\install-service.js
+		
+	g. Open the Copmonent Services, and start ME-Maps Nodejs Service.
+	
+#### For any question on frontend compilation process, please read https://indepth.dev/deploy-an-angular-application-to-iis/  ####
+
+	h. Delete previous src folder:
+		Delete the src folder inside C:\ME-Maps\Application\Frontend\
+		(This step will make sure files deleted in newer versions will also be deleted)
+	
+	h. Update the frontend files:
+	From the project zip file, extract Frontend folder contents into C:\ME-Maps\Application\Frontend 
+		MAKE SURE to replace conflicting files with the new files from the zip.
+		
+	i. Install missing packages:
+		#### This step can be skipped if no new packages were added since last deployment.
+		Trying to compile with missing packages will result in failure, but no harm will be done.
+		Maybe it's best to just try and compile if you're not sure whether an update is needed or not ####
+		
+		Open a CMD in c:\ME-Maps\Application\Frontend
+		and run the following command:	npm install -g
+		The command will take a while to run.
+		
+	j. Compile frontend:
+		Open a CMD in c:\ME-Maps\Application\Frontend
+		and run the following command:	ng build --base-href "/ME-Map/" --prod
+		The command will take a while to run. Finally, the compiled project will be in C:\ME-Maps\Application\Frontend\dist
+	
+	k. Deploy frontend:
+		Navigate to ...., and delete existing frontend.
+		copy C:\ME-Maps\Application\Frontend\dist folder contents into ....
+		
