@@ -103,7 +103,8 @@ describe('References', function () {
             .set('token', testUserToken)
             .send(testRefData)
             .then((res, err) => {
-                res.statusCode.should.equal(500);
+                res.statusCode.should.equal(400);
+                res.text.should.equal("Cannot create a Context without a Title, Authors, Publicatoin, Description adn Link fields");
                 
                 return reference.find({ 'Title': testRefData.Title }).exec()
                 .then((newRef, err) => {
