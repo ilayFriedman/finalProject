@@ -87,6 +87,7 @@ app.get('/private/getSharedMaps/:userID', mapsRoute);
 
 app.get('/private/searchNodes/:nodeName', mapsRoute);
 app.put('/private/addNewConnection', mapsRoute);
+app.put('/private/deleteConnection', mapsRoute);
 
 // app.get('/private/getAllUserMaps', mapsRoute);
 
