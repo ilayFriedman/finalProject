@@ -12,7 +12,8 @@ import { ModalService } from '../services/modal.service';
 export class SaveAsMapComponent implements OnInit {
   saveMapForm = new FormGroup({
     mapName: new FormControl(),
-    description: new FormControl()
+    description: new FormControl(),
+    savedFolder: new FormControl()
   });
   localUrl = 'http://localhost:3000';
   submitted = false
@@ -25,7 +26,8 @@ export class SaveAsMapComponent implements OnInit {
   ngOnInit() {
     this.saveMapForm = this.formBuilder.group({
       mapName: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      savedFolder: ['', Validators.required]
     });
   }
 
@@ -34,20 +36,23 @@ export class SaveAsMapComponent implements OnInit {
   }
 
   onSubmit(id: string) {
-    this.modalService.close(id);
     this.submitted = true;
     // stop here if form is invalid
     if (this.saveMapForm.invalid) {
+      console.log("map invalid");
+
       return;
     }
     // this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
-    console.log(this.mapHandler.myDiagram.model);
+    console.log(this.saveMapForm.controls);
+    this.modalService.close(id);
 
     let data = {
       'MapName': this.saveMapForm.controls.mapName.value,
       // 'Model': this.mapHandler.myDiagram.model.toJson(),
       'Model': this.mapHandler.myDiagram.model,
-      'Description': this.saveMapForm.controls.description.value
+      'Description': this.saveMapForm.controls.description.value,
+      'folderID': this.saveMapForm.controls.savedFolder.value
     }
     this.saveMapForm.reset()
     let result = this.http.post(this.localUrl + '/private/createMap', data, {

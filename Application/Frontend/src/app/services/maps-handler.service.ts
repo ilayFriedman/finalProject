@@ -9,7 +9,7 @@ export class MapsHandlerService {
   currMap_mapViewer: any;
   myDiagram: any;
   folderNamesList: any = [];
-  
+
 
   constructor(private http: HttpClient) { }
 

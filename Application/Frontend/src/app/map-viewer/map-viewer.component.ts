@@ -1136,11 +1136,10 @@ export class MapViewerComponent implements OnInit {
   }
 
   saveAs() {
+    console.log(this.mapHandler.folderNamesList);
     this.modalService.open('save-as-modal');
     this.isSaved = true;
-    // this.saveDiagramProperties();
-    // this.toSave = true;
-    // this.mapHandler.myDiagram.isModified = false;
+
   }
 
   save() {

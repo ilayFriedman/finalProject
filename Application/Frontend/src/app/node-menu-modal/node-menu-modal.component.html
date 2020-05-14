@@ -8,13 +8,13 @@
                 <!-- <div id="detailsTable" style="width: fit-content;" class="table table-hover borderless table-vcenter"> -->
                 <div style="margin: 5%;">
                     <!-- <span> -->
-                    <mat-form-field style="width: 50%;">
+                    <mat-form-field style="width: 50%;" appearance="outline">
                         <mat-label style="font-size: 20px;">Node's text:</mat-label>
                         <input matInput type="text" id="textFeature" class="form-control" name="objectText"
                             [(ngModel)]="this.modalService.currNodeData.text" style="text-align: center;">
                     </mat-form-field>
                     <br>
-                    <mat-form-field style="width: 50%;">
+                    <mat-form-field style="width: 50%;" appearance="outline">
                         <mat-label style="font-size: 20px;">Node's description:</mat-label>
                         <textarea matInput id="descriptionFeature" name="objectDescription" class="form-control"
                             [(ngModel)]="this.modalService.currNodeData.description"
@@ -343,6 +343,7 @@
                 </span>
             </div>
         </mat-tab>
+
         <!-- node styles -->
         <mat-tab label="Styles">
             <div class="tab-content" (change)="setNodeStyles()">
@@ -415,7 +416,7 @@
 
                     <!-- Content Column -->
                     <ng-container matColumnDef="Content">
-                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <th mat-header-cell *matHeaderCellDef> The comment</th>
                         <td mat-cell *matCellDef="let element" style="width: 60%;">
                             <span *ngIf="element.editCommentButton">
                                 <mat-form-field floatLabel="never" style="width: 80%;">
@@ -435,7 +436,7 @@
 
                     <!-- commentor name Column -->
                     <ng-container matColumnDef="CreatorName">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Name </th>
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Commenter </th>
                         <td mat-cell *matCellDef="let element" style="width: 10%; ">
                             {{element.CreatorName}} </td>
                     </ng-container>
@@ -634,33 +635,33 @@
 
 <!-- create new ref modal -->
 <jw-modal class="jw-modal" id="newRefModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+    <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeNewRefModal('newRefModal')">&times;</span>
         <div class="new-ref-modal-form">
             <form [formGroup]="newRefForm" (ngSubmit)="addNewRef()">
                 <h1>Create New Reference</h1>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Title</mat-label>
-                    <input matInput formControlName="title">
+                    <input matInput formControlName="title" required>
                 </mat-form-field>
                 <br>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Authors</mat-label>
                     <input matInput formControlName="authors">
                 </mat-form-field>
                 <br>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Publication
                     </mat-label>
                     <input matInput formControlName="publication">
                 </mat-form-field>
                 <br>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Description</mat-label>
                     <textarea matInput formControlName="description"></textarea>
                 </mat-form-field>
                 <br>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Link
                     </mat-label>
                     <input matInput formControlName="link">
@@ -679,9 +680,9 @@
         <div class="new-ref-modal-form">
             <form [formGroup]="newCtxForm" (ngSubmit)="addNewCtx()">
                 <h1>Create New Context</h1>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Title</mat-label>
-                    <input matInput formControlName="title">
+                    <input matInput formControlName="title" required>
                 </mat-form-field>
                 <br>
                 <button type="submit" mat-raised-button>Add</button>
@@ -697,9 +698,9 @@
         <div class="new-ref-modal-form">
             <form [formGroup]="newCommentForm" (ngSubmit)="addNewComment()">
                 <h1>Add New Comment</h1>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label>Your Comment</mat-label>
-                    <input matInput formControlName="content">
+                    <input matInput formControlName="content" required>
                 </mat-form-field>
                 <br>
                 <button type="submit" mat-raised-button>Add</button>
