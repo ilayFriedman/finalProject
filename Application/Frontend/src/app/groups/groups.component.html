@@ -1,7 +1,11 @@
 <div>
     <div>
         <mat-tab-group>
-            <mat-tab label="My Groups:">
+            <mat-tab label="Owner Groups ({{totalGroupsNumber}}):">
+            </mat-tab>
+            <mat-tab label="Manager Groups ({{totalGroupsNumber}}):">
+            </mat-tab>
+            <mat-tab label="Member Groups ({{totalGroupsNumber}}):">
             </mat-tab>
         </mat-tab-group>
 
@@ -17,7 +21,11 @@
         </table>
     </div>
 
-    <div>
+    <div style="padding-top: 5%;">
+        <div style="padding-left: 25px; padding-bottom: 5px;">
+            <span><input #category  placeholder="Search folders or maps.." /></span>
+            <span  style="font-size: 14px; font-family: 'Calibri', ssans-seif;"><b><i> No results</i></b></span>
+            </div>
         <kendo-treeview [nodes]="groupsArray" textField="text" childrenField="items" [animate]="true">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
                 <span class="k-icon k-i-myspace"></span><!-- ICON-->

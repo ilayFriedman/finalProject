@@ -6,55 +6,46 @@
 
 <body>
   <!-- <div class="background"></div> -->
-  <div>
+
     <!-- toolbar -->
-    <div class="toolbar">
-      <!-- <img style= "-webkit-filter: grayscale(1) invert(1); filter: grayscale(1) invert(1);" 
-        src="https://cdn2.iconfinder.com/data/icons/navigation-location/512/map_examine_enlarge_zoom_locate_location_navigate_navigation_plan-512.png" width="2%"> -->
-      <span style="float: left; position: relative;"><a mat-button [routerLink]="'/openPage'"
-          style="font-size: 20px; vertical-align: middle">ME-Mapper</a></span>
-      <span @fade *ngIf='!isLoggedIn()'>
-        <!-- Login -->
-        <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <span style="float: left; position: relative; padding-right: 5px;">
-            <div>
-              <div>
-                <span><input type="text" class="form-control" formControlName="username" placeholder="User Name"></span>
-              </div>
-            </div>
-          </span>
-
-          <span style="float: left; position: relative;  padding-right: 5px;">
-            <div>
-              <div>
-                <span><input type="text" class="form-control" formControlName="password" placeholder="Passowrd"></span>
-              </div>
-                
-            </div>
-          </span>
-          <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In"
-              class="form-control"></span>
-          <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;"><b>Password is required</b></span>
-          <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback"><b>userName is required</b></span>
-        </form>
+    <div class="toolbar" style="background-color: red;">
+      <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
+      <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
+        <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
+                  </kendo-autocomplete>
       </span>
+                
+      
+        <!-- Login -->
+        <span @fade *ngIf='!isLoggedIn()' style="background-color: green;">
+          bla bla
+          <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <span style="float: left; position: relative; padding-right: 5px;">
+              <div>
+                  <span><input type="text" class="form-control" formControlName="username" placeholder="User Name"></span>
+                </div>
+            </span>
 
-      <!-- <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/logedHome'"> Home </a></span> -->
+            <span style="float: left; position: relative;  padding-right: 5px;">
+                <div>
+                  <span><input type="text" class="form-control" formControlName="password" placeholder="Passowrd"></span>
+                </div>
+            </span>
 
-
-      <span @fade style="position: absolute;right:0;top:0; padding: 0.4%;">
+            <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In" class="form-control"></span>
+            <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;"><b>Password is required</b></span>
+            <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback"><b>userName is required</b></span>
+          </form>
+      </span>
+      
+      <span @fade style="float: right; position: relative;">
         <!--right side buttons-->
-        <!-- <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/register'"><span
-              class="k-icon k-i-user"></span> Register </a></span>
-        <span *ngIf='!isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/login'"><span
-              class="k-icon k-i-login"></span> Log In </a></span> -->
-        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span
-              class="k-icon k-i-user"></span> Change user info</a></span>
-        <span *ngIf='isLoggedIn()' class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/openPage'"><span
-              class="k-icon k-i-logout"></span> Log out</a></span>
+        <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">Hi {{fullName}}!</span>
+        <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
+        <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span></a></span>
+        <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/openPage'"><span class="k-icon k-i-logout"></span></a></span>
       </span>
     </div>
-  </div>
 
 
 

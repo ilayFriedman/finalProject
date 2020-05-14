@@ -29,6 +29,7 @@ export class AppComponent {
     password: new FormControl(),
 
   });
+  fullName = sessionStorage.userFullName;
 
 
   constructor(private router: Router, private formBuilder: FormBuilder, private http: HttpClient) {}
@@ -77,6 +78,7 @@ export class AppComponent {
       // @ts-ignore
       sessionStorage.setItem('userId', response._id);
       this.loginForm.reset();
+      this.fullName = sessionStorage.userFullName
       this.router.navigate(['/logedHome']);
     }, error => {
       this.submitted = false;

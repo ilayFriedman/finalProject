@@ -23,7 +23,6 @@ export interface Iuser {
 })
 
 export class GroupsComponent implements OnInit {
-  localUrl = 'http://localhost:3000';
   isPermissionChanged: boolean = false;
   selectedPermission = 'Member';
   currentlyEditedGroupId: string;
@@ -100,7 +99,6 @@ export class GroupsComponent implements OnInit {
           text: element.GroupName,
           GroupId: element.GroupId,
           GroupDescription: element.GroupDescription,
-          items: [],
         })
         this.totalGroupsNumber++
       }
@@ -141,8 +139,6 @@ export class GroupsComponent implements OnInit {
         text: res.Name,
         GroupId: res.GroupId,
         GroupDescription: res.Description,
-        items: [],
-
       })
   }
 

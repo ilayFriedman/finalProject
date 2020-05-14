@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FolderHandlerService } from '../services/folder-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
@@ -61,11 +61,16 @@ export class MapsfoldersViewerComponent implements OnInit {
   currPermissionMapDATA: any[] = [];
   snapshootFirst = [];
   dbAction = false;
+  @Input() autoCompleteUserNames: Array<string> = []
+  public autoCompleteUserNamesFilterd: Array<string>;
+  newUserPermission = ""
+  userNotFound = false
 
   // sharedMaps variables
   sharedMapList_notAssociated = []
   sharedMapList_Associated = []
   folderToSelected : Object  
+ 
   
 
 
@@ -76,7 +81,6 @@ export class MapsfoldersViewerComponent implements OnInit {
     this.addFolderCheckOut = this.formBuilder.group({ folderName: ['', Validators.required], description: ['', Validators.required] });
     this.addMapCheckOut = this.formBuilder.group({ mapName: ['', Validators.required], description: ['', Validators.required] });
     this.editPropertiesCheckOut = this.formBuilder.group({ fileName: [''], description: [''] });
-
   }
 
 
@@ -110,8 +114,11 @@ export class MapsfoldersViewerComponent implements OnInit {
 
         // fill the treeView : jsonRes= folder in backend, this.data= folder on treeView
         this.fillTreeView(jsonRes, this.data[0])
-        // console.log(this.data)
         this.parsedData = this.data;
+        this.mapHandler.folderNamesList = this.folderNamesList
+
+        this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.slice();
+        
 
       }).catch
         (err => {
@@ -124,10 +131,7 @@ export class MapsfoldersViewerComponent implements OnInit {
       console.log("error with getRoot folder");
       console.log(err)
     })
-
-
     }
-
   }
 
   public fillTreeView(folderLists, rootNode) {
@@ -505,7 +509,7 @@ newUserPermissionChoose: any
 
   public loadPermissionTable() {
     this.currPermissionMapDATA = []
-    if (this.selectedNode.usersPermissionsMap == "") {
+    // if (this.selectedNode.usersPermissionsMap == "") {
       var usersPermissionsMap = new Map();
       this.mapHandler.getUsersPermissionsMap(this.selectedNode.mapID).then(res => {
         var permissionsList = JSON.parse(res)
@@ -544,47 +548,54 @@ newUserPermissionChoose: any
       }
       // snapShot of permissions
       this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({username: val.username, name: val.name, permission: val.permission}));
-      
+      console.log("%%%%%%%%%%%%%%%%%%")
+      console.log(this.selectedNode.usersPermissionsMap)
       }).catch(err => {
         console.log(err);
       });
       console.log(this.currPermissionMapDATA);
-    }
-    else {
-      console.log("using with the exist!")
-      for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
-        if(key != sessionStorage.userId)  // not showe myself
-        {
-          this.currPermissionMapDATA.push(value);
-        }
-      }
-      console.log(this.currPermissionMapDATA);
-      // snapShot of permissions
-      this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({ username: val.username, name: val.name, permission: val.permission }));
-
-    }
+    // }
+    // else {
+    //   console.log("using with the exist!")
+    //   for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
+    //     if(key != sessionStorage.userId)  // not showe myself
+    //     {
+    //       this.currPermissionMapDATA.push(value);
+    //     }
+    //   }
+    //   console.log(this.currPermissionMapDATA);
+    //   // snapShot of permissions
+    //   this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({ username: val.username, name: val.name, permission: val.permission }));
+    //   console.log("%%%%%%%%%%%%%%%%%%")
+    //   console.log(this.selectedNode.usersPermissionsMap)
+    // }
+    
   }
 
 
-  public cancelHandler({ sender, rowIndex }) {
-    this.newUserPermissionChoose == null
+  public cancelHandler({sender,rowIndex}) {
+    this.newUserPermissionChoose = null
+    this.userNotFound = false
     sender.closeRow(rowIndex);
   }
 
   public openNewRow(event) {
     console.log(event)
-
-    // console.log(this.parsedDataPermissions)
     // define all editable fields validators and default values
     const newUser = new FormGroup({
-      'username': new FormControl(""),
+      // 'username': new FormControl(""),
       'permission': new FormControl({"": []})
     });
-    // show the new row editor, with the `FormGroup` build above
+
+    // RESETS
+    this.newUserPermission = ""
+    this.userNotFound = false
+    
     event.sender.addRow(newUser);
   }
 
   public addNewUserToPermission(event){
+    this.userNotFound = false
     console.log(this.selectedNode)
     console.log(event)
     this.dbAction = true
@@ -612,12 +623,12 @@ newUserPermissionChoose: any
     this.cancelHandler(event)
 
     
-    // HANDLE WITH NO FIND USER!!!! //
+   
       }).catch(err => {
         this.dbAction = false;
         if(err.status == 404)
           console.log("theres no such user!!")
-          event.dataItem['username'] = ""
+          this.userNotFound = true
         // console.log(err);
       });
   }
@@ -717,32 +728,40 @@ newUserPermissionChoose: any
     });
     this.currPermissionMapDATA = this.currPermissionMapDATA.slice()
     this.updatePermissionUsers = []
+
+    // undo addUserRow (only close added row!)
+    this.newUserPermission = ""
+    this.userNotFound = false
+    // this.cancelHandler(event)
   }
 
   public openPermissionsModal() {
     this.deleteUsersChange = false
     this.deleteUserList = []
-    this.modalService.open('usersPermissionsModal')
     this.snapshootFirst = []
+    // console.log("curr "+ this.currPermissionMapDATA)
     this.currPermissionMapDATA.forEach(element => {
       this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
     });
+    this.modalService.open('usersPermissionsModal')
 
+  }
 
-
+  cleanFromDuplicates(){
+    return this.currPermissionMapDATA.find(i => i.username === this.newUserPermission) != null
   }
   public closePermissionModal(modalId) {
     this.deleteUsersChange = false
     this.deleteUserList = []
-    this.modalService.close(modalId);
     this.currPermissionMapDATA = []
     this.snapshootFirst = [];
+    this.modalService.close(modalId);
 
   }
 
   radioButtonsUpdate(event, rowIndex) {
     console.log(event)
-
+    
     if (rowIndex !=-1){
       console.log(this.currPermissionMapDATA)
 
@@ -773,16 +792,6 @@ newUserPermissionChoose: any
     }
     else{   // new row permission touch
       this.newUserPermissionChoose = event
-      // var unique = true;
-      // this.currPermissionMapDATA.forEach(element => {
-      //   if (element.username == event.target.name)
-      //     unique = false;
-      // });
-      // if(unique)
-       
-      // else{
-      //   console.log("elrady thereIs!!!")
-      // }
       }
 }
 
@@ -794,6 +803,13 @@ newUserPermissionChoose: any
     }
   }
 
+  autoCompleteHandler(value) {
+    this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+    this.currPermissionMapDATA.forEach(element => {
+      this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj !== element.username);
+    });
+    
+}
 
 // ############### permissions- not Associated  functionallity ########################
 

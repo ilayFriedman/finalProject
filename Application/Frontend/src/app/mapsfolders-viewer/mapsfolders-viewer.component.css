@@ -45,6 +45,7 @@ a:active {
 /* MODAL PROPERTIES CSS*/
 
 .jw-modal {
+    overflow: auto;
     display: none;
     position: fixed;
     padding-top: 100px;

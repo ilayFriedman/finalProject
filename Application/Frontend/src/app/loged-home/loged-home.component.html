@@ -1,35 +1,19 @@
 <div class="homePage">
-  <div class="welcome">
-    <span style="font-size: 30px; width: 50%; display: inline-block; vertical-align:top;"><b>{{fullName}}'s Management
-        Page</b><br><br></span>
+  <div style="text-align: center;">
+    <h1>Your Management Page</h1>
+  </div>
+  <!-- <div class="welcome">
+    
+    
     <span style="width: 50%; display: inline-block;text-align: right; vertical-align:top; padding-top: 15px;">
       <input type="text" placeholder="Enter Name For Search..." [(ngModel)]="inputTextSearch" size="30">
       <input type="submit" value="Go!">
     </span>
-
-    <div>
-      <table style="width:100%; text-align: center;">
-        <tr>
-          <td>Total Folders:</td>
-          <td>Total Maps:</td>
-          <td>Total Groups:</td>
-          <td>Associated Maps:</td>
-          <td>Not Associated Maps:</td>
-        </tr>
-        <tr>
-          <td>{{folders_child.totalFolderCounter}}</td>
-          <td>{{folders_child.totalMapsCounter + folders_child.sharedMapList_notAssociated.length}}</td>
-          <td>{{groups_child.totalGroupsNumber}}</td>
-          <td>{{folders_child.totalMapsCounter}}</td>
-          <td>{{folders_child.sharedMapList_notAssociated.length}}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
+  </div> -->
 
   <div class="containerMaps_Groups">
     <div @fade class="mapsFoldersView">
-      <app-mapsfolders-viewer  #folders_child></app-mapsfolders-viewer>
+      <app-mapsfolders-viewer [autoCompleteUserNames] = "allUsersList" #folders_child></app-mapsfolders-viewer>
     </div>
     <div @fade class = "groups">
         <app-groups #groups_child></app-groups>

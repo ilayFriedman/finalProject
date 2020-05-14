@@ -7,9 +7,9 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 export class MapsHandlerService {
   localUrl = 'http://localhost:3000';
   currMap_mapViewer: any;
-  myMapsPromise: Promise<any>;
   myDiagram: any;
-  currMapPermission: string = "";
+  folderNamesList: any = [];
+  
 
   constructor(private http: HttpClient) { }
 

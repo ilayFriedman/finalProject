@@ -1,36 +1,21 @@
 body{
+  background: url("background.png") no-repeat center center fixed; 
   background-color: rgb(248, 248, 248);
   font-family: 'Calibri', ssans-seif;
  }
- .background{
-  /* background: url("blurbackground.png") no-repeat center center fixed;  */
-  /* -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  filter: blur(8px);
-  -webkit-filter: blur(8px); */
-
-  /* position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  display: block;
-  width: 1200px;
-  height: 800px;
-  -webkit-filter: blur(5px);
-  -moz-filter: blur(5px);
-  -o-filter: blur(5px);
-  -ms-filter: blur(5px);
-  filter: blur(5px); */
+ 
+ .mat-button{
+   padding: 0.1%;
  }
+
 .toolbar {
-  background-image: -webkit-linear-gradient(135deg, #2CB5E8, rgb(29, 103, 172));
-  height: 10%;
-  min-height: 30px;
-  box-shadow: 0px 0px 53px -12px rgba(0,0,0,0.75);
-  padding: 0.4%;
+  background-image: -webkit-linear-gradient(135deg, #2CB5E8, rgb(26, 82, 134));
+  overflow: auto;
+  
+  box-shadow: 0px 0px 40px -1px rgba(0,0,0,0.85);
+  padding: 0.2%;
   color: white
+  
 }
 .toolbarAddition{
   text-shadow: 1px 1px black;
@@ -43,16 +28,16 @@ body{
   border: none;
   border-radius: 4px;
   font-size: 15px;
+  line-height: 80%;
   margin: 0;
   outline: 0;
-  padding: 5px;
+  /* padding: 5px; */
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-
-
   -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
   box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+  font-family: 'Calibri', ssans-seif;
   
 }
 
@@ -60,9 +45,11 @@ body{
 .loginForm input[type="submit"],
 .loginForm input[type="button"]
 {
-  position: relative;
+  /* position: relative;
   display: block;
-  /* padding: 19px 39px 18px 39px; */
+
+  border: none;
+  border-radius: 4px;
   color: #FFF;
   margin: 0 auto;
   background: #87cfff;
@@ -71,8 +58,11 @@ body{
   font-style: normal;
   width: 100%;
   border: 1px solid #b6b5b5;
-  /* border-width: 1px 1px 3px; */
-  margin-bottom: 10px;
+
+  margin-bottom: 10px; */
+  font-family: 'Calibri', ssans-seif;
+  border-radius: 5px;
+  width: 80px;
 }
 .loginForm input[type="submit"]:hover,
 .loginForm input[type="button"]:hover
@@ -83,5 +73,5 @@ body{
 
 .invalid-feedback{
   color: black;
-  font-size: 14px;
+  /* font-size: 14px; */
 }
