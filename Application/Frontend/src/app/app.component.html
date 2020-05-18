@@ -11,8 +11,8 @@
     <div class="toolbar" style="background-color: red;">
       <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
       <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
-        <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
-                  </kendo-autocomplete>
+        <!-- <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
+                  </kendo-autocomplete> -->
       </span>
                 
       

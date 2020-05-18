@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {environment} from '../../../environments/environment';
 
 // export interface ReferenceElement {
 //   _id: string,
@@ -18,7 +19,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 
 export class NodeMenuHendlerService {
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   constructor(private http: HttpClient) { }
 
   // references

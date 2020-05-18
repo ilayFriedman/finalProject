@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
 
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) { }
   //TODO @Saar - Add Login, Register, ChangeUserInfo functions, and remove previous implementations from components.
