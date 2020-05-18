@@ -61,7 +61,6 @@ export class NodeMenuModalComponent implements OnInit {
   allRefs: any;
   displayedColumnsRefs: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];
   doShowAllRefs: boolean = false;
-  btnShowAllRefs: string = "Show All >";
 
   allRefList: ReferenceElement[] = [];
   nodeRefList: ReferenceElement[] = [];
@@ -107,7 +106,7 @@ export class NodeMenuModalComponent implements OnInit {
   // #### node styles ####
   shapeColor: string;
   borderColor: string;
-  borderThickness: string;
+  borderThickness: string = "1px";
 
   // #### Comments ####
   nodeComments: CommentElement[] = []
@@ -243,10 +242,10 @@ export class NodeMenuModalComponent implements OnInit {
 
   showAllRefs() {
     this.doShowAllRefs = !this.doShowAllRefs;
-    if (this.doShowAllRefs) {
-      this.btnShowAllRefs = "< Hide All"
-    }
-    else this.btnShowAllRefs = "Show All >"
+    // if (this.doShowAllRefs) {
+    //   this.btnShowAllRefs = "< Hide All"
+    // }
+    // else this.btnShowAllRefs = "Show All >"
   }
 
   unloadNodeRefs() {
@@ -362,13 +361,6 @@ export class NodeMenuModalComponent implements OnInit {
       })
   }
 
-  showAllCtxs() {
-    this.doShowAllCtxs = !this.doShowAllCtxs;
-    if (this.doShowAllCtxs) {
-      this.btnShowAllCtxs = "< Hide All"
-    }
-    else this.btnShowAllCtxs = "Show All >"
-  }
 
   unloadNodeCtxs() {
     this.nodeCtxsList = [];

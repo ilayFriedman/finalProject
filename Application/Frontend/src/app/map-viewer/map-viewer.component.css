@@ -141,7 +141,7 @@ body {
 .jw-modal {
     display: none;
     position: fixed;
-    padding-top: 100px;
+    padding: 100px;
     left: 0;
     top: 0;
     width: 100%;
@@ -162,10 +162,11 @@ body {
     border: 1px solid #888;
     min-width: max-content;
     width: max-content;
-    height: max-content;
+    height: 100%;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
     line-height: 10pt;
+    overflow: auto;
 }
 
 .close {
