@@ -150,10 +150,10 @@ export class NodeMenuModalComponent implements OnInit {
   ngOnInit() {
     this.newRefForm = this.formBuilder.group({
       title: ['', Validators.required],
-      authors: ['', Validators.required],
-      publication: ['', Validators.required],
-      description: ['', Validators.required],
-      link: ['', Validators.required]
+      authors: [' '],
+      publication: [' '],
+      description: [' '],
+      link: [' ']
     });
     this.loadRefsFromDB();
 
@@ -165,9 +165,7 @@ export class NodeMenuModalComponent implements OnInit {
     this.newCommentForm = this.formBuilder.group({
       content: ['', Validators.required]
     });
-    this.editCommentForm = this.formBuilder.group({
-      content: ['', Validators.required]
-    });
+
 
   }
 
@@ -306,8 +304,11 @@ export class NodeMenuModalComponent implements OnInit {
 
   addNewRef() {
     if (this.newRefForm.invalid) {
+
       return;
     }
+    console.log(this.newRefForm.controls);
+
     this.NodeMenuHendler.createNewRef(this.newRefForm.controls).then(res => {
       this.loadRefsFromDB()
       this.closeNewRefModal('newRefModal');
@@ -617,7 +618,8 @@ export class NodeMenuModalComponent implements OnInit {
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
-          tmpContainingList.push(map)
+          if (map.MapName != this.mapHandler.currMap_mapViewer.MapName)
+            tmpContainingList.push(map)
         })
         this.containingMapsList = new MatTableDataSource<ConnectionElement>(tmpContainingList);
         this.containingMapsList.paginator = this.addConnectionPaginator;

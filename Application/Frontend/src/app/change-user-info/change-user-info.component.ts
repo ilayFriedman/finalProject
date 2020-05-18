@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { first } from 'rxjs/operators';
+import {environment} from '../../environments/environment';
 
 
 @Component({ 
@@ -14,7 +14,7 @@ export class ChangeUserInfoComponent implements OnInit {
     changeUserInfoForm: FormGroup;
     loading = false;
     submitted = false;
-    localUrl = 'http://localhost:3000';
+    localUrl = environment.backendUrl;
     error: string;
     headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.token);
     constructor(

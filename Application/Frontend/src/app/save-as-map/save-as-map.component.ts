@@ -3,6 +3,7 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { ModalService } from '../services/modal.service';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-save-as-map',
@@ -12,12 +13,13 @@ import { ModalService } from '../services/modal.service';
 export class SaveAsMapComponent implements OnInit {
   saveMapForm = new FormGroup({
     mapName: new FormControl(),
-    description: new FormControl()
+    description: new FormControl(),
+    savedFolder: new FormControl()
   });
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   submitted = false
   // save: any;
-  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
+  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, public mapHandler: MapsHandlerService) {
     // let save = document.getElementById("saveButton");
     // save.addEventListener("click", (e:Event) => this.onSubmit());
   }
@@ -25,7 +27,8 @@ export class SaveAsMapComponent implements OnInit {
   ngOnInit() {
     this.saveMapForm = this.formBuilder.group({
       mapName: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      savedFolder: ['', Validators.required]
     });
   }
 
@@ -34,20 +37,23 @@ export class SaveAsMapComponent implements OnInit {
   }
 
   onSubmit(id: string) {
-    this.modalService.close(id);
     this.submitted = true;
     // stop here if form is invalid
     if (this.saveMapForm.invalid) {
+      console.log("map invalid");
+
       return;
     }
     // this.mapHandler.myDiagram.model.class = 'go.GraphLinksModel';
-    console.log(this.mapHandler.myDiagram.model);
+    console.log(this.saveMapForm.controls);
+    this.modalService.close(id);
 
     let data = {
       'MapName': this.saveMapForm.controls.mapName.value,
       // 'Model': this.mapHandler.myDiagram.model.toJson(),
       'Model': this.mapHandler.myDiagram.model,
-      'Description': this.saveMapForm.controls.description.value
+      'Description': this.saveMapForm.controls.description.value,
+      'folderID': this.saveMapForm.controls.savedFolder.value
     }
     this.saveMapForm.reset()
     let result = this.http.post(this.localUrl + '/private/createMap', data, {

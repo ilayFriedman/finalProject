@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users/users.service';
+import {environment} from '../../environments/environment';
 
 
 @Component({
@@ -22,7 +23,7 @@ import { UsersService } from '../services/users/users.service';
 export class LogedHomeComponent implements OnInit {
 
   fullName = ""
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   myMaps: any;
   name: any;
   allUsersList :Array<string> =  [];
