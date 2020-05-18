@@ -108,8 +108,8 @@
                 </div>
             </div>
 
-        </mat-tab>
-        <mat-tab label="Shared Maps ({{sharedMapList_notAssociated.length}}):">
+    </mat-tab>
+     <mat-tab label="Shared Maps ({{sharedMapList_notAssociated.length}}):">
 
 
             <!-- SHARED MAPS -->
@@ -128,8 +128,9 @@
                         <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
                         <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
                         <td style="vertical-align:center; font-size: 13px;">
+                            
                             <kendo-dropdownlist [data]="folderNamesList" [textField]="'name'" [valueField]="'folderID'"
-                                [(ngModel)]="folderToSelected">
+                                (ngModel)="folderToSelected">
                             </kendo-dropdownlist>
                         </td>
                         <td><button (click)="AssociatedMap(sharedMap)">Move to Folder!</button></td>
@@ -224,15 +225,15 @@
                 <br><br>
                 <form [formGroup]="editPropertiesCheckOut" (ngSubmit)="onSubmit_editProperties()">
                     <div>
-                        <table style="width: 800px;">
+                        <table style="width: 100%;">
                             <tr>
                                 <td style="text-align: left; padding: 10px;background-color: rgb(245, 244, 244);">
                                     <b><label>File Name: </label></b></td>
-                                <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="!changeFileName">
+                                <td style="background-color: rgb(245, 244, 244); min-width: 90%;" *ngIf="!changeFileName">
                                     {{selectedNode.text}}</td>
-                                <td style="background-color: rgb(245, 244, 244); width: 500px;" *ngIf="changeFileName">
+                                <td style="background-color: rgb(245, 244, 244); min-width: 90%;" *ngIf="changeFileName">
                                     <input id="fileName" type="text" formControlName="fileName"
-                                        placeholder="{{selectedNode.text}}"></td>
+                                    value="{{selectedNode.text}}"></td>
                                 <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeFileName"><span
                                         (click)="changeFileName= !changeFileName"
                                         [ngClass]="changeFileName ? 'true' : 'false'"
@@ -250,7 +251,7 @@
                                     {{selectedNode.Description}}</td>
                                 <td style="background-color: rgb(245, 244, 244);" *ngIf="changeDescription"><textarea
                                         formControlName="description" rows="4" cols="50"
-                                        placeholder="{{selectedNode.Description}}"></textarea></td>
+                                        value="{{selectedNode.Description}}"></textarea></td>
                                 <td style="background-color: rgb(245, 244, 244);" *ngIf="!changeDescription"><span
                                         (click)="changeDescription= !changeDescription"
                                         [ngClass]="changeDescription ? 'true' : 'false'"

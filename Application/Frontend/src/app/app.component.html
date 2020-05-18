@@ -8,34 +8,38 @@
   <!-- <div class="background"></div> -->
 
     <!-- toolbar -->
-    <div class="toolbar" style="background-color: red;">
+    <div class="toolbar">
       <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
-      <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
+      <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;padding-top: 10px; ">
         <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
                   </kendo-autocomplete>
       </span>
                 
       
         <!-- Login -->
-        <span @fade *ngIf='!isLoggedIn()' style="background-color: green;">
-          bla bla
-          <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <span style="float: left; position: relative; padding-right: 5px;">
-              <div>
-                  <span><input type="text" class="form-control" formControlName="username" placeholder="User Name"></span>
-                </div>
-            </span>
-
-            <span style="float: left; position: relative;  padding-right: 5px;">
+        
+        <span style="float: left;" @fade *ngIf='!isLoggedIn()'>
+          <div style="padding-top: 10px; ">
+            <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <span style="float: left; position: relative; padding-right: 5px;">
                 <div>
-                  <span><input type="text" class="form-control" formControlName="password" placeholder="Passowrd"></span>
-                </div>
-            </span>
-
-            <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In" class="form-control"></span>
-            <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;"><b>Password is required</b></span>
-            <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback"><b>userName is required</b></span>
-          </form>
+                    <span><input type="text" [ngStyle]="submitted && f.username.errors && f.username.errors.required?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}" class="form-control" formControlName="username" placeholder="User Name"></span>
+                  </div>
+              </span>
+  
+              <span style="float: left; position: relative;  padding-right: 5px;">
+                  <div>
+                    <span><input type="password" [ngStyle]="submitted && f.password.errors && f.password.errors.required?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}" class="form-control" formControlName="password" placeholder="Passowrd"></span>
+                  </div>
+              </span>
+  
+              <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In" class="form-control"></span>
+            </form>
+          </div>
+          <div>
+            <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback" style="padding-right: 5px;">userName is required!</span>
+            <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;">Password is required!</span>
+          </div>
       </span>
       
       <span @fade style="float: right; position: relative;">

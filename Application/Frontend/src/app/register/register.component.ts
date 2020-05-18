@@ -25,6 +25,7 @@ export class RegisterComponent implements OnInit {
     submitted = false;
     localUrl = 'http://localhost:3000';
     error: string;
+  done = false;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -60,8 +61,11 @@ export class RegisterComponent implements OnInit {
     
         result.subscribe(response => {
             this.submitted = false;
-            this.router.navigate(['/login']);
-            alert("New user successfully registered.");
+            // this.router.navigate(['/login']);
+            this.done = true;
+            setTimeout(() => { this.done=false }, 2000);
+            
+            // alert("New user successfully registered.");
           }, error => {
             this.submitted = false;
             console.log(error.error);

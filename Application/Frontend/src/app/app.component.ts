@@ -84,6 +84,7 @@ export class AppComponent {
       this.submitted = false;
       console.log(error.error)
       alert(error.error)
+      this.loginForm.reset();
     }
     );
   }

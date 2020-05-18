@@ -7,6 +7,7 @@ import { ModalService } from '../services/modal.service';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import { MatTable } from '@angular/material';
+import { Observable, of } from 'rxjs';
 
 export interface Iuser {
   Permission: string;
@@ -38,7 +39,12 @@ export class GroupsComponent implements OnInit {
   groupsPermissionList: any[] = [];
   groupsNoPermissionList: any[] = [];
 
-  public groupsArray: any[] = [];
+  public groupsArray: any[] = [
+    {text:"Owner Groups",isTitle:"true", items: []},
+    {text:"Manager Groups",isTitle:"true", items: []},
+    {text:"Member Groups",isTitle:"true", items: []},
+  ];
+  public expandedKeys: any[] = [];
   addGroupCheckOut;
   
   // allUsersTableSelection = new SelectionModel<Iuser>(true, []);
@@ -71,7 +77,6 @@ export class GroupsComponent implements OnInit {
       this.getGroupsUserOwns();
       this.getGroupsUserMember();
       this.getUsers();
-      console.log(this.groupsArray);
       }
   }
 
@@ -95,7 +100,7 @@ export class GroupsComponent implements OnInit {
 
       for (let index = 0; index < this.groupsUserOwns.length; index++) {
         const element = this.groupsUserOwns[index];
-        this.groupsArray.push({
+        this.groupsArray[0].items.push({
           text: element.GroupName,
           GroupId: element.GroupId,
           GroupDescription: element.GroupDescription,
@@ -329,4 +334,33 @@ export class GroupsComponent implements OnInit {
       this.newUserPermissionChoice = event;
     }
   }
+
+
+
+    // ############### Tree-view functionallity ########################
+
+
+    public children = (dataitem: any): Observable<any[]> => of(dataitem.items);
+    public hasChildren = (dataitem: any): boolean => !!dataitem.items;
+  
+    /**
+     * A `collapse` event handler that will remove the node hierarchical index
+     * from the collection, collapsing its children.
+     */
+    public handleCollapse(node) {
+      this.expandedKeys = this.expandedKeys.filter(k => k !== node.index);
+    }
+  
+    /**
+    * An `expand` event handler that will add the node hierarchical index
+    * to the collection, expanding the its children.
+    */
+    public handleExpand(expandedNode) {
+      this.expandedKeys = this.expandedKeys.concat(expandedNode.index);
+    }
+  
+    public isExpanded = (dataItem: any, index: string) => {
+  
+      return this.expandedKeys.indexOf(index) > -1;
+    }
 }

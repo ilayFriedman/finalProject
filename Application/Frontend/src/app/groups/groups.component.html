@@ -1,11 +1,7 @@
 <div>
     <div>
         <mat-tab-group>
-            <mat-tab label="Owner Groups ({{totalGroupsNumber}}):">
-            </mat-tab>
-            <mat-tab label="Manager Groups ({{totalGroupsNumber}}):">
-            </mat-tab>
-            <mat-tab label="Member Groups ({{totalGroupsNumber}}):">
+            <mat-tab label="Groups ({{totalGroupsNumber}}):">
             </mat-tab>
         </mat-tab-group>
 
@@ -26,16 +22,18 @@
             <span><input #category  placeholder="Search folders or maps.." /></span>
             <span  style="font-size: 14px; font-family: 'Calibri', ssans-seif;"><b><i> No results</i></b></span>
             </div>
-        <kendo-treeview [nodes]="groupsArray" textField="text" childrenField="items" [animate]="true">
+        <kendo-treeview [nodes]="groupsArray" textField="text" childrenField="items" [animate]="true" [expandBy]="'text'"
+        kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" [children]="children" [hasChildren]="hasChildren" [animate]="true" [expandBy]="'text'" [(expandedKeys)]="expandedKeys"
+        (collapse)="handleCollapse($event)" (expand)="handleExpand($event)">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
-                <span class="k-icon k-i-myspace"></span><!-- ICON-->
-                <span style="margin-right: 10px;">{{dataItem.text}}</span><!-- text-->
-                <span style="margin-right: 10px; font-size: 10px;"><i>{{dataItem.GroupDescription}}</i></span>
+                <span *ngIf="dataItem.isTitle == null" class="k-icon k-i-myspace"></span><!-- ICON-->
+                <span style="margin-right: 10px;" ng-class="{'green-class': list.enabled, 'red-class' : !list.enabled }">{{dataItem.text}}<span *ngIf="dataItem.isTitle != null"> ({{dataItem.items.length}})</span></span><!-- text-->
+                <span *ngIf="dataItem.isTitle == null" style="margin-right: 10px; font-size: 10px;"><i>{{dataItem.GroupDescription}}</i></span>
                 <!-- description-->
-                <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
+                <span *ngIf="dataItem.isTitle == null" style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
                     title="Edit group '{{dataItem.text}}'" (click)="this.openEditGroupModal(dataItem);"></span>
                 <!-- edit-->
-                <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-delete"
+                <span *ngIf="dataItem.isTitle == null" style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-delete"
                     title="Permanently delete group '{{dataItem.text}}'" (click)="deleteGroup(dataItem);"></span>
                 <!-- delete-->
             </ng-template>

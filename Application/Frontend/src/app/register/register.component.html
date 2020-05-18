@@ -1,86 +1,107 @@
 <div @fade class="allRegister">
-    <div style="text-align: center; width: 100%; margin-bottom: 5%;" >
-        <span class="registerTitle" style="width: 100%; text-align: center;"><b>Registration</b></span>
+    <div @fade *ngIf="!done">
+        <div style="text-align: center; width: 100%; margin-bottom: 5%;" >
+            <span class="registerTitle" style="width: 100%; text-align: center;"><b>Join Us</b></span>
+        </div>
+        <form class="form-style-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <table style="margin: auto; padding : 15px; background: #f0f0f0; border-radius: 8px; ">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="formElements">
+                                <div>
+                                    <span class="form-lbl" style="font-size: 110%;"><b>Email address:</b></span><span style="font-size: 90%;"><i> will use as your username</i></span>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="email" size="50" placeholder="e.g unknown@gmail.com">
+                                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                                        <div *ngIf="f.email.errors.required">Email address is required</div>
+                                        <div *ngIf="f.email.errors.email">Please insert a valid email address</div>
+                                    </div>
+                                </div>
+                                <div style="padding-top: 10px;">
+                                    <span><kendo-switch formControlName="getPermissionUpdate"></kendo-switch></span><span class="form-lbl" style="padding-left: 5px;">Get to your mail updates about your maps permissions</span>
+                                </div>
+                            </div>
+                            
+                
+                            <div class="formElements" style=" display:flex;">
+                                <span style="padding-right: 5px;">
+                                    <div>
+                                        <span class="form-lbl" style="font-size: 110%;"><b>Password:</b></span><span style="font-size: 90%;"><i></i></span>
+                                    </div>
+                                    <div>
+                                        <input type="password" class="form-control" formControlName="password">
+                                        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                                            <div *ngIf="f.password.errors.required">Password is required</div>
+                                        </div>
+                                    </div>
+    
+                                </span>
+    
+                                <span>
+                                    <div>
+                                        <span class="form-lbl" style="font-size: 110%;"><b>Validate Password:</b></span><span style="font-size: 90%;"><i></i></span>
+                                    </div>
+                                    <div>
+                                        <input type="password" class="form-control" formControlName="password">
+                                        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                                            <div *ngIf="f.password.errors.required">Password is required</div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                
+                            
+                            <div class="formElements">
+                                <span>
+                                    <div>
+                                        <span class="form-lbl" style="font-size: 110%;"><b>Your First name:</b></span>
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control" formControlName="firstName" size="30">
+                                        <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+                                            <div *ngIf="f.firstName.errors.required">First name is required</div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                
+                
+                            <div class="formElements">
+                                <span>
+                                    <div>
+                                        <span class="form-lbl" style="font-size: 110%;"><b>Your Last name:</b></span>
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control"  formControlName="lastName" size="30">
+                                        <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+                                            <div *ngIf="f.lastName.errors.required">Last name is required</div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        
+                
+                    </td>
+                    <td>
+                        <span style=" font-size: 1500%; color: #757474; text-shadow: rgba(97, 96, 96, 0.84) 2px 3px 3px;" class="k-icon k-i-user"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Register" class="form-control">
+                    </td>
+                </tr>
+            </table>
+        </form>
     </div>
-    <form class="form-style-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <table style="margin: auto; padding : 15px; background: #f0f0f0; border-radius: 8px;">
-            <tr>
-                <td>
-                    <div class="form-group">
-                        <div class="formElements">
-                            <div>
-                                <span class="form-lbl" style="font-size: 110%;"><b>Email address:</b></span><span style="font-size: 90%;"><i> will use as your username</i></span>
-                            </div>
-                            <div>
-                                <input type="text" formControlName="email" size="50" placeholder="e.g unknown@gmail.com">
-                                <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
-                                    <div *ngIf="f.email.errors.required">Email address is required</div>
-                                    <div *ngIf="f.email.errors.email">Please insert a valid email address</div>
-                                </div>
-                            </div>
-                            <div style="padding-top: 10px;">
-                                <span><kendo-switch formControlName="getPermissionUpdate"></kendo-switch></span><span class="form-lbl" style="padding-left: 5px;">Get to your mail updates about your maps permissions</span>
-                            </div>
-                        </div>
-                        
-            
-                        <div class="formElements">
-                            <span>
-                                <div>
-                                    <span class="form-lbl" style="font-size: 110%;"><b>Password:</b></span><span style="font-size: 90%;"><i></i></span>
-                                </div>
-                                <div>
-                                    <input type="text" class="form-control" formControlName="password">
-                                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-                                        <div *ngIf="f.password.errors.required">Password is required</div>
-                                        <div *ngIf="f.password.errors.minlength">Password must have at least 6 characters</div>
-                                    </div>
-                                </div>
-                            </span>
-                        </div>
-            
-                        
-                        <div class="formElements">
-                            <span>
-                                <div>
-                                    <span class="form-lbl" style="font-size: 110%;"><b>Your First name:</b></span>
-                                </div>
-                                <div>
-                                    <input type="text" class="form-control" formControlName="firstName" size="30">
-                                    <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
-                                        <div *ngIf="f.firstName.errors.required">First name is required</div>
-                                    </div>
-                                </div>
-                            </span>
-                        </div>
-            
-            
-                        <div class="formElements">
-                            <span>
-                                <div>
-                                    <span class="form-lbl" style="font-size: 110%;"><b>Your Last name:</b></span>
-                                </div>
-                                <div>
-                                    <input type="text" class="form-control"  formControlName="lastName" size="30">
-                                    <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
-                                        <div *ngIf="f.lastName.errors.required">Last name is required</div>
-                                    </div>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-                    
-            
-                </td>
-                <td>
-                    <span style=" font-size: 1500%; color: #757474; text-shadow: rgba(97, 96, 96, 0.84) 2px 3px 3px;" class="k-icon k-i-user"></span>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="Register" class="form-control">
-                </td>
-            </tr>
-        </table>
-    </form>
+
+    <div @fade *ngIf="done" style="text-align: center;">
+        <br><br><br><br><br><br><br><br>
+        <span @fade class="k-icon k-i-check-outline" style="font-size: 50px;"></span>
+        <h1>New user successfully registered.</h1> 
+        
+    </div>
 </div>
