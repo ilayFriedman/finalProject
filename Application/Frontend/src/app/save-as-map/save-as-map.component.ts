@@ -18,7 +18,7 @@ export class SaveAsMapComponent implements OnInit {
   localUrl = 'http://localhost:3000';
   submitted = false
   // save: any;
-  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, private mapHandler: MapsHandlerService) {
+  constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, public mapHandler: MapsHandlerService) {
     // let save = document.getElementById("saveButton");
     // save.addEventListener("click", (e:Event) => this.onSubmit());
   }
