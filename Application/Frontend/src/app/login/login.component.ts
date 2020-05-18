@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from '@angular/router';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import {environment} from '../../environments/environment';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ]
 })
 export class LoginComponent implements OnInit {
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   submitted = false
   loginForm = new FormGroup({
     username: new FormControl(),

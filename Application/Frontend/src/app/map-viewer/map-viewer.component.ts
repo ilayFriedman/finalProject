@@ -11,6 +11,7 @@ import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
 import { ThemePalette } from '@angular/material/core';
+import {environment} from '../../environments/environment';
 
 
 
@@ -26,7 +27,7 @@ export class MapViewerComponent implements OnInit {
   mapModel: any;
   tabNum: number;
   toSave: boolean = false;
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   fileToImport: any;
   updateConverter: boolean = false
   currNode: any;

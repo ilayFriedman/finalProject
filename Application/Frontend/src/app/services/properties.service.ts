@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PropertiesService {
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   
   constructor() { }
 }

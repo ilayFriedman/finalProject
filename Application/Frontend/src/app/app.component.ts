@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import {environment} from '../environments/environment';
+
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,7 @@ export class AppComponent {
   title = 'ME-Mapper';
   userFullName = sessionStorage.userFullName
 
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   submitted = false
   loginForm = new FormGroup({
     username: new FormControl(),

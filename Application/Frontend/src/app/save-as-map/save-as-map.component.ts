@@ -3,6 +3,7 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { ModalService } from '../services/modal.service';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-save-as-map',
@@ -15,7 +16,7 @@ export class SaveAsMapComponent implements OnInit {
     description: new FormControl(),
     savedFolder: new FormControl()
   });
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   submitted = false
   // save: any;
   constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, public mapHandler: MapsHandlerService) {

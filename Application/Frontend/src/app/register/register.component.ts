@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import {HttpClient} from "@angular/common/http";
 import { trigger, transition, animate, style } from '@angular/animations';
 import { UsersService } from '../services/users/users.service';
+import {environment} from '../../environments/environment';
 
 
 @Component({ 
@@ -23,7 +24,7 @@ export class RegisterComponent implements OnInit {
     registerForm: FormGroup;
     loading = false;
     submitted = false;
-    localUrl = 'http://localhost:3000';
+    localUrl = environment.backendUrl;
     error: string;
 
     constructor(

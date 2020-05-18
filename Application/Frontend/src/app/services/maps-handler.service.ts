@@ -1,11 +1,12 @@
 import { Injectable, SimpleChanges } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapsHandlerService {
-  localUrl = 'http://localhost:3000';
+  localUrl = environment.backendUrl;
   currMap_mapViewer: any;
   myDiagram: any;
   folderNamesList: any = [];
