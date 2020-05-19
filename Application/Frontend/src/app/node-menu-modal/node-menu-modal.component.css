@@ -1,5 +1,6 @@
 table {
     width: 100%;
+    height: 100%;
 }
 
 .mat-tab-lable {
@@ -11,14 +12,13 @@ table {
 
 .tab-content {
     align-items: center;
-    justify-content: space-around;
+    /* justify-content: space-around; */
     /* display: flex; */
-    width: 100%;
-    margin-right: 15px;
-}
-
-tbody {
-    margin: 10px;
+    width: 95%;
+    height: 95%;
+    padding: 15px;
+    /* border: solid; */
+    overflow: auto;
 }
 
 /* .mat-header-cell.mat-column-position {
@@ -36,8 +36,9 @@ h3 {
 }
 
 .filterAndClear {
-    margin-top: 15px;
-    width: 100%;
+    /* margin-top: 15px; */
+    width: 90%;
+    padding: 2%;
 }
 
 .mat-header-cell {
@@ -48,33 +49,35 @@ h3 {
     font-size: 15px;
 }
 
-.refBtn {
-    margin: 5px;
-}
-
 .mat-raised-button {
     width: max-content;
     height: fit-content;
 }
 
 .mat-form-field {
-    font-size: 14px;
-    width: 100%;
+    font-size: 18px;
+    /* width: 100%; */
 }
 
 #nodeRefsSpan, #allRefsSpan {
+    /* padding: 2%; */
     margin-top: 5px;
-    width: max-content;
 }
 
 .small-menu-option {
     margin: 15px;
 }
 
+.upperMenu {
+    width: 100%;
+    /* align-content: center;    */
+    height: min-content;
+}
+
 .jw-modal {
     display: none;
     position: fixed;
-    padding-top: 100px;
+    padding: 100px;
     /* left: 0; */
     top: 0;
     width: 100%;
@@ -88,18 +91,18 @@ h3 {
 }
 
 .jw-modal-body {
-    position: fixed;
     text-align: center;
     background-color: #fefefe;
-    margin: 10 auto;
+    margin: 10px auto;
     padding: 20px;
     border: 1px solid #888;
     min-width: max-content;
     width: max-content;
-    height: max-content;
+    height: 100%;
     font-family: 'Calibri', sans-seif;
     border-radius: 25px;
     line-height: 10pt;
+    overflow: auto;
 }
 
 .close {

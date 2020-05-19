@@ -6,7 +6,7 @@
         <mat-tab label="Details">
             <div class="tab-content" style="justify-content: center; position: relative;">
                 <!-- <div id="detailsTable" style="width: fit-content;" class="table table-hover borderless table-vcenter"> -->
-                <div style="margin: 5%;">
+                <div style="margin: 2%;">
                     <!-- <span> -->
                     <mat-form-field style="width: 50%;" appearance="outline">
                         <mat-label style="font-size: 20px;">Node's text:</mat-label>
@@ -28,25 +28,58 @@
 
         <!-- references tab -->
         <mat-tab label="References">
-            <div class="tab-content" style="width: max-content; ">
+            <div class="tab-content">
+                <!-- menu refs -->
+                <mat-toolbar style="background-color: inherit;">
+                    <mat-toolbar-row>
+                        <div class="upperMenu">
+                            <button mat-icon-button (click)="doShowAllRefs = !doShowAllRefs">
+                                <mat-icon matTooltip="Show All" *ngIf="!doShowAllRefs">arrow_forward</mat-icon>
+                                <mat-icon matTooltip="Hide All" *ngIf="doShowAllRefs">arrow_back</mat-icon>
+                            </button>
+                            <button mat-icon-button
+                                [disabled]="this.allRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                                (click)=" addRefToNode()">
+                                <mat-icon matTooltip="Add References">add_to_photos</mat-icon>
+                            </button>
+                            <button mat-icon-button
+                                [disabled]="this.nodeRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                                (click)="removeRefToNode()">
+                                <mat-icon matTooltip="Remove
+                                References">delete_sweep</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="openNewRefModal('newRefModal')">
+                                <mat-icon matTooltip="Create New
+                            Reference">post_add</mat-icon>
+
+                            </button>
+                        </div>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+
                 <!-- node refs -->
-                <span id="nodeRefsSpan" style="float: left;">
-                    <h3> The references of "{{modalService.currNodeData.text}}" </h3>
-                    <!-- filter node refs -->
-                    <div class="filterAndClear">
-                        <span style="float: left; width: 70%;">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilterNodeRefs($event)">
-                            </mat-form-field>
-                        </span>
-                        <span style="float: right; ">
-                            <button mat-raised-button [disabled]='this.nodeRefSelection.selected.length == 0'
-                                (click)="this.nodeRefSelection.clear()">Clear
-                                Selection</button>
-                        </span></div>
+                <span id="nodeRefsSpan" style="float: left; position: relative;" class="mat-elevation-z8">
+                    <div style="width: 100%;">
+                        <h3> The references of "{{modalService.currNodeData.text}}" </h3>
+
+                        <!-- filter node refs -->
+                        <div class="filterAndClear" style="padding: 2%;">
+                            <span>
+                                <mat-form-field style="width: 80%;">
+                                    <mat-label>Filter</mat-label>
+                                    <input matInput (keyup)="applyFilterNodeRefs($event)">
+                                </mat-form-field>
+                            </span>
+                            <span>
+                                <button mat-icon-button [disabled]='this.nodeRefSelection.selected.length == 0'
+                                    (click)="this.nodeRefSelection.clear()" style="margin: 10px;">
+                                    <mat-icon matTooltip="Clear Selection">check_box_outline_blank</mat-icon>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
                     <!-- node refs table -->
-                    <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource" class="mat-elevation-z0">
+                    <table id="nodeRefsTbl" mat-table [dataSource]="nodeRefSource">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
                             <tr>
@@ -96,31 +129,35 @@
 
 
                     </table>
-                    <div style="position: relative; bottom: 0;">
+                    <div style="position: relative; bottom: 0; width: 100%;">
                         <span style="float: left;">
-                            <mat-paginator #nodeRefsPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                            <mat-paginator #nodeRefsPaginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
                             </mat-paginator>
                         </span>
                     </div>
                 </span>
+
                 <!-- all refs  -->
-                <span id="allRefsSpan" style="float: right;" [hidden]="!this.doShowAllRefs">
+                <span id="allRefsSpan" style="float: right; position: relative;" class="mat-elevation-z8"
+                    [hidden]="!this.doShowAllRefs">
                     <h3>All references</h3>
                     <!-- filter -->
                     <div class="filterAndClear">
-                        <span style="float: left; width: 70%;">
-                            <mat-form-field>
+                        <span>
+                            <mat-form-field style="width: 80%;">
                                 <mat-label>Filter</mat-label>
                                 <input matInput (keyup)="applyFilterAllRefs($event)">
                             </mat-form-field>
                         </span>
-                        <span style="float: right; ">
-                            <button mat-raised-button [disabled]='this.allRefSelection.selected.length == 0'
-                                (click)="this.allRefSelection.clear()">Clear
-                                Selection</button>
-                        </span></div>
+                        <span>
+                            <button mat-icon-button [disabled]='this.allRefSelection.selected.length == 0'
+                                (click)="this.allRefSelection.clear()">
+                                <mat-icon matTooltip="Clear Selection">check_box_outline_blank</mat-icon>
+                            </button>
+                        </span>
+                    </div>
                     <!-- all refs table -->
-                    <table id="allRefsTbl" mat-table [dataSource]="allRefSource" class="mat-elevation-z0">
+                    <table id="allRefsTbl" mat-table [dataSource]="allRefSource">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
                             <tr>
@@ -172,51 +209,67 @@
                     </table>
                     <div style="position: relative; bottom: 0;">
                         <span style="float: right;">
-                            <mat-paginator #allRefsPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                            <mat-paginator #allRefsPaginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
                             </mat-paginator>
                         </span>
                     </div>
-                </span>
-                <!-- menu between tables refs -->
-                <span style="float: right; margin: 5px;">
-                    <div class="refBtn"><button mat-raised-button (click)="showAllRefs()">{{btnShowAllRefs}}</button>
-                    </div>
-                    <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.allRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
-                            (click)=" addRefToNode()">Add Reference</button></div>
-                    <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.nodeRefSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
-                            (click)="removeRefToNode()">Remove
-                            Reference</button>
-                    </div>
-                    <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
-                            Reference</button></div>
-
                 </span>
             </div>
         </mat-tab>
 
         <!-- contexts tab -->
         <mat-tab label="Contexts">
-            <div class="tab-content" style="width: max-content; ">
+            <div class="tab-content">
+
+                <!-- menu ctxs -->
+                <mat-toolbar style="background-color: inherit;">
+                    <mat-toolbar-row>
+                        <div class="upperMenu">
+                            <button mat-icon-button (click)="doShowAllCtxs = !this.doShowAllCtxs">
+                                <mat-icon matTooltip="Show All" *ngIf="!doShowAllCtxs">arrow_forward</mat-icon>
+                                <mat-icon matTooltip="Hide All" *ngIf="doShowAllCtxs">arrow_back</mat-icon>
+                            </button>
+                            <button mat-icon-button
+                                [disabled]="this.allCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                                (click)="addCtxsToNode()">
+                                <mat-icon matTooltip="Add Contexts">add_to_photos</mat-icon>
+                            </button>
+                            <button mat-icon-button
+                                [disabled]="this.nodeCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
+                                (click)="removeCtxsToNode()">
+                                <mat-icon matTooltip="Remove Contexts">delete_sweep</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="openNewCtxModal('newCtxModal')">
+                                <mat-icon matTooltip="Create New Contexts">post_add</mat-icon>
+
+                            </button>
+                        </div>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+
                 <!-- node ctxs -->
-                <span id="nodeCtxsSpan" style="float: left;">
-                    <h3> The contexts of "{{modalService.currNodeData.text}}"</h3>
-                    <!-- filter -->
-                    <div class="filterAndClear">
-                        <span style="float: left; width: 70%;">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilterNodeCtxs($event)">
-                            </mat-form-field>
-                        </span>
-                        <span style="float: right; ">
-                            <button mat-raised-button [disabled]='this.nodeCtxsSelection.selected.length == 0'
-                                (click)="this.nodeCtxsSelection.clear()">Clear
-                                Selection</button>
-                        </span></div>
+                <span id="nodeCtxsSpan" style="float: left; position: relative;" class="mat-elevation-z8">
+                    <div style="width: 100%;">
+                        <h3> The contexts of "{{modalService.currNodeData.text}}"</h3>
+                        <!-- filter -->
+                        <div class="filterAndClear">
+                            <span>
+                                <mat-form-field style="width: 80%;">
+                                    <mat-label>Filter</mat-label>
+                                    <input matInput (keyup)="applyFilterNodeCtxs($event)">
+                                </mat-form-field>
+                            </span>
+                            <span>
+                                <button mat-icon-button [disabled]='this.nodeCtxsSelection.selected.length == 0'
+                                    (click)="this.nodeCtxsSelection.clear()">
+                                    <mat-icon matTooltip="Clear Selection"> check_box_outline_blank </mat-icon>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+
                     <!-- node ctxs table -->
-                    <table id="nodeCtxsTbl" mat-table [dataSource]="nodeCtxsSource" class="mat-elevation-z0">
+                    <table id="nodeCtxsTbl" mat-table [dataSource]="nodeCtxsSource">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
                             <tr>
@@ -254,30 +307,37 @@
 
 
                     </table>
-                    <div style="position: relative; bottom: 0;">
+                    <div style="position: relative; bottom: 0; width: 100%;">
                         <span style="float: left;">
-                            <mat-paginator #nodeCtxsPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                            <mat-paginator #nodeCtxsPaginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
                             </mat-paginator>
                         </span>
                     </div>
                 </span>
+
                 <!-- all ctxs -->
-                <span id="allCtxsSpan" style="float: right;" [hidden]="!this.doShowAllCtxs">
-                    <h3>All contexts</h3>
-                    <div class="filterAndClear">
-                        <span style="float: left; width: 70%;">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilterAllCtxs($event)">
-                            </mat-form-field>
-                        </span>
-                        <span style="float: right; ">
-                            <button mat-raised-button [disabled]='this.allCtxsSelection.selected.length == 0'
-                                (click)="this.allCtxsSelection.clear()">Clear
-                                Selection</button>
-                        </span></div>
+                <span id="allCtxsSpan" style="float: right; position: relative; " [hidden]="!this.doShowAllCtxs"
+                    class="mat-elevation-z8">
+                    <div style="width: 100%;">
+                        <h3>All contexts</h3>
+                        <div class="filterAndClear">
+                            <span>
+                                <mat-form-field style="width: 80%;">
+                                    <mat-label>Filter</mat-label>
+                                    <input matInput (keyup)="applyFilterAllCtxs($event)">
+                                </mat-form-field>
+                            </span>
+                            <span style="float: right; ">
+                                <button mat-icon-button [disabled]='allCtxsSelection.selected.length == 0'
+                                    (click)="this.allCtxsSelection.clear()">
+                                    <mat-icon matTooltip="Clear Selection"> check_box_outline_blank </mat-icon>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+
                     <!-- all ctxs table -->
-                    <table id="allCtxsTbl" mat-table [dataSource]="allCtxsSource" class="mat-elevation-z0">
+                    <table id="allCtxsTbl" mat-table [dataSource]="allCtxsSource">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
                             <tr>
@@ -317,29 +377,12 @@
                     </table>
                     <div style="position: relative; bottom: 0;">
                         <span style="float: right;">
-                            <mat-paginator #allCtxssPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                            <mat-paginator #allCtxssPaginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
                             </mat-paginator>
 
                         </span>
 
                     </div>
-                </span>
-                <!-- menu between tables ctxs -->
-                <span style="float: right; margin: 5px;">
-                    <div class="refBtn"><button mat-raised-button (click)="showAllCtxs()">{{btnShowAllCtxs}}</button>
-                    </div>
-                    <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.allCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
-                            (click)="addCtxsToNode()">Add Contexts</button></div>
-                    <div class="refBtn"><button mat-raised-button
-                            [disabled]="this.nodeCtxsSelection.selected.length == 0 || mapHandler.getUserPermission() &lt; 2"
-                            (click)="removeCtxsToNode()">Remove Contexts</button>
-                    </div>
-                    <div class="refBtn"><button mat-raised-button (click)="openNewCtxModal('newCtxModal')">Create New
-                            Contexts</button></div>
-                    <!-- <div class="refBtn"><button mat-raised-button (click)="openNewRefModal('newRefModal')">Create New
-                            Reference</button></div> -->
-
                 </span>
             </div>
         </mat-tab>
@@ -347,28 +390,39 @@
         <!-- node styles -->
         <mat-tab label="Styles">
             <div class="tab-content" (change)="setNodeStyles()">
-                <h3>Change the appearance of "{{modalService.currNodeData.text}}"</h3>
-                <br>
-                <span class="small-menu-option">Shape Color:</span>
-                <span><input type="color" [(ngModel)]="shapeColor" /></span>
-                <br>
-                <br>
-                <span class="small-menu-option">Border Color:</span>
-                <span><input type="color" [(ngModel)]="borderColor" /></span>
-                <br>
-                <br>
-                <span class="small-menu-option">Border Thickness:</span>
-                <mat-form-field class="node-style-select" style="width: 10%;">
-                    <mat-label>1px</mat-label>
-                    <mat-select (selectionChange)="setNodeStyles()" [(value)]="borderThickness">
-                        <mat-option value="1">1px</mat-option>
-                        <mat-option value="2">2px</mat-option>
-                        <mat-option value="3">3px</mat-option>
-                        <mat-option value="4">4px</mat-option>
-                        <mat-option value="5">5px</mat-option>
-                        <mat-option value="6">6px</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <div style=" width: 100%;">
+                    <h3 style="font-size: 20px;">Change the appearance of "{{modalService.currNodeData.text}}"</h3>
+                    <div class="mat-elevation-z8"
+                        style="width: 20%; display: inline-block; margin: 20px; vertical-align: top ">
+                        <h3> Fill: </h3>
+                        <mat-form-field appearance="outline" style="width: 90%;">
+                            <mat-label class=" small-menu-option">Color</mat-label>
+                            <input matInput type="color" [(ngModel)]="shapeColor" />
+                        </mat-form-field>
+                        <br>
+                    </div>
+                    <div class="mat-elevation-z8"
+                        style="width: 20%; display: inline-block; margin: 20px; vertical-align: top">
+                        <h3> Border: </h3>
+                        <mat-form-field appearance="outline" style="width: 90%;">
+                            <mat-label class="small-menu-option">Color</mat-label>
+                            <input matInput type="color" [(ngModel)]="borderColor" />
+                        </mat-form-field>
+                        <br>
+
+                        <mat-form-field class="node-style-select" appearance="outline" style="width: 90%;">
+                            <mat-label>Thickness</mat-label>
+                            <mat-select matInput (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
+                                <mat-option value="1">1px</mat-option>
+                                <mat-option value="2">2px</mat-option>
+                                <mat-option value="3">3px</mat-option>
+                                <mat-option value="4">4px</mat-option>
+                                <mat-option value="5">5px</mat-option>
+                                <mat-option value="6">6px</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
             </div>
 
 
@@ -377,236 +431,236 @@
 
         <!-- comment tab -->
         <mat-tab label="Comments">
-            <div class="container text-center">
-                <div class="filterAndClear">
-                    <span style="float: left; width: 80%;">
-                        <mat-form-field>
-                            <mat-label>Filter</mat-label>
-                            <input matInput (keyup)="applyFilterAComments($event)">
-                        </mat-form-field>
-                    </span>
-                    <span style="float: left; ">
-                        <button mat-raised-button (click)="modalService.open('newCommentModal')">Add
-                            New Comment</button>
-                    </span>
-                </div>
-
-
-
-                <table mat-table [dataSource]="nodeCommentsSource" class="my-table mat-elevation-z0" matSort>
-
-                    <!-- Action Column -->
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef> </th>
-                        <td mat-cell *matCellDef="let element" class="action-link" style="width: 15%;">
-                            <button mat-icon-button (click)="element.editCommentButton = !element.editCommentButton"
-                                [disabled]="!isMyComment(element)" style="float: left;">
-                                <!-- <mat-icon>create</mat-icon> -->
-                                <span class="k-icon k-i-pencil" style="font-size: 20px"></span>
+            <div class="tab-content">
+                <div class="my-table mat-elevation-z8">
+                    <div class="filterAndClear">
+                        <span>
+                            <mat-form-field style="width: 80%;">
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilterAComments($event)">
+                            </mat-form-field>
+                        </span>
+                        <span>
+                            <button mat-icon-button matTooltip="New Comment"
+                                (click)="modalService.open('newCommentModal')">
+                                <mat-icon>add_comment</mat-icon>
                             </button>
-                            <button mat-icon-button (click)="deleteComment(element)" [disabled]="!isMyComment(element)"
-                                style="float: left;">
-                                <!-- <mat-icon>delete_forever</mat-icon> -->
-                                <span class="k-icon k-i-delete" style="font-size: 20px"></span>
-                            </button>
-                        </td>
-                    </ng-container>
+                        </span>
+                    </div>
+                    <table mat-table [dataSource]="nodeCommentsSource" matSort>
 
-
-
-                    <!-- Content Column -->
-                    <ng-container matColumnDef="Content">
-                        <th mat-header-cell *matHeaderCellDef> The comment</th>
-                        <td mat-cell *matCellDef="let element" style="width: 60%;">
-                            <span *ngIf="element.editCommentButton">
-                                <mat-form-field floatLabel="never" style="width: 80%;">
-                                    <input matInput placeholder="Content" [value]="element.Content"
-                                        [(ngModel)]="element.Content">
-                                </mat-form-field>
-                                <button mat-icon-button
-                                    (click)="editComment(element); element.editCommentButton = !element.editCommentButton">
-                                    <!-- <mat-icon>done</mat-icon> -->
-                                    <span class="k-icon k-i-check" style="font-size: 20px"></span>
+                        <!-- Action Column -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef> </th>
+                            <td mat-cell *matCellDef="let element" class="action-link" style="width: 15%;">
+                                <button mat-icon-button (click)="element.editCommentButton = !element.editCommentButton"
+                                    [disabled]="!isMyComment(element)" style="float: left;">
+                                    <!-- <mat-icon>create</mat-icon> -->
+                                    <span class="k-icon k-i-pencil" style="font-size: 20px"></span>
                                 </button>
-                            </span>
-                            <span *ngIf="!element.editCommentButton"> {{element.Content}} </span>
-                        </td>
+                                <button mat-icon-button (click)="deleteComment(element)"
+                                    [disabled]="!isMyComment(element)" style="float: left;">
+                                    <!-- <mat-icon>delete_forever</mat-icon> -->
+                                    <span class="k-icon k-i-delete" style="font-size: 20px"></span>
+                                </button>
+                            </td>
+                        </ng-container>
 
-                    </ng-container>
+                        <!-- Content Column -->
+                        <ng-container matColumnDef="Content">
+                            <th mat-header-cell *matHeaderCellDef> The Comment</th>
+                            <td mat-cell *matCellDef="let element" style="width: 60%;">
+                                <span *ngIf="element.editCommentButton">
+                                    <mat-form-field floatLabel="never" style="width: 80%;">
+                                        <input matInput placeholder="Content" [value]="element.Content"
+                                            [(ngModel)]="element.Content">
+                                    </mat-form-field>
+                                    <button mat-icon-button
+                                        (click)="editComment(element); element.editCommentButton = !element.editCommentButton">
+                                        <!-- <mat-icon>done</mat-icon> -->
+                                        <span class="k-icon k-i-check" style="font-size: 20px"></span>
+                                    </button>
+                                </span>
+                                <span *ngIf="!element.editCommentButton"> {{element.Content}} </span>
+                            </td>
 
-                    <!-- commentor name Column -->
-                    <ng-container matColumnDef="CreatorName">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Commenter </th>
-                        <td mat-cell *matCellDef="let element" style="width: 10%; ">
-                            {{element.CreatorName}} </td>
-                    </ng-container>
+                        </ng-container>
 
-                    <!-- Last Modification Time Column -->
-                    <ng-container matColumnDef="LastModificationTime">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Last Modified
-                        </th>
-                        <td mat-cell *matCellDef="let element" style="width: 10%;">
-                            {{element.LastModificationTime}} </td>
-                    </ng-container>
+                        <!-- commentor name Column -->
+                        <ng-container matColumnDef="CreatorName">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Commenter </th>
+                            <td mat-cell *matCellDef="let element" style="width: 10%; ">
+                                {{element.CreatorName}} </td>
+                        </ng-container>
 
-                    <!-- Likes Column -->
-                    <ng-container matColumnDef="Likes">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Likes </th>
-                        <td mat-cell *matCellDef="let element" class="action-link">
-                            <button mat-icon-button (click)="addLikeToComment(element)"
-                                [disabled]="isMyComment(element)">
-                                <mat-icon>thumb_up</mat-icon> {{element.Likes}}
-                            </button>
+                        <!-- Last Modification Time Column -->
+                        <ng-container matColumnDef="LastModificationTime">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Last Modified
+                            </th>
+                            <td mat-cell *matCellDef="let element" style="width: 10%;">
+                                {{element.LastModificationTime}} </td>
+                        </ng-container>
 
-                        </td>
-                    </ng-container>
+                        <!-- Likes Column -->
+                        <ng-container matColumnDef="Likes">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Likes </th>
+                            <td mat-cell *matCellDef="let element" class="action-link">
+                                <button mat-icon-button (click)="addLikeToComment(element)"
+                                    [disabled]="isMyComment(element)">
+                                    <mat-icon>thumb_up</mat-icon> {{element.Likes}}
+                                </button>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumnsComments"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumnsComments;"></tr>
-                </table>
-                <div style="position: relative; bottom: 0;">
-                    <span style="float: center; width: 100%;">
-                        <mat-paginator style="float: center; width: 100%;" #commentsPaginator
-                            [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
-                        </mat-paginator>
+                            </td>
+                        </ng-container>
 
-                    </span>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsComments"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsComments;"></tr>
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: center; width: 100%;">
+                            <mat-paginator style="float: center; width: 100%;" #commentsPaginator
+                                [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                            </mat-paginator>
 
+                        </span>
+
+                    </div>
                 </div>
             </div>
         </mat-tab>
 
         <!-- connections tab -->
         <mat-tab label="Connections">
+            <div class="tab-content">
+                <div id="connectionsTable" class="my-table mat-elevation-z8"
+                    style="float: left; position: relative; width: 49%;">
+                    <h3> The connections from "{{modalService.currNodeData.text}}"</h3>
+                    <div>
+                        <div class="filterAndClear">
+                            <span>
+                                <mat-form-field style="width: 90%;">
+                                    <mat-label>Filter</mat-label>
+                                    <input matInput (keyup)="applyFilterAConnections($event)">
+                                </mat-form-field>
+                            </span>
+                        </div>
 
-            <div id="connectionsTable" style="float: left; position: relative; width: 40%;">
-                <h3> The connections from "{{modalService.currNodeData.text}}"</h3>
-                <div class="filterAndClear">
-                    <span style="float: left; width: 100%;">
-                        <mat-form-field>
-                            <mat-label>Filter</mat-label>
-                            <input matInput (keyup)="applyFilterAConnections($event)">
-                        </mat-form-field>
-                    </span>
+                        <table mat-table [dataSource]="nodeConnectionSource" matSort>
+
+                            <!-- Action Column -->
+                            <ng-container matColumnDef="action">
+                                <th mat-header-cell *matHeaderCellDef> </th>
+                                <td mat-cell *matCellDef="let map" class="action-link" style="width: 40%;">
+                                    <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
+                                        (click)="deleteConnection(map)" matTooltip="Delete connection">
+                                        <span class="k-icon k-i-delete"></span>
+                                    </button>
+                                    <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
+                                        (click)="moveToConnectedMap(map)" matTooltip="Go to map">
+                                        <span class="k-icon k-i-hyperlink-open"></span>
+                                    </button>
+                                </td>
+                            </ng-container>
+
+                            <!-- connected map name Column -->
+                            <ng-container matColumnDef="mapName">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Map </th>
+                                <td mat-cell *matCellDef="let map">
+                                    {{map.MapName}}
+                                </td>
+                            </ng-container>
+
+                            <!-- connected node name Column -->
+                            <ng-container matColumnDef="nodeName">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Node </th>
+                                <td mat-cell *matCellDef="let map">
+                                    {{map.nodeText}}
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsConnections"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsConnections;"></tr>
+                        </table>
+
+                        <div style="position: relative; bottom: 0;">
+                            <span style="float: center; width: 100%;">
+                                <mat-paginator style="float: center; width: 100%;" #connectedPaginator
+                                    [pageSizeOptions]="pageSizeOptions">
+                                </mat-paginator>
+                            </span>
+                        </div>
+                    </div>
                 </div>
+                <!-- <mat-divider vertical style="position: relative; height: 40%;"></mat-divider> -->
 
-                <table mat-table [dataSource]="nodeConnectionSource" class="my-table mat-elevation-z0" matSort>
-
-                    <!-- Action Column -->
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef> </th>
-                        <td mat-cell *matCellDef="let map" class="action-link" style="width: 40%;">
-                            <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
-                                (click)="deleteConnection(map)" matTooltip="Delete connection">
-                                <span class="k-icon k-i-delete"></span>
+                <div id="addConnectionTable" class="mat-elevation-z8"
+                    style="float: right; position: relative; width: 49%; margin-bottom: 10px;">
+                    <h3 style="width: 100%;"> Add new connections to "{{modalService.currNodeData.text}}"</h3>
+                    <div class="filterAndClear">
+                        <span>
+                            <mat-form-field style="width: 78%; margin-left: 2px;">
+                                <mat-label>Node Text</mat-label>
+                                <input matInput [(ngModel)]="nodeToSearch" (keyup.enter)="searchNodes()">
+                            </mat-form-field>
+                        </span>
+                        <span>
+                            <button mat-icon-button (click)="clearSearches()" matTooltip="Clear search">
+                                <mat-icon>clear</mat-icon>
+                                <!-- <span class="k-icon k-i-close" style="font-size: 20px"></span> -->
                             </button>
-                            <button mat-icon-button style="font-size: 20px; float: left; position: relative;"
-                                (click)="moveToConnectedMap(map)" matTooltip="Go to map">
-                                <span class="k-icon k-i-hyperlink-open"></span>
+                            <button mat-icon-button (click)="searchNodes()" matTooltip="Search">
+                                <!-- <span class="k-icon k-i-search" style="font-size: 20px"></span> -->
+                                <mat-icon>search</mat-icon>
                             </button>
-                        </td>
-                    </ng-container>
+                        </span>
+                    </div>
 
-                    <!-- connected map name Column -->
-                    <ng-container matColumnDef="mapName">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Map </th>
-                        <td mat-cell *matCellDef="let map">
-                            {{map.MapName}}
-                        </td>
-                    </ng-container>
+                    <table mat-table [dataSource]="containingMapsList">
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <tr>
+                                <th mat-header-cell *matHeaderCellDef style="width: 5%;">
+                                    <mat-checkbox style=" float: left; position: relative;"
+                                        (change)="$event ? masterToggle('addConnection') : null"
+                                        [checked]="mapsSelectedOptions.hasValue() && isAllSelected('addConnection')"
+                                        [indeterminate]="mapsSelectedOptions.hasValue() && !isAllSelected('addConnection')">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row" style="width: 5%;">
+                                    <mat-checkbox style="float: left; position: relative;"
+                                        (click)="$event.stopPropagation()"
+                                        (change)="$event ? mapsSelectedOptions.toggle(row) : null"
+                                        [checked]="mapsSelectedOptions.isSelected(row)">
+                                    </mat-checkbox>
+                                </td>
+                            </tr>
+                        </ng-container>
 
-                    <!-- connected node name Column -->
-                    <ng-container matColumnDef="nodeName">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='after'> Node </th>
-                        <td mat-cell *matCellDef="let map">
-                            {{map.nodeText}}
-                        </td>
-                    </ng-container>
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="mapName">
+                            <th mat-header-cell *matHeaderCellDef> Map </th>
+                            <td mat-cell *matCellDef="let map"> {{map.MapName}} </td>
+                        </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumnsConnections"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumnsConnections;"></tr>
-                </table>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsConnectionsSearchResults"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsConnectionsSearchResults;"
+                            (click)="mapsSelectedOptions.toggle(row)">
+                        </tr>
 
-                <div style="position: relative; bottom: 0;">
-                    <span style="float: center; width: 100%;">
-                        <mat-paginator style="float: center; width: 100%;" #connectedPaginator
-                            [pageSizeOptions]="[5, 10, 20]">
-                        </mat-paginator>
-                    </span>
+
+                    </table>
+                    <div style="position: relative; bottom: 0;">
+                        <span style="float: center; width: 100%;">
+                            <mat-paginator style="float: center; width: 100%;" #addConnectionPaginator
+                                [pageSizeOptions]="pageSizeOptions">
+                            </mat-paginator>
+                        </span>
+                    </div>
+
+                    <button mat-raised-button (click)="addNewConnection()"
+                        [disabled]="mapsSelectedOptions.selected.length == 0" style="margin: 10px;"> Connect </button>
                 </div>
             </div>
-            <mat-divider [vertical]="true"></mat-divider>
-
-            <span id="addConnectionTable" style="float: right; position: relative; width: 50%; margin-bottom: 10px;">
-                <h3 style="width: 100%;"> Add new connections to "{{modalService.currNodeData.text}}"</h3>
-                <div class="filterAndClear">
-                    <span style="float: left; width: 80%;">
-                        <mat-form-field>
-                            <mat-label>Node Text</mat-label>
-                            <input matInput [(ngModel)]="nodeToSearch" (keyup.enter)="searchNodes()">
-                        </mat-form-field>
-                    </span>
-                    <span style="float: left; width: fit-content;">
-                        <button mat-icon-button (click)="clearSearches()" matTooltip="Clear search">
-                            <span class="k-icon k-i-close" style="font-size: 20px"></span>
-                        </button>
-
-                        <button mat-icon-button (click)="searchNodes()" matTooltip="Search">
-                            <span class="k-icon k-i-search" style="font-size: 20px"></span>
-                        </button>
-                    </span>
-                    <!-- <span style="float: right; ">
-                        <button mat-raised-button [disabled]='mapsSelectedOptions.selected.length == 0'
-                            (click)="mapsSelectedOptions.clear()">Clear
-                            Selection</button>
-                    </span> -->
-                </div>
-
-                <table mat-table [dataSource]="containingMapsList" class="mat-elevation-z0">
-                    <!-- Checkbox Column -->
-                    <ng-container matColumnDef="select">
-                        <tr>
-                            <th mat-header-cell *matHeaderCellDef style="width: 5%;">
-                                <mat-checkbox style=" float: left; position: relative;"
-                                    (change)="$event ? masterToggle('addConnection') : null"
-                                    [checked]="mapsSelectedOptions.hasValue() && isAllSelected('addConnection')"
-                                    [indeterminate]="mapsSelectedOptions.hasValue() && !isAllSelected('addConnection')">
-                                </mat-checkbox>
-                            </th>
-                            <td mat-cell *matCellDef="let row" style="width: 5%;">
-                                <mat-checkbox style="float: left; position: relative;"
-                                    (click)="$event.stopPropagation()"
-                                    (change)="$event ? mapsSelectedOptions.toggle(row) : null"
-                                    [checked]="mapsSelectedOptions.isSelected(row)">
-                                </mat-checkbox>
-                            </td>
-                        </tr>
-                    </ng-container>
-
-                    <!-- Symbol Column -->
-                    <ng-container matColumnDef="mapName">
-                        <th mat-header-cell *matHeaderCellDef> Map </th>
-                        <td mat-cell *matCellDef="let map"> {{map.MapName}} </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumnsConnectionsSearchResults"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumnsConnectionsSearchResults;"
-                        (click)="mapsSelectedOptions.toggle(row)">
-                    </tr>
-
-
-                </table>
-                <div style="position: relative; bottom: 0;">
-                    <span style="float: center; width: 100%;">
-                        <mat-paginator style="float: center; width: 100%;" #addConnectionPaginator
-                            [pageSizeOptions]="[5, 10, 20]">
-                        </mat-paginator>
-                    </span>
-                </div>
-                <br>
-                <button mat-raised-button (click)="addNewConnection()"> Connect </button>
-
-            </span>
 
 
 
@@ -675,7 +729,7 @@
 
 <!-- create new ctx modal -->
 <jw-modal class="jw-modal" id="newCtxModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+    <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeNewCtxModal('newCtxModal')">&times;</span>
         <div class="new-ref-modal-form">
             <form [formGroup]="newCtxForm" (ngSubmit)="addNewCtx()">
@@ -693,7 +747,7 @@
 
 <!-- create new comment modal -->
 <jw-modal class="jw-modal" id="newCommentModal">
-    <div ngDraggable [ngResizable]='true' class="jw-modal-body">
+    <div ngDraggable class="jw-modal-body">
         <span class="close" (click)="closeNewCommentModal('newCommentModal')">&times;</span>
         <div class="new-ref-modal-form">
             <form [formGroup]="newCommentForm" (ngSubmit)="addNewComment()">

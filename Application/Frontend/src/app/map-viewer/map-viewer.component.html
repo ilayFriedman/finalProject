@@ -113,11 +113,12 @@
     </div>
 </jw-modal>
 
-<!-- references modal -->
+<!-- node menu modal -->
 <jw-modal class="jw-modal" id="nodeMenuModal">
-    <div ngDraggable class="jw-modal-body">
+    <div ngDraggable class="jw-modal-body" style="height: 100%;">
         <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="initNewMap()" (change)="saveChanges()">
+        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="initNewMap()" (change)="saveChanges()"
+            style="height: 100%;">
         </app-node-menu-modal>
     </div>
 </jw-modal>
