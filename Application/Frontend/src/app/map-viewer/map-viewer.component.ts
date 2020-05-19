@@ -11,7 +11,7 @@ import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
 import { ThemePalette } from '@angular/material/core';
-import {environment} from '../../environments/environment';
+import { environment } from '../../environments/environment';
 
 
 
@@ -38,6 +38,8 @@ export class MapViewerComponent implements OnInit {
   subscribeCurrMap: boolean = false;
   color: ThemePalette = 'primary';
   @ViewChild(NodeMenuModalComponent, { static: true }) nodeMenu: NodeMenuModalComponent;
+  filterRsdius: string = "";
+  currColor: any;
 
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
@@ -91,7 +93,7 @@ export class MapViewerComponent implements OnInit {
       });
     var nodeSelectionAdornmentTemplate =
       $(go.Adornment, "Auto",
-        $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
+        $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 3 }),
         $(go.Placeholder)
       );
 
@@ -132,9 +134,9 @@ export class MapViewerComponent implements OnInit {
         $("ContextMenuButton",
           $(go.TextBlock, "Properties", { margin: 3 }),
           { click: function (e, obj) { self.showModal(obj); } }),
-        // $("ContextMenuButton",
-        //      $(go.TextBlock, "Filter Radius"),
-        //      { click: function (e, obj) { showFilterMenu(obj); } })
+        $("ContextMenuButton",
+          $(go.TextBlock, "Filter Radius"),
+          { click: function (e, obj) { self.showFilterMenu(obj); } })
       );
 
     //  var LinkMenu =
@@ -167,7 +169,7 @@ export class MapViewerComponent implements OnInit {
 
     // ##########   SET NODES AND LINK PROPERTIES ###########
     var qualityTemplate =
-      $(go.Node, "Spot",
+      $(go.Node, "Auto",
         {
           locationSpot: go.Spot.Center,
           locationObjectName: "PANEL",
@@ -194,6 +196,9 @@ export class MapViewerComponent implements OnInit {
             },
             new go.Binding("figure", "figure").makeTwoWay(),
             new go.Binding("fill", "fill").makeTwoWay(),
+            // new go.Binding("fill", "isSelected", function (sel) {
+            //   if (sel) return "yellow"; else return "white"
+            // }).ofObject(""),
             new go.Binding("stroke", "stroke").makeTwoWay(),
             new go.Binding("strokeWidth", "strokeWidth").makeTwoWay()
           ),
@@ -239,6 +244,9 @@ export class MapViewerComponent implements OnInit {
         // { rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
         new go.Binding("angle").makeTwoWay(),
         // the main object is a Panel that surrounds a TextBlock with a Shape
+        new go.Binding("fill", "isSelected", function (sel) {
+          if (sel) return "cyan"; else return "lightgray";
+        }).ofObject(""),
         $(go.Panel, "Auto",
           { name: "PANEL" },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
@@ -512,6 +520,7 @@ export class MapViewerComponent implements OnInit {
     self.mapHandler.myDiagram.model = go.Model.fromJson(self.mapHandler.currMap_mapViewer.Model);
     self.initialModel = go.Model.fromJson(self.mapHandler.currMap_mapViewer.Model);
     self.mapHandler.myDiagram.model.addChangedListener(self.updateConverterACtivate);
+
 
     self.mapHandler.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
       var node = e.diagram.selection.first();
@@ -1093,12 +1102,17 @@ export class MapViewerComponent implements OnInit {
       }
 
     })
-  }
+  } // init new map
 
+  showFilterMenu(obj) {
+    this.currNode = obj.part.adornedObject;
+    console.log(this.currNode.findLinksOutOf());
+
+    this.openModal('filter-radius-modal')
+  }
 
   showModal(obj) {
     this.currNode = obj.part.adornedObject;
-    var refs = this.currNode.data.refs
     this.openModalMenu('nodeMenuModal')
   }
 
@@ -1299,5 +1313,33 @@ export class MapViewerComponent implements OnInit {
 
   }
 
+  setFilterRadius() {
+    console.log(this.filterRsdius);
+    this.filterRadiusRec(this.currNode, Number(this.filterRsdius))
+    this.closeModal('filter-radius-modal')
+  }
+
+  filterRadiusRec(node, num: number) {
+    console.log(num);
+
+    if (num == 0)
+      return;
+    var outLinkIter = node.findLinksOutOf();
+    var intoLinkIter = node.findLinksInto();
+    while (outLinkIter.next()) {
+      var currLink = outLinkIter.value;
+      console.log(currLink);
+
+      currLink.toNode.isSelected = true;
+      currLink.visible = true;
+      this.filterRadiusRec(currLink.toNode, num - 1);
+    }
+    while (intoLinkIter.next()) {
+      var currLink = intoLinkIter.value;
+      currLink.fromNode.isSelected = true;
+      currLink.visible = true;
+      this.filterRadiusRec(currLink.fromNode, num - 1);
+    }
+  }
 
 }// component

@@ -42,7 +42,8 @@ export interface ConnectionElement {
   mapID: string,
   MapName: string,
   nodeId: string,
-  nodetext: string
+  nodetext: string,
+  nodeKey: string
 }
 
 
@@ -648,6 +649,7 @@ export class NodeMenuModalComponent implements OnInit {
       this.tabNum = 0;
       this.modalService.closeMenu('nodeMenuModal')
       this.reInitMapViewer.emit();
+      this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
     }).catch
       (err => {
         console.log("error with getMap - promise return");
@@ -663,6 +665,7 @@ export class NodeMenuModalComponent implements OnInit {
   unloadConnections() {
     this.containingMapsList = new MatTableDataSource<ConnectionElement>();
     this.connectedMapsList = [];
+    this.mapsSelectedOptions.clear()
   }
 
   loadConnections() {
@@ -685,7 +688,9 @@ export class NodeMenuModalComponent implements OnInit {
           newConnections.push(element);
       });
     }
+
     if (newConnections.length == 0) {
+
       return;
     }
     let data = {

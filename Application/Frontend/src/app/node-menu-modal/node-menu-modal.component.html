@@ -393,7 +393,7 @@
                 <div style=" width: 100%;">
                     <h3 style="font-size: 20px;">Change the appearance of "{{modalService.currNodeData.text}}"</h3>
                     <div class="mat-elevation-z8"
-                        style="width: 20%; display: inline-block; margin: 20px; vertical-align: top ">
+                        style="width: 30%; display: inline-block; margin: 20px; vertical-align: top ">
                         <h3> Fill: </h3>
                         <mat-form-field appearance="outline" style="width: 90%;">
                             <mat-label class=" small-menu-option">Color</mat-label>
@@ -402,7 +402,7 @@
                         <br>
                     </div>
                     <div class="mat-elevation-z8"
-                        style="width: 20%; display: inline-block; margin: 20px; vertical-align: top">
+                        style="width: 30%; display: inline-block; margin: 20px; vertical-align: top">
                         <h3> Border: </h3>
                         <mat-form-field appearance="outline" style="width: 90%;">
                             <mat-label class="small-menu-option">Color</mat-label>
@@ -412,7 +412,7 @@
 
                         <mat-form-field class="node-style-select" appearance="outline" style="width: 90%;">
                             <mat-label>Thickness</mat-label>
-                            <mat-select matInput (selectionChange)="setNodeStyles($event)" [(value)]="borderThickness">
+                            <mat-select matInput (selectionChange)="setNodeStyles()" [(value)]="borderThickness">
                                 <mat-option value="1">1px</mat-option>
                                 <mat-option value="2">2px</mat-option>
                                 <mat-option value="3">3px</mat-option>
@@ -442,8 +442,9 @@
                         </span>
                         <span>
                             <button mat-icon-button matTooltip="New Comment"
-                                (click)="modalService.open('newCommentModal')">
-                                <mat-icon>add_comment</mat-icon>
+                                (click)="modalService.open('newCommentModal')" style="display: flex; float: right;">
+                                <mat-icon style="font-size: 25px;">add_comment</mat-icon>
+                                <span style="display: flex;">Add Comment</span>
                             </button>
                         </span>
                     </div>
