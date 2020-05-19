@@ -33,7 +33,7 @@ import { GridModule } from '@progress/kendo-angular-grid';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 
 import { NgxPrintModule } from 'ngx-print';
-import { HomepageModule } from './homepage/homepage.module';
+import { OpenPageModule } from './open-page/open-page.module';
 
 
 
@@ -83,7 +83,7 @@ import { HomepageModule } from './homepage/homepage.module';
     NgxPrintModule,
     MatTooltipModule,
     MatSlideToggleModule,
-    HomepageModule
+    OpenPageModule
   ],
   providers: [
     MapsHandlerService,

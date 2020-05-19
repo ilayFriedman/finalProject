@@ -6,7 +6,7 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
 
 import { RegisterComponent } from '../register/register.component';
 import { LoginComponent } from '../login/login.component';
-import { OpenPageComponent } from '../open-page/open-page.component'
+import { OpenPageComponent } from './open-page.component'
 
 
 
@@ -28,4 +28,4 @@ import { OpenPageComponent } from '../open-page/open-page.component'
     ReactiveFormsModule
   ]
 })
-export class HomepageModule { }
+export class OpenPageModule { }
