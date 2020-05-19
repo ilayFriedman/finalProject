@@ -9,8 +9,6 @@ import {
   MatSlideToggleModule
 } from "@angular/material";
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { LoginComponent } from './login/login.component';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { GojsAngularModule } from 'gojs-angular';
 import { MapViewerComponent } from './map-viewer/map-viewer.component';
@@ -18,7 +16,6 @@ import { Router } from '@angular/router';
 import { MapsHandlerService } from "./services/maps-handler.service";
 import { TextMapConverterComponent } from './text-map-converter/text-map-converter.component';
 import { SaveAsMapComponent } from './save-as-map/save-as-map.component';
-import { RegisterComponent } from './register/register.component';
 import { ModalComponent } from './modal/modal.component';
 import { ModalService } from './services/modal.service';
 import { ChangeUserInfoComponent } from './change-user-info/change-user-info.component';
@@ -33,35 +30,25 @@ import { TooltipModule } from '@progress/kendo-angular-tooltip';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
-import { InputsModule } from '@progress/kendo-angular-inputs';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
-import { OpenPageComponent } from './open-page/open-page.component';
 
 import { NgxPrintModule } from 'ngx-print';
+import { OpenPageModule } from './open-page/open-page.module';
 
-
-
-
-
-
-// import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     MapViewerComponent,
     TextMapConverterComponent,
     SaveAsMapComponent,
-    RegisterComponent,
     ModalComponent,
     ChangeUserInfoComponent,
     NodeMenuModalComponent,
     MapsfoldersViewerComponent,
     LogedHomeComponent,
     GroupsComponent,
-    OpenPageComponent
   ],
   imports: [
     BrowserModule,
@@ -73,10 +60,8 @@ import { NgxPrintModule } from 'ngx-print';
     MatToolbarModule,
     MatMenuModule,
     MatTabsModule,
-    ReactiveFormsModule,
     HttpClientModule,
     MatButtonModule,
-    FormsModule,
     GojsAngularModule,
     MatCheckboxModule,
     MatTableModule,
@@ -93,12 +78,12 @@ import { NgxPrintModule } from 'ngx-print';
     MatExpansionModule,
     GridModule,
     MatSortModule,
-    InputsModule,
     MatSortModule,
     DropDownsModule,
     NgxPrintModule,
     MatTooltipModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    OpenPageModule
   ],
   providers: [
     MapsHandlerService,
