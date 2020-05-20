@@ -179,5 +179,9 @@ router.post('/private/sendMailToUser', async function (req, res) {
     }
 });
 
+router.post('/private/restorePassword', async function (req, res) {
+    
+});
+
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;

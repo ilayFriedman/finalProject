@@ -1,20 +1,35 @@
-<div>
-  <div class="login" style="margin-top: 5%; height: 800px">
-    <h1 class="loginTitle" style="text-align: center;">Login:</h1>
-    <form class="form-style-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label class="form-lbl">Username:</label>
-        <input type="text" class="form-control" formControlName="username">
-        <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
-          <div *ngIf="f.username.errors.required">Password is required</div>
+<div style="padding-top: 10px; ">
+  <form class="loginForm" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <span style="float: left; position: relative; padding-right: 5px;">
+      <div>
+          <span><input type="text" [ngStyle]="submitted && f.username.errors && f.username.errors.required?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}" class="form-control" formControlName="username" placeholder="User Name"></span>
         </div>
-        <label class="form-lbl">Password:</label>
-        <input type="text" class="form-control" formControlName="password">
-        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-          <div *ngIf="f.password.errors.required">Password is required</div>
+    </span>
+
+    <span style="float: left; position: relative;  padding-right: 5px;">
+        <div>
+          <span><input type="password" [ngStyle]="submitted && f.password.errors && f.password.errors.required?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}" class="form-control" formControlName="password" placeholder="Passowrd"></span>
         </div>
-        <input type="submit" id="submitBtn" value="Go" class="form-control">
-      </div>
-    </form>
-  </div>
+    </span>
+
+    <span style="float: left; position: relative; padding-right: 5px;"><input type="submit" id="submitBtn" value="Log In" class="form-control"></span>
+  </form>
 </div>
+<div>
+  <span  style="padding-right: 5px; color: white; cursor: pointer;" (click)="modalService.open('passwordRestoremModal')"><u>Forgot my password</u></span>
+  <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback" style="padding-right: 5px;">userName is required!</span>
+  <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;">Password is required!</span>
+</div>
+
+
+<jw-modal class="jw-modal" id="passwordRestoremModal">
+  <div [ngResizable]='true' class="jw-modal-body">
+      <span class="close" (click)="modalService.close('passwordRestoremModal')">&times;</span>
+      <div>
+        <h1>Forgot your password?</h1>
+        <h4>Enter your registered email</h4>
+        <input type="text" size="50">
+        <input type="submit" value="Send My Password To This Mail">
+      </div>
+  </div>
+</jw-modal>
