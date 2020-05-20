@@ -569,19 +569,21 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
                 var containingMaps = []
                 result.forEach(map => {
                     if (UserHasReadPermissionForMap(map, req.decoded._id)) {
-                        let nodeId, nodeText;
+                        let nodeId, nodeText, nodeKey;
                         for (let index = 0; index < map.Model.nodeDataArray.length; index++) {
                             const element = map.Model.nodeDataArray[index];
                             if (element.text.toLowerCase() == req.params.nodeName) {
                                 nodeId = element.id
                                 nodeText = element.text
+                                nodeKey = element.key
                             }
                         }
                         let currInfo = {
                             mapID: map._id,
                             MapName: map.MapName,
                             nodeId: nodeId,
-                            nodeText: nodeText
+                            nodeText: nodeText,
+                            nodeKey: nodeKey
 
                         }
                         containingMaps.push(currInfo)

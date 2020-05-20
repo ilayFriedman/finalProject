@@ -94,6 +94,24 @@
         <div id="myOverview"></div>
     </span>
 </div>
+
+<!-- filter radius modal -->
+<jw-modal class="jw-modal" id="filter-radius-modal">
+    <div class="jw-modal-body">
+        <span class="close" (click)="closeModal('filter-radius-modal')">&times;</span>
+        <h1>Your radius of choice:</h1>
+        <mat-form-field appearance="outline">
+            <mat-label>Radius</mat-label>
+            <input matInput type="number" [(ngModel)]="filterRsdius">
+        </mat-form-field>
+        <div>
+
+            <button mat-raised-button (click)="setFilterRadius()">Go</button>
+        </div>
+    </div>
+</jw-modal>
+
+
 <!-- save map as modal -->
 <jw-modal class="jw-modal" id="save-as-modal">
     <div class="jw-modal-body">
