@@ -3,7 +3,7 @@ const router = express.Router();
 const user = require('../models/user')
 const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
-var nodemailer = require('nodemailer');
+var mail = require('../models/mail');
 
 router.post('/login', async function (req, res) {
         try {
@@ -146,50 +146,45 @@ router.get('/private/getUsersDetailsByIds/:ids', async function (req, res) {
 });
 
 
-router.post('/private/sendMailToUser', async function (req, res) {
-
-    try {
-        var transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'me.maps.system',
-              pass: 'memaps123'
-            }
-          });
-          
-          var mailOptions = {
-            from: 'me.maps.system@gmail.com',
-            to: req.body.reciever_mail,
-            subject: req.body.subject,
-            html: req.body.text
-          };
-        //   console.log(mailOptions)
-          
-          transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-              console.log(error);
-              res.status(500).send(`Server error occured while send email`)
-              
-            } else {
-              res.status(200).send('Email sent: ' + info.response)
-            }
-          });
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
+router.post('/restorePassword', async function (req, res) {
+    if(req.body.Username){
+        try {
+            user.findOne({'Username': req.body.Username}, function(err, result) {
+                if (result) {
+                    var mailSubject = "Restore Your Password"
+                    var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + result.FirstName + " " + result.LastName + ". Did you forgot your details? </h3>\n\nUser Name: " + 
+                        "<b>" + result.Username + "</b>" + '\nPassword: "<b>' + result.Password + '</b>".<br><br>Please log in for more details in <a href="http://132.72.65.112:4200">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
+                    try {
+                        var mailObjects = mail.sendEmail(req.body.Username,mailSubject,text)
+                        mailObjects[0].sendMail(mailObjects[1], function (error, info) {
+                            if (error) {
+                                console.log(error);
+                                res.status(500).send(`Server error occured while send email`)
+                                res.end()
+                            } else {
+                                res.status(200).send(`Server error occured while send email`)
+                                res.end();
+    
+                            }
+                        });
+                    } catch (e) {
+                        res.status(400).send(`problem: ${e}`);
+                        res.end()
+                    }
+    
+                } else {
+                    res.status(404).send("don't find such user");
+                    res.end()
+                }
+            })
+        } catch (e) {
+            res.status(500).send(`problem: ${e}`);
+            res.end()
+        }
     }
-});
-
-router.post('/private/restorePassword', async function (req, res) {
-    try {
-        user.findOne({'Username': req.body.userName}, function(err, result) {
-            if (result) {
-                res.status(200).send({"Description" :result.Description})
-            } else {
-                res.status(400).send(`problem: ${err}`);
-            }
-        })
-    } catch (e) {
-        res.status(400).send(`problem: ${e}`);
+    else{
+        res.status(400).send("bad request. need to send Username");
+        res.end()
     }
 });
 

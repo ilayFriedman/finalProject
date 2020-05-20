@@ -16,20 +16,32 @@
   </form>
 </div>
 <div>
-  <span  style="padding-right: 5px; color: white; cursor: pointer;" (click)="modalService.open('passwordRestoremModal')"><u>Forgot my password</u></span>
+  <span  style="padding-right: 5px; color: white; cursor: pointer;" (click)="emailInput='';modalService.open('passwordRestoremModal')"><u>Forgot my password</u></span>
   <span *ngIf="submitted && f.username.errors && f.username.errors.required" class="invalid-feedback" style="padding-right: 5px;">userName is required!</span>
   <span *ngIf="submitted && f.password.errors && f.password.errors.required" class="invalid-feedback" style=" padding-right: 5px;">Password is required!</span>
 </div>
 
 
-<!-- <jw-modal class="jw-modal" id="passwordRestoremModal">
+<jw-modal class="jw-modal" id="passwordRestoremModal">
   <div [ngResizable]='true' class="jw-modal-body">
-      <span class="close" (click)="modalService.close('passwordRestoremModal')">&times;</span>
-      <div>
-        <h1>Forgot your password?</h1>
-        <h4>Enter your registered email</h4>
-        <input type="text" size="50">
-        <input type="submit" value="Send My Password To This Mail">
+    <div class="grid-wrapper">
+      <span class="close" (click)="modalService.close('passwordRestoremModal');errMessage ='';pwdSent = false;">&times;</span>
+      <h1>Forgot your password?</h1>
+      <div *ngIf="!pwdSent">
+        <h4>Enter your regisred mail</h4>
+        <input type="text" size="60" [(ngModel)]="emailInput">
+        <input type="submit" value="Send My Password To This Mail" (click)="restorePassword()">
+        <br><br>
+        <span>{{errMessage}}</span>
       </div>
+
+      <div *ngIf="pwdSent">
+        <br><br>
+        <h4>Your password successfully sent to your email</h4>
+        <h6 (click)="errMessage ='';emailInput='';pwdSent = false;" style="cursor: pointer;"><i><u>Worng Email? Send Me Again</u></i></h6>
+      </div>
+
+    </div>
+    <div *ngIf="dbAction" class="k-i-loading"></div>
   </div>
-</jw-modal> -->
+</jw-modal>

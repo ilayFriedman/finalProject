@@ -299,24 +299,7 @@
                         (cancel)="cancelHandler($event)" (add)="openNewRow($event)"
                         (save)="addNewUserToPermission($event)" (remove)="openUserPerimssionDialog($event)"
                         [navigable]="true" [resizable]="true" style="max-width:inherit;">
-                        <!-- 
-                      [pageSize]="pageSize" [skip]="gridState.skip" 
-          [pageable]="{
-            buttonCount: buttonCount,
-            info: info,
-            type: type,
-            pageSizes: pageSizes,
-            previousNext: previousNext
-          }"
-          (pageChange)="pageChange($event)"
-          (dataStateChange)="onStateChange($event)"
-            (cellClick)="cellClickHandler($event)"
-        (cellClose)="cellCloseHandler($event)"
-        
-        
-        
-         -->
-
+                        
                         <ng-template kendoGridToolbarTemplate>
                             <button kendoGridAddCommand>Add Permission To User</button>
                             <button class='k-button'>Add Permission To Group</button>

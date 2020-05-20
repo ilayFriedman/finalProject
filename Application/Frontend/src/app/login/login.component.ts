@@ -6,6 +6,7 @@ import { MapsHandlerService } from '../services/maps-handler.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import {environment} from '../../environments/environment';
 import { ModalService } from '../services/modal.service';
+import { UsersService } from '../services/users/users.service';
 
 
 @Component({
@@ -30,9 +31,12 @@ export class LoginComponent implements OnInit {
 
   });
   fullName = "sessionStorage.userFullName";
+  emailInput = ""
+  pwdSent = false;
+  errMessage = "";
+  dbAction = false;
 
-
-  constructor(private router: Router, private formBuilder: FormBuilder, private http: HttpClient,public modalService: ModalService) {
+  constructor(private router: Router, private formBuilder: FormBuilder, private http: HttpClient,public modalService: ModalService,  private usersService: UsersService) {
   }
 
 
@@ -79,5 +83,25 @@ export class LoginComponent implements OnInit {
     }
     );
   }
+
+  restorePassword(){
+    this.dbAction = true;
+    this.usersService.restorePassword(this.emailInput).then(results => {
+      this.pwdSent = true;
+      this.dbAction = false;
+
+    })
+    .catch(e=>{
+      this.dbAction = false;
+      if(e.status == 404){
+        this.errMessage = "Can't find user with this e-mail."
+      }
+      else{
+        this.errMessage = "Something worng with your request: " + e.status + " problem"
+      }
+    });
+
+  }
+
 
 }

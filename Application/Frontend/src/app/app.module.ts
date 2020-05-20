@@ -34,6 +34,7 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { LoginComponent } from './login/login.component';
 import { NgxPrintModule } from 'ngx-print';
 import { OpenPageModule } from './open-page/open-page.module';
+import { AuthService } from "./services/authentication/auth.service";
 
 
 
@@ -88,7 +89,8 @@ import { OpenPageModule } from './open-page/open-page.module';
   ],
   providers: [
     MapsHandlerService,
-    ModalService
+    ModalService,
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

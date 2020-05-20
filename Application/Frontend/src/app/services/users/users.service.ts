@@ -49,8 +49,7 @@ export class UsersService {
     return this.http.post(this.localUrl + '/private/sendMailToUser', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  // getUserDetailsById(userID: String){
-  //   return this.http.get(this.localUrl + '/private/getUserDetailsById/'+ userID, { headers: { 'token': sessionStorage.token }}).toPromise()
-  // }
-
+  restorePassword(Username){
+    return this.http.post(this.localUrl + '/restorePassword', {Username: Username}, {responseType: 'text'}).toPromise()
+  }
 }
