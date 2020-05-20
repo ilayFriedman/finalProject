@@ -1,9 +1,7 @@
 import { Component, OnInit, ViewChildren, ViewChild, QueryList, Output, EventEmitter, Input } from '@angular/core';
 import { ModalService } from '../services/modal.service';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
-import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
-import { HttpClient } from "@angular/common/http";
 import { NodeMenuHendlerService } from '../services/nodeMenu/node-menu-hendler.service';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import * as go from 'gojs';

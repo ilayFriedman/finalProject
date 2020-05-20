@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren, NgModule } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren, NgModule, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
@@ -12,6 +12,8 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { v4 as uuid } from 'uuid';
 import { ThemePalette } from '@angular/material/core';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../can-deactivate.guard';
 
 
 
@@ -21,7 +23,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './map-viewer.component.html',
   styleUrls: ['./map-viewer.component.css']
 })
-export class MapViewerComponent implements OnInit {
+export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   [x: string]: any;
   // @Input('name') mapIdx: any;
   mapModel: any;
@@ -38,17 +40,31 @@ export class MapViewerComponent implements OnInit {
   subscribeCurrMap: boolean = false;
   color: ThemePalette = 'primary';
   @ViewChild(NodeMenuModalComponent, { static: true }) nodeMenu: NodeMenuModalComponent;
-  filterRsdius: string = "";
-  currColor: any;
+  // filterRadius: number = 0;
+  filterRadiusForm = new FormGroup({
+    filterRadius: new FormControl()
+  });
 
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
+  canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
+    if (this.isSaved)
+      return true;
+    return confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.');
+  }
+
+
+  @HostListener('window:beforeunload', ['$event'])
+  yourfunction($event) {
+    return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
+  }
+
   ngOnInit() {
-    // this.currMap = this.mapHandler.currMap_mapViewer
-    // console.log(this.currMap);
-    // (this.currMap)
+    this.filterRadiusForm = this.formBuilder.group({
+      filterRadius: ['0', [Validators.required, Validators.min(0)]]
+    });
     this.init()
   }
 
@@ -1094,14 +1110,6 @@ export class MapViewerComponent implements OnInit {
       }
     });
 
-    self.mapHandler.myDiagram.addModelChangedListener(function (e) {
-      // console.log(self.mapHandler.myDiagram.model.nodeDataArray);
-      // console.log(self.initialModel.nodeDataArray);
-      if (self.mapHandler.myDiagram.model.nodeDataArray === self.initialModel.nodeDataArray) {
-        console.log("modified");
-      }
-
-    })
   } // init new map
 
   showFilterMenu(obj) {
@@ -1119,9 +1127,7 @@ export class MapViewerComponent implements OnInit {
   updateConverterACtivate = (e) => {
     if (e != null) {    // firing from touch the model
       if (e.af == "CommittingTransaction") {
-        console.log("issaved: " + this.isSaved);
         if (this.isInitialModel) {
-          console.log("changeeeeee");
           this.isSaved = true;
           this.isInitialModel = false;
         } else {
@@ -1314,30 +1320,29 @@ export class MapViewerComponent implements OnInit {
   }
 
   setFilterRadius() {
-    console.log(this.filterRsdius);
-    this.filterRadiusRec(this.currNode, Number(this.filterRsdius))
+    console.log(this.filterRadiusForm.controls.filterRadius.value);
+    if (this.filterRadiusForm.invalid) {
+      return;
+    }
+    this.filterRadiusRec(this.currNode, this.filterRadiusForm.controls.filterRadius.value)
     this.closeModal('filter-radius-modal')
   }
 
   filterRadiusRec(node, num: number) {
-    console.log(num);
-
     if (num == 0)
       return;
     var outLinkIter = node.findLinksOutOf();
     var intoLinkIter = node.findLinksInto();
     while (outLinkIter.next()) {
       var currLink = outLinkIter.value;
-      console.log(currLink);
-
       currLink.toNode.isSelected = true;
-      currLink.visible = true;
+      currLink.isSelected = true;
       this.filterRadiusRec(currLink.toNode, num - 1);
     }
     while (intoLinkIter.next()) {
       var currLink = intoLinkIter.value;
       currLink.fromNode.isSelected = true;
-      currLink.visible = true;
+      currLink.isSelected = true;
       this.filterRadiusRec(currLink.fromNode, num - 1);
     }
   }

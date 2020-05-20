@@ -21,43 +21,73 @@
     <!-- <div id="mapMenu" style="float: left;"> -->
     <mat-toolbar style="background-color: inherit; ">
         <mat-toolbar-row>
-            <div style="margin: auto; text-align: center; width: 100%; ">
+            <div style="text-align: center; width: 100%; ">
                 <mat-slide-toggle class="example-margin" [color]="color" [(ngModel)]="subscribeCurrMap"
                     (change)="subscribe()" [disabled]="disabled" #toggle>
                     Subscribe</mat-slide-toggle>
-                <button class="mapsMenu" matTooltip="Save As" mat-raised-button (click)="saveAs()"
+
+                <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button [matMenuTriggerFor]="saveOptions"
                     [disabled]="mapHandler.getUserPermission() &lt; 2">
-                    <!-- <span class="k-icon  k-i-save" style="width: min-content; font-size: 20px;"></span> -->
-                    Save As
+                    <span class="k-icon k-i-save"></span>
                 </button>
-                <button class="mapsMenu" matTooltip="Save Changes" mat-raised-button (click)="save()"
-                    [disabled]="mapHandler.getUserPermission() &lt; 2"> Save </button>
-                <button class="mapsMenu" matTooltip="Print" mat-raised-button (click)="printOption()"> Print
+                <button class="mapsMenu" matTooltip="Print" mat-icon-button (click)="printOption()">
+                    <span class="k-icon k-i-print"></span>
                 </button>
-                <button class="mapsMenu" matTooltip="New Map" mat-raised-button (click)="newMap()"> Clear Map
+                <button class="mapsMenu" matTooltip="Clear Map" mat-icon-button (click)="newMap()">
+                    <span class="k-icon k-i-reset"></span>
                 </button>
-                <button class="mapsMenu" matTooltip="Cut (Ctrl + x)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()"> Cut </button>
-                <button class="mapsMenu" matTooltip="Copy (Ctrl + c)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()"> Copy </button>
-                <button class="mapsMenu" matTooltip="Paste (Ctrl + v)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()"> Paste </button>
-                <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.undo()"> Undo </button>
-                <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.redo()"> Redo </button>
-                <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)"> Zoom In </button>
-                <button class="mapsMenu" matTooltip="Zoom Out (Ctrl + -)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)"> Zoom Out </button>
-                <button class="mapsMenu" matTooltip="Reset Zoom (Ctrl + 0)" mat-raised-button
-                    (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()"> Reset Zoom </button>
-                <button class="mapsMenu" mat-raised-button [matMenuTriggerFor]="moreOptions"> More </button>
+                <button class="mapsMenu" matTooltip="Cut (Ctrl + x)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.cutSelection()">
+                    <span class="k-icon k-i-cut"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Copy (Ctrl + c)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.copySelection()">
+                    <span class="k-icon k-i-copy"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Paste (Ctrl + v)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()">
+                    <span class="k-icon k-i-paste"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.undo()">
+                    <span class="k-icon k-i-undo"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.redo()">
+                    <span class="k-icon k-i-redo"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.increaseZoom(1.1)">
+                    <span class="k-icon k-i-zoom-in"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Zoom Out (Ctrl + -)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)">
+                    <span class="k-icon k-i-zoom-out"></span>
+                </button>
+                <button class="mapsMenu" matTooltip="Reset Zoom (Ctrl + 0)" mat-icon-button
+                    (click)="this.mapHandler.myDiagram.commandHandler.resetZoom()">
+                    <span class="k-icon k-i-zoom"></span>
+                </button>
+                <button class="mapsMenu" mat-icon-button [matMenuTriggerFor]="moreOptions">
+                    <span class="k-icon k-i-more-vertical"></span>
+                </button>
 
                 <mat-menu #moreOptions="matMenu">
                     <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
+                    <br>
                     <button mat-button (click)="openModal('import-modal')"
                         [disabled]="mapHandler.getUserPermission() &lt; 2">Import</button><br>
+                </mat-menu>
+
+                <mat-menu #saveOptions="matMenu">
+                    <button class="mapsMenu" matTooltip="Save As" mat-button (click)="saveAs()"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2">
+                        Save As
+                    </button>
+                    <br>
+                    <button class="mapsMenu" matTooltip="Save Changes" mat-button (click)="save()"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Save
+                    </button>
                 </mat-menu>
 
                 <mat-menu #Export="matMenu">
@@ -69,7 +99,8 @@
             <br>
         </mat-toolbar-row>
     </mat-toolbar>
-    <div *ngIf='!isSaved'>There are changes that hasen't saved</div>
+
+    <div id="usavedError" *ngIf='!isSaved'> Your changes are unsaved </div>
     <!-- </div> -->
 </div>
 <!-- diagram, sidde bar, overviwe and converter -->
@@ -100,14 +131,21 @@
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('filter-radius-modal')">&times;</span>
         <h1>Your radius of choice:</h1>
-        <mat-form-field appearance="outline">
-            <mat-label>Radius</mat-label>
-            <input matInput type="number" [(ngModel)]="filterRsdius">
-        </mat-form-field>
-        <div>
+        <form [formGroup]="filterRadiusForm" (ngSubmit)="setFilterRadius()">
+            <mat-form-field appearance="outline">
+                <mat-label>Radius</mat-label>
+                <input matInput type="number" min="0" formControlName="filterRadius">
+                <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('min')"> Please enter positive
+                    number</mat-error>
+                <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('required')"> Please enter a number
+                </mat-error>
 
-            <button mat-raised-button (click)="setFilterRadius()">Go</button>
-        </div>
+            </mat-form-field>
+            <div>
+                <button mat-raised-button type="submit">Go</button>
+            </div>
+        </form>
+
     </div>
 </jw-modal>
 
