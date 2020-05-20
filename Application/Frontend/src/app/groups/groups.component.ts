@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Router} from '@angular/router';
 import { GroupsService } from '../services/groups/groups.service';
@@ -35,7 +35,7 @@ export class GroupsComponent implements OnInit {
   userDeleteDialogOpened: boolean = false;
   userToDelete: any;
 
-  allUsersList: any;
+  @Input() allUsersList: any;
   groupsPermissionList: any[] = [];
   groupsNoPermissionList: any[] = [];
 
@@ -44,7 +44,7 @@ export class GroupsComponent implements OnInit {
     {text:"Manager Groups",isTitle:"true", items: []},
     {text:"Member Groups",isTitle:"true", items: []},
   ];
-  public expandedKeys: any[] = [];
+  public expandedKeys: any[] = ['Owner Groups'];
   addGroupCheckOut;
   
   // allUsersTableSelection = new SelectionModel<Iuser>(true, []);
@@ -61,6 +61,8 @@ export class GroupsComponent implements OnInit {
   // @ViewChild(MatTable,  {static: true}) 
   // noPermissionTable: MatTable<any>;
   totalGroupsNumber =  0;
+  mouseOverNode: any;
+
 
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
               private usersService: UsersService, public modalService: ModalService, 
@@ -76,21 +78,10 @@ export class GroupsComponent implements OnInit {
     if(sessionStorage.token != null){
       this.getGroupsUserOwns();
       this.getGroupsUserMember();
-      this.getUsers();
+      // this.getUsers();
       }
   }
 
-  //USING
-  private getUsers() {
-
-    this.usersService.getUsers()
-    .then(response =>{
-      this.allUsersList = JSON.parse(response);
-      
-      // Remove the user currently logged in from the list
-      this.allUsersList = this.allUsersList.filter(obj => obj._id !== sessionStorage.userId);      
-    });
-  }
 
   //USING
   private getGroupsUserOwns() {
@@ -118,6 +109,17 @@ export class GroupsComponent implements OnInit {
     this.groupsService.getGroupsUserBlongsTo()
      .then(response => {
       this.groupsUserMember = response;
+
+      for (let index = 0; index < this.groupsUserMember.length; index++) {
+        const element = this.groupsUserMember[index];
+        this.groupsArray[2].items.push({
+          text: element.GroupName,
+          GroupId: element.GroupId,
+          GroupDescription: element.GroupDescription,
+        })
+        this.totalGroupsNumber++
+      }
+
     }, error => {
       console.log(error.error);
       alert(error.error);
@@ -362,5 +364,9 @@ export class GroupsComponent implements OnInit {
     public isExpanded = (dataItem: any, index: string) => {
   
       return this.expandedKeys.indexOf(index) > -1;
+    }
+
+    public mouseOverNodeChanger(dataItem) {
+      this.mouseOverNode = dataItem
     }
 }

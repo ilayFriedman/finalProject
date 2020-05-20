@@ -44,7 +44,6 @@ export class LogedHomeComponent implements OnInit {
       JSON.parse(response).forEach(element => {
         this.allUsersList.push(element.Username)
       });
-      // console.log( this.allUsersList)
     });
   }
 

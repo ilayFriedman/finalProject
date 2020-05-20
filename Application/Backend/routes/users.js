@@ -180,7 +180,17 @@ router.post('/private/sendMailToUser', async function (req, res) {
 });
 
 router.post('/private/restorePassword', async function (req, res) {
-    
+    try {
+        user.findOne({'Username': req.body.userName}, function(err, result) {
+            if (result) {
+                res.status(200).send({"Description" :result.Description})
+            } else {
+                res.status(400).send(`problem: ${err}`);
+            }
+        })
+    } catch (e) {
+        res.status(400).send(`problem: ${e}`);
+    }
 });
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;

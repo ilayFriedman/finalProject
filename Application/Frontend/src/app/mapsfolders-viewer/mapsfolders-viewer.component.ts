@@ -117,7 +117,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         this.parsedData = this.data;
         this.mapHandler.folderNamesList = this.folderNamesList
 
-        this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.slice();
+        // this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.slice();
         
 
       }).catch

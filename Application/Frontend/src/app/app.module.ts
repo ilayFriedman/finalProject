@@ -31,7 +31,7 @@ import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
-
+import { LoginComponent } from './login/login.component';
 import { NgxPrintModule } from 'ngx-print';
 import { OpenPageModule } from './open-page/open-page.module';
 
@@ -49,6 +49,7 @@ import { OpenPageModule } from './open-page/open-page.module';
     MapsfoldersViewerComponent,
     LogedHomeComponent,
     GroupsComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

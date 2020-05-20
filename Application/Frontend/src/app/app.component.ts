@@ -41,11 +41,6 @@ export class AppComponent {
     // this.router.navigate(['/login'])
 
     this.router.navigate(['/logedHome']) //remove at the end of debug
-
-    this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
-    });
   }
 
   isLoggedIn() {
@@ -56,47 +51,7 @@ export class AppComponent {
     sessionStorage.clear()
   }
 
-  get f() {
-    return this.loginForm.controls;
-  }
-
-  onSubmit() {
-    this.submitted = true;
-    // stop here if form is invalid
-    if (this.loginForm.invalid) {
-      return;
-    }
-    var data = {
-      'Username': this.loginForm.controls.username.value,
-      'Password': this.loginForm.controls.password.value
-    }
-    let result = this.http.post(this.localUrl + '/login', data);
-    result.subscribe(response => {
-      this.submitted = false;
-      // @ts-ignore
-      sessionStorage.setItem('token', response.token);
-      // @ts-ignore
-      sessionStorage.setItem('userFullName', response.fullName);
-      // @ts-ignore
-      sessionStorage.setItem('userId', response._id);
-      this.loginForm.reset();
-      this.fullName = sessionStorage.userFullName
-      this.router.navigate(['/logedHome']);
-    }, error => {
-      this.submitted = false;
-      console.log(error.error)
-      alert(error.error)
-      this.loginForm.reset();
-    }
-    );
-  }
-
-  // @HostListener('window:beforeunload', ['$event'])
-  // public beforeunloadHandler($event) {
-  //   sessionStorage.token = "";
-  //   alert("close?")
-  //   $event.returnValue = "Are you sure?";
-  // }
+  
 }
 
 

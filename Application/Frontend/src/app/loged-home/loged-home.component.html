@@ -13,10 +13,10 @@
 
   <div class="containerMaps_Groups">
     <div @fade class="mapsFoldersView">
-      <app-mapsfolders-viewer [autoCompleteUserNames] = "allUsersList" #folders_child></app-mapsfolders-viewer>
+      <app-mapsfolders-viewer *ngIf = "allUsersList" [autoCompleteUserNames] = "allUsersList" #folders_child></app-mapsfolders-viewer>
     </div>
     <div @fade class = "groups">
-        <app-groups #groups_child></app-groups>
+        <app-groups *ngIf = "allUsersList" [allUsersList] = "allUsersList" #groups_child></app-groups>
     </div>
   </div>
 </div>

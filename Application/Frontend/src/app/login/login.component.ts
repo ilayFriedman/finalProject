@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import {environment} from '../../environments/environment';
+import { ModalService } from '../services/modal.service';
 
 
 @Component({
@@ -28,9 +29,10 @@ export class LoginComponent implements OnInit {
     password: new FormControl(),
 
   });
+  fullName = "sessionStorage.userFullName";
 
 
-  constructor(private router: Router, private formBuilder: FormBuilder, private http: HttpClient) {
+  constructor(private router: Router, private formBuilder: FormBuilder, private http: HttpClient,public modalService: ModalService) {
   }
 
 
@@ -55,6 +57,8 @@ export class LoginComponent implements OnInit {
       'Username': this.loginForm.controls.username.value,
       'Password': this.loginForm.controls.password.value
     }
+    console.log("IM LOCAL!")
+    console.log(this.localUrl)
     let result = this.http.post(this.localUrl + '/login', data);
     result.subscribe(response => {
       this.submitted = false;
@@ -64,11 +68,14 @@ export class LoginComponent implements OnInit {
       sessionStorage.setItem('userFullName', response.fullName);
       // @ts-ignore
       sessionStorage.setItem('userId', response._id);
+      this.loginForm.reset();
+      this.fullName = sessionStorage.userFullName
       this.router.navigate(['/logedHome']);
     }, error => {
       this.submitted = false;
       console.log(error.error)
       alert(error.error)
+      this.loginForm.reset();
     }
     );
   }
