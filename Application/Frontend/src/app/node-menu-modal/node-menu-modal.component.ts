@@ -7,6 +7,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import * as go from 'gojs';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { v4 as uuid } from 'uuid';
+import { Router } from '@angular/router';
 
 export interface ReferenceElement {
   _id: string,
@@ -142,7 +143,7 @@ export class NodeMenuModalComponent implements OnInit {
 
 
 
-  constructor(public mapHandler: MapsHandlerService, public modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
+  constructor(public mapHandler: MapsHandlerService, public router: Router, public modalService: ModalService, private formBuilder: FormBuilder, private NodeMenuHendler: NodeMenuHendlerService) {
 
   }
   ngOnInit() {
@@ -646,6 +647,7 @@ export class NodeMenuModalComponent implements OnInit {
       this.nodeToSearch = ""
       this.tabNum = 0;
       this.modalService.closeMenu('nodeMenuModal')
+      // this.router.navigate(['/mapViewer']);
       this.reInitMapViewer.emit();
       this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
     }).catch

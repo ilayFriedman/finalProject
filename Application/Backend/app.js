@@ -17,6 +17,9 @@ const groupsRoute = require('./routes/groups');
 const referencesRoute = require('./routes/references');
 const contextRoute = require('./routes/contexts');
 const foldersRoute = require('./routes/folders')
+const subscriptionsRoute = require('./routes/subscriptions')
+const connectionsRoute = require('./routes/connections')
+const commentsRoute = require('./routes/comments')
 
 
 
@@ -62,7 +65,7 @@ app.use('/private', function (req, res, next) {
 //Call routes
 app.post('/login', usersRoute);
 app.post('/register', usersRoute);
-app.post('/restorePassword',usersRoute);
+app.post('/restorePassword', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
 app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
@@ -75,19 +78,23 @@ app.put('/private/updateMap', mapsRoute);
 app.post('/private/updateMapProperties', mapsRoute);
 app.delete('/private/removeMap/:mapID&:userPermission&:folderID', mapsRoute);
 
-app.put('/private/addLikeToComment', mapsRoute);
-app.put('/private/addNewComment', mapsRoute);
-app.put('/private/updateComment', mapsRoute);
-app.put('/private/deleteComment', mapsRoute);
+app.put('/private/addLikeToComment', commentsRoute);
+app.put('/private/addNewComment', commentsRoute);
+app.put('/private/updateComment', commentsRoute);
+app.put('/private/deleteComment', commentsRoute);
 
 app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
 app.post('/private/updateUserPermission', mapsRoute)
 app.post('/private/addNewPermission', mapsRoute)
 app.get('/private/getSharedMaps/:userID', mapsRoute);
-
 app.get('/private/searchNodes/:nodeName', mapsRoute);
-app.put('/private/addNewConnection', mapsRoute);
-app.put('/private/deleteConnection', mapsRoute);
+
+app.put('/private/addNewConnection', connectionsRoute);
+app.put('/private/deleteConnection', connectionsRoute);
+
+app.post('/private/addNewSubscriber', subscriptionsRoute)
+app.delete('/private/removesubscriber/:mapID&:userID', subscriptionsRoute)
+
 
 // app.get('/private/getAllUserMaps', mapsRoute);
 

@@ -1,17 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {environment} from '../../../environments/environment';
-
-// export interface ReferenceElement {
-//   _id: string,
-//   Title: string,
-//   CreatorId: string,
-//   CreationTime: string,
-//   Authors: string,
-//   Publication: string,
-//   Description: string,
-//   Link: string
-// }
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({

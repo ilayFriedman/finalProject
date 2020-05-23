@@ -19,11 +19,11 @@
     </div>
 
     <!-- <div id="mapMenu" style="float: left;"> -->
-    <mat-toolbar style="background-color: inherit; ">
+    <mat-toolbar style="background-color: inherit; " class="doNotPrint">
         <mat-toolbar-row>
             <div style="text-align: center; width: 100%; ">
                 <mat-slide-toggle class="example-margin" [color]="color" [(ngModel)]="subscribeCurrMap"
-                    (change)="subscribe()" [disabled]="disabled" #toggle>
+                    (change)="changeSubscription()" #toggle>
                     Subscribe</mat-slide-toggle>
 
                 <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button [matMenuTriggerFor]="saveOptions"
@@ -80,13 +80,13 @@
                 </mat-menu>
 
                 <mat-menu #saveOptions="matMenu">
-                    <button class="mapsMenu" matTooltip="Save As" mat-button (click)="saveAs()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2">
-                        Save As
+                    <button class="mapsMenu" mat-button (click)="save()"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Save
                     </button>
                     <br>
-                    <button class="mapsMenu" matTooltip="Save Changes" mat-button (click)="save()"
-                        [disabled]="mapHandler.getUserPermission() &lt; 2"> Save
+                    <button class="mapsMenu" mat-button (click)="saveAs()"
+                        [disabled]="mapHandler.getUserPermission() &lt; 2">
+                        Save As
                     </button>
                 </mat-menu>
 
@@ -104,19 +104,23 @@
     <!-- </div> -->
 </div>
 <!-- diagram, sidde bar, overviwe and converter -->
+
 <div id="block_container">
-    <div id="sideBar">
+    <div id="sideBar" class="doNotPrint">
         <div class="titleArea">Map Shapes</div>
         <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
     </div>
     <div id="myDiagram"></div>
-    <!-- <div id="rightSideUnknownForFutureUse">
-        <div class="handle">Overview</div>
-        <div id="myOverview"></div>
 
-    </div> -->
+    <!-- <div id="rightSideUnknownForFutureUse">
+            <div class="handle">Overview</div>
+            <div id="myOverview"></div>
+    
+        </div> -->
 </div>
-<div>
+
+
+<div class="doNotPrint">
     <span id="textConverter" style='float: left; width: 70%;'>
         <app-text-map-converter [doUpade]=updateConverter></app-text-map-converter>
     </span>
@@ -173,7 +177,7 @@
 <jw-modal class="jw-modal" id="nodeMenuModal">
     <div ngDraggable class="jw-modal-body" style="height: 100%;">
         <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="initNewMap()" (change)="saveChanges()"
+        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="goTOConnectMap()" (change)="saveChanges()"
             style="height: 100%;">
         </app-node-menu-modal>
     </div>
