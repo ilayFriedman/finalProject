@@ -364,6 +364,8 @@ export class MapsfoldersViewerComponent implements OnInit {
     this.addFolderCheckOut.reset();
     this.addMapCheckOut.reset();
     this.editPropertiesCheckOut.reset();
+    this.changeFileName = false;
+    this.changeDescription = false;
   }
 
   // ############### dialog functionallity (delete files from tree) ########################

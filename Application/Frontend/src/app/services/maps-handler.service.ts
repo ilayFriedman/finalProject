@@ -1,6 +1,6 @@
 import { Injectable, SimpleChanges } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import {environment} from '../../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -98,10 +98,28 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/getSharedMaps/' + userID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
+
+  // connect maps //
   searchNodes(nodeName) {
     return this.http.get(this.localUrl + '/private/searchNodes/' + nodeName, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
 
+  // subscripotions //
+  addNewSubscriber(userID) {
+    const bodyReq = {
+      mapID: this.currMap_mapViewer._id,
+      userID: userID
+    }
+    console.log(bodyReq)
+    return this.http.post(this.localUrl + '/private/addNewSubscriber', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
 
+
+  removeSubscriber(userId) {
+    // console.log(mapId,userId,permission)
+    let params = this.currMap_mapViewer._id + "&" + userId
+    console.log(params);
+    return this.http.delete(this.localUrl + '/private/removesubscriber/' + params, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
 
 }

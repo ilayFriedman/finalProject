@@ -23,7 +23,7 @@ const testMapData = {
     Description: "shit1",
     Model: JSON.stringify({
         class: "go.GraphLinksModel",
-        modelData: {position: "-658 -379"},
+        modelData: { position: "-658 -379" },
         nodeDataArray: [
             {
                 category: "Task",
@@ -56,7 +56,7 @@ const testMapData = {
             category: "Association",
             text: "",
             toArrow: "",
-            routing: {class: "go.EnumValue", classType: "Link", name: "Normal"},
+            routing: { class: "go.EnumValue", classType: "Link", name: "Normal" },
             description: "Add a Description",
             points: [-221.0908251994365, -264.28240737915036, -217.96977391360795, -148.80350980349422],
             from: -1,
@@ -69,7 +69,7 @@ const testMapData = {
 }
 const testChangeMapModel = JSON.stringify({
     class: "go.GraphLinksModel",
-    modelData: {position: "-658 -379"},
+    modelData: { position: "-658 -379" },
     nodeDataArray: [
         {
             category: "Task",
@@ -102,7 +102,7 @@ const testChangeMapModel = JSON.stringify({
         category: "Association",
         text: "",
         toArrow: "",
-        routing: {class: "go.EnumValue", classType: "Link", name: "Normal"},
+        routing: { class: "go.EnumValue", classType: "Link", name: "Normal" },
         description: "Add a Description",
         points: [-221.0908251994365, -264.28240737915036, -217.96977391360795, -148.80350980349422],
         from: -1,
@@ -118,12 +118,12 @@ let testUserToken;
 function createUser(userData = testUserData) {
     try {
         const newUser = new user(userData);
-        return new Promise(function(resolve, reject){
+        return new Promise(function (resolve, reject) {
             newUser.save(function (err, savedUser) {
                 if (savedUser) {
                     testUserId = savedUser._id;
-                    let payload = {username: savedUser.Username, _id: savedUser._id};
-                    let options = {expiresIn: "1d"};
+                    let payload = { username: savedUser.Username, _id: savedUser._id };
+                    let options = { expiresIn: "1d" };
                     testUserToken = jwt.sign(payload, secret, options);
                     resolve();
                 }
@@ -137,9 +137,10 @@ function createUser(userData = testUserData) {
 
 async function createMapWithReadPermission(mapData = testMapData) {
     try {
-        let mapDataCopy = {...mapData};
+        let mapDataCopy = { ...mapData };
         mapDataCopy.CreatorId = testUserId;
         mapDataCopy.CreationTime = new Date();
+        mapDataCopy.LastModifiedTime = new Date();
         mapDataCopy.Permission = {
             "Owner": [/*"userId": testUserId, "permission": "owner"*/],
             "Write": [/*{"userId": testUserId, "permission": "owner"}*/],
@@ -148,7 +149,7 @@ async function createMapWithReadPermission(mapData = testMapData) {
             mapDataCopy.Subscribers = [];
         mapDataCopy.ContainingFolders = [];
         const newMap = new usermap(mapDataCopy);
-        return new Promise(function(resolve, reject){
+        return new Promise(function (resolve, reject) {
             newMap.save(function (err, saveMap) {
                 if (savedMap) {
                     testMap = savedMap;
@@ -170,7 +171,7 @@ describe('Maps', function () {
      * Then, insert a test map.
      */
     before(async function () {
-        await dbHandler.connect({useUnifiedTopology: true,});
+        await dbHandler.connect({ useUnifiedTopology: true, });
         // await createUser();
     });
 
@@ -184,82 +185,82 @@ describe('Maps', function () {
 
     it('should add a map', function (done) {
         createUser()
-            .then(function() {
+            .then(function () {
                 chai.request(serverAddress)
                     .post('/private/createMap')
                     .set('token', testUserToken)
                     .send(testMapData)
                     .end(function (err, res) {
-                            res.statusCode.should.equal(200);
-                            // res.text.should.equal("Map added successfully");
-                            done();
-                        }
+                        res.statusCode.should.equal(200);
+                        // res.text.should.equal("Map added successfully");
+                        done();
+                    }
                     );
             })
             .catch();
     });
 
     it('should not find a token', function (done) {
-            chai.request(serverAddress)
-                .post('/private/createMap')
-                .send()
-                .end(function (err, res) {
-                        res.statusCode.should.equal(401);
-                        res.text.should.equal("Access denied. No token provided.");
+        chai.request(serverAddress)
+            .post('/private/createMap')
+            .send()
+            .end(function (err, res) {
+                res.statusCode.should.equal(401);
+                res.text.should.equal("Access denied. No token provided.");
 
-                        done();
-                    }
-                );
-        }
+                done();
+            }
+            );
+    }
     );
 
     it('should find and update stored map', function () {
-        return map.find({'MapName': testMapData.MapName}).exec()
-        .then((result, err) => {
-            return chai.request(serverAddress)
-                .put('/private/updateMap')
-                .set('token', testUserToken)
-                .send({_id: result[0]._id, Model: testChangeMapModel})
-                .then((res, err) => {
-                    res.statusCode.should.equal(200);
-                    res.text.should.equal("Map updated successfully.");
+        return map.find({ 'MapName': testMapData.MapName }).exec()
+            .then((result, err) => {
+                return chai.request(serverAddress)
+                    .put('/private/updateMap')
+                    .set('token', testUserToken)
+                    .send({ _id: result[0]._id, Model: testChangeMapModel })
+                    .then((res, err) => {
+                        res.statusCode.should.equal(200);
+                        res.text.should.equal("Map updated successfully.");
 
-                    map.findById(result[0]).exec()
-                    .then((updatedMap, err) => {
-                        updatedMap.Model.nodeDataArray[0].text.should.equal(testChangeMapModel.nodeDataArray[0].text);
-                    });   
-                });
-        })
+                        map.findById(result[0]).exec()
+                            .then((updatedMap, err) => {
+                                updatedMap.Model.nodeDataArray[0].text.should.equal(testChangeMapModel.nodeDataArray[0].text);
+                            });
+                    });
+            })
     });
 
     it('should not find _id of map in updateMap', async function (done) {
         chai.request(serverAddress)
             .put('/private/updateMap')
             .set('token', testUserToken)
-            .send({model: testChangeMapModel})
+            .send({ model: testChangeMapModel })
             .end(function (err, res) {
-                    res.statusCode.should.equal(400);
-                    res.text.should.equal("No map ID attached to request.");
-                }
+                res.statusCode.should.equal(400);
+                res.text.should.equal("No map ID attached to request.");
+            }
             );
 
         done();
     });
 
     it('should remove map', function (done) {
-        map.findOne({MapName: "oren4"}, function (err, result) {
+        map.findOne({ MapName: "oren4" }, function (err, result) {
             if (result) {
                 let mapID = result._id.toString();
                 chai.request(serverAddress)
-                    .delete('/private/removeMap/' + mapID +"&")
+                    .delete('/private/removeMap/' + mapID + "&")
                     .set('token', testUserToken)
-                    .send({_id: mapID})
+                    .send({ _id: mapID })
                     .end(function (err, res) {
-                            res.statusCode.should.equal(200);
-                            res.text.should.equal("Map deleted successfully.");
+                        res.statusCode.should.equal(200);
+                        res.text.should.equal("Map deleted successfully.");
 
-                            done();
-                        }
+                        done();
+                    }
                     );
             }
         });
@@ -271,13 +272,13 @@ describe('Maps', function () {
         chai.request(serverAddress)
             .delete('/private/removeMap')
             .set('token', testUserToken)
-            .send({_id: mapID})
+            .send({ _id: mapID })
             .end(function (err, res) {
-                    res.statusCode.should.equal(404);
-                    res.text.should.equal("Could not find the requested map.");
+                res.statusCode.should.equal(404);
+                res.text.should.equal("Could not find the requested map.");
 
-                    done();
-                }
+                done();
+            }
             );
     });
 
@@ -287,11 +288,11 @@ describe('Maps', function () {
             .set('token', testUserToken)
             .send()
             .end(function (err, res) {
-                    res.statusCode.should.equal(400);
-                    res.text.should.equal("Missing map id");
+                res.statusCode.should.equal(400);
+                res.text.should.equal("Missing map id");
 
-                    done();
-                }
+                done();
+            }
             );
     });
 });

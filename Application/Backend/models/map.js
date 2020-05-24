@@ -13,6 +13,10 @@ const MapSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    LastModifiedTime: {
+        type: Date,
+        required: true
+    },
     Description: {
         type: String,
         required: true

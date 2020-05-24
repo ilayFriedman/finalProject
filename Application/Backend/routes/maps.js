@@ -51,6 +51,7 @@ function UserHasOwnerPermissionForMap(resMap, userId) {
     return false;
 }
 
+// call in save as
 router.post('/private/createMap', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
@@ -61,6 +62,7 @@ router.post('/private/createMap', async function (req, res) {
             MapName: req.body.MapName,
             CreatorId: CreatorId,
             CreationTime: new Date(),
+            LastModifiedTime: new Date(),
             Description: req.body.Description,
             Model: new_model,
             Permission: {
@@ -161,8 +163,6 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
     }
 });
 
-
-
 router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async function (req, res) {
     if (req.params.mapID) {
         map.findOne({ _id: req.params.mapID }, function (err, result) {
@@ -234,6 +234,7 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
 
 });
 
+// call in save
 router.put('/private/updateMap', async function (req, res) {
     let new_model = JSON.parse(req.body.Model)
     new_model['class'] = 'go.GraphLinksModel'
@@ -245,7 +246,7 @@ router.put('/private/updateMap', async function (req, res) {
         }, function (err, result) {
             if (result) {
                 if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': new_model }, function (err, mongoRes) {
+                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': new_model, "LastModifiedTime": new Date() }, function (err, mongoRes) {
                         if (err) {
                             res.status(500).send("Server error occurred.");
 
@@ -266,14 +267,13 @@ router.put('/private/updateMap', async function (req, res) {
     }
 });
 
-
 router.post('/private/updateMapProperties', async function (req, res) {
     if (req.body.mapID) {
         // console.log(req.body.mapID)
         map.findOne({ '_id': req.body.mapID }, function (err, result) {
             if (result) {
                 if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.updateOne({ '_id': req.body.mapID }, { $set: { 'MapName': req.body.mapName, 'Description': req.body.Decription } }, function (err, mongoRes) {
+                    map.updateOne({ '_id': req.body.mapID }, { $set: { 'MapName': req.body.mapName, "LastModifiedTime": new Date(), 'Description': req.body.Decription } }, function (err, mongoRes) {
                         if (err) {
                             res.status(500).send("Server error occurred.");
                         } else {
@@ -299,7 +299,6 @@ router.post('/private/updateMapProperties', async function (req, res) {
         res.status(400).send("No map ID attached to request.");
     }
 });
-
 
 router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async function (req, res) {
     if (req.params.mapID && req.params.userID && req.params.permission) {
@@ -603,210 +602,10 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
     }
 });
 
-// ############ CONNECTIONS #####################
-
-router.put('/private/addNewConnection', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        req.body.connections.forEach(newConn => {
-                            if (currModel.nodeDataArray[index].connections.findIndex(conn => conn.MapName == newConn.MapName) > -1) {
-                                return;
-                            }
-                            else {
-                                currModel.nodeDataArray[index].connections.push(newConn);
-                            }
-                        });
 
 
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Connection added successfully.")
-                    }
-                });
 
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-router.put('/private/deleteConnection', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        let idx = currModel.nodeDataArray[index].connections.findIndex(conn => conn.MapName === req.body.MapName)
-                        currModel.nodeDataArray[index].connections.splice(idx, 1);
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Connection deleted successfully.")
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-// ############ COMMENTS #####################
-
-router.put('/private/addLikeToComment', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
-                            let currComment = currModel.nodeDataArray[index].comment[commentIdx]
-                            if (currComment.id == req.body.commentId) {
-                                currModel.nodeDataArray[index].comment[commentIdx].Likes++;
-                            }
-                        }
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Like added successfully.")
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-router.put('/private/addNewComment', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        currModel.nodeDataArray[index].comment.push(req.body.comment);
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Comment added successfully.")
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-
-router.put('/private/updateComment', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        for (let commentIdx = 0; commentIdx < element.comment.length; commentIdx++) {
-                            let currComment = currModel.nodeDataArray[index].comment[commentIdx]
-                            if (currComment.id == req.body.commentId) {
-                                currModel.nodeDataArray[index].comment[commentIdx].Content = req.body.newContent;
-                            }
-                        }
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Comment edited successfully.")
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
-
-router.put('/private/deleteComment', async function (req, res) {
-    if (req.body.mapId) {
-        map.findOne({
-            '_id': req.body.mapId
-        }, function (err, result) {
-            if (result) {
-                let currModel = result.Model
-                for (let index = 0; index < currModel.nodeDataArray.length; index++) {
-                    const element = currModel.nodeDataArray[index];
-                    if (element.id == req.body.nodeId) {
-                        let idx = currModel.nodeDataArray[index].comment.indexOf(req.body.commentId)
-                        currModel.nodeDataArray[index].comment.splice(idx, 1);
-                    }
-                }
-                map.updateOne({ '_id': req.body.mapId }, { $set: { 'Model': currModel } }, function (err, mongoRes) {
-                    if (err) {
-                        res.status(500).send("Server error occurred.");
-                    } else {
-                        res.status(200).send("Comment deleted successfully.")
-                    }
-                });
-
-            } else {
-                res.status(404).send("Could not find map.");
-            }
-        })
-    } else {
-        res.status(400).send("No map ID attached to request.");
-    }
-});
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;
+
+

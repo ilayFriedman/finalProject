@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const group = require('../models/group')
 const jwt = require('jsonwebtoken');
+const user = require('../models/user');
 
 function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactlyMemberPermission = false) {
     if (!checkIfUserHasExactlyMemberPermission) {
@@ -17,7 +18,7 @@ function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactly
     if (resGroup.Members.Member) {
         for (let i = 0; i < resGroup.Members.Member.length; i++) {
             const element = resGroup.Members.Member[i];
-            if (element.userId == userId) {
+            if (element == userId) {
                 return true;
             }
         }
@@ -36,7 +37,7 @@ function UserHasManagerPermissionForGroup(resGroup, userId, checkIfUserHasExactl
     if (resGroup.Members.Manager) {
         for (let i = 0; i < resGroup.Members.Manager.length; i++) {
             const element = resGroup.Members.Manager[i];
-            if (element.userId == userId) {
+            if (element == userId) {
                 return true;
             }
         }
@@ -50,7 +51,7 @@ function UserHasOwnerPermissionForGroup(resGroup, userId) {
     if (resGroup.Members.Owner) {
         for (let i = 0; i < resGroup.Members.Owner.length; i++) {
             const element = resGroup.Members.Owner[i];
-            if (element.userId == userId) {
+            if (element == userId) {
                 return true;
             }
         }
@@ -151,7 +152,7 @@ router.post('/private/createGroup', async function (req, res) {
             CreationTime: new Date(),
             Description: req.body.description,
             Members: {
-                Owner: [{ "userId": CreatorId }],
+                Owner: [CreatorId],
                 Manager: [],
                 Member: []
             },
@@ -200,28 +201,14 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
 });
 
 router.post('/private/updateGroupProperties', async function (req, res) {
-    if (req.body._id && req.body.description) {
-        group.findOne({
-            '_id': req.body._id
-        }, function (err, result) {
-            if (result) {
-                if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {
-                    group.findOneAndUpdate({ _id: req.body._id }, { 'Description': req.body.description }, function (err, mongoRes) {
-                        if (err) {
-                            res.status(500).send("Server error occurred.");
-                        } else {
-                            res.status(200).send('Group description updated successfully.');
-                        }
-                    });
-                }
-                else {
-                    res.status(403).send("The user's permissions are insufficient to update the group's description.");
-                }
+    if (req.body._id && req.body.description && req.body.groupName) {
+        group.findOneAndUpdate({ '_id': req.body._id, 'Members.Owner':req.decoded._id}, { 'Description': req.body.description , 'Name': req.body.groupName}, function (err, mongoRes) {
+            if (err) {
+                res.status(500).send("Server error occurred.");
+            } else {
+                res.status(200).send('Group description updated successfully.');
             }
-            else {
-                res.status(404).send("Could not find group.");
-            }
-        })
+        });
     }
     else {
         res.status(400).send("No group ID or description attached to request.");
@@ -306,24 +293,15 @@ router.post('/private/SetUserPermissionForGroup', async function (req, res) {
 
 router.get('/private/GetGroupsMembers/:id', async function (req, res) {
     if (req.params.id) {
-        group.findOne({
-            '_id': req.params.id
-        }, function (err, result) {
-            if (!result) {
-                res.status(404).send("Could not find group.");
-                return;
-            }
-
-            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id); // Manager can view permissions.
-            if (!isUserGivingPermissionHasSufficientPrivileges) {
-                res.status(403).send("The user's permissions are insufficient to set requested permission.");
-                return;
-            }
-
-            if (err) {
-                res.status(500).send("Server error occurred.");
+       await group.findOne({'_id': req.params.id}, async function (err, result) {
+            if (result) {
+                    Member = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Member).exec()
+                    Manager = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Manager).exec()
+                    Owner = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Owner).exec()
+                    // res.writeHead(200, {"Content-Type": "application/json"});
+                    res.send({ Member: Member, Manager: Manager, Owner: Owner })
             } else {
-                res.status(200).send(result.Members);
+                res.status(500).send("Server error occurred.");
             }
         })
     }
@@ -332,54 +310,32 @@ router.get('/private/GetGroupsMembers/:id', async function (req, res) {
     }
 });
 
-router.get('/private/GetGroupsUserBlongsTo', async function (req, res) {
-    group.find({}, function (err, result) {
-        if (err) {
-            res.status(500).send("Server error occurred.");
-            return;
-        }
 
-        let responseArray = [];
-
-        result.forEach(resGroup => {
-            let checkIfUserHasExactlyMemberPermission = true;
-            if (UserHasMemberPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)
-                || UserHasManagerPermissionForGroup(resGroup, req.decoded._id, checkIfUserHasExactlyMemberPermission)) {
-                responseArray.push({
-                    "GroupId": resGroup.id,
-                    "GroupName": resGroup.Name,
-                    "GroupDescription": resGroup.Description
+router.get('/private/getMyGroups/', async function (req, res) {
+    try {
+        group.find({ $or: [{ 'Members.Owner': req.decoded._id }, { 'Members.Manager': req.decoded._id }, { 'Members.Member': req.decoded._id }] }, async function (err, result) {
+            if (result) {
+                var sharedUserGroups = []
+                result.forEach(group => {
+                    if (group.Members.Owner.indexOf(req.decoded._id) > -1) {
+                        sharedUserGroups.push({ GroupId: group._id, text: group.Name, GroupDescription: group.Description, permission: "Owner" })
+                    } else if (group.Members.Manager.indexOf(req.decoded._id) > -1) {
+                        sharedUserGroups.push({ GroupId: group._id, text: group.Name, GroupDescription: group.Description, permission: "Manager" })
+                    } else {
+                        sharedUserGroups.push({ GroupId: group._id, text: group.Name, GroupDescription: group.Description, permission: "Member" })
+                    }
                 });
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(sharedUserGroups))
+            } else {
+                res.status(404).send("Theres not such user");
             }
-        });
-
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(responseArray));
-    });
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).send('Server error occured.');
+    }
 });
 
-router.get('/private/GetGroupsUserOwns', async function (req, res) {
-    group.find({}, function (err, result) {
-        if (err) {
-            res.status(500).send("Server error occurred.");
-            return;
-        }
-
-        let responseArray = [];
-
-        result.forEach(resGroup => {
-            if (UserHasOwnerPermissionForGroup(resGroup, req.decoded._id)) {
-                responseArray.push({
-                    "GroupId": resGroup.id,
-                    "GroupName": resGroup.Name,
-                    "GroupDescription": resGroup.Description
-                });
-            }
-        });
-
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(responseArray));
-    });
-});
 
 module.exports = router;
