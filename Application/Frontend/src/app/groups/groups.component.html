@@ -208,14 +208,14 @@
                 <kendo-grid-column field="name" title="Full name" [width]="180" [minResizableWidth]="100"></kendo-grid-column><!--name column-->
 
                 <kendo-grid-column field="Member" title="Member" [width]="70" [minResizableWidth]="50" ><!--Member column-->
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex" [disabled] = "ownerCheck()">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex" >
                         <!-- new row -->
                         <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Read'" name="{{newUserPermission}}" id="Read"
+                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Member'" name="{{newUserPermission}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Read'" name="{{dataItem.username}}" id="Read"
+                        <span *ngIf="rowIndex > -1"><input type="radio"  [disabled]="ownerCheck()" [checked]="dataItem.permission=='Member'" name="{{dataItem.username}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
@@ -224,13 +224,13 @@
                     <!--write column-->
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <!-- new row -->
-                        <!-- <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Write'" name="{{newUserPermission}}" id="Write"
+                        <span *ngIf="rowIndex == -1">
+                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Manager'" name="{{newUserPermission}}" id="Manager"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
-                        </span> -->
+                        </span>
                         <!-- other rows -->
-                        <!-- <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Write'" name="{{dataItem.username}}" id="Write"
-                            (change)="radioButtonsUpdate($event,rowIndex)" /></span> -->
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="ownerCheck()" [checked]="dataItem.permission=='Manager'" name="{{dataItem.username}}" id="Manager"
+                            (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
 
@@ -238,13 +238,13 @@
                     <!--owner column-->
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <!-- new row -->
-                        <!-- <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
+                        <span *ngIf="rowIndex == -1">
+                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
-                        </span> -->
+                        </span>
                         <!-- other rows -->
-                        <!-- <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
-                            (change)="radioButtonsUpdate($event,rowIndex)" /></span> -->
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="ownerCheck()" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
+                            (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
 
                 </kendo-grid-column>
