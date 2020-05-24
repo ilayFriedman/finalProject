@@ -509,7 +509,6 @@ export class GroupsComponent implements OnInit {
     }
     // snapShot of permissions
     this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({username: val.username, name: val.name, permission: val.permission}));
-    console.log("%%%%%%%%%%%%%%%%%%")
     console.log(this.selectedNode.usersPermissionsMap)
     }).catch(err => {
       console.log(err);
