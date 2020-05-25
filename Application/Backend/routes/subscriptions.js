@@ -7,8 +7,8 @@ var mail = require('../models/mail');
 var schedule = require('node-schedule');
 
 router.post('/private/addNewSubscriber', async function (req, res) {
-    if (req.body.mapID && req.body.userID) {
-        user.findOne({ '_id': req.body.userID }, function (err, result) {
+    if (req.body.mapID) {
+        user.findOne({ '_id': req.decoded._id }, function (err, result) {
             if (result) {
                 // user exist!
                 map.findOneAndUpdate({ _id: req.body.mapID }, { $addToSet: { ["Subscribers"]: result._id.toString() } }, function (err, resultUpadte) {
@@ -34,11 +34,11 @@ router.post('/private/addNewSubscriber', async function (req, res) {
 
 });
 
-router.delete('/private/removeSubscriber/:mapID&:userID', async function (req, res) {
-    if (req.params.mapID && req.params.userID) {
-        user.findOne({ '_id': req.params.userID }, function (err, userResult) {
+router.delete('/private/removeSubscriber/:mapID', async function (req, res) {
+    if (req.params.mapID) {
+        user.findOne({ '_id': req.decoded._id }, function (err, userResult) {
             if (userResult) {
-                map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Subscribers"]: req.params.userID } }, function (err, mapResult) {
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Subscribers"]: req.decoded._id } }, function (err, mapResult) {
                     if (err) {
                         console.log(err);
                         res.statusCode = 500;
@@ -136,7 +136,7 @@ function getAllSubscribersAndSendEmail(modifiedMaps) {
 
 }
 
-schedule.scheduleJob({ hour: 00, minute: 00 }, function () {
+var j = schedule.scheduleJob({ hour: 00, minute: 00 }, function () {
     console.log('Time to notify subscribers!');
     startNotifyToSubscribers()
 });

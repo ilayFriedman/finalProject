@@ -1,18 +1,24 @@
 <div id="welcomeAndMenu">
     <br>
     <div class="welcome">
+        <mat-slide-toggle
+            style="font-size: 15px; width: 50%; display: inline-block;  text-align: right; vertical-align: top;"
+            class="example-margin" class="doNotPrint" [color]="color" [(ngModel)]="subscribeCurrMap"
+            (change)="changeSubscription()" #toggle>
+            Subscribe</mat-slide-toggle>
         <span style="font-size: 25px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
             <b>{{this.mapHandler.currMap_mapViewer.MapName}}</b>
             <br>
         </span>
-        <span style="font-size: 18px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
+        <span class="doNotPrint"
+            style="font-size: 18px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
             {{this.mapHandler.currMap_mapViewer.Description}}
         </span>
-        <span style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
+        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
             <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
             {{getMapCreationTime()}}
         </span>
-        <span style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
+        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
             <span class="k-icon k-i-lock" style="font-size: 15px"></span>
             {{getUserPermission()}}
         </span>
@@ -22,10 +28,6 @@
     <mat-toolbar style="background-color: inherit; " class="doNotPrint">
         <mat-toolbar-row>
             <div style="text-align: center; width: 100%; ">
-                <mat-slide-toggle class="example-margin" [color]="color" [(ngModel)]="subscribeCurrMap"
-                    (change)="changeSubscription()" #toggle>
-                    Subscribe</mat-slide-toggle>
-
                 <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button [matMenuTriggerFor]="saveOptions"
                     [disabled]="mapHandler.getUserPermission() &lt; 2">
                     <span class="k-icon k-i-save"></span>
