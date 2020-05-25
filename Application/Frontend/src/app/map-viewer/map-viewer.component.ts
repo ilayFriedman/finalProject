@@ -57,7 +57,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
 
   @HostListener('window:beforeunload', ['$event'])
-  yourfunction($event) {
+  beforeunloadFunction($event) {
     return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
   }
 
@@ -73,6 +73,10 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   printOption() {
+    // var div = this.mapHandler.myDiagram.div;
+    // div.style.width = '200px';
+    // div.style.height = '700px';
+    // this.mapHandler.myDiagram.requestUpdate();
     window.print();
 
   }
@@ -86,13 +90,15 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     let self = this;
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     self.initDiagramProperties();
+
     var myPalette =
       $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
         {
           layout: $(go.GridLayout,
             {
               alignment: go.GridLayout.Location,
-              wrappingColumn: 1
+              wrappingColumn: 1,
+              wrappingWidth: Infinity
             }),
           maxSelectionCount: 1,
           nodeTemplateMap: self.mapHandler.myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
@@ -140,17 +146,15 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
       { category: "Quality", text: "Quality", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
     ], [
       // the Palette also has a disconnected Link, which the user can drag-and-drop
-      { category: "AchievedBy", text: "achieved by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "ConsistsOf", text: "consists of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "ExtendedBy", text: "extended by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "Association", text: "association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "Contribution", text: "contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
-      //{ category: "Contribution", text: "contribution", points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+      { category: "AchievedBy", text: "Achieved By", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "ConsistsOf", text: "Consists Of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Association", text: "Association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Contribution", text: "Contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
     ])
 
     var myOverview =
       $(go.Overview, "myOverview",
-        { observed: self.mapHandler.myDiagram, maxScale: 10, contentAlignment: go.Spot.Center });
+        { observed: self.mapHandler.myDiagram, maxScale: 50, contentAlignment: go.Spot.Center });
 
   }//init
 
@@ -492,46 +496,47 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         )
       );
 
-    var extendByLinkTamplate =
-      $(go.Link,  // the whole link panel
-        {
-          routing: go.Link.Normal,
-          curve: go.Link.None,
-          //curviness: 'None',
-          selectable: true,
-          relinkableFrom: true,
-          relinkableTo: true,
-          reshapable: true,
-          selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
-          // contextMenu: LinkMenu //linkMenu
-        },
-        new go.Binding("routing", "routing"),
-        new go.Binding("curve", "curve"),
-        new go.Binding("curviness", "curviness"),
-        // { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
-        new go.Binding("points").makeTwoWay(),
-        $(go.Shape,  // the link path shape
-          { isPanelMain: true, strokeWidth: 1 },
-          new go.Binding("stroke", "color"),  // shape.stroke = data.color
-          new go.Binding("strokeWidth", "strokeWidth")  // shape.strokeWidth = data.thick
-        ),
-        $(go.Shape,  // the arrowhead
-          { toArrow: "Standard", stroke: null }),
-        $(go.Panel, "Auto",
-          new go.Binding("visible", "true").ofObject(),
-          $(go.Shape, "RoundedRectangle",  // the link shape
-            { fill: "white", stroke: null }), //#F8F8F8
-          $(go.TextBlock,
-            {
-              textAlign: "center",
-              font: "9pt helvetica, arial, sans-serif",
-              stroke: "black",
-              margin: 1,
-              minSize: new go.Size(10, NaN),
-              editable: false
-            },
-            new go.Binding("text").makeTwoWay())
-        ));
+    // var extendByLinkTamplate =
+    //   $(go.Link,  // the whole link panel
+    //     {
+    //       routing: go.Link.Normal,
+    //       curve: go.Link.None,
+    //       //curviness: 'None',
+    //       selectable: true,
+    //       relinkableFrom: true,
+    //       relinkableTo: true,
+    //       reshapable: true,
+    //       selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
+    //       // contextMenu: LinkMenu //linkMenu
+    //     },
+    //     new go.Binding("routing", "routing"),
+    //     new go.Binding("curve", "curve"),
+    //     new go.Binding("curviness", "curviness"),
+    //     // { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
+    //     new go.Binding("points").makeTwoWay(),
+    //     $(go.Shape,  // the link path shape
+    //       { isPanelMain: true, strokeWidth: 1 },
+    //       new go.Binding("stroke", "color"),  // shape.stroke = data.color
+    //       new go.Binding("strokeWidth", "strokeWidth")  // shape.strokeWidth = data.thick
+    //     ),
+    //     $(go.Shape,  // the arrowhead
+    //       { toArrow: "Standard", stroke: null }),
+    //     $(go.Panel, "Auto",
+    //       new go.Binding("visible", "true").ofObject(),
+    //       $(go.Shape, "RoundedRectangle",  // the link shape
+    //         { fill: "white", stroke: null }), //#F8F8F8
+    //       $(go.TextBlock,
+    //         {
+    //           textAlign: "center",
+    //           font: "9pt helvetica, arial, sans-serif",
+    //           stroke: "black",
+    //           margin: 1,
+    //           minSize: new go.Size(10, NaN),
+    //           editable: false
+    //         },
+    //         new go.Binding("text").makeTwoWay())
+    //     ));
+
     var contributionLinkTamplate =
       $(go.Link, // the whole link panel
         {
@@ -606,7 +611,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     self.mapHandler.myDiagram.linkTemplateMap.add("Association", associationLinkTmplate);
     self.mapHandler.myDiagram.linkTemplateMap.add("ConsistsOf", consistOfLinkTamplate);
     self.mapHandler.myDiagram.linkTemplateMap.add("AchievedBy", achievedBylinkTemplate);
-    self.mapHandler.myDiagram.linkTemplateMap.add("ExtendedBy", extendByLinkTamplate);
+    // self.mapHandler.myDiagram.linkTemplateMap.add("ExtendedBy", extendByLinkTamplate);
     self.mapHandler.myDiagram.linkTemplateMap.add("Contribution", contributionLinkTamplate);
 
 
@@ -845,7 +850,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   subscribe() {
-    this.mapHandler.addNewSubscriber(sessionStorage.userId).then(res => {
+    this.mapHandler.addNewSubscriber().then(res => {
       console.log("added new sub");
     }).catch
       (err => {
@@ -855,7 +860,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   unsubscribe() {
-    this.mapHandler.removeSubscriber(sessionStorage.userId).then(res => {
+    this.mapHandler.removeSubscriber().then(res => {
       console.log("remove sub");
     }).catch
       (err => {

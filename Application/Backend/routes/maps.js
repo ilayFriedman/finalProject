@@ -118,48 +118,36 @@ router.get('/private/getMap/:mapID', async function (req, res) {
     }
 });
 
+// call in save
+router.put('/private/updateMap', async function (req, res) {
+    let new_model = JSON.parse(req.body.Model)
+    new_model['class'] = 'go.GraphLinksModel'
+    // console.log(new_model);
 
-router.get('/private/getMapDescription/:mapID', async function (req, res) {
-    try {
-        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
+    if (req.body._id) {
+        map.findOne({
+            '_id': req.body._id
+        }, function (err, result) {
             if (result) {
-                // console.log(result)
-                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    // console.log(result)
-                    res.send({ "Description": result.Description });
+                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
+                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': new_model, "LastModifiedTime": new Date() }, function (err, mongoRes) {
+                        if (err) {
+                            res.status(500).send("Server error occurred.");
+
+                        } else {
+                            res.status(200).send('Map updated successfully.');
+
+                        }
+                    });
                 } else {
-                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                    res.status(403).send("The user's permissions are insufficient to update map");
                 }
             } else {
-                res.status(404).send("Could not find the requested map.");
+                res.status(404).send("Could not find map.");
             }
         })
-    } catch (e) {
-        res.status(500).send('Server error occured.');
-    }
-});
-
-router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
-    try {
-        await map.findOne({ '_id': req.params.mapID }, async function (err, result) {
-            if (result) {
-                // console.log(result)
-                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Read).exec()
-                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Write).exec()
-                    owner = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Owner).exec()
-                    // console.log(result.Permission.Read)
-                    res.send({ read: read, write: write, owner: owner })
-                    // res.send(result.Permission);
-                } else {
-                    res.status(403).send("The user's permissions are insufficient to retrieve map");
-                }
-            } else {
-                res.status(404).send("Could not find the requested map.");
-            }
-        })
-    } catch (e) {
-        res.status(500).send('Server error occured.');
+    } else {
+        res.status(400).send("No map ID attached to request.");
     }
 });
 
@@ -234,36 +222,23 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
 
 });
 
-// call in save
-router.put('/private/updateMap', async function (req, res) {
-    let new_model = JSON.parse(req.body.Model)
-    new_model['class'] = 'go.GraphLinksModel'
-    // console.log(new_model);
-
-    if (req.body._id) {
-        map.findOne({
-            '_id': req.body._id
-        }, function (err, result) {
+router.get('/private/getMapDescription/:mapID', async function (req, res) {
+    try {
+        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
             if (result) {
-                if (UserHasWritePermissionForMap(result, req.decoded._id)) {
-                    map.findOneAndUpdate({ _id: req.body._id }, { 'Model': new_model, "LastModifiedTime": new Date() }, function (err, mongoRes) {
-                        if (err) {
-                            res.status(500).send("Server error occurred.");
-
-                        } else {
-                            res.status(200).send('Map updated successfully.');
-
-                        }
-                    });
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
+                    // console.log(result)
+                    res.send({ "Description": result.Description });
                 } else {
-                    res.status(403).send("The user's permissions are insufficient to update map");
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
                 }
             } else {
-                res.status(404).send("Could not find map.");
+                res.status(404).send("Could not find the requested map.");
             }
         })
-    } else {
-        res.status(400).send("No map ID attached to request.");
+    } catch (e) {
+        res.status(500).send('Server error occured.');
     }
 });
 
@@ -297,6 +272,30 @@ router.post('/private/updateMapProperties', async function (req, res) {
         })
     } else {
         res.status(400).send("No map ID attached to request.");
+    }
+});
+
+router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
+    try {
+        await map.findOne({ '_id': req.params.mapID }, async function (err, result) {
+            if (result) {
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
+                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Read).exec()
+                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Write).exec()
+                    owner = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Owner).exec()
+                    // console.log(result.Permission.Read)
+                    res.send({ read: read, write: write, owner: owner })
+                    // res.send(result.Permission);
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                }
+            } else {
+                res.status(404).send("Could not find the requested map.");
+            }
+        })
+    } catch (e) {
+        res.status(500).send('Server error occured.');
     }
 });
 

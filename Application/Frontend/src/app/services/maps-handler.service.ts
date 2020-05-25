@@ -105,19 +105,18 @@ export class MapsHandlerService {
   }
 
   // subscripotions //
-  addNewSubscriber(userID) {
+  addNewSubscriber() {
     const bodyReq = {
-      mapID: this.currMap_mapViewer._id,
-      userID: userID
+      mapID: this.currMap_mapViewer._id
     }
     console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/addNewSubscriber', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
 
-  removeSubscriber(userId) {
+  removeSubscriber() {
     // console.log(mapId,userId,permission)
-    let params = this.currMap_mapViewer._id + "&" + userId
+    let params = this.currMap_mapViewer._id
     console.log(params);
     return this.http.delete(this.localUrl + '/private/removesubscriber/' + params, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }

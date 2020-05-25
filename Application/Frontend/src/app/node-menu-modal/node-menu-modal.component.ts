@@ -485,7 +485,6 @@ export class NodeMenuModalComponent implements OnInit {
       this.loadNodeComments()
       this.closeNewCommentModal('newCommentModal')
       console.log(res);
-      (res)
     }).catch
       (err => {
         console.log("error new comment");
