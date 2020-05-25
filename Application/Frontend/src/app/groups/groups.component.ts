@@ -41,8 +41,8 @@ export class GroupsComponent implements OnInit {
 
   public groupsArray: any[] = [
     { text: "Owner Groups", isTitle: "true", items: [] },
-    { text: "Manager Groups", isTitle: "true", items: [] },
-    { text: "Member Groups", isTitle: "true", items: [] },
+    { text: "Shared Groups :Manager Permission", isTitle: "true", items: [] },
+    { text: "Shared Groups :Member Permission", isTitle: "true", items: [] },
   ];
   public expandedKeys: any[] = ['Owner Groups'];
   addGroupCheckOut;
@@ -64,10 +64,12 @@ export class GroupsComponent implements OnInit {
   snapshootFirst = [];
   dbAction = false;
   @Input() autoCompleteUserNames: Array<string> = []
-  public autoCompleteUserNamesFilterd: Array<string>;
+  public autoCompleteUserNamesFilterd: Array<string> = [];
   newUserPermission = ""
   userNotFound = false
   watcherPermission = "";
+  senderPermissionWindow: any;
+  startWrite=false
 
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
     private usersService: UsersService, public modalService: ModalService,
@@ -181,7 +183,12 @@ export class GroupsComponent implements OnInit {
     if(modalName == "permissionGroupModal" ){
       this.loadPermissionTable();
     }
+
     this.modalService.open(modalName)
+    console.log(this.senderPermissionWindow)
+    if(this.senderPermissionWindow != null){
+      this.senderPermissionWindow.closeRow(-1);
+    }
   }
 // UPDATE
   closeModal(modalId) {
@@ -248,167 +255,6 @@ export class GroupsComponent implements OnInit {
     this.modalService.close('addGroupModal');
   }
 
-  // checkPermissionClick(dataItem){
-  //   if(dataItem.permission == 'Owner' || dataItem.permission == 'Manager'){
-  //     this.openModalWithDataItem(dataItem,'permissionGroupModal');
-  //   }
-  // }
-
-  //  //USING
-  //  private populateGroupsPermissionList(permissions) {
-  //   let ans = [];
-  //   permissions.Member.forEach(elem => {
-  //     let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
-  //     if (userDetails) {
-  //       userDetails.Permission = 'Member';
-  //       userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
-  //       ans.push(userDetails);
-  //     }
-  //   });
-
-  //   permissions.Manager.forEach(elem => {
-  //     let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
-  //     if (userDetails) {
-  //       userDetails.Permission = 'Manager';
-  //       userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
-  //       ans.push(userDetails);
-  //     }
-
-  //   });
-
-  //   permissions.Owner.forEach(elem => {
-  //     let userDetails = this.allUsersList.filter(obj => obj._id === elem.userId)[0];
-  //     if (userDetails) {
-  //       userDetails.Permission = 'Owner';
-  //       userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
-  //       ans.push(userDetails);
-  //     }
-  //   });
-
-  //   this.groupsPermissionList = ans;
-  // }
-
-  // //USING
-  // AddNewRow(event) {
-
-  //   // define all editable fields validators and default values
-  //   const newUser = new FormGroup({
-  //     'Username': new FormControl(""),
-  //     'Permission': new FormControl({ "": [] })
-  //   });
-  //   // show the new row editor, with the `FormGroup` build above
-  //   event.sender.addRow(newUser);
-  // }
-
-  // public addNewUserPermission(event) {
-  //   if (this.newUserPermissionChoice != null) {
-
-  //     let userDetails = this.allUsersList.filter(obj => obj.Username === this.newUserPermissionChoice.target.name)[0];
-
-  //     if (userDetails) {
-  //       userDetails.Permission = this.newUserPermissionChoice.target.id;
-  //       userDetails.FullName = userDetails.FirstName + " " + userDetails.LastName;
-
-  //       this.groupsPermissionList = [userDetails].concat(this.groupsPermissionList);
-  //       var userInNoPermissionList = this.groupsNoPermissionList.filter(item => item.Username === event.dataItem.Username)
-  //       if (userInNoPermissionList.length != 0) {
-  //         const index = this.groupsNoPermissionList.indexOf(userInNoPermissionList[0]);
-  //         if (index > -1) {
-  //           this.groupsNoPermissionList.splice(index, 1);
-  //         }
-  //       }
-
-  //       this.changesMadeToPermission();
-  //     }
-  //   }
-
-  //   this.cancelHandler(event)
-
-  //   //TODO handle the case where the user is not found.
-  // }
-
-  // public openUserPerimssionDialog(dataItem) {
-  //   this.userDeleteDialogOpened = true;
-  //   this.userToDelete = dataItem;
-  // }
-
-  // public closeUserPerimssionDialog(status) {
-  //   this.userDeleteDialogOpened = false;
-  //   if (status == "yes") {  // the user choose to delete the file
-  //     this.removeUserHandler(this.userToDelete)
-  //   }
-  // }
-
-  // public removeUserHandler(event) {
-  //   this.groupsNoPermissionList.push(event.dataItem);
-
-  //   this.groupsPermissionList = this.groupsPermissionList.filter(item => item !== event.dataItem);
-
-  //   this.changesMadeToPermission();
-  // }
-
-  // public cancelHandler({ sender, rowIndex }) {
-  //   this.newUserPermissionChoice = null;
-  //   sender.closeRow(rowIndex);
-  // }
-
-  // populateGroupsNoPermissionList() {
-  //   this.groupsNoPermissionList = [];
-  //   this.allUsersList.forEach(allUser => {
-  //     if (this.groupsPermissionList.filter(obj => obj._id === allUser._id).length == 0) {
-  //       this.groupsNoPermissionList.push(allUser);
-  //     }
-  //   });
-  // }
-
-
-  // closeModal_editGroup() {
-  //   if (!this.isPermissionChanged || confirm("Discard permission changes?")) {
-  //     this.groupsPermissionList = [];
-  //     this.groupsNoPermissionList = [];
-  //     this.currentlyEditedGroupId = undefined;
-  //     this.isPermissionChanged = false;
-  //     this.modalService.close('editGroupModal');
-  //   }
-  // }
-
-  // savePermissionChanges() {
-  //   let promises = [];
-
-  //   if (!this.isPermissionChanged) {
-  //     return;
-  //   }
-
-  //   this.isPermissionChanged = false;
-
-  //   this.groupsPermissionList.forEach(elem => {
-  //     promises.push(this.groupsService.setUserPermissionForGroup(this.currentlyEditedGroupId, [elem._id], [elem.Permission]));
-  //   });
-
-  //   this.groupsNoPermissionList.forEach(elem => {
-  //     promises.push(this.groupsService.removeUserFromGroup(this.currentlyEditedGroupId, [elem._id]));
-  //   });
-
-  //   Promise.all(promises.map(p => p.catch(e => e)))
-  //     .then(results => alert("Permission changes were successfully saved."))
-  //     .catch(e => alert(e));
-  // }
-
-  // changesMadeToPermission() {
-  //   this.isPermissionChanged = true;
-  // }
-
-  // radioButtonsUpdate(event, rowIndex) {
-  //   if (rowIndex != -1) {
-  //     this.groupsPermissionList.find(item => item.Username == event.target.name).Permission = event.target.id;
-  //     this.changesMadeToPermission();
-  //   }
-  //   else { //This is a new user
-  //     this.newUserPermissionChoice = event;
-  //   }
-  // }
-
-
 
   // ############### Tree-view functionallity ########################
 
@@ -444,10 +290,12 @@ export class GroupsComponent implements OnInit {
  // ############### Permissions functionallity ########################
 
   autoCompleteHandler(value) {
+    this.startWrite=true
     this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) !== -1);
-    // this.currPermissionMapDATA.forEach(element => {
-    //   this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj !== element.username);
-    // });
+    this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd .filter(obj=> obj != sessionStorage.user)
+    for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
+      this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj != value.username);
+    }
   }
 
   deleteUsersChange: boolean = false;
@@ -460,7 +308,7 @@ export class GroupsComponent implements OnInit {
   public closeUserPerimssionDialog(status) {
     this.userDeleteDialogOpened = false;
     if (status == "yes") {  // the user choose to delete the file
-      // this.removeUserHandler(this.userToDelete)
+      this.removeUserHandler(this.userToDelete)
     }
   }
 
@@ -473,10 +321,14 @@ export class GroupsComponent implements OnInit {
     this.currPermissionMapDATA = []
     console.log("here")
     var usersPermissionsMap = new Map();
+    var managerUser = false
     this.groupsService.getGroupsMembers(this.selectedNode.GroupId).then(res => {
       var permissionsList = JSON.parse(JSON.stringify(res))
       //add Manager-permission users
       permissionsList.Manager.forEach(ManagerUser => {
+        if(ManagerUser._id == sessionStorage.userId){
+          managerUser = true
+        }
         usersPermissionsMap.set(ManagerUser._id, { username: ManagerUser.Username, name: ManagerUser.FirstName + " " + ManagerUser.LastName, permission: "Manager" })
       });
 
@@ -484,6 +336,9 @@ export class GroupsComponent implements OnInit {
       permissionsList.Member.forEach(MemberUser => {
         if (usersPermissionsMap.has(MemberUser._id)) {
           usersPermissionsMap.get(MemberUser._id).permission = "Member"
+          if(MemberUser._id == sessionStorage.userId){
+            managerUser = false
+          }
         }
         else {
           usersPermissionsMap.set(MemberUser._id, { username: MemberUser.Username, name: MemberUser.FirstName + " " + MemberUser.LastName, permission: "Member" })
@@ -494,17 +349,29 @@ export class GroupsComponent implements OnInit {
       permissionsList.Owner.forEach(OwnerUser => {
         if(usersPermissionsMap.has(OwnerUser._id)){
           usersPermissionsMap.get(OwnerUser._id).permission = "Owner"
+          if(OwnerUser._id == sessionStorage.userId){
+            managerUser = false
+          }
         }
         else{
           usersPermissionsMap.set(OwnerUser._id,{username: OwnerUser.Username ,name: OwnerUser.FirstName+" "+OwnerUser.LastName, permission: "Owner"})
         }
       });
     this.selectedNode.usersPermissionsMap = usersPermissionsMap
+
     console.log(this.selectedNode.usersPermissionsMap)
     for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
-      if(key != sessionStorage.userId)  // not showe myself
+      if(key != sessionStorage.userId)  // not show myself
       {
-        this.currPermissionMapDATA.push(value);
+        if(managerUser){
+          if(value.permission != 'Owner'){
+            this.currPermissionMapDATA.push(value);
+          }
+        }
+        else{
+          this.currPermissionMapDATA.push(value);
+        }
+        
       }
     }
     // snapShot of permissions
@@ -515,14 +382,229 @@ export class GroupsComponent implements OnInit {
     });
   }
 
-  ownerCheck(){
-    if(this.selectedNode.hasOwnProperty('usersPermissionsMap')){
-      this.watcherPermission = this.selectedNode.usersPermissionsMap.get(sessionStorage.userId).permission
-      return this.selectedNode.usersPermissionsMap.get(sessionStorage.userId).permission != 'Owner'
-      
-      // console.log(this.selectedNode)
-    }
-    return true
+  public openNewRow(event) {
+    this.startWrite=false
+    console.log(event)
+    // define all editable fields validators and default values
+    const newUser = new FormGroup({
+      // 'username': new FormControl(""),
+      'permission': new FormControl({"": []})
+    });
+
+    // RESETS
+    this.newUserPermission = ""
+    this.userNotFound = false
+    this.senderPermissionWindow =  event.sender
+    event.sender.addRow(newUser);
   }
+
+  public cancelHandler({sender,rowIndex}) {
+    this.newUserPermissionChoose = null
+    this.userNotFound = false
+    console.log(sender)
+    sender.closeRow(rowIndex);
+  }
+
+
+  radioButtonsUpdate(event, rowIndex) {
+    console.log(event)
+    
+    if (rowIndex !=-1){
+      console.log(this.currPermissionMapDATA)
+
+      // update node in currDATA
+      var selectRow = JSON.parse(JSON.stringify(this.currPermissionMapDATA.filter(function (item) { return item.username == event.target.name; })[0]))
+      selectRow.permission = event.target.id
+      this.currPermissionMapDATA.find(item => item.username == event.target.name).permission = event.target.id;
+
+      // origin item before this change
+      var originRow = JSON.parse(JSON.stringify(this.snapshootFirst.filter(item => { return item.username == selectRow.username })[0]))
+      var toAdd = { userID: this.getKeyFromValue(originRow), old: originRow.permission, new: selectRow.permission }
+
+
+      if (this.snapshootFirst.some(item => item.username == selectRow.username && item.permission == selectRow.permission)) { // back to origin!
+        console.log("back to origin!");
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item.userID != toAdd.userID);
+      }
+      else { // new permission choosen
+        console.log("new permission");
+        if (this.updatePermissionUsers.some(item => item.userID === toAdd.userID)) {
+          this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item.userID !== toAdd.userID);
+        }
+
+        this.updatePermissionUsers.push(toAdd)
+      }
+
+      console.log(this.updatePermissionUsers);
+    }
+    else{   // new row permission touch
+      this.newUserPermissionChoose = event
+      }
+}
+
+  private getKeyFromValue(dataItem) {
+    for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
+      if (value.username == dataItem.username) {
+        return key
+      }
+    }
+  }
+
+  cleanFromDuplicates(){
+    return this.currPermissionMapDATA.find(i => i.username === this.newUserPermission) != null
+  }
+
+  watcherPermissionStatus(){
+    try{
+      if(this.selectedNode.hasOwnProperty('usersPermissionsMap')){
+        this.watcherPermission = this.selectedNode.usersPermissionsMap.get(sessionStorage.userId).permission
+        return this.watcherPermission
+      }
+
+      return ""
+    } catch{
+      return ""
+    }
+  }
+
+  public addNewUserToPermission(event){
+    this.userNotFound = false
+    console.log(this.selectedNode)
+    console.log(event)
+    this.dbAction = true
+
+    this.groupsService.addUserToGroup(this.selectedNode.GroupId,this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
+      this.dbAction = false
+      var jsonRes = JSON.parse(res)
+        // ---- seach for username in DB ---  then --//
+    if(this.newUserPermissionChoose != null){
+      this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
+      
+
+      // update snapshoorFirst
+      this.snapshootFirst = []
+      this.currPermissionMapDATA.forEach(element => {
+        this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
+      });
+
+      // console.log(res)
+      // update usersPermissionsMap
+      this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
+
+      this.newUserPermissionChoose = null
+    }
+    console.log(event)
+    this.cancelHandler(event)
+      }).catch(err => {
+        this.dbAction = false;
+        if(err.status == 404)
+          console.log("theres no such user!!")
+          this.userNotFound = true
+        // console.log(err);
+      });
+  }
+
+  public removeUserHandler(event) {
+      console.log(event.dataItem)
+      console.log(this.currPermissionMapDATA)
+      // this.currPermissionMapDATA.forEach(element => {
+      //   if(element == dataItem)
+      //     console.log(true)
+      // });
+      this.deleteUserList.push(event.dataItem)
+      this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== event.dataItem);
+      this.deleteUsersChange = true
+    }
+
+  public undoAllChangesClick() {
+
+    // undo all deleted
+    this.deleteUserList.forEach(deleteUser => {
+      this.currPermissionMapDATA.push(deleteUser)
+    });
+    this.currPermissionMapDATA = this.currPermissionMapDATA.slice()
+    this.deleteUserList = []
+    this.deleteUsersChange = false
+
+    // undo all radioButtons
+    this.currPermissionMapDATA = []
+    this.snapshootFirst.forEach(element => {
+      this.currPermissionMapDATA.push({ username: element.username, name: element.name, permission: element.permission })
+    });
+    this.currPermissionMapDATA = this.currPermissionMapDATA.slice()
+    this.updatePermissionUsers = []
+
+    // undo addUserRow (only close added row!)
+    this.newUserPermission = ""
+    this.userNotFound = false
+    // this.cancelHandler(event)
+  }
+
+  public closePermissionModal(modalId) {
+    this.deleteUsersChange = false
+    this.deleteUserList = []
+    this.currPermissionMapDATA = []
+    this.snapshootFirst = [];
+    this.modalService.close(modalId);
+
+  }
+
+  public saveAllChangesClick() {
+    console.log("selectNode map: ")
+    // console.log(this.selectedNode.usersPermissionsMap);
+    console.log("delete list:")
+    
+    console.log( this.deleteUserList)
+    console.log("update list:")
+    console.log( this.updatePermissionUsers)
+    let promises = [];
+    // ---- delete all remove users -------
+    this.deleteUserList.forEach(deleteUser => {
+      var userID = this.getKeyFromValue(deleteUser)
+
+      // look if user changed on radiobuttons
+      var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
+      if(duplicateUser!= null){
+        // take the old permission to delete and delete from updateButtonsList
+        promises.push(this.groupsService.removeUserFromGroup(this.selectedNode.GroupId,userID,duplicateUser.old))
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+      }
+      promises.push(this.groupsService.removeUserFromGroup(this.selectedNode.GroupId, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
+      this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
+      this.selectedNode.usersPermissionsMap.delete(userID)
+    });
+
+    // ----- update all radiobuttons -------
+    this.updatePermissionUsers.forEach(user => {
+      promises.push(this.groupsService.updateUserPermission(this.selectedNode.GroupId, user.userID, user.old, user.new))
+      
+      // update mapPermission on selectedMap
+      for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
+        if (key == user.userID) {
+          value.permission = user.new;
+        }
+      }
+    });
+    this.dbAction = true;
+    Promise.all(promises.map(p => p.catch(e => e)))
+      .then(results => {
+        this.dbAction = false;
+        // console.log("currPermissionMapDATA: "+this.currPermissionMapDATA)
+        // console.log("selectNode map: " + this.selectedNode.usersPermissionsMap)
+        // users Reset
+        this.deleteUserList = []
+        this.deleteUsersChange = false
+        // permissions Reset
+        this.updatePermissionUsers = []
+        this.snapshootFirst = []
+        this.currPermissionMapDATA.forEach(element => {
+          this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
+        });
+
+
+      })
+      .catch(e => alert(e));
+  }
+  
 
 }

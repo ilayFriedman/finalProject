@@ -103,16 +103,14 @@ app.post('/private/addNewSubscriber', subscriptionsRoute)
 app.delete('/private/removesubscriber/:mapID&:userID', subscriptionsRoute)
 
 
-
-app.post("/private/createGroup", groupsRoute);
-app.post("/private/updateGroupProperties", groupsRoute);
-app.post("/private/SetUserPermissionForGroup", groupsRoute);
-app.get("/private/GetGroupsMembers/:id", groupsRoute);
-// app.get("/private/GetGroupsUserBlongsTo", groupsRoute);
-// app.get("/private/GetGroupsUserOwns", groupsRoute);
-app.delete("/private/deleteGroup/:id", groupsRoute);
-app.delete("/private/RemoveUserFromGroup/:groupId/:userId", groupsRoute);
 app.get("/private/getMyGroups", groupsRoute);
+app.post("/private/createGroup", groupsRoute);
+app.delete("/private/deleteGroup/:id", groupsRoute);
+app.post("/private/updateGroupProperties", groupsRoute);
+app.get("/private/GetGroupsMembers/:id", groupsRoute);
+app.post('/private/addUserToGroup', groupsRoute);
+app.delete("/private/RemoveUserFromGroup/:groupId&:userID&:permission", groupsRoute);
+app.post('/private/updateGroupUserPermission', groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);

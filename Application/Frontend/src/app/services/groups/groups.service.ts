@@ -75,13 +75,15 @@ export class GroupsService {
     return this.http.post(environment.backendUrl + '/private/updateGroupProperties', requestBody, { headers: { 'token': sessionStorage.token },responseType: 'text'}).toPromise()
   }
 
+
   /**
    * Remove user's permission on group
    * @param groupId 
    * @param users 
    */
-  removeUserFromGroup(groupId: string, usersId: [string]){
-    return this.http.delete(environment.backendUrl + '/private/RemoveUserFromGroup/' + groupId + "/" + usersId[0], { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
+  removeUserFromGroup(groupId, usersId, permission){
+    console.log("send: "+ groupId + usersId + permission)
+    return this.http.delete(environment.backendUrl + '/private/RemoveUserFromGroup/' + groupId + "&" + usersId + "&" + permission, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
   /**
@@ -90,14 +92,25 @@ export class GroupsService {
    * @param usersId 
    * @param permission 
    */
-  setUserPermissionForGroup(groupId: string, usersId: [string], permission: [string]){
-    const requestBody = {
-      _id: groupId,
-      userId: usersId[0],
-      permission: permission[0]
-    }
 
-    return this.http.post(environment.backendUrl + '/private/SetUserPermissionForGroup', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
+  addUserToGroup(groupId, username, permission_To){
+    const requestBody = {
+      groupId: groupId,
+      username: username,
+      permission_To: permission_To
+    }
+    return this.http.post(environment.backendUrl + '/private/addUserToGroup', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
+  }
+
+  updateUserPermission(groupId, userID,permission_From,permission_To){
+    const requestBody = {
+      groupId: groupId,
+      userID: userID,
+      permission_From: permission_From,
+      permission_To: permission_To
+    }
+    console.log(requestBody)
+    return this.http.post(environment.backendUrl + '/private/updateGroupUserPermission', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
 

@@ -165,21 +165,26 @@
     </jw-modal>
 
 
-        <!--Edit group-->
+        <!--permission group-->
         <jw-modal class="jw-modal" id="permissionGroupModal">
-            <div [ngResizable]='true' class="jw-modal-body">
-                <span class="close" (click)="closeModal('permissionGroupModal')">&times;</span>
+            <div class="jw-modal-body">
+                <div class="grid-wrapper">
+                <div class="close" [class.disabled]="dbAction" (click)="undoAllChangesClick();closePermissionModal('permissionGroupModal')">&times;</div>
+                
                 <span style="font-size: 25px"><b><mat-icon style="margin-right: 10px;">people_alt</mat-icon>Group "{{selectedNode.text}}":</b></span>
                     <h4>{{selectedNode.GroupDescription}}</h4>
-                    <div style="font-size: 14px;" ><b>Your Permission in this group: </b>{{watcherPermission}}<br><br>Here you can see groups memebers and their permissions for this groups.<br><br></div>
+                    <div style="font-size: 14px;" ><b>Your Permission in this group: </b>{{watcherPermission}}
+                        <br><b>Note:</b> you can not see yourself in the list<br><b>Note:</b> Only group owners can see other group owners
+                        <br><br>Here you can see groups memebers and their permissions for this groups.<br><br></div>
                     <div>
-                    <!-- (cancel)="cancelHandler($event)" (add)="openNewRow($event)"
+                    <!-- (cancel)="cancelHandler($event)" 
                     (save)="addNewUserToPermission($event)" (remove)="openUserPerimssionDialog($event)" -->
                     <kendo-grid [data]="currPermissionMapDATA" [height]="533" [sortable]="true"
-                    [navigable]="true" [resizable]="true" style="max-width:inherit;">
-                    <ng-template kendoGridToolbarTemplate *ngIf="!ownerCheck()">
-                        <button class='k-button'>Add New User</button>
-                        <!-- <button class='k-button' (click)="saveAllChangesClick()"
+                    [navigable]="true" [resizable]="true" style="max-width:inherit;"
+                    (add)="openNewRow($event)" (cancel)="cancelHandler($event)" (save)="addNewUserToPermission($event)" (remove)="openUserPerimssionDialog($event)">
+                    <ng-template kendoGridToolbarTemplate *ngIf="watcherPermissionStatus() != 'Member'">
+                        <button class='k-button' kendoGridAddCommand>Add New User</button>
+                        <button class='k-button' (click)="saveAllChangesClick()"
                             [disabled]="!deleteUsersChange && updatePermissionUsers.length == 0"><span
                                 [ngStyle]="deleteUsersChange?{'font-weight': 'bold'} : {'font-weight': 'normal'}">Save
                                 Changes</span></button>
@@ -189,15 +194,15 @@
                         <p *ngIf="deleteUsersChange || updatePermissionUsers.length != 0"
                             style="text-align: center; color:green"><b><i>Some Changes Are waiting To Been Saved! dont Forget to save them before you leave</i></b></p>
                         <p *ngIf="userNotFound"
-                            style="text-align: center; color:red"><b><i>The user dosen't exist!</i></b></p> -->
+                            style="text-align: center; color:red"><b><i>The user dosen't exist!</i></b></p>
                     </ng-template>
 
                     <kendo-grid-column field="username" title="Username (E-mail)" [width]="180"
-                    [minResizableWidth]="100" [hidden]="ownerCheck()">
+                    [minResizableWidth]="100" [hidden]="watcherPermissionStatus() == 'Member'">
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <span *ngIf="rowIndex == -1"><kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [(ngModel)]="newUserPermission"
                             [placeholder]="'Enter user name..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;" 
-                            [ngStyle]="userNotFound && newUserPermission!= ''?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}">
+                            [ngStyle]="(startWrite && autoCompleteUserNamesFilterd.length ==0) ||(userNotFound && newUserPermission!= '')?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}">
                                       </kendo-autocomplete></span>
                         <span *ngIf="rowIndex > -1">{{dataItem.username}}</span>
                     </ng-template>
@@ -211,11 +216,11 @@
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex" >
                         <!-- new row -->
                         <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Member'" name="{{newUserPermission}}" id="Member"
+                            <input type="radio" [disabled]="watcherPermissionStatus() == 'Member' || newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Member'" name="{{newUserPermission}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio"  [disabled]="ownerCheck()" [checked]="dataItem.permission=='Member'" name="{{dataItem.username}}" id="Member"
+                        <span *ngIf="rowIndex > -1"><input type="radio"  [disabled]="watcherPermissionStatus() == 'Member'" [checked]="dataItem.permission=='Member'" name="{{dataItem.username}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
@@ -225,11 +230,11 @@
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <!-- new row -->
                         <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Manager'" name="{{newUserPermission}}" id="Manager"
+                            <input type="radio" [disabled]="watcherPermissionStatus() == 'Member' || newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Manager'" name="{{newUserPermission}}" id="Manager"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="ownerCheck()" [checked]="dataItem.permission=='Manager'" name="{{dataItem.username}}" id="Manager"
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() == 'Member'" [checked]="dataItem.permission=='Manager'" name="{{dataItem.username}}" id="Manager"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
@@ -239,16 +244,16 @@
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <!-- new row -->
                         <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="ownerCheck() || newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
+                            <input type="radio" [disabled]="watcherPermissionStatus() != 'Owner' || newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="ownerCheck()" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() != 'Owner'" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
 
                 </kendo-grid-column>
-                <kendo-grid-command-column title="Actions" width="160"  [hidden]="ownerCheck()" >
+                <kendo-grid-command-column title="Actions" width="160"  [hidden]="watcherPermissionStatus() == 'Member'" >
                     <!--actions column-->
                     <ng-template kendoGridCellTemplate let-isNew="isNew">
                         <button kendoGridRemoveCommand>Remove User From List</button>
@@ -262,9 +267,24 @@
                 
                 
                     </kendo-grid>
+
+                <!-- dialog of remove user -->
+                <kendo-dialog title="Please confirm" *ngIf="userDeleteDialogOpened"
+                (close)="closeUserPerimssionDialog('cancel')" [minWidth]="250" [width]="450">
+                <p style="margin: 30px; text-align: center;">Are you sure you want to delete User
+                    {{ userToDelete.username }} from "{{selectedNode.text}}" group?</p>
+                <p style="margin: 30px; text-align: center; color:red">Note! his permission for maps will 
+                    remain the same, but the group will cease to exist and stop appearing for him under his "Groups"!</p>
+                <kendo-dialog-actions>
+                    <button class='k-button' (click)="closeUserPerimssionDialog('no')">No</button>
+                    <button class='k-button k-primary' (click)="closeUserPerimssionDialog('yes')"
+                        primary="true">Yes. Remove This User {{userToDelete.username}}</button>
+                </kendo-dialog-actions>
+            </kendo-dialog>
                     
                     </div>
-    
+                    <div *ngIf="dbAction" class="k-i-loading"></div>
+            </div>
             </div>
         </jw-modal>
 

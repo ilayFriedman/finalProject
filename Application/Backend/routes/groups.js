@@ -200,6 +200,32 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
 
 });
 
+router.post('/private/addUserToGroup', async function (req, res) {
+    if (req.body.groupId && req.body.username && req.body.permission_To) {
+        user.findOne({ 'Username': req.body.username }, function (err, result) {
+            if (result) {
+                // user exist!
+                group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, function (err, resultUpadte) {
+                    if (err) {
+                        res.status(500).send("Server error occurred.");
+                        res.end();
+                    } else {
+                        console.log("here!")
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify(result));
+                    }
+                });
+            } else {
+                res.status(404).send("Could not find the requested User.");
+            }
+        })
+    } else {
+        res.status(400).send("worng/missing parameters");
+        res.end();
+    }
+
+});
+
 router.post('/private/updateGroupProperties', async function (req, res) {
     if (req.body._id && req.body.description && req.body.groupName) {
         group.findOneAndUpdate({ '_id': req.body._id, 'Members.Owner':req.decoded._id}, { 'Description': req.body.description , 'Name': req.body.groupName}, function (err, mongoRes) {
@@ -215,80 +241,19 @@ router.post('/private/updateGroupProperties', async function (req, res) {
     }
 });
 
-//TODO @Saar Change middleware to work with an array of users.
-router.delete('/private/RemoveUserFromGroup/:groupId/:userId', async function (req, res) {
-    if (req.params.groupId && req.params.userId) {
-        group.findOne({
-            '_id': req.params.groupId
-        }, function (err, result) {
-            if (!result) {
-                res.status(404).send("Could not find map.");
-                return;
-            }
 
-            isUserGivingPermissionHasSufficientPrivileges = UserHasManagerPermissionForGroup(result, req.decoded._id) && !UserHasOwnerPermissionForGroup(result, req.params.userId); // It takes at least a manager to revoke permission. Cannot revoke Owner permissions.
+router.delete('/private/RemoveUserFromGroup/:groupId&:usersId&:permission', async function (req, res) {
+    group.findOneAndUpdate({ _id: req.params.groupId }, { $pull: { ["Members." + req.params.permission]: req.params.usersId } }, function (err, resultUpadte) {
+        if (err) {
+            res.status(500).send("Server error occurred.");
+            res.end();
+        } else {
+            res.status(200).send("user deleted successfully from this group");
+            res.end();
+        }
+    });
 
-            if (!isUserGivingPermissionHasSufficientPrivileges) {
-                res.status(403).send("The user's permissions are insufficient to set requested permission.");
-                return;
-            }
 
-            deleteUserCurrentPermission(result, req.params.userId);
-
-            group.findOneAndUpdate({ _id: req.params.groupId }, { 'Members': result.Members }, function (err, mongoRes) {
-                if (err) {
-                    res.status(500).send("Server error occurred.");
-                } else {
-                    res.status(200).send('Group permissions has been updated successfully.');
-                }
-            });
-
-        })
-    }
-    else {
-        res.status(400).send("No group Id, user Id or permission level attached to request.");
-    }
-});
-
-//TODO @Saar Change middleware to work with an array of users.
-router.post('/private/SetUserPermissionForGroup', async function (req, res) {
-    if (req.body._id && req.body.userId && req.body.permission) {
-        group.findOne({
-            '_id': req.body._id
-        }, function (err, result) {
-            if (!result) {
-                res.status(404).send("Could not find map.");
-                return;
-            }
-
-            isUserGivingPermissionHasSufficientPrivileges = UserHasOwnerPermissionForGroup(result, req.decoded._id); // Owner can give any permission.
-            isUserGivingPermissionHasSufficientPrivileges = isUserGivingPermissionHasSufficientPrivileges // A Manager can give another user Manager or Memeber permissions.
-                || (UserHasManagerPermissionForGroup(result, req.decoded._id) && (req.body.permission == "Manager" || req.body.permission == "Member"));
-            if (!isUserGivingPermissionHasSufficientPrivileges) {
-                res.status(403).send("The user's permissions are insufficient to set requested permission.");
-                return;
-            }
-
-            deleteUserCurrentPermission(result, req.body.userId);
-            let permissionGiven = addUserPermissionOnGroup(result, req.body.userId, req.body.permission);
-            if (!permissionGiven) {
-                res.status(400).send("Unsupported permission requested. Supported permissions are: 'Member', 'Manager' and 'Owner'.");
-                return;
-            }
-
-            group.findOneAndUpdate({ _id: req.body._id }, { 'Members': result.Members }, function (err, mongoRes) {
-                if (err) {
-                    res.status(500).send("Server error occurred.");
-                } else {
-                    res.status(200).send('Group permissions has been updated successfully.');
-                }
-            });
-
-        })
-    }
-    else {
-        res.status(400).send("No group Id, user Id or permission level attached to request.");
-    }
 });
 
 router.get('/private/GetGroupsMembers/:id', async function (req, res) {
@@ -337,5 +302,25 @@ router.get('/private/getMyGroups/', async function (req, res) {
     }
 });
 
+
+router.post('/private/updateGroupUserPermission', async function (req, res) {
+    if (req.body.groupId && req.body.userID && req.body.permission_From && req.body.permission_To) {
+        group.findOneAndUpdate({ _id: req.body.groupId }, { $pull: { ["Members." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Members." + req.body.permission_To]: req.body.userID } }, function (err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Server error occured.');
+                res.end();
+            } else {
+                res.status(200).send("user's permission updated!");
+                    res.end();
+            }
+        });
+           
+    } else {
+        res.status(400).send("worng/missing parameters");
+        res.end();
+    }
+
+});
 
 module.exports = router;

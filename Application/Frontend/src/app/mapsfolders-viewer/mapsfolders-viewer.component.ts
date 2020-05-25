@@ -62,14 +62,16 @@ export class MapsfoldersViewerComponent implements OnInit {
   snapshootFirst = [];
   dbAction = false;
   @Input() autoCompleteUserNames: Array<string> = []
-  public autoCompleteUserNamesFilterd: Array<string>;
+  public autoCompleteUserNamesFilterd: Array<string> = [];
   newUserPermission = ""
   userNotFound = false
+  startWrite=false
 
   // sharedMaps variables
   sharedMapList_notAssociated = []
   sharedMapList_Associated = []
   folderToSelected : Object  
+  senderPermissionWindow: any;
  
   
 
@@ -582,6 +584,7 @@ newUserPermissionChoose: any
   }
 
   public openNewRow(event) {
+    this.startWrite=false
     console.log(event)
     // define all editable fields validators and default values
     const newUser = new FormGroup({
@@ -592,7 +595,7 @@ newUserPermissionChoose: any
     // RESETS
     this.newUserPermission = ""
     this.userNotFound = false
-    
+    this.senderPermissionWindow =  event.sender
     event.sender.addRow(newUser);
   }
 
@@ -745,6 +748,9 @@ newUserPermissionChoose: any
     this.currPermissionMapDATA.forEach(element => {
       this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
     });
+    if(this.senderPermissionWindow != null){
+      this.senderPermissionWindow.closeRow(-1);
+    }
     this.modalService.open('usersPermissionsModal')
 
   }
@@ -806,12 +812,13 @@ newUserPermissionChoose: any
   }
 
   autoCompleteHandler(value) {
+    this.startWrite=true
     this.autoCompleteUserNamesFilterd = this.autoCompleteUserNames.filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) !== -1);
-    this.currPermissionMapDATA.forEach(element => {
-      this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj !== element.username);
-    });
-    
-}
+    this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd .filter(obj=> obj != sessionStorage.user)
+    for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
+      this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj != value.username);
+    }
+  }
 
 // ############### permissions- not Associated  functionallity ########################
 

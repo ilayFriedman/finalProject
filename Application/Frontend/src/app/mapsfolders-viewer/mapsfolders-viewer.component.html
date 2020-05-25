@@ -318,7 +318,7 @@
                             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                                 <span *ngIf="rowIndex == -1"><kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [(ngModel)]="newUserPermission"
                                     [placeholder]="'Enter user name..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;" 
-                                    [ngStyle]="userNotFound && newUserPermission!= ''?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}">
+                                    [ngStyle]="(startWrite && autoCompleteUserNamesFilterd.length ==0) ||(userNotFound && newUserPermission!= '')?{'background-color': 'rgb(250, 186, 186)'} : {'background-color': 'white'}">
                                               </kendo-autocomplete></span>
                                 <span *ngIf="rowIndex > -1">{{dataItem.username}}</span>
                             </ng-template>
@@ -331,7 +331,7 @@
                             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1">
-                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Read'" name="{{newUserPermission}}" id="Read"
+                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Read'" name="{{newUserPermission}}" id="Read"
                                     (change)="radioButtonsUpdate($event,rowIndex)" />
                                 </span>
                                 <!-- other rows -->
@@ -345,7 +345,7 @@
                             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1">
-                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Write'" name="{{newUserPermission}}" id="Write"
+                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Write'" name="{{newUserPermission}}" id="Write"
                                     (change)="radioButtonsUpdate($event,rowIndex)" />
                                 </span>
                                 <!-- other rows -->
@@ -359,7 +359,7 @@
                             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1">
-                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates()" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
+                                    <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
                                     (change)="radioButtonsUpdate($event,rowIndex)" />
                                 </span>
                                 <!-- other rows -->
