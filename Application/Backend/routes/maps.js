@@ -7,20 +7,26 @@ const folder = require('../models/folder');
 var nodemailer = require('nodemailer');
 
 function UserHasReadPermissionForMap(resMap, userId) {
-    if (resMap.Permission.Owner.indexOf(userId) != -1) {
-        return true;
-    }
 
-    if (resMap.Permission.Write) {
-        if (resMap.Permission.Write.indexOf(userId) != -1) {
+    for (let i = 0; i < resMap.Permission.Owner.length; i++) {
+        const element = resMap.Permission.Owner[i];
+        if (element.id == userId) {
             return true;
         }
-
     }
-    // console.log(resMap.Permission.Read);
 
-    if (resMap.Permission.Read) {
-        if (resMap.Permission.Read.indexOf(userId) != -1) {
+    
+    for (let i = 0; i < resMap.Permission.Write.length; i++) {
+        const element = resMap.Permission.Write[i];
+        if (element.id == userId) {
+            return true;
+        }
+    }
+
+    
+    for (let i = 0; i < resMap.Permission.Read.length; i++) {
+        const element = resMap.Permission.Read[i];
+        if (element.id == userId) {
             return true;
         }
     }
@@ -29,26 +35,41 @@ function UserHasReadPermissionForMap(resMap, userId) {
 }
 
 function UserHasWritePermissionForMap(resMap, userId) {
-    if (resMap.Permission.Owner.indexOf(userId) != -1) {
-        return true;
-    }
-
-    if (resMap.Permission.Write) {
-        if (resMap.Permission.Write.indexOf(userId) != -1) {
+    for (let i = 0; i < resMap.Permission.Write.length; i++) {
+        const element = resMap.Permission.Write[i];
+        if (element.id == userId) {
             return true;
         }
+    }
 
+    
+    for (let i = 0; i < resMap.Permission.Read.length; i++) {
+        const element = resMap.Permission.Read[i];
+        if (element.id == userId) {
+            return true;
+        }
     }
 
     return false;
 }
 
 function UserHasOwnerPermissionForMap(resMap, userId) {
-    if (resMap.Permission.Owner.indexOf(userId) != -1) {
-        return true;
+    for (let i = 0; i < resMap.Permission.Read.length; i++) {
+        const element = resMap.Permission.Read[i];
+        if (element.id == userId) {
+            return true;
+        }
     }
 
     return false;
+}
+
+function getSublistById(res,permissionType){
+    var list = []
+    for (let i = 0; i < res["Permission"][permissionType].length; i++) {
+        list.push(res["Permission"][permissionType][i].id)
+    }
+    return list
 }
 
 // call in save as
@@ -66,7 +87,7 @@ router.post('/private/createMap', async function (req, res) {
             Description: req.body.Description,
             Model: new_model,
             Permission: {
-                Owner: [CreatorId],
+                Owner: [{id: CreatorId, type: "PersonalPermission"}],
                 Write: [],
                 Read: []
             },
@@ -145,11 +166,12 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Read).exec()
-                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Write).exec()
-                    owner = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Permission.Owner).exec()
+                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Read")).exec()
+                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Write")).exec()
+                    owner = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Owner")).exec()
                     // console.log(result.Permission.Read)
-                    res.send({ read: read, write: write, owner: owner })
+                    res.status(200).send({ read: read, write: write, owner: owner })
+                    res.end()
                     // res.send(result.Permission);
                 } else {
                     res.status(403).send("The user's permissions are insufficient to retrieve map");
@@ -193,7 +215,7 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                     });
                     // write/read permission on map: remove my ID from permission but not delete map
                 } else {
-                    map.updateOne({ _id: result._id }, { $pull: { ["Permission." + req.params.userPermission]: req.decoded._id } }, function (err, result) {
+                    map.updateOne({ _id: result._id }, { $pull: { [["Permission"][req.params.userPermission].id]: req.decoded._id } }, function (err, result) {
                         if (err) {
                             console.log(err);
                             // res.status(500).send("Server error occurred while pop from parent folder.");

@@ -14,9 +14,9 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   links: String[] = []
   numOfLinks = -1
 
-  typesOflinks: any = null
-  typesOfNodes: any = null
-  typesOfNodes_model: any = null
+  typesOflinks: any = []
+  typesOfNodes: any = []
+  typesOfNodes_model: any = []
 
   nodeSelected_From: any = "Choose Node"
   linkSelected: any = "Choose Link Type"
@@ -41,20 +41,25 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
-    this.typesOflinks = this.mapHandler.myDiagram.linkTemplateMap.Fb
-    this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Fb
+    console.log(this.mapHandler.myDiagram.linkTemplateMap)
+    // this.mapHandler.myDiagram.linkTemplateMap.Fb.forEach(element => {
+    //   console.log(element);
+    //   this.typesOflinks.push(element)
+    // });
+    // this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Fb
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
     this.convertMapToText()
 
+  
     // remove empty-link and comment-link elements from dict
-    // delete this.typesOflinks[""]
-    // delete this.typesOflinks["Comment"]
+    // this.typesOflinks = this.typesOflinks.filter(obj=> obj != "Comment")
+    // this.typesOflinks = this.typesOflinks.filter(obj=> obj != "")
 
     // remove empty-node, Comment,LinkLabel elements from dict
-    // delete this.typesOfNodes[""]
-    // delete this.typesOfNodes["Comment"]
-    // delete this.typesOfNodes["LinkLabel"]
-
+    // console.log( this.typesOfNodes)
+    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "")
+    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "Comment")
+    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "LinkLabel")
   }
 
 
