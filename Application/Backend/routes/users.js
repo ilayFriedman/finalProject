@@ -162,7 +162,7 @@ router.post('/restorePassword', async function (req, res) {
                                 res.status(500).send(`Server error occured while send email`)
                                 res.end()
                             } else {
-                                res.status(200).send(`Server error occured while send email`)
+                                res.status(200).send(`password sent successfully `)
                                 res.end();
 
                             }

@@ -85,6 +85,7 @@ export class GroupsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.groupsService.allMyGroups = []
     // check user connected
     if (sessionStorage.token != null) {
       this.getMyGroups();
@@ -98,6 +99,9 @@ export class GroupsComponent implements OnInit {
         var totalGroups = JSON.parse(JSON.stringify(response))
         this.addToTreeView(totalGroups)
         this.totalGroupsNumber = this.groupsArray[0].items.length + this.groupsArray[1].items.length + this.groupsArray[2].items.length
+        totalGroups.forEach(element => {
+          this.groupsService.allMyGroups.push(element)
+        });
       }, error => {
         console.log(error.error);
         alert(error.error);
@@ -122,6 +126,7 @@ export class GroupsComponent implements OnInit {
   public createGroup() {
     this.ErrPreSubmit = false
     this.ErrPreSubmitDuplicateNames = false;
+    console.log(this.groupsService.allMyGroups)
     
     // check duplicate name in your tree
       if(this.addGroupCheckOut.controls.groupName.value != null && 
@@ -130,7 +135,8 @@ export class GroupsComponent implements OnInit {
         this.groupsService.createNewGroup(this.addGroupCheckOut.controls.groupName.value, this.addGroupCheckOut.controls.description.value)
         .then(res => {
           var jsonRes =  JSON.parse(JSON.stringify(res))
-          this.addToTreeView([{ text: jsonRes.Name, GroupId: jsonRes._id, GroupDescription: jsonRes.Description, permission: "Owner" ,usersPermissionsMap: ""}])
+          this.groupsService.allMyGroups.push({ text: jsonRes.Name, GroupId: jsonRes._id, GroupDescription: jsonRes.Description, permission: "Owner"})
+          this.addToTreeView([{GroupId: jsonRes._id, text: jsonRes.Name, GroupDescription: jsonRes.Description, permission: "Owner" ,usersPermissionsMap: ""}])
           this.addGroupCheckOut.controls.groupName.value = ""
           this.addGroupCheckOut.controls.description.value = ""
           this.addGroupCheckOut.reset()
@@ -157,6 +163,8 @@ export class GroupsComponent implements OnInit {
       console.log("done")
       console.log(res)
 
+      this.groupsService.allMyGroups = this.groupsService.allMyGroups.filter(obj=>obj.GroupId != this.fileToDelete.GroupId)
+      this.groupsService.allMyGroups =this.groupsService.allMyGroups.slice();
       this.groupsArray[0].items = this.groupsArray[0].items.filter(obj => obj !== this.fileToDelete);
       this.groupsArray = this.groupsArray.slice();
     }).catch

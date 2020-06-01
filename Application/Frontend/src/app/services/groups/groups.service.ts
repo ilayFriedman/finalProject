@@ -6,7 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class GroupsService {
-
+  public allMyGroups: any = []
   constructor(private http: HttpClient) { }
 
   getMyGroups(){

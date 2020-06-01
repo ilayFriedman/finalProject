@@ -9,9 +9,10 @@ import { Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { map } from '@progress/kendo-data-query/dist/npm/transducers';
 import { UsersService } from '../services/users/users.service';
-import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { GridDataResult, PageChangeEvent} from '@progress/kendo-angular-grid';
 import { State, process } from '@progress/kendo-data-query';
 import { windowWhen } from 'rxjs/operators';
+import { GroupsService } from '../services/groups/groups.service';
 // import { read } from 'fs';
 
 
@@ -63,7 +64,10 @@ export class MapsfoldersViewerComponent implements OnInit {
   dbAction = false;
   @Input() autoCompleteUserNames: Array<string> = []
   public autoCompleteUserNamesFilterd: Array<string> = [];
+  public autoCompleteUserGroupsFilterd: Array<string> = [];
+
   newUserPermission = ""
+  newGroupPermission = ""
   userNotFound = false
   startWrite=false
 
@@ -73,13 +77,18 @@ export class MapsfoldersViewerComponent implements OnInit {
   folderToSelected : Object  
   senderPermissionWindow: any;
  
+  // groups permission  butttons
+  groupAdderClick = false
+  ownerGroupsNames = this.groupsService.allMyGroups.filter(obj=> obj.permission == "Owner");
+  
   
 
 
 
 
 
-  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, public router: Router, public modalService: ModalService) {
+  constructor(private folderHandler: FolderHandlerService, private mapHandler: MapsHandlerService, private userHandler: UsersService, private http: HttpClient, private formBuilder: FormBuilder, 
+    public router: Router, public modalService: ModalService, private groupsService: GroupsService) {
     this.addFolderCheckOut = this.formBuilder.group({ folderName: ['', Validators.required], description: ['', Validators.required] });
     this.addMapCheckOut = this.formBuilder.group({ mapName: ['', Validators.required], description: ['', Validators.required] });
     this.editPropertiesCheckOut = this.formBuilder.group({ fileName: [''], description: [''] });
@@ -90,7 +99,7 @@ export class MapsfoldersViewerComponent implements OnInit {
   ngOnInit() {
     // check user connected
     if(sessionStorage.token != null){
-
+      console.log(this.ownerGroupsNames)
           // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
       
@@ -594,6 +603,7 @@ newUserPermissionChoose: any
 
     // RESETS
     this.newUserPermission = ""
+    this.newGroupPermission = ""
     this.userNotFound = false
     this.senderPermissionWindow =  event.sender
     event.sender.addRow(newUser);
@@ -604,9 +614,11 @@ newUserPermissionChoose: any
     console.log(this.selectedNode)
     console.log(event)
     this.dbAction = true
-    this.mapHandler.addNewPermission(this.selectedNode.mapID,  this.newUserPermissionChoose.target.name, this.newUserPermissionChoose.target.id).then(res => {
+    this.mapHandler.addNewPermission(this.selectedNode.mapID,this.newUserPermissionChoose.target.name,"PersonalPermission",this.newUserPermissionChoose.target.id).then(res => {
+      console.log("here now")
       this.dbAction = false
       var jsonRes = JSON.parse(res)
+      console.log(jsonRes)
         // ---- seach for username in DB ---  then --//
     if(this.newUserPermissionChoose != null){
       this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
@@ -679,15 +691,6 @@ newUserPermissionChoose: any
     // ----- update all radiobuttons -------
     this.updatePermissionUsers.forEach(user => {
       promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
-
-      // // send email about new permission:
-      // if(jsonRes.getPermissionUpdate){
-      //   var text="<div style='text-align: center; direction: ltr;'><h3>Hi There, " + jsonRes.FirstName + " " + jsonRes.LastName + "!</h3>\n\n" + sessionStorage.userFullName + " has given you a "+
-      //   "<b>"+this.newUserPermissionChoose.target.id+"</b>" + ' permission for map "<b>'+this.selectedNode.text+'</b>".<br><br>Please log in for more details in <a href="www.ynet.co.il">this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>'
-      //   this.userHandler.sendMailToUser(this.newUserPermissionChoose.target.name,"New Permission Request Has Arrived!",text)
-      // }
-
-
       // update mapPermission on selectedMap
       for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
         if (key == user.userID) {
@@ -736,6 +739,7 @@ newUserPermissionChoose: any
 
     // undo addUserRow (only close added row!)
     this.newUserPermission = ""
+    this.newGroupPermission =""
     this.userNotFound = false
     // this.cancelHandler(event)
   }
@@ -757,6 +761,10 @@ newUserPermissionChoose: any
 
   cleanFromDuplicates(){
     return this.currPermissionMapDATA.find(i => i.username === this.newUserPermission) != null
+  }
+
+  cleanFromDuplicatesGroups(){
+    return this.currPermissionMapDATA.find(i => i.username === this.newGroupPermission) != null
   }
   public closePermissionModal(modalId) {
     this.deleteUsersChange = false
@@ -817,6 +825,17 @@ newUserPermissionChoose: any
     this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd .filter(obj=> obj != sessionStorage.user)
     for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
       this.autoCompleteUserNamesFilterd = this.autoCompleteUserNamesFilterd.filter(obj => obj != value.username);
+    }
+  }
+
+  autoCompleteHandlerGroups(value) {
+    this.startWrite=true
+    this.ownerGroupsNames = this.groupsService.allMyGroups.filter(obj=> obj.permission == "Owner").map(({ text }) => text);;
+    console.log(this.ownerGroupsNames)
+    this.autoCompleteUserGroupsFilterd = this.ownerGroupsNames.filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+    this.autoCompleteUserGroupsFilterd = this.autoCompleteUserGroupsFilterd.filter(obj=> obj != sessionStorage.user)
+    for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
+      this.autoCompleteUserGroupsFilterd = this.autoCompleteUserGroupsFilterd.filter(obj => obj != value.username);
     }
   }
 
