@@ -616,7 +616,8 @@ router.post('/private/addNewPermission', async function (req, res) {
                                         } else {
                                             // status = 200
                                             // message = `permission added successfully, email sent to user`
-                                                                                            objectToReturn = userRes;
+                                                objectToReturn = { id: userRes._id, type: req.body.elementToAdd.type, name: userRes.FirstName + " " + userRes.LastName, username: userRes.Username };
+                                                
                                                 res.writeHead(200, { "Content-Type": "application/json" });
                                                 console.log("back: "+objectToReturn)
                                                 res.end(JSON.stringify(objectToReturn));
