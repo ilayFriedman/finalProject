@@ -312,8 +312,20 @@
                             <p *ngIf="userNotFound"
                                 style="text-align: center; color:red"><b><i>The user dosen't exist!</i></b></p>
                         </ng-template>
-
-                        <kendo-grid-column field="username" title="Username (E-mail)" [width]="180"
+                        <kendo-grid-column field="elemIcon" title="" [width]="50" [minResizableWidth]="50">
+                            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                <span *ngIf="rowIndex == -1">
+                                    <mat-icon *ngIf="groupAdderClick">people_alt</mat-icon>
+                                    <span *ngIf="groupAdderClick == false" class="k-icon k-i-user"></span>
+                                </span>
+                                <span *ngIf="rowIndex > -1">
+                                    <mat-icon *ngIf="dataItem.type == 'Group'">people_alt</mat-icon>
+                                    <span *ngIf="dataItem.type == 'PersonalPermission'" class="k-icon k-i-user"></span>
+                                </span>
+                                
+                            </ng-template>
+                        </kendo-grid-column><!--icon column-->
+                        <kendo-grid-column field="username" title="Username (E-mail) / Group Name" [width]="180"
                             [minResizableWidth]="100">
                             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                                 <span *ngIf="rowIndex == -1 && groupAdderClick == false"><kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [(ngModel)]="newUserPermission"
@@ -336,7 +348,7 @@
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1 && groupAdderClick == false">
                                     <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Read'" name="{{newUserPermission}}" id="Read"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <span *ngIf="rowIndex == -1 && groupAdderClick">
                                     <input type="radio" [disabled]="newGroupPermission == '' || cleanFromDuplicatesGroups() || autoCompleteUserGroupsFilterd.indexOf(newGroupPermission) == -1" [checked]="dataItem.permission=='Read'" name="{{newGroupPermission}}" id="Read"
@@ -344,7 +356,7 @@
                                 </span>
                                 <!-- other rows -->
                                 <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Read'" name="{{dataItem.username}}" id="Read"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" /></span>
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" /></span>
                             </ng-template>
                         </kendo-grid-column>
 
@@ -354,15 +366,15 @@
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1 && groupAdderClick == false">
                                     <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Write'" name="{{newUserPermission}}" id="Write"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <span *ngIf="rowIndex == -1 && groupAdderClick">
                                     <input type="radio" [disabled]="newGroupPermission == '' || cleanFromDuplicatesGroups() || autoCompleteUserGroupsFilterd.indexOf(newGroupPermission) == -1" [checked]="dataItem.permission=='Write'" name="{{newGroupPermission}}" id="Write"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <!-- other rows -->
                                 <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Write'" name="{{dataItem.username}}" id="Write"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" /></span>
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" /></span>
                             </ng-template>
                         </kendo-grid-column>
 
@@ -372,24 +384,28 @@
                                 <!-- new row -->
                                 <span *ngIf="rowIndex == -1 && groupAdderClick == false">
                                     <input type="radio" [disabled]="newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Owner'" name="{{newUserPermission}}" id="Owner"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <span *ngIf="rowIndex == -1 && groupAdderClick">
                                     <input type="radio" [disabled]="newGroupPermission == '' || cleanFromDuplicatesGroups() || autoCompleteUserGroupsFilterd.indexOf(newGroupPermission) == -1" [checked]="dataItem.permission=='Owner'" name="{{newGroupPermission}}" id="Owner"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <!-- other rows -->
                                 <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" /></span>
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" /></span>
                             </ng-template>
 
                         </kendo-grid-column>
                         <kendo-grid-command-column title="Actions" width="160">
                             <!--actions column-->
-                            <ng-template kendoGridCellTemplate let-isNew="isNew">
-                                <button kendoGridRemoveCommand>Remove User From List</button>
-                                <button kendoGridSaveCommand
-                                    [disabled]="this.newUserPermissionChoose == null || newUserPermission == ''">Add</button>
+                            <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem let-rowIndex="rowIndex">
+                                <span *ngIf=" groupAdderClick == false">
+                                    <button kendoGridRemoveCommand>Remove User From List</button>
+                                    <button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newUserPermission == '' || newUserPermission == null">Add</button></span>
+                                <span *ngIf=" groupAdderClick">
+                                    <button kendoGridRemoveCommand>Remove Group From List</button>
+                                    <button kendoGridSaveCommand [disabled]="this.newGroupPermissionChoose == null || newGroupPermission == ''|| newGroupPermission == null">Add</button></span>
+                                
                                 <button kendoGridCancelCommand>Cancel</button>
                             </ng-template>
                         </kendo-grid-command-column>

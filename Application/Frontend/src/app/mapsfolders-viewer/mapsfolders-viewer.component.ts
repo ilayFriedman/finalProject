@@ -506,6 +506,7 @@ updatePermissionUsers =[]
 userDeleteDialogOpened = false;
 userToDelete : any;
 newUserPermissionChoose: any
+newGroupPermissionChoose : any
 
 
   public closeUserPerimssionDialog(status) {
@@ -529,7 +530,11 @@ newUserPermissionChoose: any
         console.log(permissionsList)
         //add read-permission users
         permissionsList.read.forEach(readPermission_user => {
-          usersPermissionsMap.set(readPermission_user._id, { username: readPermission_user.Username, name: readPermission_user.FirstName + " " + readPermission_user.LastName, permission: "Read" })
+          if(readPermission_user.type == "PersonalPermission")
+            usersPermissionsMap.set(readPermission_user._id, { type: "PersonalPermission", username: readPermission_user.Username, name: readPermission_user.FirstName + " " + readPermission_user.LastName, permission: "Read"});
+          else{
+            usersPermissionsMap.set(readPermission_user._id, { type: "Group", username: readPermission_user.Name,  permission: "Read"});
+          }
         });
 
         //add write-permission users
@@ -538,7 +543,12 @@ newUserPermissionChoose: any
             usersPermissionsMap.get(writePermission_user._id).permission = "Write"
           }
           else {
-            usersPermissionsMap.set(writePermission_user._id, { username: writePermission_user.Username, name: writePermission_user.FirstName + " " + writePermission_user.LastName, permission: "Write" })
+            if(writePermission_user.type == "PersonalPermission"){
+              usersPermissionsMap.set(writePermission_user._id, { type: "PersonalPermission", username: writePermission_user.Username, name: writePermission_user.FirstName + " " + writePermission_user.LastName, permission: "Write" })
+            }
+            else{
+              usersPermissionsMap.set(writePermission_user._id, { type: "Group", username: writePermission_user.Name,  permission: "Write"});
+            }
           }
         });
 
@@ -548,7 +558,12 @@ newUserPermissionChoose: any
             usersPermissionsMap.get(ownerPermission_user._id).permission = "Owner"
           }
           else{
-            usersPermissionsMap.set(ownerPermission_user._id,{username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
+            if(ownerPermission_user.type == "PersonalPermission"){
+              usersPermissionsMap.set(ownerPermission_user._id,{type: "PersonalPermission", username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
+            }
+            else{
+              usersPermissionsMap.set(ownerPermission_user._id, { type: "Group", username: ownerPermission_user.Name,  permission: "Owner"});
+            }   
           }
         });
       this.selectedNode.usersPermissionsMap = usersPermissionsMap
@@ -560,7 +575,7 @@ newUserPermissionChoose: any
         }
       }
       // snapShot of permissions
-      this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({username: val.username, name: val.name, permission: val.permission}));
+      this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({type: val.type, username: val.username, name: val.name, permission: val.permission}));
       console.log("%%%%%%%%%%%%%%%%%%")
       console.log(this.selectedNode.usersPermissionsMap)
       }).catch(err => {
@@ -588,6 +603,7 @@ newUserPermissionChoose: any
 
   public cancelHandler({sender,rowIndex}) {
     this.newUserPermissionChoose = null
+    this.newGroupPermissionChoose = null
     this.userNotFound = false
     sender.closeRow(rowIndex);
   }
@@ -613,41 +629,44 @@ newUserPermissionChoose: any
     this.userNotFound = false
     console.log(this.selectedNode)
     console.log(event)
-    this.dbAction = true
-    this.mapHandler.addNewPermission(this.selectedNode.mapID,this.newUserPermissionChoose.target.name,"PersonalPermission",this.newUserPermissionChoose.target.id).then(res => {
-      console.log("here now")
-      this.dbAction = false
-      var jsonRes = JSON.parse(res)
-      console.log(jsonRes)
-        // ---- seach for username in DB ---  then --//
-    if(this.newUserPermissionChoose != null){
-      this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
+    console.log("##----###")
+    console.log(this.newUserPermissionChoose)
+
+    // this.dbAction = true
+    // this.mapHandler.addNewPermission(this.selectedNode.mapID,this.newUserPermissionChoose.target.name,"PersonalPermission",this.newUserPermissionChoose.target.id).then(res => {
+    //   console.log("here now")
+    //   this.dbAction = false
+    //   var jsonRes = JSON.parse(res)
+    //   console.log(jsonRes)
+    //     // ---- seach for username in DB ---  then --//
+    // if(this.newUserPermissionChoose != null){
+    //   this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
       
 
-      // update snapshoorFirst
-      this.snapshootFirst = []
-      this.currPermissionMapDATA.forEach(element => {
-        this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
-      });
+    //   // update snapshoorFirst
+    //   this.snapshootFirst = []
+    //   this.currPermissionMapDATA.forEach(element => {
+    //     this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
+    //   });
 
-      // console.log(res)
-      // update usersPermissionsMap
-      this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
+    //   // console.log(res)
+    //   // update usersPermissionsMap
+    //   this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
 
-      this.newUserPermissionChoose = null
-    }
-    console.log(event)
-    this.cancelHandler(event)
+    //   this.newUserPermissionChoose = null
+    // }
+    // console.log(event)
+    // this.cancelHandler(event)
 
     
    
-      }).catch(err => {
-        this.dbAction = false;
-        if(err.status == 404)
-          console.log("theres no such user!!")
-          this.userNotFound = true
-        // console.log(err);
-      });
+    //   }).catch(err => {
+    //     this.dbAction = false;
+    //     if(err.status == 404)
+    //       console.log("theres no such user!!")
+    //       this.userNotFound = true
+    //     // console.log(err);
+    //   });
   }
 
   public removeUserHandler(event) {
@@ -732,7 +751,7 @@ newUserPermissionChoose: any
     // undo all radioButtons
     this.currPermissionMapDATA = []
     this.snapshootFirst.forEach(element => {
-      this.currPermissionMapDATA.push({ username: element.username, name: element.name, permission: element.permission })
+      this.currPermissionMapDATA.push({ type: element.type, username: element.username, name: element.name, permission: element.permission })
     });
     this.currPermissionMapDATA = this.currPermissionMapDATA.slice()
     this.updatePermissionUsers = []
@@ -750,7 +769,7 @@ newUserPermissionChoose: any
     this.snapshootFirst = []
     // console.log("curr "+ this.currPermissionMapDATA)
     this.currPermissionMapDATA.forEach(element => {
-      this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
+      this.snapshootFirst.push({ type: element.type, username: element.username, name: element.name, permission: element.permission })
     });
     if(this.senderPermissionWindow != null){
       this.senderPermissionWindow.closeRow(-1);
@@ -775,8 +794,9 @@ newUserPermissionChoose: any
 
   }
 
-  radioButtonsUpdate(event, rowIndex) {
+  radioButtonsUpdate(event, rowIndex,dataItem) {
     console.log(event)
+    console.log(dataItem)
     
     if (rowIndex !=-1){
       console.log(this.currPermissionMapDATA)
@@ -807,6 +827,7 @@ newUserPermissionChoose: any
       console.log(this.updatePermissionUsers);
     }
     else{   // new row permission touch
+      this.newGroupPermissionChoose = event
       this.newUserPermissionChoose = event
       }
 }

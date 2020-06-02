@@ -66,10 +66,14 @@ function UserHasOwnerPermissionForMap(resMap, userId) {
     return false;
 }
 
-function getSublistById(res,permissionType){
+function getSublistById(res,permissionType,objectType){
     var list = []
     for (let i = 0; i < res["Permission"][permissionType].length; i++) {
-        list.push(res["Permission"][permissionType][i].id)
+        if(res["Permission"][permissionType][i].type == objectType)
+            list.push(res["Permission"][permissionType][i].id)
+        // if(groupsCheck== false){
+        //     list.push(res["Permission"][permissionType][i].id)
+        // }
     }
     return list
 }
@@ -95,6 +99,8 @@ function getAllPersonalIds(mapRes, usersList){
     return duplicateIds
 
 }
+
+
 
 
 // call in save as
@@ -191,11 +197,43 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
             if (result) {
                 // console.log(result)
                 if (UserHasReadPermissionForMap(result, req.decoded._id)) {
-                    read = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Read")).exec()
-                    write = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Write")).exec()
-                    owner = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Owner")).exec()
-                    // console.log(result.Permission.Read)
-                    res.status(200).send({ read: read, write: write, owner: owner })
+                    readUsers = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Read","PersonalPermission")).exec()
+                    writeUsers = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Write","PersonalPermission")).exec()
+                    ownerUsers = await user.find().select('_id Username FirstName LastName').where('_id').in(getSublistById(result,"Owner","PersonalPermission")).exec()
+                    newRead = []
+                    readUsers.forEach(element => {
+                        newRead.push({_id: element.id, Username: element.Username, FirstName: element.FirstName, LastName: element.LastName, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                    });
+
+                    newWrite = []
+                    writeUsers.forEach(element => {
+                        newWrite.push({_id: element.id, Username: element.Username, FirstName: element.FirstName, LastName: element.LastName, type: result.Permission.Write.filter(obj => obj.id == element.id)[0].type })
+                    });
+
+                    newOwner = []
+                    ownerUsers.forEach(element => {
+                        newOwner.push({_id: element.id, Username: element.Username, FirstName: element.FirstName, LastName: element.LastName, type: result.Permission.Owner.filter(obj => obj.id == element.id)[0].type })
+                    });
+
+                    readGroups = await group.find().select('_id Name').where('_id').in(getSublistById(result,"Read","Group")).exec()
+                    writeGroups = await group.find().select('_id Name').where('_id').in(getSublistById(result,"Write","Group")).exec()
+                    ownerGroups = await group.find().select('_id Name').where('_id').in(getSublistById(result,"Owner","Group")).exec()
+
+                    newReadGroups = []
+                    readGroups.forEach(element => {
+                        newReadGroups.push({_id: element.id,Name: element.Name, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                    });
+
+                    newWriteGroups = []
+                    writeGroups.forEach(element => {
+                        newWriteGroups.push({_id: element.id,Name: element.Name, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                    });
+
+                    newOwnerGroups = []
+                    ownerGroups.forEach(element => {
+                        newReadGroups.push({_id: element.id,Name: element.Name, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                    });
+                    res.status(200).send({ read: newRead.concat(newReadGroups), write: newWrite.concat(newWriteGroups), owner: newOwner.concat(newOwnerGroups) })
                     res.end()
                     // res.send(result.Permission);
                 } else {
@@ -664,9 +702,9 @@ router.get('/private/getSharedMaps/:userID', async function (req, res) {
                 var sharedUserMap = []
                 // {id: result._id, Owner: result.Permission.Owner, Write: result.Permission.Write, Read: result.Permission.Read}
                 result.forEach(map => {
-                    if (getSublistById(map,"Owner").indexOf(req.params.userID) > -1) {
+                    if (getSublistById(map,"Owner","PersonalPermission").indexOf(req.params.userID) > -1) {
                         sharedUserMap.push({ mapID: map._id, MapName: map.MapName, permission: "Owner" })
-                    } else if (getSublistById(map,"Write").indexOf(req.params.userID) > -1) {
+                    } else if (getSublistById(map,"Write","PersonalPermission").indexOf(req.params.userID) > -1) {
                         sharedUserMap.push({ mapID: map._id, MapName: map.MapName, permission: "Write" })
                     } else {
                         sharedUserMap.push({ mapID: map._id, MapName: map.MapName, permission: "Read" })
