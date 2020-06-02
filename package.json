@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha Application/test --recursive --reporter spec --timeout 5000",
-    "coverage": "nyc --reporter=html --reporter=text mocha Application/test --recursive --reporter spec --timeout 5000"
+    "test": "mocha Application/test --recursive --reporter spec --timeout 5000 --exit",
+    "coverage": "nyc --reporter=html --reporter=text mocha Application/test --recursive --reporter spec --timeout 5000 --exit"
   },
   "repository": {
     "type": "git",
