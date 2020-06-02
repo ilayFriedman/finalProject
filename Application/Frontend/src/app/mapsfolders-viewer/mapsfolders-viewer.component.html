@@ -399,12 +399,10 @@
                         <kendo-grid-command-column title="Actions" width="160">
                             <!--actions column-->
                             <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem let-rowIndex="rowIndex">
-                                <span *ngIf=" groupAdderClick == false">
-                                    <button kendoGridRemoveCommand>Remove User From List</button>
-                                    <button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newUserPermission == '' || newUserPermission == null">Add</button></span>
-                                <span *ngIf=" groupAdderClick">
-                                    <button kendoGridRemoveCommand>Remove Group From List</button>
-                                    <button kendoGridSaveCommand [disabled]="this.newGroupPermissionChoose == null || newGroupPermission == ''|| newGroupPermission == null">Add</button></span>
+                                <span *ngIf = "groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newGroupPermission == '' || newGroupPermission == null">Add</button></span>
+                                <span *ngIf = "!groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newUserPermission == '' || newUserPermission == null">Add</button></span>
+                                    <span *ngIf ="dataItem.type == 'Group'"><button kendoGridRemoveCommand>Remove Group From List</button></span>
+                                    <span *ngIf ="dataItem.type == 'PersonalPermission'"><button kendoGridRemoveCommand>Remove User From List</button></span>
                                 
                                 <button kendoGridCancelCommand>Cancel</button>
                             </ng-template>

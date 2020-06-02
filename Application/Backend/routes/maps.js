@@ -225,12 +225,12 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
 
                     newWriteGroups = []
                     writeGroups.forEach(element => {
-                        newWriteGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                        newWriteGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Write.filter(obj => obj.id == element.id)[0].type })
                     });
 
                     newOwnerGroups = []
                     ownerGroups.forEach(element => {
-                        newReadGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Read.filter(obj => obj.id == element.id)[0].type })
+                        newReadGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Owner.filter(obj => obj.id == element.id)[0].type })
                     });
                     res.status(200).send({ read: newRead.concat(newReadGroups), write: newWrite.concat(newWriteGroups), owner: newOwner.concat(newOwnerGroups) })
                     res.end()

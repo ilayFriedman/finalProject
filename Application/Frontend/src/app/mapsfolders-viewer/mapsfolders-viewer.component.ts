@@ -506,7 +506,6 @@ updatePermissionUsers =[]
 userDeleteDialogOpened = false;
 userToDelete : any;
 newUserPermissionChoose: any
-newGroupPermissionChoose : any
 
 
   public closeUserPerimssionDialog(status) {
@@ -582,28 +581,11 @@ newGroupPermissionChoose : any
         console.log(err);
       });
       console.log(this.currPermissionMapDATA);
-    // }
-    // else {
-    //   console.log("using with the exist!")
-    //   for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
-    //     if(key != sessionStorage.userId)  // not showe myself
-    //     {
-    //       this.currPermissionMapDATA.push(value);
-    //     }
-    //   }
-    //   console.log(this.currPermissionMapDATA);
-    //   // snapShot of permissions
-    //   this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({ username: val.username, name: val.name, permission: val.permission }));
-    //   console.log("%%%%%%%%%%%%%%%%%%")
-    //   console.log(this.selectedNode.usersPermissionsMap)
-    // }
-    
   }
 
 
   public cancelHandler({sender,rowIndex}) {
     this.newUserPermissionChoose = null
-    this.newGroupPermissionChoose = null
     this.userNotFound = false
     sender.closeRow(rowIndex);
   }
@@ -625,6 +607,7 @@ newGroupPermissionChoose : any
     event.sender.addRow(newUser);
   }
 
+
   public addNewUserToPermission(event){
     this.userNotFound = false
     console.log(this.selectedNode)
@@ -632,41 +615,50 @@ newGroupPermissionChoose : any
     console.log("##----###")
     console.log(this.newUserPermissionChoose)
 
-    // this.dbAction = true
-    // this.mapHandler.addNewPermission(this.selectedNode.mapID,this.newUserPermissionChoose.target.name,"PersonalPermission",this.newUserPermissionChoose.target.id).then(res => {
-    //   console.log("here now")
-    //   this.dbAction = false
-    //   var jsonRes = JSON.parse(res)
-    //   console.log(jsonRes)
-    //     // ---- seach for username in DB ---  then --//
-    // if(this.newUserPermissionChoose != null){
-    //   this.currPermissionMapDATA.push({username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id})
+    this.dbAction = true
+
+    var selectedTypeObj = ""
+    if(this.groupAdderClick){
+      selectedTypeObj = "Group"
+    }
+    else{
+      selectedTypeObj = "PersonalPermission"
+    }
+    
+    this.mapHandler.addNewPermission(this.selectedNode.mapID,this.newUserPermissionChoose.target.name,selectedTypeObj,this.newUserPermissionChoose.target.id).then(res => {
+      console.log("here now")
+      this.dbAction = false
+      var jsonRes = JSON.parse(res)
+      console.log(jsonRes)
+        // ---- seach for username in DB ---  then --//
+        console.log()
+    if(this.newUserPermissionChoose != null){
+      this.currPermissionMapDATA.push({type: jsonRes.type, username: this.newUserPermissionChoose.target.name, name: jsonRes.name, permission: this.newUserPermissionChoose.target.id})
       
+      // update snapshoorFirst
+      this.snapshootFirst = []
+      this.currPermissionMapDATA.forEach(element => {
+        this.snapshootFirst.push({type: jsonRes.type, username: element.username, name: element.name, permission: element.permission})
+      });
 
-    //   // update snapshoorFirst
-    //   this.snapshootFirst = []
-    //   this.currPermissionMapDATA.forEach(element => {
-    //     this.snapshootFirst.push({username: element.username, name: element.name, permission: element.permission})
-    //   });
+      // console.log(res)
+      // update usersPermissionsMap
+      this.selectedNode.usersPermissionsMap.set(jsonRes._id, { type: jsonRes.type ,username: this.newUserPermissionChoose.target.name, name: jsonRes.name, permission: this.newUserPermissionChoose.target.id })
 
-    //   // console.log(res)
-    //   // update usersPermissionsMap
-    //   this.selectedNode.usersPermissionsMap.set(jsonRes._id, { username: this.newUserPermissionChoose.target.name, name: jsonRes.FirstName + " " + jsonRes.LastName, permission: this.newUserPermissionChoose.target.id })
-
-    //   this.newUserPermissionChoose = null
-    // }
-    // console.log(event)
-    // this.cancelHandler(event)
+      this.newUserPermissionChoose = null
+    }
+    console.log(event)
+    this.cancelHandler(event)
 
     
    
-    //   }).catch(err => {
-    //     this.dbAction = false;
-    //     if(err.status == 404)
-    //       console.log("theres no such user!!")
-    //       this.userNotFound = true
-    //     // console.log(err);
-    //   });
+      }).catch(err => {
+        this.dbAction = false;
+        if(err.status == 404)
+          console.log("theres no such user!!")
+          this.userNotFound = true
+        // console.log(err);
+      });
   }
 
   public removeUserHandler(event) {
@@ -827,7 +819,6 @@ newGroupPermissionChoose : any
       console.log(this.updatePermissionUsers);
     }
     else{   // new row permission touch
-      this.newGroupPermissionChoose = event
       this.newUserPermissionChoose = event
       }
 }
