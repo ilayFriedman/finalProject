@@ -230,7 +230,7 @@ router.get('/private/getUsersPermissionsMap/:mapID', async function (req, res) {
 
                     newOwnerGroups = []
                     ownerGroups.forEach(element => {
-                        newReadGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Owner.filter(obj => obj.id == element.id)[0].type })
+                        newOwnerGroups.push({ _id: element.id, Name: element.Name, type: result.Permission.Owner.filter(obj => obj.id == element.id)[0].type })
                     });
                     res.status(200).send({ read: newRead.concat(newReadGroups), write: newWrite.concat(newWriteGroups), owner: newOwner.concat(newOwnerGroups) })
                     res.end()
@@ -453,64 +453,64 @@ router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async 
 
 });
 
-router.post('/private/updateUserPermission', async function (req, res) {
-    if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
-        user.findOne({ '_id': req.body.userID }, function (err, userResult) {
-            if (userResult) {
-                map.findOneAndUpdate({ _id: req.body.mapID }, {
-                    $pull: { ["Permission." + [req.body.permission_From]]: { id: req.body.userID } }
-                    , $addToSet: { ["Permission." + [req.body.permission_To]]: { id: req.body.userID, type: "PersonalPermission" } }
-                }, function (err, result) {
-                    if (err) {
-                        console.log(err);
-                        // res.status(500).send("Server error occurred while pop from parent folder.");
-                        res.statusCode = 500;
-                        res.end();
-                    } else {
-                        // change - now send mail
-                        if (userResult.getPermissionUpdate) {
-                            var mailSubject = "Map Permission Updates"
-                            var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
-                                + " changed your permission for map: <b>" + result.MapName + "</b> from <b>" + req.body.permission_From + "</b> to <b>" + req.body.permission_To + "</b>.<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
-                            try {
+// router.post('/private/updateUserPermission', async function (req, res) {
+//     if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
+//         user.findOne({ '_id': req.body.userID }, function (err, userResult) {
+//             if (userResult) {
+//                 map.findOneAndUpdate({ _id: req.body.mapID }, {
+//                     $pull: { ["Permission." + [req.body.permission_From]]: { id: req.body.userID } }
+//                     , $addToSet: { ["Permission." + [req.body.permission_To]]: { id: req.body.userID, type: "PersonalPermission" } }
+//                 }, function (err, result) {
+//                     if (err) {
+//                         console.log(err);
+//                         // res.status(500).send("Server error occurred while pop from parent folder.");
+//                         res.statusCode = 500;
+//                         res.end();
+//                     } else {
+//                         // change - now send mail
+//                         if (userResult.getPermissionUpdate) {
+//                             var mailSubject = "Map Permission Updates"
+//                             var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
+//                                 + " changed your permission for map: <b>" + result.MapName + "</b> from <b>" + req.body.permission_From + "</b> to <b>" + req.body.permission_To + "</b>.<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+//                             try {
 
-                                var mailObjects = mail.sendEmail(userResult.Username, mailSubject, text)
-                                mailObjects[0].sendMail(mailObjects[1], function (error, info) {
-                                    if (error) {
-                                        console.log(error);
-                                        res.status(500).send(`Server error occured while send email`)
-                                        res.end()
-                                    } else {
-                                        res.status(200).send(`permission updated successfully, email sent successfully `)
-                                        res.end();
+//                                 var mailObjects = mail.sendEmail(userResult.Username, mailSubject, text)
+//                                 mailObjects[0].sendMail(mailObjects[1], function (error, info) {
+//                                     if (error) {
+//                                         console.log(error);
+//                                         res.status(500).send(`Server error occured while send email`)
+//                                         res.end()
+//                                     } else {
+//                                         res.status(200).send(`permission updated successfully, email sent successfully `)
+//                                         res.end();
 
-                                    }
-                                });
-                            } catch (e) {
+//                                     }
+//                                 });
+//                             } catch (e) {
 
-                                res.status(400).send(`problem: ${e}`);
-                                res.end()
-                            }
-                        }
-                        else {
-                            res.statusCode = 200;
-                            res.end();
-                        }
-                    }
-                });
-            }
-            else {
-                res.statusCode = 400;
-                res.end();
-            }
-        });
-    } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
-        res.end();
-    }
+//                                 res.status(400).send(`problem: ${e}`);
+//                                 res.end()
+//                             }
+//                         }
+//                         else {
+//                             res.statusCode = 200;
+//                             res.end();
+//                         }
+//                     }
+//                 });
+//             }
+//             else {
+//                 res.statusCode = 400;
+//                 res.end();
+//             }
+//         });
+//     } else {
+//         // res.status(400).send(`Missing map id`);
+//         res.statusCode = 400;
+//         res.end();
+//     }
 
-});
+// });
 
 // new version - update done
 router.post('/private/addNewPermission', async function (req, res) {
@@ -629,10 +629,10 @@ router.post('/private/addNewPermission', async function (req, res) {
             // add user : personal permission
             await user.findOne({ 'Username': req.body.elementToAdd.name }, async function (err, userRes) {
                 if (userRes) {
-                    // delete all GroupPermission users from exists premissions
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: userRes._id.toString(), type: "GroupPermission" } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission owner permission"; } })
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Write"]: { id: userRes._id.toString(), type: "GroupPermission" } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Write permission"; } })
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString(), type: "GroupPermission" } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Read permission"; } })
+                    // delete all users from exists premissions
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission owner permission"; } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Write"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Write permission"; } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Read permission"; } })
 
                     await map.findOneAndUpdate({ _id: req.body.mapId },
                         { $addToSet: { ["Permission." + req.body.elementToAdd.permission_To]: { id: userRes._id.toString(), type: req.body.elementToAdd.type } } }, async function (err, addResult) {

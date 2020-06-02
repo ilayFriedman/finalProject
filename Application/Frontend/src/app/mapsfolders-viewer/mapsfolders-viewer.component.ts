@@ -684,24 +684,26 @@ newUserPermissionChoose: any
     console.log( this.updatePermissionUsers)
     let promises = [];
     // ---- delete all remove users -------
-    this.deleteUserList.forEach(deleteUser => {
-      var userID = this.getKeyFromValue(deleteUser)
+    // this.deleteUserList.forEach(deleteUser => {
+    //   var userID = this.getKeyFromValue(deleteUser)
 
-      // look if user changed on radiobuttons
-      var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
-      if(duplicateUser!= null){
-        // take the old permission to delete and delete from updateButtonsList
-        promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
-        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
-      }
-      promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
-      this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
-      this.selectedNode.usersPermissionsMap.delete(userID)
-    });
+    //   // look if user changed on radiobuttons
+    //   var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
+    //   if(duplicateUser!= null){
+    //     // take the old permission to delete and delete from updateButtonsList
+    //     promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
+    //     this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+    //   }
+    //   promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
+    //   this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
+    //   this.selectedNode.usersPermissionsMap.delete(userID)
+    // });
 
     // ----- update all radiobuttons -------
     this.updatePermissionUsers.forEach(user => {
-      promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
+
+      promises.push(this.mapHandler.addNewPermission(this.selectedNode.mapID,user.username.username ,user.type ,user.new ))
+      // promises.push(this.mapHandler.updateUserPermission(this.selectedNode.mapID, user.userID, user.old, user.new))
       // update mapPermission on selectedMap
       for (const [key, value] of this.selectedNode.usersPermissionsMap.entries()) {
         if (key == user.userID) {
@@ -712,7 +714,6 @@ newUserPermissionChoose: any
     this.dbAction = true;
     Promise.all(promises.map(p => p.catch(e => e)))
       .then(results => {
-        this.dbAction = false;
         // console.log("currPermissionMapDATA: "+this.currPermissionMapDATA)
         console.log("selectNode map: " + this.selectedNode.usersPermissionsMap)
         // users Reset
@@ -721,9 +722,12 @@ newUserPermissionChoose: any
         // permissions Reset
         this.updatePermissionUsers = []
         this.snapshootFirst = []
-        this.currPermissionMapDATA.forEach(element => {
-          this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
-        });
+        // this.currPermissionMapDATA.forEach(element => {
+        //   this.snapshootFirst.push({ username: element.username, name: element.name, permission: element.permission })
+        // });
+
+        this.loadPermissionTable()
+        this.dbAction = false;
 
 
       })
@@ -800,7 +804,7 @@ newUserPermissionChoose: any
 
       // origin item before this change
       var originRow = JSON.parse(JSON.stringify(this.snapshootFirst.filter(item => { return item.username == selectRow.username })[0]))
-      var toAdd = { userID: this.getKeyFromValue(originRow), old: originRow.permission, new: selectRow.permission }
+      var toAdd = { type: dataItem.type, username:originRow, userID: this.getKeyFromValue(originRow), old: originRow.permission, new: selectRow.permission }
 
 
       if (this.snapshootFirst.some(item => item.username == selectRow.username && item.permission == selectRow.permission)) { // back to origin!
