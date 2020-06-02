@@ -117,15 +117,16 @@ describe('Groups', function () {
             return chai.request(serverAddress)
                 .post('/private/updateGroupProperties')
                 .set('token', testUserToken)
-                .send({_id: result[0]._id, description: "updated test group"})
+                .send({_id: result[0]._id, description: "updated test group", groupName: testGroupData.groupName})
                 .then((res, err) => {
                     res.statusCode.should.equal(200);
-                    res.text.should.equal("Group description updated successfully.");
+                    res.text.should.equal('Group description and name updated successfully.');
                     
                     // Assert that DB is actually changed.
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
-                            return updatedGroup.Description.should.equal("updated test group");
+                            updatedGroup.Description.should.equal("updated test group");
+                            updatedGroup.Name.should.equal(testGroupData.groupName);
                     })
                     .catch();
                 })
@@ -135,11 +136,11 @@ describe('Groups', function () {
     
     it('should disallow update group description due to insufficient permissions', function () {
         const newUserData = {
-            Username: "a",
+            Username: "b",
             Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
-            getPermissionUpdate: true
+            getPermissionUpdate: false
         }
         const newUser = new user(newUserData);
         let newUserToken;
@@ -162,13 +163,14 @@ describe('Groups', function () {
                 return chai.request(serverAddress)
                     .post('/private/updateGroupProperties')
                     .set('token', newUserToken)
-                    .send({_id: result[0]._id, description: "not updated"})
+                    .send({_id: result[0]._id, description: "not updated", groupName: "not updated"})
                     .then((res, err) =>{
                         return group.findById(result[0]).exec()
                         .then(updatedGroup => {
-                            res.statusCode.should.equal(403);
-                            res.text.should.equal("The user's permissions are insufficient to update the group's description.");
-                            updatedGroup.Description.should.not.equal("not updated");                                
+                            res.statusCode.should.equal(400);
+                            res.text.should.equal("Could not find the requested map, or the user has insufficient permissions to perform this action.");
+                            updatedGroup.Description.should.not.equal("not updated");   
+                            updatedGroup.Name.should.not.equal("not updated");                             
                         })
                         .catch()
                     });     
@@ -178,7 +180,7 @@ describe('Groups', function () {
 
     it('should disallow update group memebrs due to insufficient permissions', function () {
         const newUserData = {
-            Username: "a",
+            Username: "c",
             Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
@@ -202,15 +204,15 @@ describe('Groups', function () {
         .then(function() {return group.find({'Name': testGroupData.groupName}).exec()})
         .then(result => {
             return chai.request(serverAddress)
-                .post('/private/SetUserPermissionForGroup')
+                .post('/private/addUserToGroup')
                 .set('token', newUserToken)
-                .send({_id: result[0]._id, userId: testUserId, permission: "Manager"})
+                .send({groupId: result[0]._id, username: testUserData.Username, permission_To: "Manager"})
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
                         res.statusCode.should.equal(403);
                         res.text.should.equal("The user's permissions are insufficient to set requested permission.");
-                        updatedGroup.Members.Owner[0].userId.should.equal(testUserId);                                
+                        updatedGroup.Members.Owner[0].should.equal(testUserId);                                
                     })
                 });     
         });
@@ -218,7 +220,7 @@ describe('Groups', function () {
 
     it('should allow update group memebrs', function () {
         const newUserData = {
-            Username: "a",
+            Username: "d",
             Password: "a",
             FirstName: "FirstName",
             LastName: "LastName",
@@ -243,46 +245,56 @@ describe('Groups', function () {
         .then(function() {return group.find({'Name': testGroupData.groupName}).exec()})
         .then(result => {
             return chai.request(serverAddress)
-                .post('/private/SetUserPermissionForGroup')
+                .post('/private/addUserToGroup')
                 .set('token', testUserToken)
-                .send({_id: result[0]._id, userId: otherUserId, permission: "Manager"})
+                .send({groupId: result[0]._id, username: newUserData.Username, permission_To: "Manager"})
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
                         res.statusCode.should.equal(200);
-                        res.text.should.equal("Group permissions has been updated successfully.");
-                        updatedGroup.Members.Manager[0].userId.should.equal(otherUserId);                                
+                        updatedGroup.Members.Manager[0].should.equal(otherUserId);                                
                     })
                 });     
         });
     });
 
     it('should GetGroupsMembers', function () {
-        return group.find({'Name': testGroupData.groupName}).exec()
+        return group.findOne({'Name': testGroupData.groupName}).exec()
         .then((result, err) => {
             return chai.request(serverAddress)
-            .get('/private/GetGroupsMembers/' + result[0]._id)
+            .get('/private/GetGroupsMembers/' + result._id)
             .set('token', testUserToken)
             .send()
             .then((res, err) => {
+
                 res.statusCode.should.equal(200);
-                JSON.parse(res.text).should.deep.equal(result[0].Members);
+                res = JSON.parse(res.text);
+
+                res.Manager.length.should.equal(1);
+                res.Manager[0].Username.should.equal('d');
+
+                res.Member.length.should.equal(0);
+
+                res.Owner.length.should.equal(1);
+                res.Owner[0].Username.should.equal('a');
+
             })
         })             
     });
 
-    it('should GetGroupsUserBlongsTo', function () {
+    it('should getMyGroups', function () {
         let groupId;
         return group.find({'Name': testGroupData.groupName}).exec()
         .then((result, err) => {
             expectedResponse = [{
-                "GroupId": result[0].id,
-                "GroupName": result[0].Name,
-                GroupDescription: result[0].Description
+                GroupId: result[0].id,
+                text: result[0].Name,
+                GroupDescription: result[0].Description,
+                permission: 'Manager'
             }];
 
             return chai.request(serverAddress)
-            .get('/private/GetGroupsUserBlongsTo')
+            .get('/private/getMyGroups')
             .set('token', otherUserToken)
             .send()
             .then((res, err) => {
@@ -291,43 +303,20 @@ describe('Groups', function () {
             })  
         });
     });
-
-    it('should GetGroupsUserOwns', function () {
-        let groupId;
-        return group.find({'Name': testGroupData.groupName}).exec()
-        .then((result, err) => {
-            expectedResponse = [{
-                "GroupId": result[0].id,
-                "GroupName": result[0].Name,
-                GroupDescription: result[0].Description
-            }];
-
-            return chai.request(serverAddress)
-            .get('/private/GetGroupsUserOwns')
-            .set('token', testUserToken)
-            .send()
-            .then((res, err) => {
-                res.statusCode.should.equal(200);
-                res.body.should.deep.equal(expectedResponse);
-            })  
-        });
-    });
     
-    it('should disallow revoking Owner permission', function () {
+    it('should disallow revoking Owner permission by non-owner', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then(result => {
             return chai.request(serverAddress)
-            // /private/RemoveUserFromGroup/:groupId/:userId
-                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "/" +  testUserId)
+                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "&" + testUserId + "&" + "Owner")
                 .set('token', otherUserToken)
-                // .send({_id: result[0]._id, userId: testUserId})
-                .send({})
+                .send()
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
                         res.statusCode.should.equal(403);
-                        res.text.should.equal("The user's permissions are insufficient to set requested permission.");
-                        updatedGroup.Members.Owner[0].userId.should.equal(testUserId);                                 
+                        res.text.should.equal("The user's permissions are insufficient to revoke Owner permission.");
+                        updatedGroup.Members.Owner[0].should.equal(testUserId);                                 
                     })
                 });     
         });
@@ -337,15 +326,14 @@ describe('Groups', function () {
         return group.find({'Name': testGroupData.groupName}).exec()
         .then(result => {
             return chai.request(serverAddress)
-                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "/" + otherUserId)
+                .delete('/private/RemoveUserFromGroup/' + result[0]._id + "&" + otherUserId + "&" + "Manager")
                 .set('token', testUserToken)
-                // .send({_id: result[0]._id, userId: otherUserId})
-                .send({})
+                .send()
                 .then((res, err) =>{
                     return group.findById(result[0]).exec()
                     .then(updatedGroup => {
                         res.statusCode.should.equal(200);
-                        res.text.should.equal("Group permissions has been updated successfully.");
+                        res.text.should.equal("User successfully deleted from group.");
                         UserHasManagerPermissionForGroup(updatedGroup, testUserId).should.equal(false);                                
                     })
                 });     
