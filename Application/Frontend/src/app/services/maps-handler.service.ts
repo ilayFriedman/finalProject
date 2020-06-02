@@ -51,7 +51,7 @@ export class MapsHandlerService {
   addNewPermission(mapID, name, type, permission_To) {
     const bodyReq = {
       mapId: mapID,
-      elementToAdd : {name: name, type: type, permission_To : permission_To}
+      elementToAdd: { name: name, type: type, permission_To: permission_To }
     }
     console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/addNewPermission', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
@@ -80,14 +80,14 @@ export class MapsHandlerService {
   getUserPermission() {
     let permissions = this.currMap_mapViewer.Permission;
     let currUserId = sessionStorage.userId
-    if (this.currMap_mapViewer.Permission.Owner.filter(obj=>obj.id == sessionStorage.userId) != null) {
+    if (this.currMap_mapViewer.Permission.Owner.filter(obj => obj.id == sessionStorage.userId) != null) {
       return 3;
     }
-    else if (this.currMap_mapViewer.Permission.Write.filter(obj=>obj.id == sessionStorage.userId) != null) {
+    else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId) != null) {
       return 2;
     }
     // else if (this.currMap_mapViewer.Permission.Read.filter(obj=>obj.id == sessionStorage.userId) != null) {
-      else{
+    else {
       return 1;
     }
 
@@ -105,19 +105,19 @@ export class MapsHandlerService {
   }
 
   // subscripotions //
-  addNewSubscriber(userID) {
+  addNewSubscriber() {
     const bodyReq = {
       mapID: this.currMap_mapViewer._id,
-      userID: userID
+      userID: sessionStorage.userId
     }
     console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/addNewSubscriber', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
 
-  removeSubscriber(userId) {
+  removeSubscriber() {
     // console.log(mapId,userId,permission)
-    let params = this.currMap_mapViewer._id + "&" + userId
+    let params = this.currMap_mapViewer._id + "&" + sessionStorage.userId
     console.log(params);
     return this.http.delete(this.localUrl + '/private/removesubscriber/' + params, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }

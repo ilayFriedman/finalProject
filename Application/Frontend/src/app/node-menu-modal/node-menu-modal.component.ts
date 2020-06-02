@@ -54,6 +54,7 @@ export interface ConnectionElement {
 })
 export class NodeMenuModalComponent implements OnInit {
   @Output("reInit") reInitMapViewer: EventEmitter<any> = new EventEmitter();
+  @Output("canDeactivate") canDeactivate: EventEmitter<any> = new EventEmitter();
   @Input() tabNum: number;
   pageSizeOptions: number[] = [5, 10, 25, 100];
 
@@ -635,30 +636,16 @@ export class NodeMenuModalComponent implements OnInit {
   }
 
   moveToConnectedMap(map) {
-    console.log(map);
-    // let selectedMap;
     this.mapHandler.getMap(map.mapID).then(res => {
-      console.log(res);
-      this.mapHandler.currMap_mapViewer = res
-      this.mapHandler.myDiagram.div = null;
-      this.mapHandler.myDiagram = null;
       this.unloadConnections();
       this.nodeToSearch = ""
-      this.tabNum = 0;
       this.modalService.closeMenu('nodeMenuModal')
-      // this.router.navigate(['/mapViewer']);
-      this.reInitMapViewer.emit();
-      this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
+      this.reInitMapViewer.emit(res);
     }).catch
       (err => {
-        console.log("error with getMap - promise return");
+        console.log("error with getMap for go to connected map");
         console.log(err)
       })
-
-
-    // let currModel = JSON.parse(self.fileToImport)
-    // this.newMap()
-    // this.mapHandler.myDiagram.model = go.Model.fromJson(currModel);
   }
 
   unloadConnections() {

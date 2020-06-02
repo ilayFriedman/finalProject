@@ -25,10 +25,7 @@ import { CanComponentDeactivate } from '../can-deactivate.guard';
 })
 export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   [x: string]: any;
-  // @Input('name') mapIdx: any;
-  mapModel: any;
   tabNum: number;
-  toSave: boolean = false;
   localUrl = environment.backendUrl;
   fileToImport: any;
   updateConverter: boolean = false
@@ -44,7 +41,8 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   filterRadiusForm = new FormGroup({
     filterRadius: new FormControl()
   });
-
+  panelOpenState = false;
+  linkStats = [];
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -81,9 +79,14 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   }
 
-  goTOConnectMap() {
-    this.canDeactivate();
-    this.initDiagramProperties()
+  goToConnectMap(map) {
+    if (this.canDeactivate()) {
+      this.mapHandler.currMap_mapViewer = map
+      this.mapHandler.myDiagram.div = null;
+      this.mapHandler.myDiagram = null;
+      this.initDiagramProperties()
+      this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
+    }
   }
 
   init() {
@@ -639,6 +642,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     });
 
     self.isSubscriber()
+    self.getLinkStatistics()
   } //initDiagramProperties
 
 
@@ -662,6 +666,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
           this.isInitialModel = false;
         } else {
           this.isSaved = false;
+          this.getLinkStatistics()
         }
         if (e.Uo != "Move" && e.Uo != "Initial Layout") {
           // this.child.convertMapToText()
@@ -796,8 +801,9 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     console.log("save changes");
     this.currNode.data.text = this.modalService.currNodeData.text
     this.currNode.data.description = this.modalService.currNodeData.description
-    var changedModel = this.mapHandler.myDiagram.model.toJson()
-    this.mapHandler.myDiagram.model = go.Model.fromJson(changedModel);
+    // var changedModel = this.mapHandler.myDiagram.model.toJson()
+    this.isSaved = false;
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model);
   }
 
   importMap(fileList: FileList, modalID: string) {
@@ -899,6 +905,32 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
       currLink.isSelected = true;
       this.filterRadiusRec(currLink.fromNode, num - 1);
     }
+  }
+
+  getLinkStatistics() {
+    this.linkStats = []
+    let tmpLinkList: any[] = [];
+    let typesSet = new Set<any>();
+    for (var i = 0; i < this.mapHandler.myDiagram.model.linkDataArray.length; i++) {
+      let currLink = this.mapHandler.myDiagram.model.linkDataArray[i].category.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2").substring(1);
+      typesSet.add(currLink)
+      if (!tmpLinkList[currLink])
+        tmpLinkList[currLink] = 0
+      tmpLinkList[currLink] = tmpLinkList[currLink] + 1;
+
+    }
+    typesSet.forEach(type => {
+      this.linkStats.push({ "category": type, "num": tmpLinkList[type] })
+      // console.log(tmpLinkList[type]);
+    })
+    // console.log(tmpLinkList['Achieved By']);
+    tmpLinkList.forEach(link => {
+      console.log(link);
+
+    })
+
+    console.log(this.linkStats);
+
   }
 
 }// component
