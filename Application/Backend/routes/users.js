@@ -64,24 +64,6 @@ router.post('/register', async function (req, res) {
                                     res.status(200).send("User successfully registered")
                                 }
                             });
-
-                            // const rootFolder = new folder({
-                            //     Name: "userRootFolder",
-                            //     MapsInFolder: [],
-                            //     SubFolder: [],
-                            //     Creator: saveRes._id.toString(),
-                            //     CreationTime: new Date(),
-                            //     Description: "rootFolder",
-                            //     ParentDir: "/",
-                            // });
-                            // rootFolder.save(function (err, saveRes) {
-                            //     if (err) {
-                            //         console.log(err);
-                            //         res.status(500).send(`Server error occured while creating root folder.`);
-                            //     } else {
-                            //         res.status(200).send("User successfully registered")
-                            //     }
-                            // });
                         }
                     });
                 }
