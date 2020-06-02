@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const user = require('../models/user')
 const folder = require('../models/folder')
+const folderModule = require('./folders')
 const jwt = require('jsonwebtoken');
 var mail = require('../models/mail');
 
@@ -55,25 +56,32 @@ router.post('/register', async function (req, res) {
                             res.status(500).send(`Server error occured.`)
                         } else {
                             // create user Root folder
-
-
-                            const rootFolder = new folder({
-                                Name: "userRootFolder",
-                                MapsInFolder: [],
-                                SubFolder: [],
-                                Creator: saveRes._id.toString(),
-                                CreationTime: new Date(),
-                                Description: "rootFolder",
-                                ParentDir: "/",
-                            });
-                            rootFolder.save(function (err, saveRes) {
+                            folderModule.createRootFolder(saveRes._id.toString(), function (err, saveRes) {
                                 if (err) {
                                     console.log(err);
-                                    res.status(500).send(`Server error occured while creation root folder.`);
+                                    res.status(500).send(`Server error occured while creating root folder.`);
                                 } else {
                                     res.status(200).send("User successfully registered")
                                 }
                             });
+
+                            // const rootFolder = new folder({
+                            //     Name: "userRootFolder",
+                            //     MapsInFolder: [],
+                            //     SubFolder: [],
+                            //     Creator: saveRes._id.toString(),
+                            //     CreationTime: new Date(),
+                            //     Description: "rootFolder",
+                            //     ParentDir: "/",
+                            // });
+                            // rootFolder.save(function (err, saveRes) {
+                            //     if (err) {
+                            //         console.log(err);
+                            //         res.status(500).send(`Server error occured while creating root folder.`);
+                            //     } else {
+                            //         res.status(200).send("User successfully registered")
+                            //     }
+                            // });
                         }
                     });
                 }
