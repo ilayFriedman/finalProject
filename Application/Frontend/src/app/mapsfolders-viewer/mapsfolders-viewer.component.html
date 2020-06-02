@@ -289,7 +289,8 @@
                 <span>
                     <h2>Permissions Management for "{{selectedNode.text}}" Map:</h2>
                 </span>
-                <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!</span>
+                <span>After some changes, don't forget to click on <b>"Save changes"</b> for update the settings!<br><br>
+                (<b>Display order:</b> 1.Read 2. Write 3.Owner ; 1.Users 2. Groups</span>)
                 <br><br>
                 <div>
                     <kendo-grid [data]="currPermissionMapDATA" [height]="533" [sortable]="true"
@@ -408,6 +409,8 @@
                             </ng-template>
                         </kendo-grid-command-column>
                     </kendo-grid>
+                    <br>
+                    <b>Total Permissions: </b>{{currPermissionMapDATA.length}} ({{currPermissionMapDATAGroupsNumber}} group permissions, {{currPermissionMapDATAUsersNumber-1}} personal user permissions)<br><br>
 
                     <!-- dialog of remove user -->
                     <kendo-dialog title="Please confirm" *ngIf="userDeleteDialogOpened"

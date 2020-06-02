@@ -71,6 +71,8 @@ export class MapsfoldersViewerComponent implements OnInit {
   userNotFound = false
   startWrite=false
 
+  currPermissionMapDATAGroupsNumber = 0
+  currPermissionMapDATAUsersNumber = 0
   // sharedMaps variables
   sharedMapList_notAssociated = []
   sharedMapList_Associated = []
@@ -521,6 +523,8 @@ newUserPermissionChoose: any
   }
 
   public loadPermissionTable() {
+    this.currPermissionMapDATAGroupsNumber = 0
+    this.currPermissionMapDATAUsersNumber = 0
     this.currPermissionMapDATA = []
     // if (this.selectedNode.usersPermissionsMap == "") {
       var usersPermissionsMap = new Map();
@@ -529,10 +533,13 @@ newUserPermissionChoose: any
         console.log(permissionsList)
         //add read-permission users
         permissionsList.read.forEach(readPermission_user => {
-          if(readPermission_user.type == "PersonalPermission")
+          if(readPermission_user.type == "PersonalPermission"){
             usersPermissionsMap.set(readPermission_user._id, { type: "PersonalPermission", username: readPermission_user.Username, name: readPermission_user.FirstName + " " + readPermission_user.LastName, permission: "Read"});
+            this.currPermissionMapDATAUsersNumber++;
+          }
           else{
             usersPermissionsMap.set(readPermission_user._id, { type: "Group", username: readPermission_user.Name,  permission: "Read"});
+            this.currPermissionMapDATAGroupsNumber++;
           }
         });
 
@@ -544,9 +551,11 @@ newUserPermissionChoose: any
           else {
             if(writePermission_user.type == "PersonalPermission"){
               usersPermissionsMap.set(writePermission_user._id, { type: "PersonalPermission", username: writePermission_user.Username, name: writePermission_user.FirstName + " " + writePermission_user.LastName, permission: "Write" })
+              this.currPermissionMapDATAUsersNumber++;
             }
             else{
               usersPermissionsMap.set(writePermission_user._id, { type: "Group", username: writePermission_user.Name,  permission: "Write"});
+              this.currPermissionMapDATAGroupsNumber++;
             }
           }
         });
@@ -559,9 +568,11 @@ newUserPermissionChoose: any
           else{
             if(ownerPermission_user.type == "PersonalPermission"){
               usersPermissionsMap.set(ownerPermission_user._id,{type: "PersonalPermission", username: ownerPermission_user.Username ,name: ownerPermission_user.FirstName+" "+ownerPermission_user.LastName, permission: "Owner"})
+              this.currPermissionMapDATAUsersNumber++;
             }
             else{
               usersPermissionsMap.set(ownerPermission_user._id, { type: "Group", username: ownerPermission_user.Name,  permission: "Owner"});
+              this.currPermissionMapDATAGroupsNumber++;
             }   
           }
         });
@@ -634,6 +645,12 @@ newUserPermissionChoose: any
         console.log()
     if(this.newUserPermissionChoose != null){
       this.currPermissionMapDATA.push({type: jsonRes.type, username: this.newUserPermissionChoose.target.name, name: jsonRes.name, permission: this.newUserPermissionChoose.target.id})
+      if(jsonRes.type == "Group"){
+        this.currPermissionMapDATAGroupsNumber++;
+      }
+      else{
+        this.currPermissionMapDATAUsersNumber++;
+      }
       
       // update snapshoorFirst
       this.snapshootFirst = []
@@ -714,11 +731,11 @@ newUserPermissionChoose: any
     this.dbAction = true;
     Promise.all(promises.map(p => p.catch(e => e)))
       .then(results => {
-        // console.log("currPermissionMapDATA: "+this.currPermissionMapDATA)
         console.log("selectNode map: " + this.selectedNode.usersPermissionsMap)
         // users Reset
         this.deleteUserList = []
         this.deleteUsersChange = false
+
         // permissions Reset
         this.updatePermissionUsers = []
         this.snapshootFirst = []
@@ -787,7 +804,7 @@ newUserPermissionChoose: any
     this.currPermissionMapDATA = []
     this.snapshootFirst = [];
     this.modalService.close(modalId);
-
+    
   }
 
   radioButtonsUpdate(event, rowIndex,dataItem) {

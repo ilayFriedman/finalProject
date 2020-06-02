@@ -453,6 +453,74 @@ router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async 
 
 });
 
+router.delete('/private/removeGroupPermission/:mapID&:groupID&:permission', async function (req, res) {
+    if (req.params.mapID && req.params.groupID && req.params.permission) {
+        group.findOne({ '_id': req.params.groupID }, function (err, userResult) {
+            if (userResult) {
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + [req.params.permission]]: { id: req.params.userID } } }, function (err, mapResult) {
+                    if (err) {
+                        console.log(err);
+                        // res.status(500).send("Server error occurred while pop from parent folder.");
+                        res.statusCode = 500;
+                        res.end();
+                    } else {
+                        // delete from otherUser folders
+                        folder.updateMany({ 'Creator': req.params.userID, 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+                            if (err) {
+                                console.log(err);
+                                // res.status(500).send("Server error occurred while pop from parent folder.");
+                                res.statusCode = 500;
+                                res.end();
+                            } else {
+                                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+
+                                if (userResult.getPermissionUpdate) {
+                                    var mailSubject = "Map Permission Revocation"
+                                    var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
+                                        + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+                                    try {
+
+                                        var mailObjects = mail.sendEmail(userResult.Username, mailSubject, text)
+                                        mailObjects[0].sendMail(mailObjects[1], function (error, info) {
+                                            if (error) {
+                                                console.log(error);
+                                                res.status(500).send(`Server error occured while send email`)
+                                                res.end()
+                                            } else {
+                                                res.status(200).send(`permission updated successfully, email sent successfully `)
+                                                res.end();
+
+                                            }
+                                        });
+                                    } catch (e) {
+
+                                        res.status(400).send(`problem: ${e}`);
+                                        res.end()
+                                    }
+                                }
+                                else {
+                                    res.statusCode = 200;
+                                    res.end();
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }
+            else {
+                res.statusCode = 400;
+                res.end();
+            }
+        });
+
+    } else {
+        // res.status(400).send(`Missing map id`);
+        res.statusCode = 400;
+        res.end();
+    }
+
+});
 // router.post('/private/updateUserPermission', async function (req, res) {
 //     if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
 //         user.findOne({ '_id': req.body.userID }, function (err, userResult) {
@@ -649,8 +717,9 @@ router.post('/private/addNewPermission', async function (req, res) {
                                         var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text)
                                         await mailObjects[0].sendMail(mailObjects[1], function (error, info) {
                                             if (error) {
-                                                status = 500
-                                                message = `Server error occured while send email`
+                                                // status = 500
+                                                // message = `Server error occured while send email`
+                                                res.status(500).send(`Server error occured while send email`)
                                             } else {
                                                 // status = 200
                                                 // message = `permission added successfully, email sent to user`
