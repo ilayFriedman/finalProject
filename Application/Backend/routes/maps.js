@@ -742,6 +742,7 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
                         let currInfo = {
                             mapID: map._id,
                             MapName: map.MapName,
+                            MapDescription: map.Description,
                             nodeId: nodeId,
                             nodeText: nodeText,
                             nodeKey: nodeKey
