@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule, MatMenuModule,
   MatTabsModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatSortModule, MatTooltipModule,
-  MatSlideToggleModule
+  MatSlideToggleModule, MatCardModule
 } from "@angular/material";
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientModule } from "@angular/common/http";
@@ -85,7 +85,8 @@ import { CanDeactivateGuard } from './can-deactivate.guard';
     NgxPrintModule,
     MatTooltipModule,
     MatSlideToggleModule,
-    OpenPageModule
+    OpenPageModule,
+    MatCardModule
   ],
   providers: [
     MapsHandlerService,
