@@ -6,29 +6,6 @@ const user = require('../models/user');
 
 const possiblePermissions = ['Member', 'Owner', 'Manager']
 
-function UserHasMemberPermissionForGroup(resGroup, userId, checkIfUserHasExactlyMemberPermission = false) {
-    if (!checkIfUserHasExactlyMemberPermission) {
-        if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
-            return true;
-        }
-
-        if (UserHasManagerPermissionForGroup(resGroup, userId)) {
-            return true;
-        }
-    }
-
-    if (resGroup.Members.Member) {
-        for (let i = 0; i < resGroup.Members.Member.length; i++) {
-            const element = resGroup.Members.Member[i];
-            if (element == userId) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 function UserHasManagerPermissionForGroup(resGroup, userId, checkIfUserHasExactlyManagerPermission = false) {
     if (!checkIfUserHasExactlyManagerPermission) {
         if (UserHasOwnerPermissionForGroup(resGroup, userId)) {
@@ -212,7 +189,7 @@ router.get('/private/GetGroupsMembers/:id', async function (req, res) {
                     Member = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Member).exec()
                     Manager = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Manager).exec()
                     Owner = await user.find().select('_id Username FirstName LastName').where('_id').in(result.Members.Owner).exec()
-                    // res.writeHead(200, {"Content-Type": "application/json"});
+
                     res.send({ Member: Member, Manager: Manager, Owner: Owner })
             } else {
                 res.status(500).send("Server error occurred.");
@@ -258,22 +235,24 @@ router.get('/private/getMyGroups/', async function (req, res) {
 
 
 router.post('/private/updateGroupUserPermission', async function (req, res) {
-    if (req.body.groupId && req.body.userID && req.body.permission_From && req.body.permission_To) {
-        group.findOneAndUpdate({ _id: req.body.groupId }, { $pull: { ["Members." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Members." + req.body.permission_To]: req.body.userID } }, function (err, result) {
-            if (err) {
-                console.log(err);
-                res.status(500).send('Server error occured.');
-                res.end();
-            } else {
-                res.status(200).send("user's permission updated!");
-                    res.end();
-            }
-        });
-           
-    } else {
+    if (!(req.body.groupId && req.body.userID && req.body.permission_From && req.body.permission_To)) {
         res.status(400).send("worng/missing parameters");
         res.end();
+
+        return;
     }
+        
+    group.findOneAndUpdate({ _id: req.body.groupId }, { $pull: { ["Members." + req.body.permission_From]: req.body.userID }, $addToSet: { ["Members." + req.body.permission_To]: req.body.userID } }, function (err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Server error occured.');
+            res.end();
+
+        } else {
+            res.status(200).send("user's permission updated!");
+            res.end();
+        }
+    });
 
 });
 
