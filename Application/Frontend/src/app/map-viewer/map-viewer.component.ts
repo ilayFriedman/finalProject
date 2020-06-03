@@ -43,6 +43,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   });
   panelOpenState = false;
   linkStats = [];
+  myFiles: FileList;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -71,10 +72,6 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   printOption() {
-    // var div = this.mapHandler.myDiagram.div;
-    // div.style.width = '200px';
-    // div.style.height = '700px';
-    // this.mapHandler.myDiagram.requestUpdate();
     window.print();
 
   }
@@ -804,6 +801,11 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     // var changedModel = this.mapHandler.myDiagram.model.toJson()
     this.isSaved = false;
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model);
+  }
+
+  printFile() {
+    console.log(this.myFiles);
+
   }
 
   importMap(fileList: FileList, modalID: string) {
