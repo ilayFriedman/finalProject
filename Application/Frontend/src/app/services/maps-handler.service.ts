@@ -24,6 +24,19 @@ export class MapsHandlerService {
     return this.http.post(this.localUrl + '/private/createMap', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
+  updateInUse(inUse: boolean) {
+    let data = {
+      '_id': this.currMap_mapViewer._id,
+      'inUse': inUse
+    }
+    this.http.put(this.localUrl + '/private/updateMapInuse', data, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise().then(res => {
+      this.currMap_mapViewer.inUse = inUse;
+    }).catch
+      (err => {
+        console.log("error update in use");
+        console.log(err)
+      });
+  }
 
   getMap(mapId: String) {
     return this.http.get(this.localUrl + '/private/getMap/' + mapId, { headers: { 'token': sessionStorage.token } }).toPromise()

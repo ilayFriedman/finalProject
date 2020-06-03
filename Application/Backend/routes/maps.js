@@ -372,6 +372,23 @@ router.put('/private/updateMap', async function (req, res) {
     }
 });
 
+router.put('/private/updateMapInuse', async function (req, res) {
+    if (req.body._id) {
+        map.findOneAndUpdate({ _id: req.body._id }, { 'inUse': req.body.inUse }, function (err, mongoRes) {
+            if (err) {
+                res.status(500).send("Server error occurred.");
+
+            } else {
+                res.status(200).send('Map inUse updated successfully.');
+
+            }
+        });
+
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
 router.post('/private/updateMapProperties', async function (req, res) {
     if (req.body.mapID) {
         // console.log(req.body.mapID)

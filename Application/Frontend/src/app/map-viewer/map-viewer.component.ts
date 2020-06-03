@@ -50,11 +50,11 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
     if (this.isSaved) {
-      this.mapHandler.currMap_mapViewer.inUse = false;
+      this.mapHandler.updateInUse(false);
       return true;
     }
     if (confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.')) {
-      this.mapHandler.currMap_mapViewer.inUse = false;
+      this.mapHandler.updateInUse(false);
       return true;
     }
   }
@@ -62,12 +62,11 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadFunction($event) {
-    this.mapHandler.currMap_mapViewer.inUse = false;
+    this.mapHandler.updateInUse(false);
     return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
   }
 
   ngOnInit() {
-    this.mapHandler.currMap_mapViewer.inUse = true;
     this.filterRadiusForm = this.formBuilder.group({
       filterRadius: ['0', [Validators.required, Validators.min(0)]]
     });
@@ -85,7 +84,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   goToConnectMap(map) {
     if (this.canDeactivate()) {
-      this.mapHandler.currMap_mapViewer.inUse = false;
+      this.mapHandler.updateInUse(false);
       this.mapHandler.currMap_mapViewer = map
       this.mapHandler.myDiagram.div = null;
       this.mapHandler.myDiagram = null;
@@ -168,6 +167,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   initDiagramProperties() {
     let self = this;
+    self.mapHandler.updateInUse(true);
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     self.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
