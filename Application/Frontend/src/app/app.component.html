@@ -1,31 +1,71 @@
 <html>
+
 <head>
   <title>ME - Mapper</title>
   <script src="https://kit.fontawesome.com/02fbb6f7fc.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-    <!-- toolbar -->
-    <div class="toolbar">
-      <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
-      <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
-        <!-- <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
+  <!-- toolbar -->
+  <div class="toolbar">
+    <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
+    <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
+      <!-- <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
                   </kendo-autocomplete> -->
+    </span>
+    <!-- Login -->
+    <span style="float: left;" @fade *ngIf='!isLoggedIn()'>
+      <app-login></app-login>
+    </span>
+
+    <!-- Search bar -->
+    <span style="float: left;" @fade *ngIf='isLoggedIn()'>
+      <span id="searchBarAndResult">
+        <input type="text" placeholder="Name To Search" [(ngModel)]="inputTextSearch"
+          (keyup.enter)="searchNodesAndMaps()">
+        <div id="searchResultDiv" *ngIf="showSearchResults" style="width: 180px;">
+          <div *ngFor="let node of searchResults">
+            <button mat-button (click)="goToResult(node)" matTooltip="Go to map"
+              style="width: 100%; white-space: normal;">
+              <div mat-line><b style="font-size: 20px;">{{node.MapName}}</b></div>
+              <div mat-line> {{node.MapDescription}} </div>
+            </button>
+          </div>
+          <div *ngIf="searchResults.length == 0">
+            <b> No Results </b>
+          </div>
+        </div>
       </span>
-        <!-- Login -->
-        <span style="float: left;" @fade *ngIf='!isLoggedIn()'>
-          <app-login></app-login>
-        </span>
-      <span @fade style="float: right; position: relative;">
-        <!--right side buttons-->
-        <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">Hi {{fullName}}!</span>
-        <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
-        <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mainMenu"><a mat-button [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span></a></span>
-        <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mainMenu"><a mat-button (click)="logOut()" [routerLink]="'/openPage'"><span class="k-icon k-i-logout"></span></a></span>
+      <span>
+        <button mat-icon-button (click)="searchNodesAndMaps()" matTooltip="Search">
+          <!-- <span class="k-icon k-i-search" style="font-size: 20px"></span> -->
+          <mat-icon>search</mat-icon>
+        </button>
+        <button mat-icon-button (click)="showSearchResults = false" matTooltip="Clear search">
+          <mat-icon>clear</mat-icon>
+          <!-- <span class="k-icon k-i-close" style="font-size: 20px"></span> -->
+        </button>
       </span>
-    </div>
+    </span>
+    <!-- Right menu buttons -->
+    <span @fade style="float: right; position: relative;">
+      <!--right side buttons-->
+      <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">Hi {{fullName}}!</span>
+      <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button
+          [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
+      <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mainMenu"><a mat-button
+          [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span></a></span>
+      <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mainMenu"><a mat-button (click)="logOut()"
+          [routerLink]="'/openPage'"><span class="k-icon k-i-logout"></span></a></span>
+    </span>
+  </div>
+
+  <!-- search results -->
+
+  <!-- content -->
   <div>
-    <!-- content -->
     <router-outlet></router-outlet>
   </div>
 </body>
+
 </html>

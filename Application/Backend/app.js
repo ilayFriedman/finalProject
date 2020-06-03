@@ -75,6 +75,7 @@ app.get('/private/getMapDescription/:mapID', mapsRoute);
 app.get('/private/getUsersPermissionsMap/:mapID', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
+app.put('/private/updateMapInuse', mapsRoute);
 app.post('/private/updateMapProperties', mapsRoute);
 app.delete('/private/removeMap/:mapID&:userPermission&:folderID', mapsRoute);
 
@@ -88,6 +89,7 @@ app.delete('/private/removeGroupPermission/:mapID&:groupID', mapsRoute)
 app.post('/private/addNewPermission', mapsRoute)
 app.get('/private/getSharedMaps/:userID', mapsRoute);
 app.get('/private/searchNodes/:nodeName', mapsRoute);
+app.get('/private/searchMaps/:mapName', mapsRoute);
 
 
 app.put('/private/addNewConnection', connectionsRoute);

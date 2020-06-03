@@ -24,6 +24,19 @@ export class MapsHandlerService {
     return this.http.post(this.localUrl + '/private/createMap', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
+  updateInUse(inUse: boolean) {
+    let data = {
+      '_id': this.currMap_mapViewer._id,
+      'inUse': inUse
+    }
+    this.http.put(this.localUrl + '/private/updateMapInuse', data, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise().then(res => {
+      this.currMap_mapViewer.inUse = inUse;
+    }).catch
+      (err => {
+        console.log("error update in use");
+        console.log(err)
+      });
+  }
 
   getMap(mapId: String) {
     return this.http.get(this.localUrl + '/private/getMap/' + mapId, { headers: { 'token': sessionStorage.token } }).toPromise()
@@ -82,15 +95,13 @@ export class MapsHandlerService {
 
 
   getUserPermission() {
-    let permissions = this.currMap_mapViewer.Permission;
-    let currUserId = sessionStorage.userId
-    if (this.currMap_mapViewer.Permission.Owner.filter(obj => obj.id == sessionStorage.userId) != null) {
+    if (this.currMap_mapViewer.Permission.Owner.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 3;
     }
-    else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId) != null) {
+    else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 2;
     }
-    else if (this.currMap_mapViewer.Permission.Read.filter(obj=>obj.id == sessionStorage.userId) != null) {
+    else if (this.currMap_mapViewer.Permission.Read.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 1;
     }
 
@@ -105,6 +116,10 @@ export class MapsHandlerService {
   // connect maps //
   searchNodes(nodeName) {
     return this.http.get(this.localUrl + '/private/searchNodes/' + nodeName, { headers: { 'token': sessionStorage.token } }).toPromise()
+  }
+
+  searchMaps(mapName) {
+    return this.http.get(this.localUrl + '/private/searchMaps/' + mapName, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
 
   // subscripotions //

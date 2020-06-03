@@ -43,19 +43,26 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   });
   panelOpenState = false;
   linkStats = [];
+  myFiles: FileList;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
   canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
-    if (this.isSaved)
+    if (this.isSaved) {
+      this.mapHandler.updateInUse(false);
       return true;
-    return confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.');
+    }
+    if (confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.')) {
+      this.mapHandler.updateInUse(false);
+      return true;
+    }
   }
 
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadFunction($event) {
+    this.mapHandler.updateInUse(false);
     return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
   }
 
@@ -71,16 +78,13 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   printOption() {
-    // var div = this.mapHandler.myDiagram.div;
-    // div.style.width = '200px';
-    // div.style.height = '700px';
-    // this.mapHandler.myDiagram.requestUpdate();
     window.print();
 
   }
 
   goToConnectMap(map) {
     if (this.canDeactivate()) {
+      this.mapHandler.updateInUse(false);
       this.mapHandler.currMap_mapViewer = map
       this.mapHandler.myDiagram.div = null;
       this.mapHandler.myDiagram = null;
@@ -163,6 +167,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   initDiagramProperties() {
     let self = this;
+    self.mapHandler.updateInUse(true);
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     self.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
@@ -804,6 +809,11 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     // var changedModel = this.mapHandler.myDiagram.model.toJson()
     this.isSaved = false;
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model);
+  }
+
+  printFile() {
+    console.log(this.myFiles);
+
   }
 
   importMap(fileList: FileList, modalID: string) {

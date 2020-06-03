@@ -99,13 +99,13 @@ function getAllPersonalIdsInMap(mapRes, usersList) {
 
 }
 
-function getAllGroupMember(res, reqId,includeOwner){
+function getAllGroupMember(res, reqId, includeOwner) {
     var usersList = []
     res.Members.Owner.forEach(groupUserId => {
-        if(includeOwner){
+        if (includeOwner) {
             usersList.push({ id: groupUserId, type: "GroupPermission" })
         }
-        else{
+        else {
             if (groupUserId != reqId) {
                 usersList.push({ id: groupUserId, type: "GroupPermission" })
             }
@@ -142,7 +142,8 @@ router.post('/private/createMap', async function (req, res) {
                 Read: []
             },
             Subscribers: [],
-            ContainingFolders: []
+            ContainingFolders: [],
+            inUse: false
         });
         newMap.save(function (err, saveRes) {
             if (err) {
@@ -371,6 +372,23 @@ router.put('/private/updateMap', async function (req, res) {
     }
 });
 
+router.put('/private/updateMapInuse', async function (req, res) {
+    if (req.body._id) {
+        map.findOneAndUpdate({ _id: req.body._id }, { 'inUse': req.body.inUse }, function (err, mongoRes) {
+            if (err) {
+                res.status(500).send("Server error occurred.");
+
+            } else {
+                res.status(200).send('Map inUse updated successfully.');
+
+            }
+        });
+
+    } else {
+        res.status(400).send("No map ID attached to request.");
+    }
+});
+
 router.post('/private/updateMapProperties', async function (req, res) {
     if (req.body.mapID) {
         // console.log(req.body.mapID)
@@ -477,9 +495,9 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
     if (req.params.mapID && req.params.groupID) {
         group.findOne({ '_id': req.params.groupID }, function (err, groupsResult) {
             if (groupsResult) {
-                var groupMembers = getAllGroupMember(groupsResult,req.decoded._id,false)
+                var groupMembers = getAllGroupMember(groupsResult, req.decoded._id, false)
                 var groupElem = [{ id: req.params.groupID, type: "Group" }]
-                map.findOneAndUpdate({ _id: req.params.mapID }, { $pullAll: { ["Permission.Owner"]: groupMembers.concat(groupElem), ["Permission.Write"]: groupMembers.concat(groupElem) , ["Permission.Read"]: groupMembers.concat(groupElem) } }, function (err, mapResult) {
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pullAll: { ["Permission.Owner"]: groupMembers.concat(groupElem), ["Permission.Write"]: groupMembers.concat(groupElem), ["Permission.Read"]: groupMembers.concat(groupElem) } }, function (err, mapResult) {
                     if (err) {
                         console.log(err);
                         res.status(500).send("Server error occurred while pop from parent folder.");
@@ -500,7 +518,7 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
                                             var mailSubject = "Map Permission Revocation"
                                             var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
                                                 + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
-                                             try {
+                                            try {
                                                 var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text);
                                                 promises.push(mailObjects[0].sendMail(mailObjects[1], function (error, info) {
                                                     if (error) {
@@ -518,7 +536,7 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
                                     }));
                                 });
                                 Promise.all(promises).then(() => {
-                                    res.writeHead(200,"All users removed and emails sent");
+                                    res.writeHead(200, "All users removed and emails sent");
                                     res.end();
                                 }
                                 );
@@ -560,7 +578,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                         if (addResult) {
                             // add all users in group : without owners! (they are the owners of the group anyway.. and for this map)
                             // important! if there's already "personal permission" user - he change his permission (to the group's one) but not his label!
-                            var usersList = getAllGroupMember(groupResult,req.decoded._id,false)
+                            var usersList = getAllGroupMember(groupResult, req.decoded._id, false)
                             // users existence  
                             // clean duplicates GroupPermission users
 
@@ -744,7 +762,7 @@ router.get('/private/getSharedMaps/:userID', async function (req, res) {
 
 router.get('/private/searchNodes/:nodeName', async function (req, res) {
     try {
-        let texeReg = new RegExp(`^${req.params.nodeName}$`, 'i');
+        let texeReg = new RegExp(`${req.params.nodeName}`, 'i');
         map.find({ $or: [{ 'Model.nodeDataArray.text': texeReg }] }, async function (err, result) {
             if (result) {
                 var containingMaps = []
@@ -773,6 +791,35 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
 
                 });
                 res.status(200).send(containingMaps)
+            } else {
+                res.status(403).send("This node doesn't exist in DB");
+            }
+
+        })
+
+    } catch (e) {
+        console.log(e)
+        res.status(500).send('Server error occured.');
+    }
+});
+
+router.get('/private/searchMaps/:mapName', async function (req, res) {
+    try {
+        let texeReg = new RegExp(`${req.params.mapName}`, 'i');
+        map.find({ $or: [{ 'MapName': texeReg }] }, async function (err, result) {
+            if (result) {
+                var maps = []
+                result.forEach(map => {
+                    if (UserHasReadPermissionForMap(map, req.decoded._id)) {
+                        let currInfo = {
+                            mapID: map._id,
+                            MapName: map.MapName,
+                            MapDescription: map.Description
+                        }
+                        maps.push(currInfo)
+                    }
+                });
+                res.status(200).send(maps)
             } else {
                 res.status(403).send("This node doesn't exist in DB");
             }

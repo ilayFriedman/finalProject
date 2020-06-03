@@ -225,8 +225,11 @@
 <jw-modal class="jw-modal" id="import-modal">
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('import-modal')">&times;</span>
-        <h1>Import Map From:</h1>
+        <!-- <mat-form-field appearance="outline" panelClass="example-class"> -->
+        <mat-label>Import Map From:</mat-label>
         <input type="file" (change)="importMap($event.target.files, 'import-modal')">
+        <!-- </mat-form-field> -->
+
         <!-- <button (click)="importMap($event.target.files)">Import</button> -->
     </div>
 </jw-modal>

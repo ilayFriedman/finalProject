@@ -3,7 +3,7 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { ModalService } from '../services/modal.service';
-import {environment} from '../../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-save-as-map',
@@ -62,6 +62,7 @@ export class SaveAsMapComponent implements OnInit {
 
     result.subscribe(response => {
       this.submitted = false;
+      this.mapHandler.currMap_mapViewer.inUse = true;
       alert("Map Added Succsessfully!")
 
     }, error => {

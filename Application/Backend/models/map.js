@@ -36,6 +36,10 @@ const MapSchema = new mongoose.Schema({
     ContainingFolders: {
         type: Array,
         default: []
+    },
+    inUse: {
+        type: Boolean,
+        required: true
     }
 })
 
