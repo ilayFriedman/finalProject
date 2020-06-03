@@ -99,13 +99,13 @@ function getAllPersonalIdsInMap(mapRes, usersList) {
 
 }
 
-function getAllGroupMember(res, reqId,includeOwner){
+function getAllGroupMember(res, reqId, includeOwner) {
     var usersList = []
     res.Members.Owner.forEach(groupUserId => {
-        if(includeOwner){
+        if (includeOwner) {
             usersList.push({ id: groupUserId, type: "GroupPermission" })
         }
-        else{
+        else {
             if (groupUserId != reqId) {
                 usersList.push({ id: groupUserId, type: "GroupPermission" })
             }
@@ -142,7 +142,8 @@ router.post('/private/createMap', async function (req, res) {
                 Read: []
             },
             Subscribers: [],
-            ContainingFolders: []
+            ContainingFolders: [],
+            inUse: false
         });
         newMap.save(function (err, saveRes) {
             if (err) {
@@ -477,9 +478,9 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
     if (req.params.mapID && req.params.groupID) {
         group.findOne({ '_id': req.params.groupID }, function (err, groupsResult) {
             if (groupsResult) {
-                var groupMembers = getAllGroupMember(groupsResult,req.decoded._id,false)
+                var groupMembers = getAllGroupMember(groupsResult, req.decoded._id, false)
                 var groupElem = [{ id: req.params.groupID, type: "Group" }]
-                map.findOneAndUpdate({ _id: req.params.mapID }, { $pullAll: { ["Permission.Owner"]: groupMembers.concat(groupElem), ["Permission.Write"]: groupMembers.concat(groupElem) , ["Permission.Read"]: groupMembers.concat(groupElem) } }, function (err, mapResult) {
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pullAll: { ["Permission.Owner"]: groupMembers.concat(groupElem), ["Permission.Write"]: groupMembers.concat(groupElem), ["Permission.Read"]: groupMembers.concat(groupElem) } }, function (err, mapResult) {
                     if (err) {
                         console.log(err);
                         res.status(500).send("Server error occurred while pop from parent folder.");
@@ -500,7 +501,7 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
                                             var mailSubject = "Map Permission Revocation"
                                             var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
                                                 + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
-                                             try {
+                                            try {
                                                 var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text);
                                                 promises.push(mailObjects[0].sendMail(mailObjects[1], function (error, info) {
                                                     if (error) {
@@ -518,7 +519,7 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (
                                     }));
                                 });
                                 Promise.all(promises).then(() => {
-                                    res.writeHead(200,"All users removed and emails sent");
+                                    res.writeHead(200, "All users removed and emails sent");
                                     res.end();
                                 }
                                 );
@@ -560,7 +561,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                         if (addResult) {
                             // add all users in group : without owners! (they are the owners of the group anyway.. and for this map)
                             // important! if there's already "personal permission" user - he change his permission (to the group's one) but not his label!
-                            var usersList = getAllGroupMember(groupResult,req.decoded._id,false)
+                            var usersList = getAllGroupMember(groupResult, req.decoded._id, false)
                             // users existence  
                             // clean duplicates GroupPermission users
 

@@ -82,15 +82,13 @@ export class MapsHandlerService {
 
 
   getUserPermission() {
-    let permissions = this.currMap_mapViewer.Permission;
-    let currUserId = sessionStorage.userId
-    if (this.currMap_mapViewer.Permission.Owner.filter(obj => obj.id == sessionStorage.userId) != null) {
+    if (this.currMap_mapViewer.Permission.Owner.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 3;
     }
-    else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId) != null) {
+    else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 2;
     }
-    else if (this.currMap_mapViewer.Permission.Read.filter(obj=>obj.id == sessionStorage.userId) != null) {
+    else if (this.currMap_mapViewer.Permission.Read.filter(obj => obj.id == sessionStorage.userId).length > 0) {
       return 1;
     }
 

@@ -49,18 +49,25 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
   canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
-    if (this.isSaved)
+    if (this.isSaved) {
+      this.mapHandler.currMap_mapViewer.inUse = false;
       return true;
-    return confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.');
+    }
+    if (confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.')) {
+      this.mapHandler.currMap_mapViewer.inUse = false;
+      return true;
+    }
   }
 
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadFunction($event) {
+    this.mapHandler.currMap_mapViewer.inUse = false;
     return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
   }
 
   ngOnInit() {
+    this.mapHandler.currMap_mapViewer.inUse = true;
     this.filterRadiusForm = this.formBuilder.group({
       filterRadius: ['0', [Validators.required, Validators.min(0)]]
     });
@@ -78,6 +85,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   goToConnectMap(map) {
     if (this.canDeactivate()) {
+      this.mapHandler.currMap_mapViewer.inUse = false;
       this.mapHandler.currMap_mapViewer = map
       this.mapHandler.myDiagram.div = null;
       this.mapHandler.myDiagram = null;
