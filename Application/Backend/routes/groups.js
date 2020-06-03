@@ -77,32 +77,30 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
         group.findOne({ _id: req.params.id }, function (err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {
-                    // group.deleteOne({ _id: result._id }, function (err) {
-                    //     if (err) {
-                    //         console.log(err);
-                    //         res.status(500).send(`Server error occured.`);
-                    //     } else {
-
+                    group.deleteOne({ _id: result._id }, function (err) {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send(`Server error occured.`);
+                        } else {
                             // delete all group users from group-permission-maps
                             // get all maps that groups has permission to
                             var groupUsers = maps.getAllGroupMember(result,req.decoded._id,true)
-                            var groupElem = [{ id: req.params.groupID, type: "Group" }]
-                            console.log(groupUsers)
-                            map.updateMany({ $or: [{ 'Permission.Owner': {id: req.params.id.toString(), type: "Group"} }, { 'Permission.Write': {id: req.params.id.toString(), type: "Group"} },
-                            { 'Permission.Read': {id: req.params.id.toString(), type: "Group"} }]},{ $pullAll: { ["Permission.Write"]: groupUsers.concat(groupElem) }, $pullAll: { ["Permission.Read"]: groupUsers.concat(groupElem) }  }, async function (err, mapResult) {
+                            var groupElem = [{ id: req.params.id, type: "Group" }]
+                            map.updateMany({$or: [{ 'Permission.Owner': {id: req.params.id.toString(), type: "Group"} }, { 'Permission.Write': {id: req.params.id.toString(), type: "Group"} },
+                            { 'Permission.Read': {id: req.params.id.toString(), type: "Group"} }]},{ $pullAll: { ["Permission.Write"]: groupUsers.concat(groupElem),  ["Permission.Read"]: groupUsers.concat(groupElem)} }, async function (err, mapResult) {
                                if(err){
+                                
                                    res.status(500).send('Server error occured.');
                                }
                                else{
-                                   console.log(mapResult)
                                     //send mail to all
                                     var promises = []
                                     groupUsers.forEach(async (element) => {
                                         promises.push(user.findOne({ "_id": element.id }, async function (err, userRes) {
                                             if (userRes.getPermissionUpdate) {
-                                                var mailSubject = "Map Permission Revocation"
-                                                var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
-                                                    + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+                                                var mailSubject = "Map Permission Revocation: Group Removoal"
+                                                var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that "
+                                                    + " Following deletion of a group that you were a member of: There are changes to permissions you have for different maps.<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
                                                 try {
                                                     var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text);
                                                     promises.push(mailObjects[0].sendMail(mailObjects[1], function (error, info) {
@@ -128,8 +126,8 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
                                 //    var mapsList = result.map(({ _id }) => id)
                                }
                                });
-                    //     }
-                    // });
+                        }
+                    });
                 }
                 else {
                     res.status(403).send("The user's permissions are insufficient to delete group.");
