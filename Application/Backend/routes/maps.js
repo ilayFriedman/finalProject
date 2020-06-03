@@ -77,7 +77,7 @@ function getSublistById(res, permissionType, objectType) {
     return list
 }
 
-function getAllPersonalIds(mapRes, usersList) {
+function getAllPersonalIdsInMap(mapRes, usersList) {
     var idsList = usersList.map(({ id }) => id);
     var duplicateIds = []
     mapRes.Permission.Owner.forEach(element => {
@@ -99,6 +99,26 @@ function getAllPersonalIds(mapRes, usersList) {
 
 }
 
+function getAllGroupMember(res, reqId,includeOwner){
+    var usersList = []
+    res.Members.Owner.forEach(groupUserId => {
+        if(includeOwner){
+            usersList.push({ id: groupUserId, type: "GroupPermission" })
+        }
+        else{
+            if (groupUserId != reqId) {
+                usersList.push({ id: groupUserId, type: "GroupPermission" })
+            }
+        }
+    });
+    res.Members.Manager.forEach(groupUserId => {
+        usersList.push({ id: groupUserId, type: "GroupPermission" })
+    });
+    res.Members.Member.forEach(groupUserId => {
+        usersList.push({ id: groupUserId, type: "GroupPermission" })
+    });
+    return usersList;
+}
 
 
 
@@ -453,55 +473,55 @@ router.delete('/private/removeUserPermission/:mapID&:userID&:permission', async 
 
 });
 
-router.delete('/private/removeGroupPermission/:mapID&:groupID&:permission', async function (req, res) {
-    if (req.params.mapID && req.params.groupID && req.params.permission) {
-        group.findOne({ '_id': req.params.groupID }, function (err, userResult) {
-            if (userResult) {
-                map.findOneAndUpdate({ _id: req.params.mapID }, { $pull: { ["Permission." + [req.params.permission]]: { id: req.params.userID } } }, function (err, mapResult) {
+router.delete('/private/removeGroupPermission/:mapID&:groupID', async function (req, res) {
+    if (req.params.mapID && req.params.groupID) {
+        group.findOne({ '_id': req.params.groupID }, function (err, groupsResult) {
+            if (groupsResult) {
+                var groupMembers = getAllGroupMember(groupsResult,req.decoded._id,false)
+                var groupElem = [{ id: req.params.groupID, type: "Group" }]
+                map.findOneAndUpdate({ _id: req.params.mapID }, { $pullAll: { ["Permission.Owner"]: groupMembers.concat(groupElem), ["Permission.Write"]: groupMembers.concat(groupElem) , ["Permission.Read"]: groupMembers.concat(groupElem) } }, function (err, mapResult) {
                     if (err) {
                         console.log(err);
-                        // res.status(500).send("Server error occurred while pop from parent folder.");
-                        res.statusCode = 500;
+                        res.status(500).send("Server error occurred while pop from parent folder.");
                         res.end();
                     } else {
-                        // delete from otherUser folders
-                        folder.updateMany({ 'Creator': req.params.userID, 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
+                        // delete connected map from other Users folders
+                        folder.updateMany({ 'Creator': groupMembers.map(({ id }) => id), 'MapsInFolder.mapID': req.params.mapID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
                             if (err) {
                                 console.log(err);
-                                // res.status(500).send("Server error occurred while pop from parent folder.");
-                                res.statusCode = 500;
+                                res.status(500).send("Server error occurred while pop from parent folder.");
                                 res.end();
                             } else {
-                                // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-
-                                if (userResult.getPermissionUpdate) {
-                                    var mailSubject = "Map Permission Revocation"
-                                    var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
-                                        + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
-                                    try {
-
-                                        var mailObjects = mail.sendEmail(userResult.Username, mailSubject, text)
-                                        mailObjects[0].sendMail(mailObjects[1], function (error, info) {
-                                            if (error) {
-                                                console.log(error);
-                                                res.status(500).send(`Server error occured while send email`)
-                                                res.end()
-                                            } else {
-                                                res.status(200).send(`permission updated successfully, email sent successfully `)
-                                                res.end();
-
+                                //send mail to all
+                                var promises = []
+                                groupMembers.forEach(async (element) => {
+                                    promises.push(user.findOne({ "_id": element.id }, async function (err, userRes) {
+                                        if (userRes.getPermissionUpdate) {
+                                            var mailSubject = "Map Permission Revocation"
+                                            var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
+                                                + " stop sharing with you the map: <b>" + mapResult.MapName + "</b>.<br>For that reason: the map is no longer in your Tree View<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
+                                             try {
+                                                var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text);
+                                                promises.push(mailObjects[0].sendMail(mailObjects[1], function (error, info) {
+                                                    if (error) {
+                                                        status = 500;
+                                                        message = `Server error occured while send email`;
+                                                        res.status(500).send("Server error occured while send email");
+                                                        res.end();
+                                                    }
+                                                }));
                                             }
-                                        });
-                                    } catch (e) {
-
-                                        res.status(400).send(`problem: ${e}`);
-                                        res.end()
-                                    }
-                                }
-                                else {
-                                    res.statusCode = 200;
+                                            catch (e) {
+                                                res.status(400).send(`problem: ${e}`);
+                                            }
+                                        }
+                                    }));
+                                });
+                                Promise.all(promises).then(() => {
+                                    res.writeHead(200,"All users removed and emails sent");
                                     res.end();
                                 }
+                                );
                             }
                         });
 
@@ -509,76 +529,18 @@ router.delete('/private/removeGroupPermission/:mapID&:groupID&:permission', asyn
                 });
             }
             else {
-                res.statusCode = 400;
+                res.status(400).send("Server error occurred while pull from other users folders.");
                 res.end();
             }
         });
 
     } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
+        res.status(400).send(`Missing map id`);
+        // res.statusCode = 400;
         res.end();
     }
 
 });
-// router.post('/private/updateUserPermission', async function (req, res) {
-//     if (req.body.mapID && req.body.userID && req.body.permission_From && req.body.permission_To) {
-//         user.findOne({ '_id': req.body.userID }, function (err, userResult) {
-//             if (userResult) {
-//                 map.findOneAndUpdate({ _id: req.body.mapID }, {
-//                     $pull: { ["Permission." + [req.body.permission_From]]: { id: req.body.userID } }
-//                     , $addToSet: { ["Permission." + [req.body.permission_To]]: { id: req.body.userID, type: "PersonalPermission" } }
-//                 }, function (err, result) {
-//                     if (err) {
-//                         console.log(err);
-//                         // res.status(500).send("Server error occurred while pop from parent folder.");
-//                         res.statusCode = 500;
-//                         res.end();
-//                     } else {
-//                         // change - now send mail
-//                         if (userResult.getPermissionUpdate) {
-//                             var mailSubject = "Map Permission Updates"
-//                             var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userResult.FirstName + " " + userResult.LastName + "!</h3>\n\nWe wanted to update you that " + req.decoded.fullName
-//                                 + " changed your permission for map: <b>" + result.MapName + "</b> from <b>" + req.body.permission_From + "</b> to <b>" + req.body.permission_To + "</b>.<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
-//                             try {
-
-//                                 var mailObjects = mail.sendEmail(userResult.Username, mailSubject, text)
-//                                 mailObjects[0].sendMail(mailObjects[1], function (error, info) {
-//                                     if (error) {
-//                                         console.log(error);
-//                                         res.status(500).send(`Server error occured while send email`)
-//                                         res.end()
-//                                     } else {
-//                                         res.status(200).send(`permission updated successfully, email sent successfully `)
-//                                         res.end();
-
-//                                     }
-//                                 });
-//                             } catch (e) {
-
-//                                 res.status(400).send(`problem: ${e}`);
-//                                 res.end()
-//                             }
-//                         }
-//                         else {
-//                             res.statusCode = 200;
-//                             res.end();
-//                         }
-//                     }
-//                 });
-//             }
-//             else {
-//                 res.statusCode = 400;
-//                 res.end();
-//             }
-//         });
-//     } else {
-//         // res.status(400).send(`Missing map id`);
-//         res.statusCode = 400;
-//         res.end();
-//     }
-
-// });
 
 // new version - update done
 router.post('/private/addNewPermission', async function (req, res) {
@@ -598,18 +560,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                         if (addResult) {
                             // add all users in group : without owners! (they are the owners of the group anyway.. and for this map)
                             // important! if there's already "personal permission" user - he change his permission (to the group's one) but not his label!
-                            var usersList = []
-                            groupResult.Members.Owner.forEach(groupUserId => {
-                                if (groupUserId != req.decoded._id) {
-                                    usersList.push({ id: groupUserId, type: "GroupPermission" })
-                                }
-                            });
-                            groupResult.Members.Manager.forEach(groupUserId => {
-                                usersList.push({ id: groupUserId, type: "GroupPermission" })
-                            });
-                            groupResult.Members.Member.forEach(groupUserId => {
-                                usersList.push({ id: groupUserId, type: "GroupPermission" })
-                            });
+                            var usersList = getAllGroupMember(groupResult,req.decoded._id,false)
                             // users existence  
                             // clean duplicates GroupPermission users
 
@@ -617,7 +568,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                             await map.updateOne({ _id: req.body.mapId }, { $pullAll: { ["Permission.Write"]: usersList } }, async function (err) { if (err) { res.status(500).send("err in clean write permission"); res.end(); } })
                             await map.updateOne({ _id: req.body.mapId }, { $pullAll: { ["Permission.Read"]: usersList } }, async function (err) { if (err) { res.status(500).send("err in clean read permission"); res.end(); } })
                             // update "personal permission" users
-                            var personalUsers = getAllPersonalIds(addResult, usersList)
+                            var personalUsers = getAllPersonalIdsInMap(addResult, usersList)
 
                             // delete ids from userslist
                             var duplicate_Ids = personalUsers.map(({ id }) => id);

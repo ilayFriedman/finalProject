@@ -66,6 +66,10 @@ export class MapsHandlerService {
     return this.http.delete(this.localUrl + '/private/removeUserPermission/' + mapId + "&" + userId + "&" + permission, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
+  removeGroupPermission(mapId, groupID) {
+    return this.http.delete(this.localUrl + '/private/removeGroupPermission/' + mapId + "&" + groupID, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+  }
+
   updateUserPermission(mapID, userId, permission_From, permission_To) {
     const bodyReq = {
       mapID: mapID,
@@ -86,8 +90,7 @@ export class MapsHandlerService {
     else if (this.currMap_mapViewer.Permission.Write.filter(obj => obj.id == sessionStorage.userId) != null) {
       return 2;
     }
-    // else if (this.currMap_mapViewer.Permission.Read.filter(obj=>obj.id == sessionStorage.userId) != null) {
-    else {
+    else if (this.currMap_mapViewer.Permission.Read.filter(obj=>obj.id == sessionStorage.userId) != null) {
       return 1;
     }
 

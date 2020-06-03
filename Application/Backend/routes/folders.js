@@ -4,7 +4,27 @@ const folder = require('../models/folder')
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
 
+createRootFolder = function(userId, callback) {
+    const rootFolder = new folder({
+        Name: "userRootFolder",
+        MapsInFolder: [],
+        SubFolder: [],
+        Creator: userId,
+        CreationTime: new Date(),
+        Description: "rootFolder",
+        ParentDir: "/",
+    });
+    rootFolder.save(callback);
+};
+
 router.post('/private/createFolder', async function(req, res) {
+    if(!(req.body.folderName && req.body.Description && req.body.ParentDir)){
+        res.status(400).send("Request is missing one of the necessary fields: folderName, Description, ParentDir");
+        res.end();
+
+        return;
+    }
+
     try {
         const CreatorId = req.decoded._id;
         const newFolder = new folder({
@@ -22,6 +42,7 @@ router.post('/private/createFolder', async function(req, res) {
                 res.status(500).send(`Server error occured while creation.`);
             } else {
                 if(saveRes.ParentDir != "/"){
+                    // Update parent folder with new sub-folder
                     folder.findOneAndUpdate({'_id': saveRes.ParentDir},{$addToSet:{'SubFolders': {"folderID" : saveRes._id.toString(), "folderName": saveRes.Name}}}, function(err, result) {
                         if (err) {
                             folder.deleteOne({'_id': saveRes._id}, function (err) {
@@ -38,13 +59,14 @@ router.post('/private/createFolder', async function(req, res) {
                         else{
                             res.writeHead(200, {"Content-Type": "application/json"});
                             res.end(JSON.stringify(saveRes));
-                        }});
+                        }
+                    });
                 }
                 else{
                     res.writeHead(200, {"Content-Type": "application/json"});
                     res.end(JSON.stringify(saveRes));
                 }
-                }
+            }
         });
     } catch (e) {
         console.log(e);
@@ -181,3 +203,4 @@ router.post('/private/addExistMapToFolder', async function(req, res) {
 });
 
 module.exports = router;
+module.exports.createRootFolder = createRootFolder;

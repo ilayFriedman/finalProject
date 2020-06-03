@@ -3,6 +3,7 @@ const router = express.Router();
 const group = require('../models/group')
 const jwt = require('jsonwebtoken');
 const user = require('../models/user');
+const map = require('../models/map');
 
 const possiblePermissions = ['Member', 'Owner', 'Manager']
 
@@ -39,6 +40,7 @@ function UserHasOwnerPermissionForGroup(resGroup, userId) {
     return false;
 }
 
+
 router.post('/private/createGroup', async function (req, res) {
     try {
         const CreatorId = req.decoded._id;
@@ -73,14 +75,32 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
         group.findOne({ _id: req.params.id }, function (err, result) {
             if (result) {
                 if (UserHasOwnerPermissionForGroup(result, req.decoded._id)) {
-                    group.deleteOne({ _id: result._id }, function (err) {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send(`Server error occured.`);
-                        } else {
-                            res.status(200).send("Group deleted successfully.");
-                        }
-                    });
+                    // group.deleteOne({ _id: result._id }, function (err) {
+                    //     if (err) {
+                    //         console.log(err);
+                    //         res.status(500).send(`Server error occured.`);
+                    //     } else {
+
+                            // delete all group users from group-permission-maps
+                            // get all maps that groups has permission to
+                            var groupUsers = map.getAllGroupMember(result,req.decoded._id,true)
+                            map.updateMany({ $or: [{ 'Permission.Owner': {id: groupId, type: "Group"} }, { 'Permission.Write': {id: groupId, type: "Group"} },
+                            { 'Permission.Read': {id: groupId, type: "Group"} }]},{ $pullAll: { ["Permission.Write"]: groupUsers }, $pullAll: { ["Permission.Read"]: groupUsers }  }, async function (err, Mapresult) {
+                               if(err){
+                                   res.status(500).send('Server error occured.');
+                               }
+                               else{
+                                   var promises = []
+                                    Mapresult.forEach(mapElement => {
+                                        promises.push(map.findByIdAndUpdate())
+                                    });
+                                   
+                                //    var mapsList = result.map(({ _id }) => id)
+                                   res.status(200).send("Group deleted successfully.");
+                               }
+                               });
+                    //     }
+                    // });
                 }
                 else {
                     res.status(403).send("The user's permissions are insufficient to delete group.");

@@ -701,20 +701,33 @@ newUserPermissionChoose: any
     console.log( this.updatePermissionUsers)
     let promises = [];
     // ---- delete all remove users -------
-    // this.deleteUserList.forEach(deleteUser => {
-    //   var userID = this.getKeyFromValue(deleteUser)
+    this.deleteUserList.forEach(deleteUser => {
+      var userID = this.getKeyFromValue(deleteUser)
 
-    //   // look if user changed on radiobuttons
-    //   var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
-    //   if(duplicateUser!= null){
-    //     // take the old permission to delete and delete from updateButtonsList
-    //     promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
-    //     this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
-    //   }
-    //   promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, this.selectedNode.usersPermissionsMap.get(userID).permission))
-    //   this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
-    //   this.selectedNode.usersPermissionsMap.delete(userID)
-    // });
+      // look if user changed on radiobuttons
+      var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
+      if(duplicateUser!= null){
+        // take the old permission to delete and delete from updateButtonsList
+        if(deleteUser.type == "PersonalPermission"){
+          promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
+        }
+        else{ // group element
+          promises.push(this.mapHandler.removeGroupPermission(this.selectedNode.mapID,userID))
+        }
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+      }
+      else{
+        if(deleteUser.type == "PersonalPermission"){
+          promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
+        }
+        else{ // group element
+          promises.push(this.mapHandler.removeGroupPermission(this.selectedNode.mapID,userID))
+        }
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+      }
+      this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
+      this.selectedNode.usersPermissionsMap.delete(userID)
+    });
 
     // ----- update all radiobuttons -------
     this.updatePermissionUsers.forEach(user => {
