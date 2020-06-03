@@ -790,5 +790,6 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;
+module.exports.getAllGroupMember = getAllGroupMember
 
 
