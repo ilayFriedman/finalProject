@@ -88,6 +88,7 @@ app.post('/private/updateUserPermission', mapsRoute)
 app.post('/private/addNewPermission', mapsRoute)
 app.get('/private/getSharedMaps/:userID', mapsRoute);
 app.get('/private/searchNodes/:nodeName', mapsRoute);
+app.get('/private/searchMaps/:mapName', mapsRoute);
 
 app.put('/private/addNewConnection', connectionsRoute);
 app.put('/private/deleteConnection', connectionsRoute);

@@ -793,7 +793,7 @@ router.get('/private/getSharedMaps/:userID', async function (req, res) {
 
 router.get('/private/searchNodes/:nodeName', async function (req, res) {
     try {
-        let texeReg = new RegExp(`^${req.params.nodeName}$`, 'i');
+        let texeReg = new RegExp(`${req.params.nodeName}`, 'i');
         map.find({ $or: [{ 'Model.nodeDataArray.text': texeReg }] }, async function (err, result) {
             if (result) {
                 var containingMaps = []
@@ -822,6 +822,35 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
 
                 });
                 res.status(200).send(containingMaps)
+            } else {
+                res.status(403).send("This node doesn't exist in DB");
+            }
+
+        })
+
+    } catch (e) {
+        console.log(e)
+        res.status(500).send('Server error occured.');
+    }
+});
+
+router.get('/private/searchMaps/:mapName', async function (req, res) {
+    try {
+        let texeReg = new RegExp(`${req.params.mapName}`, 'i');
+        map.find({ $or: [{ 'MapName': texeReg }] }, async function (err, result) {
+            if (result) {
+                var maps = []
+                result.forEach(map => {
+                    if (UserHasReadPermissionForMap(map, req.decoded._id)) {
+                        let currInfo = {
+                            mapID: map._id,
+                            MapName: map.MapName,
+                            MapDescription: map.Description
+                        }
+                        maps.push(currInfo)
+                    }
+                });
+                res.status(200).send(maps)
             } else {
                 res.status(403).send("This node doesn't exist in DB");
             }

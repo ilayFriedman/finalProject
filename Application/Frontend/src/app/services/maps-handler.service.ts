@@ -104,6 +104,10 @@ export class MapsHandlerService {
     return this.http.get(this.localUrl + '/private/searchNodes/' + nodeName, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
 
+  searchMaps(mapName) {
+    return this.http.get(this.localUrl + '/private/searchMaps/' + mapName, { headers: { 'token': sessionStorage.token } }).toPromise()
+  }
+
   // subscripotions //
   addNewSubscriber() {
     const bodyReq = {
