@@ -402,8 +402,8 @@
                             <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem let-rowIndex="rowIndex">
                                 <span *ngIf = "groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newGroupPermission == '' || newGroupPermission == null">Add</button></span>
                                 <span *ngIf = "!groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newUserPermission == '' || newUserPermission == null">Add</button></span>
-                                    <span *ngIf ="dataItem.type == 'Group'"><button kendoGridRemoveCommand>Remove Group From List</button></span>
-                                    <span *ngIf ="dataItem.type == 'PersonalPermission'"><button kendoGridRemoveCommand>Remove User From List</button></span>
+                                    <button *ngIf ="dataItem.type == 'Group'" kendoGridRemoveCommand>Remove Group From List</button>
+                                    <button *ngIf ="dataItem.type == 'PersonalPermission'" kendoGridRemoveCommand>Remove User From List</button>
                                 
                                 <button kendoGridCancelCommand>Cancel</button>
                             </ng-template>

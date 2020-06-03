@@ -84,10 +84,11 @@ app.put('/private/updateComment', commentsRoute);
 app.put('/private/deleteComment', commentsRoute);
 
 app.delete('/private/removeUserPermission/:mapID&:userID&:permission', mapsRoute)
-app.post('/private/updateUserPermission', mapsRoute)
+app.delete('/private/removeGroupPermission/:mapID&:groupID', mapsRoute)
 app.post('/private/addNewPermission', mapsRoute)
 app.get('/private/getSharedMaps/:userID', mapsRoute);
 app.get('/private/searchNodes/:nodeName', mapsRoute);
+
 
 app.put('/private/addNewConnection', connectionsRoute);
 app.put('/private/deleteConnection', connectionsRoute);
