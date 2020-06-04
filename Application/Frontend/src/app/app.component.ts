@@ -33,7 +33,7 @@ export class AppComponent {
     password: new FormControl(),
 
   });
-  fullName = sessionStorage.userFullName;
+  fullName = "";
   inputTextSearch: string;
   showSearchResults: boolean = false;
   searchResults: any[] = [];
@@ -45,16 +45,19 @@ export class AppComponent {
   ngOnInit() {
     // this.logOut()
     // this.router.navigate(['/login'])
-    this.router.navigate(['/logedHome']) //remove at the end of debug
+      this.router.navigate(['/logedHome']) //remove at the end of debug
   }
 
   isLoggedIn() {
+    this.fullName = sessionStorage.userFullName;
     return sessionStorage.userFullName != null;
   }
 
   logOut() {
     sessionStorage.clear()
   }
+
+
 
   searchNodesAndMaps() {
     this.searchResults = [];

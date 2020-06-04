@@ -1,7 +1,7 @@
 <div>
     <mat-tab-group>
         <mat-tab label="My Maps ({{totalMapsCounter}}) & Folders ({{totalFolderCounter}}):">
-            <div style="padding-left: 25px; margin: auto;">
+            <!-- <div style="padding-left: 25px; margin: auto;">
                 <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
                     <tr>
                         <td><span class="k-icon k-i-pencil"></span> Edit properties</td>
@@ -11,7 +11,7 @@
                         <td><span class="k-icon k-i-lock"></span> File Permissions</td>
                     </tr>
                 </table>
-            </div>
+            </div> -->
             <div style="padding-top: 5%;">
 
                 <div>
@@ -55,22 +55,22 @@
                                         <span>
                                             <span *ngIf="dataItem.text!='/'"
                                                 style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
-                                                (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span>
+                                                (click)="preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')" matTooltip="Edit properties"></span>
                                             <!-- update-->
                                             <span
                                                 *ngIf="dataItem.text!='/' || (dataItem.text=='/' && dataItem.items.length!=0)"
                                                 style="margin-right: 10px; cursor: pointer;"
                                                 (click)="addFolderCheckOut.reset();addMapCheckOut.reset();openDialog(dataItem)"
-                                                class="k-icon k-i-delete"></span><!-- delete-->
+                                                class="k-icon k-i-delete"  matTooltip="Delete Folder"></span><!-- delete-->
                                             <!-- <span style="margin-right: 10px;" (click)="openDialog(dataItem)" class="k-icon k-i-lock"></span>Permissions -->
                                         </span>
                                         <span>
                                             <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-plus"
-                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"></span>
+                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addFolderModal')"  matTooltip="Add new sub-folder"></span>
                                             <!-- add subFolder-->
                                             <span style="margin-right: 10px; cursor: pointer;"
                                                 class="k-icon k-i-table-insert"
-                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addMapModal')"></span>
+                                                (click)="addFolderCheckOut.reset();addMapCheckOut.reset();clickUpdateDataItem(dataItem);modalService.open('addMapModal')" matTooltip="Add new map"></span>
                                             <!-- addMap-->
                                         </span>
 
@@ -80,16 +80,16 @@
                                         <span>
                                             <span *ngIf="dataItem.permission != 'Read'"
                                                 style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
-                                                (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"></span>
+                                                (click)="addMapCheckOut.reset();preOpen_editPropertiesModal(dataItem);clickUpdateDataItem(dataItem);modalService.open('editPropertiesModal')"  matTooltip="Edit properties"></span>
                                             <!-- update-->
                                             <span *ngIf="dataItem.permission == 'Owner'"
                                                 style="margin-right: 10px; cursor: pointer;"
                                                 (click)="addFolderCheckOut.reset();openDialog(dataItem)"
-                                                class="k-icon k-i-delete"></span><!-- delete-->
+                                                class="k-icon k-i-delete"  matTooltip="Delete Map"></span><!-- delete-->
                                             <span *ngIf="dataItem.permission == 'Owner'"
                                                 style="margin-right: 10px; cursor: pointer;"
                                                 (click)="clickUpdateDataItem(dataItem);loadPermissionTable();openPermissionsModal();"
-                                                class="k-icon k-i-lock"></span><!-- Permissions-->
+                                                class="k-icon k-i-lock"  matTooltip="Edit Permissions"></span><!-- Permissions-->
                                             <span style="font-size: 12px;"><i><b>{{dataItem.permission}}</b></i></span>
                                         </span>
                                     </span>
@@ -112,25 +112,35 @@
             <!-- SHARED MAPS -->
 
             <div style="font-size: 14px; padding-top : 15px;">
-                <table style="width: 100%;">
+                <table style="width: 100%;;">
                     <tr style="color: rgb(196, 196, 196);">
                         <td></td>
                         <td>Map Name:</td>
                         <td>Your Permission:</td>
-                        <td>Move to Folder:</td>
-                        <td>Action:</td>
+                        <td>Select Map:</td>
                     </tr>
                     <tr *ngFor="let sharedMap of sharedMapList_notAssociated; index as i">
-                        <td class="k-icon k-i-table-align-middle-center"></td>
-                        <td style="vertical-align:center; font-size: 13px;">{{sharedMap.MapName}}</td>
-                        <td style="vertical-align:center; font-size: 13px;">{{sharedMap.permission}}</td>
-                        <td style="vertical-align:center; font-size: 13px;">
-                            
+                        <td  style="padding-top : 2%;" class="k-icon k-i-table-align-middle-center"></td>
+                        <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">{{sharedMap.MapName}}</td>
+                        <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">{{sharedMap.permission}}</td>
+                        <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">
+                            <mat-checkbox (change)="checkCheckBoxvalue($event,sharedMap)"></mat-checkbox>
+                        </td>
+                        
+                    </tr>
+                    <tr *ngIf="sharedMapList_notAssociated.length != 0">
+                        <td style = "padding-top: 5%; text-align:center;" colspan="4"><b>Add all selected maps ({{sharedMapsToAddMyTree.length}}) to Folder:</b></td>
+                    </tr>
+                    <tr  colspan="4" *ngIf="sharedMapList_notAssociated.length != 0">
+                        <td colspan="4" style = "text-align:center;">
                             <kendo-dropdownlist [data]="folderNamesList" [textField]="'name'" [valueField]="'folderID'"
-                                (ngModel)="folderToSelected">
+                            [(ngModel)]="folderToSelected">
                             </kendo-dropdownlist>
                         </td>
-                        <td><button (click)="AssociatedMap(sharedMap)">Move to Folder!</button></td>
+                    </tr>
+                    <tr  colspan="4" *ngIf="sharedMapList_notAssociated.length != 0">
+                        <td colspan="4"style = "text-align:center;">
+                            <button (click)="AssociatedMap()">Move to Folder!</button></td>
                     </tr>
                 </table>
             </div>

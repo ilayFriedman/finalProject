@@ -6,7 +6,7 @@
         </mat-tab-group>
 
     </div>
-    <div style="padding-left: 25px; margin: auto; text-align: center;">
+    <!-- <div style="padding-left: 25px; margin: auto; text-align: center;">
         <table style="width: 100%; color: rgb(196, 196, 196); margin: auto; font-size: 12px;">
             <tr>
                 <td><span class="k-icon k-i-pencil"></span> Edit Group</td>
@@ -14,7 +14,7 @@
                 <td><span><mat-icon>group_add</mat-icon></span>Add new group</td>
             </tr>
         </table>
-    </div>
+    </div> -->
 
     <div style="padding-top: 5%;">
         <div style="padding-left: 25px; padding-bottom: 5px;">
@@ -34,10 +34,10 @@
         </kendo-dialog>
 
 
-            <span><input #category [(ngModel)]="groupsArray[0].items" placeholder="Search Groups.." /></span>
-            <span  style="font-size: 14px; font-family: 'Calibri', ssans-seif;"><b><i> No results</i></b></span>
+            <span><input [(ngModel)]="searchTerm" #category placeholder="Search Groups.." (keyup)='onkeyup(category.value)'/></span>
+            <span *ngIf="parsedData.length == 0" style="font-size: 14px; font-family: 'Calibri', ssans-seif;"><b><i> No results</i></b></span>
             </div>
-        <kendo-treeview [nodes]="groupsArray" textField="text" childrenField="items" [animate]="true" [expandBy]="'text'"
+        <kendo-treeview [nodes]="parsedData" textField="text" childrenField="items" [animate]="true" [expandBy]="'text'"
         kendoTreeViewExpandable kendoTreeViewHierarchyBinding childrenField="items" [children]="children" [hasChildren]="hasChildren" [animate]="true" [expandBy]="'text'" [(expandedKeys)]="expandedKeys"
         (collapse)="handleCollapse($event)" (expand)="handleExpand($event)">
             <ng-template kendoTreeViewNodeTemplate let-dataItem>
@@ -50,15 +50,15 @@
                     <span style="margin: 5px;" *ngIf="mouseOverNode==dataItem">
                         <!-- title options -->
                         <span *ngIf="dataItem.isTitle != null && dataItem.text=='Owner Groups'">
-                            <mat-icon (click)="modalService.open('addGroupModal');" style="cursor: pointer;margin-right: 10px;">group_add</mat-icon><!--add new group-->
+                            <mat-icon (click)="modalService.open('addGroupModal');" style="cursor: pointer;margin-right: 10px;"  matTooltip="Add new Group">group_add</mat-icon><!--add new group-->
                             <span style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-delete"
-                            title="Permanently delete group '{{dataItem.text}}'" (click)="openDialog(dataItem);"></span><!-- delete title-->
+                            (click)="openDialog(dataItem);"  matTooltip="Delete All Groups"></span><!-- delete title-->
                         </span>
                         <span *ngIf="dataItem.isTitle == null">
                             <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-pencil"
-                                title="Edit group '{{dataItem.text}}' description" (click)="this.openModalWithDataItem(dataItem,'editPropertiesGroupModal');"></span><!-- edit description-->
+                                 (click)="this.openModalWithDataItem(dataItem,'editPropertiesGroupModal');"  matTooltip="Edit properties"></span><!-- edit description-->
                             <span *ngIf="dataItem.permission == 'Owner'" style="margin-right: 10px; cursor: pointer;" class="k-icon k-i-delete"
-                                title="Permanently delete group '{{dataItem.text}}'" (click)="openDialog(dataItem);"></span><!-- delete-->
+                                 (click)="openDialog(dataItem);"  matTooltip="Delete Group"></span><!-- delete-->
                         </span>
                     </span>
                 </span>

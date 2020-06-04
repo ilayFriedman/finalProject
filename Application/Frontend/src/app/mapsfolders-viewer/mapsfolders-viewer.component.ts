@@ -78,10 +78,12 @@ export class MapsfoldersViewerComponent implements OnInit {
   sharedMapList_Associated = []
   folderToSelected : Object  
   senderPermissionWindow: any;
+  sharedMapsToAddMyTree = [];
  
   // groups permission  butttons
   groupAdderClick = false
   ownerGroupsNames = this.groupsService.allMyGroups.filter(obj=> obj.permission == "Owner");
+
   
   
 
@@ -887,6 +889,17 @@ newUserPermissionChoose: any
 
 // ############### permissions- not Associated  functionallity ########################
 
+checkCheckBoxvalue(event, clickedMap){
+  if(event.checked){
+    this.sharedMapsToAddMyTree.push(clickedMap)
+  }else{
+    this.sharedMapsToAddMyTree = this.sharedMapsToAddMyTree.filter(obj=>obj != clickedMap.mapID)
+  }
+  console.log(event.checked)
+
+
+}
+
 getNodeFromTree(currNode,folderID){
   if(currNode.isFolder && currNode.folderID == folderID){
     return currNode
@@ -899,20 +912,30 @@ getNodeFromTree(currNode,folderID){
   }
 
 }
-AssociatedMap(sharedMap){
+AssociatedMap(){
   // console.log(sharedMap)
   // console.log(this.folderToSelected)
+  // console.log(this.sharedMapsToAddMyTree)
+//   "mapID" : req.body.mapID, "mapName": req.body.mapName
   var folderToSelected = JSON.parse(JSON.stringify(this.folderToSelected))
-  this.folderHandler.addExistMapToFolder(folderToSelected.folderID,sharedMap.mapID,sharedMap.MapName).then(res => {
-    this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != sharedMap.mapID);
-    this.sharedMapList_Associated.push(sharedMap)
-    this.folderToSelected == ''
+  var subList = []
+  this.sharedMapsToAddMyTree.forEach(element => {
+    subList.push({mapID: element.mapID, mapName: element.MapName})
+  });
 
-    // add to tree
-    var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected .folderID)
-    parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
-    // console.log(parentFolder)
-    this.totalMapsCounter++;
+  // console.log(subList)
+  this.folderHandler.addExistMapToFolder(folderToSelected.folderID,subList).then(res => {
+    this.sharedMapsToAddMyTree.forEach(sharedMap => {
+      this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != sharedMap.mapID);
+      this.sharedMapList_Associated.push(sharedMap)
+      this.folderToSelected == ''
+
+      // add to tree
+      var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected .folderID)
+      parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
+      // console.log(parentFolder)
+      this.totalMapsCounter++;
+    });
 
   }).catch
     (err => {

@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
     password: new FormControl(),
 
   });
-  fullName = "sessionStorage.userFullName";
+  fullName = sessionStorage.userFullName;
   emailInput = ""
   pwdSent = false;
   errMessage = "";

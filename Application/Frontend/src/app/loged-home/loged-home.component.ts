@@ -35,8 +35,11 @@ export class LogedHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-        this.ensureUserIsLoggedIn();
+    this.ensureUserIsLoggedIn();
+    if(sessionStorage.token != null){
+        
         this.getAllUsers();
+    }
   }
   getAllUsers() {
     this.usersService.getUsers().then(response =>{   
