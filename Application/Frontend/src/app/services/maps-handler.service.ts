@@ -24,13 +24,16 @@ export class MapsHandlerService {
     return this.http.post(this.localUrl + '/private/createMap', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
-  updateInUse(inUse: boolean) {
+  updateInUse(inUseBy: string) {
+    if (inUseBy != " " && (this.currMap_mapViewer.inUseBy != " " || this.getUserPermission() < 2)) { //if second person try to get in
+      return;
+    }
     let data = {
       '_id': this.currMap_mapViewer._id,
-      'inUse': inUse
+      'inUseBy': inUseBy
     }
     this.http.put(this.localUrl + '/private/updateMapInuse', data, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise().then(res => {
-      this.currMap_mapViewer.inUse = inUse;
+      this.currMap_mapViewer.inUseBy = inUseBy;
     }).catch
       (err => {
         console.log("error update in use");
@@ -105,6 +108,14 @@ export class MapsHandlerService {
       return 1;
     }
 
+  }
+
+  checkMapDisplayStatus() {
+    if (this.currMap_mapViewer.inUseBy != " " && this.currMap_mapViewer.inUseBy != sessionStorage.userId) {
+      return 1;
+    }
+    else
+      return this.getUserPermission();
   }
 
   // Shared maps //

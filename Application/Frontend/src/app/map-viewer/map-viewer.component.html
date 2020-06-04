@@ -32,7 +32,7 @@
                 <mat-toolbar-row>
                     <div style="text-align: center; width: 100%; ">
                         <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button
-                            [matMenuTriggerFor]="saveOptions" [disabled]="mapHandler.getUserPermission() &lt; 2">
+                            [matMenuTriggerFor]="saveOptions" [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
                             <span class="k-icon k-i-save"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Print" mat-icon-button (click)="printOption()">
@@ -81,16 +81,16 @@
                             <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
                             <br>
                             <button mat-button (click)="openModal('import-modal')"
-                                [disabled]="mapHandler.getUserPermission() &lt; 2">Import</button><br>
+                                [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">Import</button><br>
                         </mat-menu>
 
                         <mat-menu #saveOptions="matMenu">
                             <button class="mapsMenu" mat-button (click)="save()"
-                                [disabled]="mapHandler.getUserPermission() &lt; 2"> Save
+                                [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2"> Save
                             </button>
                             <br>
                             <button class="mapsMenu" mat-button (click)="saveAs()"
-                                [disabled]="mapHandler.getUserPermission() &lt; 2">
+                                [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
                                 Save As
                             </button>
                         </mat-menu>
@@ -116,7 +116,7 @@
 <div id="block_container">
     <div id="sideBar" class="doNotPrint">
         <div class="titleArea">Map Shapes</div>
-        <div [hidden]="mapHandler.getUserPermission() &lt; 2" id="myPalette"></div>
+        <div [hidden]="mapHandler.checkMapDisplayStatus() &lt; 2" id="myPalette"></div>
         <div class="titleArea">Map Statistics</div>
         <div style="height: 50%">
             <mat-accordion>

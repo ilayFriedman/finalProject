@@ -143,7 +143,7 @@ router.post('/private/createMap', async function (req, res) {
             },
             Subscribers: [],
             ContainingFolders: [],
-            inUse: false
+            inUseBy: " "
         });
         newMap.save(function (err, saveRes) {
             if (err) {
@@ -374,12 +374,12 @@ router.put('/private/updateMap', async function (req, res) {
 
 router.put('/private/updateMapInuse', async function (req, res) {
     if (req.body._id) {
-        map.findOneAndUpdate({ _id: req.body._id }, { 'inUse': req.body.inUse }, function (err, mongoRes) {
+        map.findOneAndUpdate({ _id: req.body._id }, { 'inUseBy': req.body.inUseBy }, function (err, mongoRes) {
             if (err) {
                 res.status(500).send("Server error occurred.");
 
             } else {
-                res.status(200).send('Map inUse updated successfully.');
+                res.status(200).send('Map in use by updated successfully.');
 
             }
         });

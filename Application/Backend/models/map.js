@@ -37,8 +37,8 @@ const MapSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    inUse: {
-        type: Boolean,
+    inUseBy: {
+        type: String,
         required: true
     }
 })
