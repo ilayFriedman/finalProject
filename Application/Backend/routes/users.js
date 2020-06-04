@@ -178,5 +178,9 @@ router.post('/restorePassword', async function (req, res) {
     }
 });
 
+router.delete('/private/removeUser', async function (req, res) {
+    user.deleteOne({'_id': req.decoded._id})
+});
+
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;

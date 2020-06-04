@@ -84,10 +84,11 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
                         } else {
                             // delete all group users from group-permission-maps
                             // get all maps that groups has permission to
-                            var groupUsers = maps.getAllGroupMember(result,req.decoded._id,true)
+                            var groupUsers = maps.getAllGroupMember(result,req.decoded._id,false) // UsersList in group
                             var groupElem = [{ id: req.params.id, type: "Group" }]
                             map.updateMany({$or: [{ 'Permission.Owner': {id: req.params.id.toString(), type: "Group"} }, { 'Permission.Write': {id: req.params.id.toString(), type: "Group"} },
-                            { 'Permission.Read': {id: req.params.id.toString(), type: "Group"} }]},{ $pullAll: { ["Permission.Write"]: groupUsers.concat(groupElem),  ["Permission.Read"]: groupUsers.concat(groupElem)} }, async function (err, mapResult) {
+                            { 'Permission.Read': {id: req.params.id.toString(), type: "Group"} }]},
+                            { $pullAll: { ["Permission.Write"]: groupUsers.concat(groupElem),  ["Permission.Read"]: groupUsers.concat(groupElem),["Permission.Owner"]: groupUsers.concat(groupElem)} }, async function (err, mapResult) {
                                if(err){
                                 
                                    res.status(500).send('Server error occured.');

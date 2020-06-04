@@ -44,6 +44,7 @@ export class GroupsComponent implements OnInit {
     { text: "Shared Groups :Manager Permission", isTitle: "true", items: [] },
     { text: "Shared Groups :Member Permission", isTitle: "true", items: [] },
   ];
+  public parsedData = this.groupsArray;
   public expandedKeys: any[] = ['Owner Groups'];
   addGroupCheckOut;
   selectedNode : any = { text: "", Description: "" };
@@ -70,7 +71,7 @@ export class GroupsComponent implements OnInit {
   watcherPermission = "";
   senderPermissionWindow: any;
   startWrite=false
-
+  public searchTerm = '';
   constructor(private router: Router, private http: HttpClient, private groupsService: GroupsService,
     private usersService: UsersService, public modalService: ModalService,
     private formBuilder: FormBuilder) {
@@ -102,6 +103,7 @@ export class GroupsComponent implements OnInit {
         totalGroups.forEach(element => {
           this.groupsService.allMyGroups.push(element)
         });
+        
       }, error => {
         console.log(error.error);
         alert(error.error);
@@ -120,6 +122,9 @@ export class GroupsComponent implements OnInit {
         this.groupsArray[2].items.push(element)
       }
     });
+
+    this.parsedData = this.groupsArray
+    
   }
 
 // UPDATE
@@ -294,6 +299,39 @@ export class GroupsComponent implements OnInit {
   public mouseOverNodeChanger(dataItem) {
     this.mouseOverNode = dataItem
   }
+
+  public onkeyup(value: string): void {
+    if(value == ''){
+      this.parsedData = this.groupsArray
+    }
+    else{
+      this.parsedData = this.search(this.groupsArray[0].items.concat(this.groupsArray[1].items).concat(this.groupsArray[2].items), value);
+    }
+
+    // console.log(this.parsedData)
+  }
+
+  public search(items: any[], term: string): any[] {
+    return items.reduce((acc, item) => {
+      if (this.contains(item.text, term)) {
+        acc.push(item);
+      } else if (item.items && item.items.length > 0) {
+        const newItems = this.search(item.items, term);
+
+        if (newItems.length > 0) {
+          acc.push({ text: item.text, items: newItems });
+        }
+      }
+
+      return acc;
+    }, []);
+  }
+
+  public contains(text: string, term: string): boolean {
+    return text.toLowerCase().indexOf(term.toLowerCase()) >= 0;
+  }
+
+
 
  // ############### Permissions functionallity ########################
 
