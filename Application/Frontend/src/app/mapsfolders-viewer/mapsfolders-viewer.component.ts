@@ -202,7 +202,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         self.selectedNode.items.push({ text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true })
         this.folderNamesList.push({folderID: jsonRes._id, name: jsonRes.Name})
         this.actionInModalIsSuccecs = true
-        setTimeout(() => { this.closeModal("addFolderModal") }, 1000);
+       this.closeModal("addFolderModal");
         this.totalFolderCounter++;
       }).catch
         (err => {
@@ -244,7 +244,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         // add to tree-view
         self.selectedNode.items.unshift({ text: jsonRes.MapName, mapID: jsonRes._id, parentNode: this.selectedNode, Description: jsonRes.Description, usersPermissionsMap: "", permission: "Owner",isFolder: false })
         this.actionInModalIsSuccecs = true
-        setTimeout(() => { this.closeModal("addMapModal") }, 1000);
+        this.closeModal("addMapModal")
         this.totalMapsCounter++;
 
       }).catch
@@ -314,7 +314,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         this.changeDescription = false;
         this.changeFileName = false;
         this.editPropertiesCheckOut.reset();
-        setTimeout(() => { this.closeModal("editPropertiesModal") }, 1000);
+        this.closeModal("editPropertiesModal")
 
       }).catch
         (err => {
@@ -332,7 +332,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         this.changeDescription = false;
         this.changeFileName = false;
         this.editPropertiesCheckOut.reset();
-        setTimeout(() => { this.closeModal("editPropertiesModal") }, 1000);
+        this.closeModal("editPropertiesModal")
       }).catch
         (err => {
           console.log("error with update properties map- promise return");

@@ -35,6 +35,8 @@ import { LoginComponent } from './login/login.component';
 import { NgxPrintModule } from 'ngx-print';
 import { OpenPageModule } from './open-page/open-page.module';
 import { CanDeactivateGuard } from './can-deactivate.guard';
+import { InputsModule } from '@progress/kendo-angular-inputs';
+
 
 
 
@@ -86,7 +88,8 @@ import { CanDeactivateGuard } from './can-deactivate.guard';
     MatTooltipModule,
     MatSlideToggleModule,
     OpenPageModule,
-    MatCardModule
+    MatCardModule,
+    InputsModule
   ],
   providers: [
     MapsHandlerService,

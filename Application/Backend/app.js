@@ -68,7 +68,7 @@ app.post('/register', usersRoute);
 app.post('/restorePassword', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
-app.get('/private/getUsersDetailsByIds/:ids', usersRoute);
+app.get('/private/getUserDetails', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);
@@ -114,6 +114,7 @@ app.get("/private/GetGroupsMembers/:id", groupsRoute);
 app.post('/private/addUserToGroup', groupsRoute);
 app.delete("/private/RemoveUserFromGroup/:groupId&:userID&:permission", groupsRoute);
 app.post('/private/updateGroupUserPermission', groupsRoute);
+app.get('/private/getGroupRoots/:id', groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);

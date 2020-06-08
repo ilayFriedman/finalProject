@@ -40,16 +40,17 @@ export class UsersService {
     return this.http.post(this.localUrl + '/register', data, { responseType: 'text' });
   }
 
-  sendMailToUser(reciever_mail, subject, text){
-    const bodyReq = {
-      reciever_mail: reciever_mail,
-      subject: subject,
-      text: text,
-    }
-    return this.http.post(this.localUrl + '/private/sendMailToUser', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
-  }
-
   restorePassword(Username){
     return this.http.post(this.localUrl + '/restorePassword', {Username: Username}, {responseType: 'text'}).toPromise()
   }
+
+  getUserDetails(){
+    return this.http.get(this.localUrl + '/private/getUserDetails',{ headers: { 'token': sessionStorage.token }}).toPromise()
+  }
+  
+  changeInfo(data){
+    return this.http.post(this.localUrl + '/private/changeInfo', data, { headers: {'token': sessionStorage.token},  responseType: 'text' }).toPromise();
+  }
+
+    
 }

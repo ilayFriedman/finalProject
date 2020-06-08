@@ -173,9 +173,10 @@
                 
                 <span style="font-size: 25px"><b><mat-icon style="margin-right: 10px;">people_alt</mat-icon>Group "{{selectedNode.text}}":</b></span>
                     <h4>{{selectedNode.GroupDescription}}</h4>
-                    <div style="font-size: 14px;" ><b>Your Permission in this group: </b>{{watcherPermission}}
-                        <br><b>Note:</b> you can not see yourself in the list<br><b>Note:</b> Only group owners can see other group owners
-                        <br><br>Here you can see groups memebers and their permissions for this groups.<br><br></div>
+                    Here you can see groups memebers and their permissions for this groups.<br><br><br>
+                    <div style="font-size: 17px;" ><b>Your Permission in this group: </b>{{watcherPermission}}<br><br>
+                        <br><b>Note:</b> you can't see yourself in the list<br><b>Note: </b>Only group owners can manage permissions for other owners
+                        <br><br></div>
                     <div>
                     <!-- (cancel)="cancelHandler($event)" 
                     (save)="addNewUserToPermission($event)" (remove)="openUserPerimssionDialog($event)" -->
@@ -197,6 +198,12 @@
                             style="text-align: center; color:red"><b><i>The user dosen't exist!</i></b></p>
                     </ng-template>
 
+                    <kendo-grid-column field="number" title="#" [width]="40">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        {{rowIndex+1}}
+                    </ng-template>
+                </kendo-grid-column><!--index-->
+
                     <kendo-grid-column field="username" title="Username (E-mail)" [width]="180"
                     [minResizableWidth]="100" [hidden]="watcherPermissionStatus() == 'Member'">
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -216,11 +223,11 @@
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex" >
                         <!-- new row -->
                         <span *ngIf="rowIndex == -1">
-                            <input type="radio" [disabled]="watcherPermissionStatus() == 'Member' || newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Member'" name="{{newUserPermission}}" id="Member"
+                            <input type="radio" [disabled]="watcherPermissionStatus() == 'Member' || managerBlockOwnersRows(dataItem) || newUserPermission == '' || cleanFromDuplicates() || autoCompleteUserNamesFilterd.indexOf(newUserPermission) == -1" [checked]="dataItem.permission=='Member'" name="{{newUserPermission}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio"  [disabled]="watcherPermissionStatus() == 'Member'" [checked]="dataItem.permission=='Member'" name="{{dataItem.username}}" id="Member"
+                        <span *ngIf="rowIndex > -1"><input type="radio"  [disabled]="watcherPermissionStatus() == 'Member' || managerBlockOwnersRows(dataItem)" [checked]="dataItem.permission=='Member'" name="{{dataItem.username}}" id="Member"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
@@ -234,7 +241,7 @@
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() == 'Member'" [checked]="dataItem.permission=='Manager'" name="{{dataItem.username}}" id="Manager"
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() == 'Member' || managerBlockOwnersRows(dataItem)" [checked]="dataItem.permission=='Manager'" name="{{dataItem.username}}" id="Manager"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
                 </kendo-grid-column>
@@ -248,15 +255,15 @@
                             (change)="radioButtonsUpdate($event,rowIndex)" />
                         </span>
                         <!-- other rows -->
-                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() != 'Owner'" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
+                        <span *ngIf="rowIndex > -1"><input type="radio" [disabled]="watcherPermissionStatus() != 'Owner' || managerBlockOwnersRows(dataItem)" [checked]="dataItem.permission=='Owner'" name="{{dataItem.username}}" id="Owner"
                             (change)="radioButtonsUpdate($event,rowIndex)" /></span>
                     </ng-template>
 
                 </kendo-grid-column>
                 <kendo-grid-command-column title="Actions" width="160"  [hidden]="watcherPermissionStatus() == 'Member'" >
                     <!--actions column-->
-                    <ng-template kendoGridCellTemplate let-isNew="isNew">
-                        <button kendoGridRemoveCommand>Remove User From List</button>
+                    <ng-template kendoGridCellTemplate let-dataItem  let-isNew="isNew">
+                        <button kendoGridRemoveCommand [disabled]="managerBlockOwnersRows(dataItem)">Remove User From List</button>
                         <button kendoGridSaveCommand
                             [disabled]="this.newUserPermissionChoose == null || newUserPermission == ''">Add</button>
                         <button kendoGridCancelCommand>Cancel</button>
@@ -284,6 +291,7 @@
                     
                     </div>
                     <div *ngIf="dbAction" class="k-i-loading"></div>
+                    <div><b>Total {{currPermissionMapDATA.length +1 }} users (include yourself) in this group</b></div>
             </div>
             </div>
         </jw-modal>

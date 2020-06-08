@@ -99,7 +99,7 @@ router.delete('/private/deleteGroup/:id', async function (req, res) {
                                     groupUsers.forEach(async (element) => {
                                         promises.push(user.findOne({ "_id": element.id }, async function (err, userRes) {
                                             if (userRes.getPermissionUpdate) {
-                                                var mailSubject = "Map Permission Revocation: Group Removoal"
+                                                var mailSubject = "Map Permission Revocation: Group Removal"
                                                 var text = "<div style='text-align: center; direction: ltr;'><h3>Hi There, " + userRes.FirstName + " " + userRes.LastName + "!</h3>\n\nWe wanted to update you that "
                                                     + " Following deletion of a group that you were a member of: There are changes to permissions you have for different maps.<br><br>Please log in for more details in <a href='http://132.72.65.112:4200'>this link</a>.<br><br>Have a great day!<br> ME-Maps system</div>"
                                                 try {
@@ -169,19 +169,43 @@ router.post('/private/addUserToGroup', async function (req, res) {
     user.findOne({ 'Username': req.body.username }, function (err, result) {
         if (result) {
             // user exist!
-            group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
-                if (err) {
-                    res.status(500).send("Server error occurred.");
-                    res.end();
-                } else if (resultUpadte) {
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify(result));
-                } else{
-                    res.status(404).send("Could not find the requested Group Id.");
+            console.log(req.body.rootsList)
+            map.find({_id: { $in: req.body.rootsList }, $or: [{ 'Permission.Owner.id': req.body.groupId }, { 'Permission.Write.id': req.body.groupId }, { 'Permission.Read.id': req.body.groupId }]},function (err, rootsRes) {
+                if(rootsRes){
+                    console.log(rootsRes)
                 }
             });
+            // ,
+            // {$addToSet:{id: result._id, type: "GroupPermission"}}
+            // group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
+            //     if (err) {
+            //         res.status(500).send("Server error occurred.");
+            //         res.end();
+            //     } else if (resultUpadte) {
+            //         res.writeHead(200, { "Content-Type": "application/json" });
+            //         res.end(JSON.stringify(result));
+            //     } else{
+            //         res.status(404).send("Could not find the requested Group Id.");
+            //     }
+            // });
         } else {
             res.status(404).send("Could not find the requested User.");
+        }
+    });
+
+});
+
+
+router.get('/private/getGroupRoots/:id', async function (req, res) {
+    map.find({ 'Permission.Owner': {id: req.params.id.toString(), type: "Group"}, $addToSet:{"Permission.Owner": {id: 123, type: "bla"} }}, function (err, rootsRes) {
+        if(err){
+            console.log(err)
+            res.status(500).send("Server error occurred.");
+        }
+        else{
+            console.log(rootsRes)
+            res.status(200).send("OK!");
+            res.end();
         }
     });
 
