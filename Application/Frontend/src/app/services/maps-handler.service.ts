@@ -10,6 +10,7 @@ export class MapsHandlerService {
   currMap_mapViewer: any;
   myDiagram: any;
   folderNamesList: any = [];
+  isReadOnlyMode: boolean = false;
 
 
   constructor(private http: HttpClient) { }
@@ -28,6 +29,9 @@ export class MapsHandlerService {
     if (inUseBy != " " && (this.currMap_mapViewer.inUseBy != " " || this.getUserPermission() < 2)) { //if second person try to get in
       return;
     }
+    if (inUseBy == " ")
+      this.isReadOnlyMode = false;
+
     let data = {
       '_id': this.currMap_mapViewer._id,
       'inUseBy': inUseBy
@@ -112,6 +116,9 @@ export class MapsHandlerService {
 
   checkMapDisplayStatus() {
     if (this.currMap_mapViewer.inUseBy != " " && this.currMap_mapViewer.inUseBy != sessionStorage.userId) {
+      this.isReadOnlyMode = true;
+      console.log(this.isReadOnlyMode);
+
       return 1;
     }
     else

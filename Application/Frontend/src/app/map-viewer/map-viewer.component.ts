@@ -43,7 +43,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   });
   panelOpenState = false;
   linkStats = [];
-  myFiles: FileList;
+  doUndoFilter: boolean = false;
 
   constructor(private modalService: ModalService, private router: ActivatedRoute,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
@@ -153,10 +153,10 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
       { category: "Quality", text: "Quality", fill: "#ffffff", stroke: "#000000", strokeWidth: 1, description: "Add a Description" },
     ], [
       // the Palette also has a disconnected Link, which the user can drag-and-drop
-      { category: "AchievedBy", text: "Achieved By", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "ConsistsOf", text: "Consists Of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "Association", text: "Association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
-      { category: "Contribution", text: "Contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+      { category: "AchievedBy", text: "achieved by", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "ConsistsOf", text: "consists of", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Association", text: "association", toArrow: "", routing: go.Link.Normal, description: "Add a Description", points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) },
+      { category: "Contribution", text: "contribution", description: "Add a Description", routing: go.Link.Normal, curve: go.Link.Bezier, curviness: 60, points: new go.List().addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
     ])
 
     var myOverview =
@@ -195,6 +195,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         // "relinkingTool.linkValidation": validLink2,
         "toolManager.mouseWheelBehavior": go.ToolManager.WheelNone,
         "panningTool.isEnabled": false,
+
         //"isModelReadOnly": true
       });
     var nodeSelectionAdornmentTemplate =
@@ -293,6 +294,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         $(go.Panel, "Auto",
           { name: "PANEL" },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("visible", "visible").makeTwoWay(),
           $(go.Shape, "Ellipse",  // default figure
             {
               portId: "", // the default port: if no spot on link data, use closest side
@@ -306,7 +308,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
             //   if (sel) return "yellow"; else return "white"
             // }).ofObject(""),
             new go.Binding("stroke", "stroke").makeTwoWay(),
-            new go.Binding("strokeWidth", "strokeWidth").makeTwoWay()
+            new go.Binding("strokeWidth", "strokeWidth").makeTwoWay(),
           ),
           $(go.TextBlock,
             {
@@ -356,6 +358,8 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         $(go.Panel, "Auto",
           { name: "PANEL" },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("visible", "visible").makeTwoWay(),
+
           $(go.Shape, "Rectangle",  // default figure
             {
               portId: "", // the default port: if no spot on link data, use closest side
@@ -404,6 +408,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
         new go.Binding("routing", "routing"),
         new go.Binding("curve", "curve"),
+        new go.Binding("visible", "visible").makeTwoWay(),
         new go.Binding("curviness", "curviness"),
         {
           selectable: true,
@@ -453,6 +458,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         new go.Binding("routing", "routing"),
         new go.Binding("curve", "curve"),
         new go.Binding("curviness", "curviness"),
+        new go.Binding("visible", "visible").makeTwoWay(),
         { selectable: true, relinkableFrom: true, relinkableTo: true, reshapable: true },
         new go.Binding("points").makeTwoWay(),
         $(go.Shape,  // the link path shape
@@ -477,6 +483,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         new go.Binding("curve", "curve"),
         new go.Binding("curviness", "curviness"),
         new go.Binding("points").makeTwoWay(),
+        new go.Binding("visible", "visible").makeTwoWay(),
         $(go.Shape,  // the link path shape
           { isPanelMain: true, strokeWidth: 1 },
           new go.Binding("stroke", "color"),  // shape.stroke = data.color
@@ -566,6 +573,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
         new go.Binding("curve", "curve").makeTwoWay().ofObject(),
         new go.Binding("curviness", "curviness").makeTwoWay().ofObject(),
         //new go.Binding("fromNode", "fromNode"),
+        new go.Binding("visible", "visible").makeTwoWay(),
         new go.Binding("points", "points").makeTwoWay(),
 
         //new go.Binding("points", "points").makeTwoWay(),
@@ -590,7 +598,6 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
             visible: true,
             name: "LABEL",
           },
-          new go.Binding("visible", "visible").makeTwoWay(),
           $(go.Shape, "RoundedRectangle",  // the label shape
             { fill: "white", stroke: null }),
           $(go.TextBlock,
@@ -719,13 +726,20 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
       result.subscribe(response => {
         this.isSaved = true;
-        alert("Map Updated Successfully")
+        // alert("Map Updated Successfully")
+        this.successSaved();
+
 
       }, error => {
         console.log(error.error)
       }
       );
     }
+  }
+
+  private successSaved() {
+    this.openModal("success-save-modal");
+    setTimeout(() => { this.closeModal("success-save-modal"); }, 1000);
   }
 
   generateImage(imgType) {
@@ -811,10 +825,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model);
   }
 
-  printFile() {
-    console.log(this.myFiles);
 
-  }
 
   importMap(fileList: FileList, modalID: string) {
     let file = fileList[0];
@@ -894,27 +905,59 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     if (this.filterRadiusForm.invalid) {
       return;
     }
+    console.log(this.mapHandler.myDiagram.model.nodeDataArray);
+
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(element => {
+      console.log(element);
+      if (element.id != this.currNode.data.id)
+        element.visible = false;
+    });
+    this.mapHandler.myDiagram.model.linkDataArray.forEach(element => {
+      element.visible = false;
+    });
+    console.log(this.currNode);
+
+    // this.currNode.visible = true;
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+    this.doUndoFilter = true;
     this.filterRadiusRec(this.currNode, this.filterRadiusForm.controls.filterRadius.value)
+    console.log(this.mapHandler.myDiagram.model);
+    // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+
+
     this.closeModal('filter-radius-modal')
   }
 
   filterRadiusRec(node, num: number) {
-    if (num == 0)
+    if (num == 0) {
+      // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
       return;
+    }
     var outLinkIter = node.findLinksOutOf();
     var intoLinkIter = node.findLinksInto();
     while (outLinkIter.next()) {
       var currLink = outLinkIter.value;
-      currLink.toNode.isSelected = true;
-      currLink.isSelected = true;
+      this.mapHandler.myDiagram.model.setDataProperty(this.mapHandler.myDiagram.model.nodeDataArray.find(node => node.id == currLink.toNode.data.id), "visible", true)
+      this.mapHandler.myDiagram.model.setDataProperty(this.mapHandler.myDiagram.model.linkDataArray.find(link => link.id == currLink.data.id), "visible", true)
       this.filterRadiusRec(currLink.toNode, num - 1);
     }
     while (intoLinkIter.next()) {
       var currLink = intoLinkIter.value;
-      currLink.fromNode.isSelected = true;
-      currLink.isSelected = true;
+      this.mapHandler.myDiagram.model.setDataProperty(this.mapHandler.myDiagram.model.nodeDataArray.find(node => node.id == currLink.fromNode.data.id), "visible", true)
+      this.mapHandler.myDiagram.model.setDataProperty(this.mapHandler.myDiagram.model.linkDataArray.find(link => link.id == currLink.data.id), "visible", true)
       this.filterRadiusRec(currLink.fromNode, num - 1);
     }
+  }
+
+  undoFilterRadius() {
+    this.mapHandler.myDiagram.model.nodeDataArray.forEach(element => {
+      element.visible = true;
+    });
+    this.mapHandler.myDiagram.model.linkDataArray.forEach(element => {
+      element.visible = true;
+    });
+    this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+    this.doUndoFilter = false;
   }
 
   getLinkStatistics() {

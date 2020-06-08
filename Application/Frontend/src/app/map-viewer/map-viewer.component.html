@@ -105,8 +105,15 @@
                 </mat-toolbar-row>
             </mat-toolbar>
         </span>
-        <span id="usavedError" *ngIf='!isSaved' style="display: inline-block; width: fit-content;">
-            Your changesare unsaved
+        <span id="usavedError" *ngIf='!isSaved && !mapHandler.isReadOnlyMode'
+            style="display: inline-block; width: fit-content; vertical-align: top;">
+            Your changes are unsaved
+        </span>
+        <span id="usavedError" *ngIf='mapHandler.isReadOnlyMode' style="display: inline-block; width: fit-content;">
+            You are in read only mode
+        </span>
+        <span>
+            <button (click)="undoFilterRadius()" *ngIf="doUndoFilter">undo filter</button>
         </span>
     </div>
 
@@ -184,9 +191,14 @@
     </span>
 </div>
 
-
-
-
+<!-- success in save map modal -->
+<jw-modal class="jw-modal" id="success-save-modal">
+    <div class="jw-modal-body">
+        <!-- <span class="close" (click)="closeModal('save-as-modal')">&times;</span> -->
+        <h1>Map saved successfully</h1>
+        <span class="k-icon k-i-check-outline" style="font-size: 100px; color: green;"></span>
+    </div>
+</jw-modal>
 
 <!-- filter radius modal -->
 <jw-modal class="jw-modal" id="filter-radius-modal">
@@ -217,7 +229,7 @@
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
         <h1>Save your map as:</h1>
-        <app-save-as-map></app-save-as-map>
+        <app-save-as-map (successSaved)="successSaved()"></app-save-as-map>
     </div>
 </jw-modal>
 
@@ -226,11 +238,8 @@
     <div class="jw-modal-body">
         <span class="close" (click)="closeModal('import-modal')">&times;</span>
         <!-- <mat-form-field appearance="outline" panelClass="example-class"> -->
-        <mat-label>Import Map From:</mat-label>
+        <h1>Import Map From:</h1>
         <input type="file" (change)="importMap($event.target.files, 'import-modal')">
-        <!-- </mat-form-field> -->
-
-        <!-- <button (click)="importMap($event.target.files)">Import</button> -->
     </div>
 </jw-modal>
 

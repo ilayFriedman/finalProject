@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MapsHandlerService } from '../services/maps-handler.service';
@@ -18,6 +18,9 @@ export class SaveAsMapComponent implements OnInit {
   });
   localUrl = environment.backendUrl;
   submitted = false
+  @Output("successSaved") successSaved: EventEmitter<any> = new EventEmitter();
+
+
   // save: any;
   constructor(private modalService: ModalService, private formBuilder: FormBuilder, private http: HttpClient, public mapHandler: MapsHandlerService) {
     // let save = document.getElementById("saveButton");
@@ -63,7 +66,8 @@ export class SaveAsMapComponent implements OnInit {
     result.subscribe(response => {
       this.submitted = false;
       this.mapHandler.currMap_mapViewer.inUse = true;
-      alert("Map Added Succsessfully!")
+      // alert("Map Added Succsessfully!")
+      this.successSaved.emit();
 
     }, error => {
       this.submitted = false;
