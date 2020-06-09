@@ -1,28 +1,134 @@
-<div class="change-user-info" style="margin-top: 5%; height: 800px">
-    <h1 class="change-user-infoTitle" style="text-align: center;">Change user info</h1>
-    <form class="form-style-5" [formGroup]="changeUserInfoForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-
-            <label class="form-lbl">Password:</label>
-            <input type="text" class="form-control" formControlName="password">
-            <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-                <div *ngIf="f.password.errors.required">Password is required</div>
-                <div *ngIf="f.password.errors.minlength">Password must have at least 6 characters</div>
-            </div>
-
-            <label class="form-lbl">First name:</label>
-            <input type="text" class="form-control" formControlName="firstName">
-            <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
-                <div *ngIf="f.firstName.errors.required">First name is required</div>
-            </div>
-
-            <label class="form-lbl">Last name:</label>
-            <input type="text" class="form-control" formControlName="lastName">
-            <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
-                <div *ngIf="f.lastName.errors.required">Last name is required</div>
-            </div>
-
-            <input type="submit" value="Submit changes" class="form-control">
+<div @fade class="allRegister">
+    <div @fade *ngIf="!done">
+        <div style="text-align: center; width: 100%; margin-bottom: 5%;" >
+            <h1 class="change-user-infoTitle" style="text-align: center;">Change user info</h1>
         </div>
-    </form>
+        <form class="form-style-5" [formGroup]="changeUserInfoForm" (ngSubmit)="onSubmit()">
+            <table style="margin: auto; padding : 15px; background: #f0f0f0; border-radius: 8px; "  *ngIf=" this.existUser != null"> 
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="formElements">
+                                <div>
+                                    <span style="font-size: 110%;"><b>Your Saved Username:</b></span>
+                                </div>
+                                <div>
+                                    {{existUser.Username}}
+                                </div>
+                            </div>
+                            
+                
+                            <div class="formElements" style=" display:flex; margin-bottom: 5px;">
+                                <span style="padding-right: 5px;">
+                                    <div>
+                                        <span style="font-size: 110%;"><b>Enter New password:</b></span><span style="font-size: 90%;"><i></i></span>
+                                    </div>
+                                    <div>
+                                        <input type="password" class="form-control" formControlName="password">
+                                        <div *ngIf="f.password.errors" class="invalid-feedback">
+                                            <div *ngIf="f.password.errors.required">Password is required</div>
+                                        </div>
+                                    </div>
+    
+                                </span>
+    
+                                <!-- <span>
+                                    <div>
+                                        <span class="form-lbl" style="font-size: 110%;"><b>Validate Password:</b></span><span style="font-size: 90%;"><i></i></span>
+                                    </div>
+                                    <div>
+                                        <input type="password" class="form-control" formControlName="password">
+                                        <div *ngIf=" f.password.errors" class="invalid-feedback">
+                                            <div *ngIf="f.password.errors.required">Password is required</div>
+                                        </div>
+                                    </div>
+                                </span> -->
+                            </div>
+                
+                            
+                            <div class="formElements" style=" display:flex; margin-bottom: 5px;">
+                                <span>
+                                    <div>
+                                        <span style="font-size: 110%;"><b>Your First name:</b></span>
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control" formControlName="firstName" size="30"  value="{{existUser.FirstName}}">
+                                        <div *ngIf="f.firstName.errors" class="invalid-feedback">
+                                            <div *ngIf="f.firstName.errors && f.firstName.errors.required">First name is required</div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                
+                
+                            <div class="formElements" style=" display:flex; margin-bottom: 5px;">
+                                <span>
+                                    <div>
+                                        <span style="font-size: 110%;"><b>Your Last name:</b></span>
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control"  formControlName="lastName" size="30"  value="{{existUser.LastName}}">
+                                        <div *ngIf="f.lastName.errors" class="invalid-feedback">
+                                            <div *ngIf="f.lastName.errors.required">Last name is required</div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        
+                
+                    </td>
+                    <td>
+                        <span style=" font-size: 1500%; color: #757474; text-shadow: rgba(97, 96, 96, 0.84) 2px 3px 3px;" class="k-icon k-i-user"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div style="padding-top: 10px;">
+                            <span><kendo-switch formControlName="getPermissionUpdate"></kendo-switch></span><span style="padding-left: 5px;">Get mails about maps permissions updates</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" style="cursor: pointer;" value="Update My Details" class="form-control"> 
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <br><br>
+        <input type="submit" style="cursor: pointer;" value="I Want To Delete My Account" class="deleteButton" (click)="modalService.open('accountRemove')"> 
+    </div>
+
+    <div @fade *ngIf="done" style="text-align: center;">
+        <br><br><br><br><br><br><br><br>
+        <span @fade class="k-icon k-i-check-outline" style="font-size: 50px;"></span>
+        <h1>Update was saved successfully.</h1> 
+        
+    </div>
+
+
+    <jw-modal class="jw-modal" id="accountRemove">
+        <div [ngResizable]='true' class="jw-modal-body">
+            
+          <div class="grid-wrapper-delete" style="padding-right: 5px;">
+            <div class="grid-wrapper">
+            <span class="close" (click)="modalService.close('accountRemove');">&times;</span>
+            <h1>Account Deleteion:</h1>
+              <h4>Just before deleting your account, it's important for us to let you know the consequences of this action:</h4>
+              <ul>
+                <li>All files (folders and maps) that only you have administrator permission on will be permanently deleted from the system<br>
+                    And so do all the other permissions and ability of other users in the system to access these files<br>
+                    For this reason: <b>We recommend</b> that before deleting your user - give Owner permission for at least one other user</li>
+                <li>Your user account (password and username) will be permanently deleted from the system and will no longer be able to log in until you re-register</li>
+              </ul> 
+              <br><br>
+              <button style="background: #e65c5c; cursor: pointer;" (click)="deleteAccount()">I Understand the consequences, Delete my account</button>
+              <br><br>
+            </div>
+        </div>
+    </div>
+        <div *ngIf="dbAction" class="k-i-loading"></div>
+      </jw-modal>
 </div>

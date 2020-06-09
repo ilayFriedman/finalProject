@@ -195,6 +195,7 @@ export class GroupsComponent implements OnInit {
     this.selectedNode = dataItem
     if(modalName == "permissionGroupModal" ){
       this.loadPermissionTable();
+      this.dbAction = true
     }
 
     this.modalService.open(modalName)
@@ -288,6 +289,7 @@ export class GroupsComponent implements OnInit {
   * to the collection, expanding the its children.
   */
   public handleExpand(expandedNode) {
+    console.log(expandedNode)
     this.expandedKeys = this.expandedKeys.concat(expandedNode.index);
   }
 
@@ -409,11 +411,11 @@ export class GroupsComponent implements OnInit {
     for (const [key,value] of this.selectedNode.usersPermissionsMap.entries()) { 
       if(key != sessionStorage.userId)  // not show myself
       {
-        if(managerUser){
+        // if(managerUser){
           if(value.permission != 'Owner'){
             this.currPermissionMapDATA.push(value);
           }
-        }
+        // }
         else{
           this.currPermissionMapDATA.push(value);
         }
@@ -423,8 +425,10 @@ export class GroupsComponent implements OnInit {
     // snapShot of permissions
     this.currPermissionMapDATA.forEach(val => this.snapshootFirst.push({username: val.username, name: val.name, permission: val.permission}));
     console.log(this.selectedNode.usersPermissionsMap)
+    this.dbAction = false;
     }).catch(err => {
-      console.log(err);
+      this.dbAction = false;
+      alert(err);
     });
   }
 
@@ -511,6 +515,11 @@ export class GroupsComponent implements OnInit {
     } catch{
       return ""
     }
+  }
+
+  public managerBlockOwnersRows(dataItem){
+    // console.log(this. watcherPermissionStatus()  == 'Manager' && dataItem.permission == 'Owner')
+    return this. watcherPermissionStatus()  == 'Manager' && dataItem.permission == 'Owner'
   }
 
   public addNewUserToPermission(event){

@@ -79,11 +79,11 @@ router.post('/register', async function (req, res) {
 });
 
 router.post('/private/changeInfo', async function (req, res) {
-    if (!req.body.FirstName || !req.body.LastName || !req.body.pwd) {
+    if (!req.body.FirstName || !req.body.LastName || !req.body.pwd || !req.body.getPermissionUpdate) {
         res.status(400).send("Could not update user information. The fields FirstName, LastName and pwd are required.");
     }
     try {
-        user.findOneAndUpdate({ "_id": req.decoded._id }, { $set: { 'FirstName': req.body.FirstName, 'LastName': req.body.LastName, 'Password': req.body.pwd } }, function (err, mongoRes) {
+        user.findOneAndUpdate({ "_id": req.decoded._id }, { $set: { 'FirstName': req.body.FirstName, 'LastName': req.body.LastName, 'Password': req.body.pwd , 'getPermissionUpdate': req.body.getPermissionUpdate} }, function (err, mongoRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send("Server error occurred.");
@@ -114,22 +114,19 @@ router.get('/private/getUsers', async function (req, res) {
 });
 
 
-// Tfor brings names
-router.get('/private/getUsersDetailsByIds/:ids', async function (req, res) {
+router.get('/private/getUserDetails', async function (req, res) {
 
     try {
-        // records = await user.find().where('_id').in(ids).exec();
-        // console.log(records)
-        // user.findOne({'_id': req.params.userID}, function(err, result) {
-        //     if (result) {
-        //         var answer = {"FirstName": result.FirstName, "LastName" :result.LastName}
-        //         res.writeHead(200, {"Content-Type": "application/json"});
-        //         res.end(JSON.stringify(answer));
-        //         res.status(200).send()
-        //     } else {
-        //         res.status(400).send(`problem: ${err}`);
-        //     }
-        // })
+        user.findOne({'_id': req.decoded._id}, function(err, result) {
+            if (result) {
+                var answer = {"FirstName": result.FirstName, "LastName" :result.LastName, "Username": result.Username, getPermissionUpdate: result.getPermissionUpdate}
+                res.writeHead(200, {"Content-Type": "application/json"});
+                res.end(JSON.stringify(answer));
+            } else {
+                console.log("server problem while searching user")
+                res.status(400).send(`problem: ${err}`);
+            }
+        })
     } catch (e) {
         res.status(400).send(`problem: ${e}`);
     }

@@ -1,14 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import {environment} from '../../environments/environment';
+import { UsersService } from '../services/users/users.service';
+import { trigger, transition, animate, style } from '@angular/animations';
+import { ModalService } from '../services/modal.service';
 
 
 @Component({ 
     selector: 'app-change-user-info',
     templateUrl: './change-user-info.component.html',
-    styleUrls: ['./change-user-info.component.css'] 
+    styleUrls: ['./change-user-info.component.css'],
+    animations: [
+        trigger('fade', [ 
+          transition('void => *', [
+            style({ opacity: 0 }), 
+            animate(500, style({opacity: 1}))
+          ]) 
+        ])
+      ]
 })
 export class ChangeUserInfoComponent implements OnInit {
     changeUserInfoForm: FormGroup;
@@ -17,20 +28,46 @@ export class ChangeUserInfoComponent implements OnInit {
     localUrl = environment.backendUrl;
     error: string;
     headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.token);
+    existUser = null;
+    done = false;
+    badForm = false;
+    userNameInput = ""
+    dbAction = false
+
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
         private http: HttpClient,
+        private usersService: UsersService,
+        private modalService: ModalService
     ){}
 
+    userNameCheck(){
+      return this.userNameInput == this.existUser.Username
+    }
     ngOnInit() {
         this.changeUserInfoForm = this.formBuilder.group({
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
-            password: ['', [Validators.required, Validators.minLength(6)]],
+            password: ['', [Validators.required]],
+            getPermissionUpdate: new FormControl(null, Validators.required)
+        });
+        this.usersService.getUserDetails().then(response => {
+          this.existUser = response
+          console.log( this.existUser)
+
+          this.changeUserInfoForm = this.formBuilder.group({
+            firstName: [this.existUser.FirstName, Validators.required],
+            lastName: [this.existUser.LastName, Validators.required],
+            password: ['', [Validators.required]],
+            getPermissionUpdate: new FormControl(this.existUser.getPermissionUpdate, Validators.required)
         });
 
-        console.log(sessionStorage.token);
+        }, error => {
+          console.log(error.error);
+          alert(error.error);
+        });
+        // console.log(sessionStorage.token);
 
     }
 
@@ -38,30 +75,35 @@ export class ChangeUserInfoComponent implements OnInit {
     get f() { return this.changeUserInfoForm.controls; }
 
     onSubmit() {
-        this.submitted = true;
-
         // stop here if form is invalid
         if (this.changeUserInfoForm.invalid) {
+            this.badForm = true
             return;
         }
+        this.badForm = false;
         var data = {
           'pwd': this.changeUserInfoForm.controls.password.value,
           'FirstName': this.changeUserInfoForm.controls.firstName.value,
-          'LastName': this.changeUserInfoForm.controls.lastName.value
+          'LastName': this.changeUserInfoForm.controls.lastName.value,
+          'getPermissionUpdate': this.changeUserInfoForm.controls.getPermissionUpdate.value
         }
+        console.log(data)
 
-        let result = this.http.post(this.localUrl + '/private/changeInfo', data, { headers: {'token': sessionStorage.token},  responseType: 'text' });
-    
-        result.subscribe(response => {
-            this.submitted = false;
+
+        this.usersService.changeInfo(data).then(response => {
             sessionStorage.setItem('userFullName', this.changeUserInfoForm.controls.firstName.value + " " + this.changeUserInfoForm.controls.lastName.value);
-            this.router.navigate(['/logedHome']);
-            alert("User information successfully updated");
+            this.done = true;
+            setTimeout(() => {  this.router.navigate(['/logedHome']); }, 2000);
+            // alert("User information successfully updated");
           }, error => {
-            this.submitted = false;
             console.log(error.error);
             alert(error.error);
           }
         );
+    }
+
+    deleteAccount(){
+      this.dbAction=true
+      
     }
 }

@@ -64,6 +64,8 @@ export class RegisterComponent implements OnInit {
             this.submitted = false;
             // this.router.navigate(['/login']);
             this.done = true;
+            this.registerForm.reset()
+            this.registerForm.controls["getPermissionUpdate"].setValue(true)
             setTimeout(() => { this.done=false }, 2000);
             
             // alert("New user successfully registered.");

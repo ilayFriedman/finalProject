@@ -8,7 +8,7 @@
   }
   .change-user-infoTitle {
     font-family: 'Calibri', ssans-seif;
-    background-color: #fafafa;
+    /* background-color: #fafafa; */
     /* -webkit-background-clip: text; */
     font-size: 300%;
     font-weight: bold;
@@ -26,7 +26,6 @@
   }
   .form-style-5{
     max-width: 500px;
-    padding: 10px 20px;
     background: #f4f7f8;
     margin: 10px auto;
     padding: 20px;
@@ -46,6 +45,7 @@
     margin-bottom: 8px;
   }
   .form-style-5 input[type="text"],
+  .form-style-5 input[type="password"],
   .form-style-5 textarea,
   .form-style-5 select {
     font-family: 'Calibri', sans-seif;
@@ -60,11 +60,10 @@
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-    background-color: #e8eeef;
+    background-color: #ffffff;
   
     -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
     box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
-    margin-bottom: 30px;
   }
   
   .form-style-5 textarea:focus,
@@ -111,4 +110,90 @@
   {
     background: #0099ff;
   }
+
+  .deleteButton{
+    position: relative;
+    display: block;
+    padding: 19px 39px 18px 39px;
+    color: #FFF;
+    margin: 0 auto;
+    background: #a32929;
+    font-size: 18px;
+    text-align: center;
+    font-style: normal;
+    
+    border: 1px solid #a32929;
+    border-width: 1px 1px 3px;
+    margin-bottom: 10px;
+  }
+
+  .deleteButton:hover{
+    
+    background: #e65c5c;
+  }
   
+  .grid-wrapper-delete{
+    border: 1px solid #a32929;
+  }
+
+  /* loading overlay css */
+.grid-wrapper {
+  position: relative;
+}
+  .k-i-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 64px;
+    background-color: rgba(255,255,255,.3);
+    color: #a32929;
+  }
+
+  .jw-modal {
+    display: none;
+    position: fixed;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    text-align: left;
+    z-index: 9998!important;
+    line-height: 10pt;
+  }
+
+  .jw-modal-body {
+    
+    text-align: center;
+    background-color: #fefefe;
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid #888;
+    min-width: 40%;
+    width: max-content;
+    max-width: 50%;
+    height: max-content;
+    font-family: 'Calibri', sans-seif;
+    border-radius: 25px;
+    line-height: 10pt;
+}
+
+.close {
+    line-height: 10pt;
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
