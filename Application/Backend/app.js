@@ -116,7 +116,7 @@ app.get("/private/GetGroupsMembers/:id", groupsRoute);
 app.post('/private/addUserToGroup', groupsRoute);
 app.delete("/private/RemoveUserFromGroup/:groupId&:userID&:permission", groupsRoute);
 app.post('/private/updateGroupUserPermission', groupsRoute);
-app.get('/private/getGroupRoots/:id', groupsRoute);
+app.get('/private/getSingleOwnerPermission', groupsRoute);
 
 app.post('/private/createReference', referencesRoute);
 app.get('/private/getAllReferences', referencesRoute);

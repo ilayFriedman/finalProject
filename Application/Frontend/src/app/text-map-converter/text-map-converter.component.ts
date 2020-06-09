@@ -42,6 +42,8 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
     console.log(this.mapHandler.myDiagram.linkTemplateMap)
+    console.log(this.mapHandler.myDiagram.linkTemplateMap.Fb)
+    console.log(Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb))
     // this.mapHandler.myDiagram.linkTemplateMap.Fb.forEach(element => {
     //   console.log(element);
     //   this.typesOflinks.push(element)

@@ -169,25 +169,25 @@ router.post('/private/addUserToGroup', async function (req, res) {
     user.findOne({ 'Username': req.body.username }, function (err, result) {
         if (result) {
             // user exist!
-            console.log(req.body.rootsList)
-            map.find({_id: { $in: req.body.rootsList }, $or: [{ 'Permission.Owner.id': req.body.groupId }, { 'Permission.Write.id': req.body.groupId }, { 'Permission.Read.id': req.body.groupId }]},function (err, rootsRes) {
-                if(rootsRes){
-                    console.log(rootsRes)
-                }
-            });
-            // ,
-            // {$addToSet:{id: result._id, type: "GroupPermission"}}
-            // group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
-            //     if (err) {
-            //         res.status(500).send("Server error occurred.");
-            //         res.end();
-            //     } else if (resultUpadte) {
-            //         res.writeHead(200, { "Content-Type": "application/json" });
-            //         res.end(JSON.stringify(result));
-            //     } else{
-            //         res.status(404).send("Could not find the requested Group Id.");
+            // console.log(req.body.rootsList)
+            // map.find({_id: { $in: req.body.rootsList }, $or: [{ 'Permission.Owner.id': req.body.groupId }, { 'Permission.Write.id': req.body.groupId }, { 'Permission.Read.id': req.body.groupId }]},function (err, rootsRes) {
+            //     if(rootsRes){
+            //         console.log(rootsRes)
             //     }
             // });
+            
+            // {$addToSet:{id: result._id, type: "GroupPermission"}}
+            group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
+                if (err) {
+                    res.status(500).send("Server error occurred.");
+                    res.end();
+                } else if (resultUpadte) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify(result));
+                } else{
+                    res.status(404).send("Could not find the requested Group Id.");
+                }
+            });
         } else {
             res.status(404).send("Could not find the requested User.");
         }
@@ -196,20 +196,6 @@ router.post('/private/addUserToGroup', async function (req, res) {
 });
 
 
-router.get('/private/getGroupRoots/:id', async function (req, res) {
-    map.find({ 'Permission.Owner': {id: req.params.id.toString(), type: "Group"}, $addToSet:{"Permission.Owner": {id: 123, type: "bla"} }}, function (err, rootsRes) {
-        if(err){
-            console.log(err)
-            res.status(500).send("Server error occurred.");
-        }
-        else{
-            console.log(rootsRes)
-            res.status(200).send("OK!");
-            res.end();
-        }
-    });
-
-});
 
 router.post('/private/updateGroupProperties', async function (req, res) {
     if (req.body._id && req.body.description && req.body.groupName) {
@@ -327,5 +313,22 @@ router.post('/private/updateGroupUserPermission', async function (req, res) {
     });
 
 });
+
+router.get('/private/getSingleOwnerPermission', async function (req, res) {
+    var promises = []
+    group.find({"Creator": req.decoded._id, "Members.Owner": [req.decoded._id.toString()], "Members.Owner" : {$size: 1} }, async function (err, result) {
+        if(err){
+            res.status(500).send('Server error occured.');
+        }
+        else{
+            var ans = result.map(({ _id }) => _id)
+            console.log(ans)
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(ans));
+
+        }
+    });
+});
+
 
 module.exports = router;

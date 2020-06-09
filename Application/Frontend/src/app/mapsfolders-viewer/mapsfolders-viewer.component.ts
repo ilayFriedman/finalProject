@@ -704,10 +704,12 @@ newUserPermissionChoose: any
     let promises = [];
     // ---- delete all remove users -------
     this.deleteUserList.forEach(deleteUser => {
+      console.log(deleteUser)
       var userID = this.getKeyFromValue(deleteUser)
 
       // look if user changed on radiobuttons
       var duplicateUser = this.updatePermissionUsers.find(elem => elem.userID == userID)
+      console.log(duplicateUser)
       if(duplicateUser!= null){
         // take the old permission to delete and delete from updateButtonsList
         if(deleteUser.type == "PersonalPermission"){
@@ -720,12 +722,12 @@ newUserPermissionChoose: any
       }
       else{
         if(deleteUser.type == "PersonalPermission"){
-          promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, duplicateUser.old))
+          promises.push(this.mapHandler.removeUserPermission(this.selectedNode.mapID, userID, deleteUser.permission))
         }
         else{ // group element
           promises.push(this.mapHandler.removeGroupPermission(this.selectedNode.mapID,userID))
         }
-        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != duplicateUser);
+        this.updatePermissionUsers = this.updatePermissionUsers.filter(item => item != deleteUser);
       }
       this.currPermissionMapDATA = this.currPermissionMapDATA.filter(item => item !== deleteUser);
       this.selectedNode.usersPermissionsMap.delete(userID)
