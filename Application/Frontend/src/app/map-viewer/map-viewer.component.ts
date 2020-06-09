@@ -868,6 +868,8 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   changeSubscription() {
+    console.log(this.subscribeCurrMap);
+    this.subscribeCurrMap = !this.subscribeCurrMap
     if (!this.subscribeCurrMap) {
       this.unsubscribe();
     }

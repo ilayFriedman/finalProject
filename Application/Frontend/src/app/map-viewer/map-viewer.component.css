@@ -23,8 +23,6 @@
 }
 
 .welcome {
-    /* float: ce; */
-    /* text-align: left; */
     background-color: rgb(251, 252, 255);
     border-radius: 15px;
     padding: 10px;
@@ -41,10 +39,11 @@
     color: red;
 }
 
-.mapsMenu {
+/* .mapsMenu {
     float: left;
     /* margin: 5px; */
-}
+
+/* } */
 
 .mapsMenu span {
     font-size: 25px;

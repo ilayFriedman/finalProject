@@ -1,6 +1,26 @@
 <div id="welcomeAndMenu">
     <br>
-    <div class="welcome">
+    <mat-expansion-panel class="welcome">
+        <mat-expansion-panel-header>
+            <mat-panel-title style="font-size: 25px; width: 100%; display: inline-block; text-align: center; ">
+                <b>{{mapHandler.currMap_mapViewer.MapName}}</b>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <span class="doNotPrint"
+            style="font-size: 18px; width: 100%; display: inline-block; text-align: center; white-space: normal;">
+            {{this.mapHandler.currMap_mapViewer.Description}}
+        </span>
+        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
+            <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
+            {{getMapCreationTime()}}
+        </span>
+        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
+            <span class="k-icon k-i-lock" style="font-size: 15px"></span>
+            {{getUserPermission()}}
+        </span>
+    </mat-expansion-panel>
+
+    <!-- <div class="welcome">
         <mat-slide-toggle
             style="font-size: 15px; width: 50%; display: inline-block;  text-align: right; vertical-align: top;"
             class="example-margin" class="doNotPrint" [color]="color" [(ngModel)]="subscribeCurrMap"
@@ -22,15 +42,30 @@
             <span class="k-icon k-i-lock" style="font-size: 15px"></span>
             {{getUserPermission()}}
         </span>
-    </div>
+    </div> -->
 
-    <div id="mapMenu">
-        <span style="display: inline-block;">
-            <mat-toolbar
-                style="background-color: inherit; width: fit-content; height: min-content; vertical-align: bottom;"
+    <div id="mapMenu" style="display: inline-block; width: 100%; vertical-align: bottom; ">
+
+        <!-- <div style="float: right; height: inherit;"> -->
+        <button mat-raised-button (click)="changeSubscription()"
+            style="float: right; margin-top: 15px; margin-right: 10px; background-color:  rgb(26, 82, 134); color: white;"
+            matTooltip="Subscribe" *ngIf="!subscribeCurrMap"> SUBSCRIBE
+        </button>
+        <button mat-raised-button (click)="changeSubscription()"
+            style="float: right; margin-top: 15px; margin-right: 10px; background-color: silver;"
+            matTooltip="Unsubscribe" *ngIf="subscribeCurrMap">SUBSCRIBED
+        </button>
+
+
+        <!-- </div> -->
+        <span class="doNotPrint" style="float: left;">
+            <mat-toolbar style="background-color: inherit; width: fit-content; vertical-align: bottom;"
                 class="doNotPrint">
+
                 <mat-toolbar-row>
-                    <div style="text-align: center; width: 100%; ">
+
+                    <div style="display: inline-block; text-align: center; width: 100%; ">
+
                         <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button
                             [matMenuTriggerFor]="saveOptions" [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
                             <span class="k-icon k-i-save"></span>
@@ -76,6 +111,14 @@
                         <button class="mapsMenu" mat-icon-button [matMenuTriggerFor]="moreOptions">
                             <span class="k-icon k-i-more-vertical"></span>
                         </button>
+                        <button class="mapsMenu" mat-icon-button (click)="undoFilterRadius()" *ngIf="doUndoFilter"
+                            matTooltip="Clear Filter">
+                            <span class="k-icon k-i-filter-clear"></span>
+                        </button>
+                        <!-- <mat-slide-toggle style="font-size: 15px;  text-align: right;" class="doNotPrint"
+                            [color]="color" [(ngModel)]="subscribeCurrMap" (change)="changeSubscription()" #toggle>
+                            Subscribe
+                        </mat-slide-toggle> -->
 
                         <mat-menu #moreOptions="matMenu">
                             <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
@@ -105,6 +148,10 @@
                 </mat-toolbar-row>
             </mat-toolbar>
         </span>
+        <span style="float: right; width: fit-content; height: 100%; vertical-align: text-bottom;">
+
+        </span>
+
         <span id="usavedError" *ngIf='!isSaved && !mapHandler.isReadOnlyMode'
             style="display: inline-block; width: fit-content; vertical-align: top;">
             Your changes are unsaved
@@ -113,7 +160,7 @@
             You are in read only mode
         </span>
         <span>
-            <button (click)="undoFilterRadius()" *ngIf="doUndoFilter">undo filter</button>
+
         </span>
     </div>
 
