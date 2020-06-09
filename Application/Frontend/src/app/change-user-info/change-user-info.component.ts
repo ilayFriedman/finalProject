@@ -41,7 +41,7 @@ export class ChangeUserInfoComponent implements OnInit {
         private router: Router,
         private http: HttpClient,
         private usersService: UsersService,
-        private modalService: ModalService,
+        public modalService: ModalService,
         private groupsService: GroupsService
     ){}
 
