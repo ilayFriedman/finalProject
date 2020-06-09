@@ -4,6 +4,12 @@ body {
   font-family: 'Calibri', ssans-seif;
 }
 
+@media print {
+  .doNotPrint {
+    display: none !important;
+  }
+}
+
 .mat-button {
   padding: 0.1%;
 }

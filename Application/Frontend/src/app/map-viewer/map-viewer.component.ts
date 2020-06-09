@@ -737,7 +737,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     }
   }
 
-  private successSaved() {
+  successSaved() {
     this.openModal("success-save-modal");
     setTimeout(() => { this.closeModal("success-save-modal"); }, 1000);
   }
@@ -868,6 +868,8 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   }
 
   changeSubscription() {
+    console.log(this.subscribeCurrMap);
+    this.subscribeCurrMap = !this.subscribeCurrMap
     if (!this.subscribeCurrMap) {
       this.unsubscribe();
     }

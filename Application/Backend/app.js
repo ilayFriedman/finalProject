@@ -98,7 +98,7 @@ app.put('/private/addNewConnection', connectionsRoute);
 app.put('/private/deleteConnection', connectionsRoute);
 
 app.post('/private/addNewSubscriber', subscriptionsRoute)
-app.delete('/private/removesubscriber/:mapID&:userID', subscriptionsRoute)
+app.delete('/private/removesubscriber/:mapID', subscriptionsRoute)
 
 
 app.put('/private/addNewConnection', connectionsRoute);

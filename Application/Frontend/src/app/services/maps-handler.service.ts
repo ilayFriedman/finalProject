@@ -143,8 +143,7 @@ export class MapsHandlerService {
   // subscripotions //
   addNewSubscriber() {
     const bodyReq = {
-      mapID: this.currMap_mapViewer._id,
-      userID: sessionStorage.userId
+      mapID: this.currMap_mapViewer._id
     }
     console.log(bodyReq)
     return this.http.post(this.localUrl + '/private/addNewSubscriber', bodyReq, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
@@ -152,10 +151,7 @@ export class MapsHandlerService {
 
 
   removeSubscriber() {
-    // console.log(mapId,userId,permission)
-    let params = this.currMap_mapViewer._id + "&" + sessionStorage.userId
-    console.log(params);
-    return this.http.delete(this.localUrl + '/private/removesubscriber/' + params, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
+    return this.http.delete(this.localUrl + '/private/removesubscriber/' + this.currMap_mapViewer._id, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise()
   }
 
 }
