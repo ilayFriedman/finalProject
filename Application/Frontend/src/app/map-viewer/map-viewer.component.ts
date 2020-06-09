@@ -737,7 +737,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     }
   }
 
-  private successSaved() {
+  successSaved() {
     this.openModal("success-save-modal");
     setTimeout(() => { this.closeModal("success-save-modal"); }, 1000);
   }
