@@ -2,8 +2,21 @@
     <br>
     <mat-expansion-panel class="welcome">
         <mat-expansion-panel-header>
-            <mat-panel-title style="font-size: 25px; width: 100%; display: inline-block; text-align: center; ">
-                <b>{{mapHandler.currMap_mapViewer.MapName}}</b>
+            <mat-panel-title>
+
+                <div style="vertical-align: middle; display: inline-block;">
+                    <button mat-raised-button (click)="changeSubscription()"
+                        style="float: right; background-color:  rgb(26, 82, 134); color: white;" matTooltip="Subscribe"
+                        *ngIf="!subscribeCurrMap"> SUBSCRIBE
+                    </button>
+                    <button mat-raised-button (click)="changeSubscription()"
+                        style="float: right; background-color: silver;" matTooltip="Unsubscribe"
+                        *ngIf="subscribeCurrMap">SUBSCRIBED
+                    </button>
+                </div>
+                <b style="font-size: 25px; width: 100%; display: inline-block; text-align: center; ">
+                    {{mapHandler.currMap_mapViewer.MapName}}
+                </b>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <span class="doNotPrint"
@@ -45,25 +58,10 @@
     </div> -->
 
     <div id="mapMenu" style="display: inline-block; width: 100%; vertical-align: bottom; ">
-
-        <!-- <div style="float: right; height: inherit;"> -->
-        <button mat-raised-button (click)="changeSubscription()"
-            style="float: right; margin-top: 15px; margin-right: 10px; background-color:  rgb(26, 82, 134); color: white;"
-            matTooltip="Subscribe" *ngIf="!subscribeCurrMap"> SUBSCRIBE
-        </button>
-        <button mat-raised-button (click)="changeSubscription()"
-            style="float: right; margin-top: 15px; margin-right: 10px; background-color: silver;"
-            matTooltip="Unsubscribe" *ngIf="subscribeCurrMap">SUBSCRIBED
-        </button>
-
-
-        <!-- </div> -->
         <span class="doNotPrint" style="float: left;">
             <mat-toolbar style="background-color: inherit; width: fit-content; vertical-align: bottom;"
                 class="doNotPrint">
-
                 <mat-toolbar-row>
-
                     <div style="display: inline-block; text-align: center; width: 100%; ">
 
                         <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button
@@ -154,7 +152,11 @@
 
         <span id="usavedError" *ngIf='!isSaved && !mapHandler.isReadOnlyMode'
             style="display: inline-block; width: fit-content; vertical-align: top;">
-            Your changes are unsaved
+            Your changes are unsaved <br>
+        </span>
+        <span id="usavedError" *ngIf='doUndoFilter'
+            style="display: inline-block; width: fit-content; vertical-align: top;">
+            Filterd by "{{currNode.data.text}}"
         </span>
         <span id="usavedError" *ngIf='mapHandler.isReadOnlyMode' style="display: inline-block; width: fit-content;">
             You are in read only mode
@@ -184,8 +186,21 @@
                         </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div id="elementsStatistics" role="list">
+                        <b>Tasks:</b>
+                        <br>
                         <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
-                            <button mat-stroked-button style="white-space: normal; margin-bottom: 2%; text-align: left;"
+                            <button mat-stroked-button *ngIf="node.category === 'Task'"
+                                style="white-space: normal; margin-bottom: 2%; text-align: left;"
+                                (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
+                                {{node.text}}
+                            </button>
+                        </div>
+                        <br>
+                        <b>Qualities:</b>
+                        <br>
+                        <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
+                            <button mat-stroked-button *ngIf="node.category === 'Quality'"
+                                style="white-space: normal; margin-bottom: 2%; text-align: left;"
                                 (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
                                 {{node.text}}
                             </button>
