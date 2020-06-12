@@ -623,8 +623,8 @@ router.post('/private/addNewPermission', async function (req, res) {
                                                     var mailObjects = mail.sendEmail(userRes.Username, mailSubject, text);
                                                     promises.push(mailObjects[0].sendMail(mailObjects[1], function (error, info) {
                                                         if (error) {
-                                                            status = 500;
-                                                            message = `Server error occured while send email`;
+                                                            // status = 500;
+                                                            // message = `Server error occured while send email`;
                                                             res.status(500).send("Server error occured while send email");
                                                             res.end();
                                                         }
@@ -666,10 +666,12 @@ router.post('/private/addNewPermission', async function (req, res) {
             // add user : personal permission
             await user.findOne({ 'Username': req.body.elementToAdd.name }, async function (err, userRes) {
                 if (userRes) {
+                    console.log(userRes)
+                    console.log(req.body)
                     // delete all users from exists premissions
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission owner permission"; } })
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Write"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Write permission"; } })
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { status = 500; message = "err in delete groupPermission Read permission"; } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { res.status(500).send(`err in delete groupPermission owner permission`) } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Write"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { res.status(500).send(`err in delete groupPermission Write permission`); } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString() } } }, async function (err) { if (err) {res.status(500).send(`err in delete groupPermission Read permission`) } })
 
                     await map.findOneAndUpdate({ _id: req.body.mapId },
                         { $addToSet: { ["Permission." + req.body.elementToAdd.permission_To]: { id: userRes._id.toString(), type: req.body.elementToAdd.type } } }, async function (err, addResult) {
@@ -706,6 +708,14 @@ router.post('/private/addNewPermission', async function (req, res) {
                                         // message = `problem: ${e}`
                                     }
 
+                                }
+                                else{
+                                    // not mail
+                                    objectToReturn = { id: userRes._id, type: req.body.elementToAdd.type, name: userRes.FirstName + " " + userRes.LastName, username: userRes.Username };
+
+                                    res.writeHead(200, { "Content-Type": "application/json" });
+                                    console.log("back: " + objectToReturn)
+                                    res.end(JSON.stringify(objectToReturn));
                                 }
                             }
                             else {

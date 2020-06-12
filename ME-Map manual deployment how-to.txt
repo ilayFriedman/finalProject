@@ -41,12 +41,10 @@ How To Update NodeJS + Angular Project On Server:
 		MAKE SURE to replace conflicting files with the new files from the zip.
 		
 	i. Install missing packages:
-		#### This step can be skipped if no new packages were added since last deployment.
-		Trying to compile with missing packages will result in failure, but no harm will be done.
-		Maybe it's best to just try and compile if you're not sure whether an update is needed or not ####
+		#### This step can be skipped if no new packages were added to the frontend since last deployment. ####
 		
 		Open a CMD in c:\ME-Maps\Application\Frontend
-		and run the following command:	npm install -g
+		and run the following command:	npm install
 		The command will take a while to run.
 		
 	j. Compile frontend:
@@ -55,6 +53,6 @@ How To Update NodeJS + Angular Project On Server:
 		The command will take a while to run. Finally, the compiled project will be in C:\ME-Maps\Application\Frontend\dist
 	
 	k. Deploy frontend:
-		Navigate to ...., and delete existing frontend.
-		copy C:\ME-Maps\Application\Frontend\dist folder contents into ....
+		Navigate to C:\inetpub\wwwroot\ME-Map, and delete existing frontend.
+		copy C:\ME-Maps\Application\Frontend\dist folder contents into C:\inetpub\wwwroot\ME-Map
 		

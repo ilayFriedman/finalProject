@@ -113,5 +113,8 @@ export class GroupsService {
     return this.http.post(environment.backendUrl + '/private/updateGroupUserPermission', requestBody, { headers: { 'token': sessionStorage.token},responseType: 'text'}).toPromise();
   }
 
+  getSingleOwnerPermission(){
+    return this.http.get(environment.backendUrl + '/private/getSingleOwnerPermission' , { headers: { 'token': sessionStorage.token}}).toPromise();
+  }
 
 }

@@ -6,6 +6,7 @@ import {environment} from '../../environments/environment';
 import { UsersService } from '../services/users/users.service';
 import { trigger, transition, animate, style } from '@angular/animations';
 import { ModalService } from '../services/modal.service';
+import { GroupsService } from '../services/groups/groups.service';
 
 
 @Component({ 
@@ -34,12 +35,14 @@ export class ChangeUserInfoComponent implements OnInit {
     userNameInput = ""
     dbAction = false
 
+
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
         private http: HttpClient,
         private usersService: UsersService,
-        private modalService: ModalService
+        public modalService: ModalService,
+        private groupsService: GroupsService
     ){}
 
     userNameCheck(){
@@ -77,6 +80,8 @@ export class ChangeUserInfoComponent implements OnInit {
     onSubmit() {
         // stop here if form is invalid
         if (this.changeUserInfoForm.invalid) {
+          console.log(this.changeUserInfoForm)
+          console.log("bad!")
             this.badForm = true
             return;
         }
@@ -88,6 +93,7 @@ export class ChangeUserInfoComponent implements OnInit {
           'getPermissionUpdate': this.changeUserInfoForm.controls.getPermissionUpdate.value
         }
         console.log(data)
+        console.log("hi")
 
 
         this.usersService.changeInfo(data).then(response => {
@@ -103,7 +109,22 @@ export class ChangeUserInfoComponent implements OnInit {
     }
 
     deleteAccount(){
-      this.dbAction=true
-      
+    //   this.groupsService.getSingleOwnerPermission().then(response => {
+    //     var promises = []
+    //     var singleGroupList = response
+    //     console.log(singleGroupList)
+    //     // this.groupsService.deleteGroup()
+    //     this.dbAction=true
+    //     console.log(this.groupsService.allMyGroups)
+
+    //     this.done = true;
+    //     setTimeout(() => {  this.router.navigate(['/logedHome']); }, 2000);
+    //     // alert("User information successfully updated");
+    //   }, error => {
+    //     console.log(error.error);
+    //     alert(error.error);
+    //   }
+    // );
+
     }
 }

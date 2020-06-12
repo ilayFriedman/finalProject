@@ -363,7 +363,7 @@
                                 </span>
                                 <span *ngIf="rowIndex == -1 && groupAdderClick">
                                     <input type="radio" [disabled]="newGroupPermission == '' || cleanFromDuplicatesGroups() || autoCompleteUserGroupsFilterd.indexOf(newGroupPermission) == -1" [checked]="dataItem.permission=='Read'" name="{{newGroupPermission}}" id="Read"
-                                    (change)="radioButtonsUpdate($event,rowIndex)" />
+                                    (change)="radioButtonsUpdate($event,rowIndex,dataItem)" />
                                 </span>
                                 <!-- other rows -->
                                 <span *ngIf="rowIndex > -1"><input type="radio" [checked]="dataItem.permission=='Read'" name="{{dataItem.username}}" id="Read"
