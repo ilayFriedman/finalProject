@@ -923,7 +923,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
     this.doUndoFilter = true;
     this.filterRadiusRec(this.currNode, this.filterRadiusForm.controls.filterRadius.value)
-    console.log(this.mapHandler.myDiagram.model);
+    console.log(this.mapHandler.currMap_mapViewer.Model.nodeDataArray[0].category);
     // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
 
 
