@@ -51,10 +51,12 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
     if (this.isSaved) {
       this.mapHandler.updateInUse(" ");
+      this.mapHandler.currMap_mapViewer = null;
       return true;
     }
     if (confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.')) {
       this.mapHandler.updateInUse(" ");
+      this.mapHandler.currMap_mapViewer = null;
       return true;
     }
   }
@@ -84,12 +86,12 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   goToConnectMap(map) {
     if (this.canDeactivate()) {
-      this.mapHandler.updateInUse(" ");
       this.mapHandler.currMap_mapViewer = map
+      this.mapHandler.updateInUse(" ");
       this.mapHandler.myDiagram.div = null;
       this.mapHandler.myDiagram = null;
       this.initDiagramProperties()
-      this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
+      // this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
     }
   }
 
@@ -803,7 +805,6 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   openModalMenu(id: string) {
     console.log(this.currNode.data);
     this.nodeMenu.tabNum = 0;
-
     this.modalService.openMenu(id, this.currNode.data);
   }
 

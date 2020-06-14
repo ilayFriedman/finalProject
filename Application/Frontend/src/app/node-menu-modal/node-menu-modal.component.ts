@@ -57,7 +57,6 @@ export class NodeMenuModalComponent implements OnInit {
   @Output("canDeactivate") canDeactivate: EventEmitter<any> = new EventEmitter();
   @Input() tabNum: number;
   pageSizeOptions: number[] = [5, 10, 25, 100];
-
   // ##### refs variables #####
   allRefs: any;
   displayedColumnsRefs: string[] = ['select', 'Title', 'Publication', 'Link', 'CreationTime'];

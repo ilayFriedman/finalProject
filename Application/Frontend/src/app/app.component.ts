@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, HostListener, ViewChild, ContentChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { MapsHandlerService } from './services/maps-handler.service';
 import { MatSelectionList } from '@angular/material';
+import { MapViewerComponent } from './map-viewer/map-viewer.component';
 
 
 @Component({
@@ -20,7 +21,8 @@ import { MatSelectionList } from '@angular/material';
         animate(500, style({ opacity: 1 }))
       ])
     ])
-  ]
+  ],
+  providers: [MapViewerComponent]
 })
 export class AppComponent {
   title = 'ME-Mapper';
@@ -39,6 +41,7 @@ export class AppComponent {
   searchResults: any[] = [];
   showPopDiv = false;
 
+  @ContentChild(MapViewerComponent, { static: false }) mapViewer: MapViewerComponent;
   @ViewChild('results', { static: false }) results: MatSelectionList;
 
   constructor(private router: Router, private formBuilder: FormBuilder, public mapHandler: MapsHandlerService) { }
@@ -46,7 +49,7 @@ export class AppComponent {
   ngOnInit() {
     // this.logOut()
     // this.router.navigate(['/login'])
-      this.router.navigate(['/logedHome']) //remove at the end of debug
+    this.router.navigate(['/logedHome']) //remove at the end of debug
   }
 
   isLoggedIn() {
@@ -64,7 +67,7 @@ export class AppComponent {
   }
 
   searchNodesAndMaps() {
-    this.searchResults = [[],[]];
+    this.searchResults = [[], []];
     this.searchNodes();
     this.searchMaps();
     this.showPopDiv = true
@@ -91,7 +94,7 @@ export class AppComponent {
       });
 
   }
-  closeSearchDiv(event){
+  closeSearchDiv(event) {
     this.showSearchResults = false;
   }
   searchMaps() {
@@ -119,19 +122,26 @@ export class AppComponent {
       });
   }
 
-  goToResult(res) {
+  goToResult(res, type) {
     console.log(res);
+    // not in mapViewer
     this.mapHandler.getMap(res.mapID).then(map => {
-      this.inputTextSearch = ""
+      this.inputTextSearch = "";
       this.showSearchResults = false;
-      this.mapHandler.currMap_mapViewer = map
-      this.router.navigate(['/mapViewer'])
-
+      if (!this.mapHandler.currMap_mapViewer) {
+        this.mapHandler.currMap_mapViewer = map;
+        this.router.navigate(['/mapViewer'])
+      }
+      else {
+        this.mapViewer.goToConnectMap(map)
+      }
     }).catch
       (err => {
         console.log("error with getMap for go to search map");
         console.log(err)
       })
+
+
 
   }
 
