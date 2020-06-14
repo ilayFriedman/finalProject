@@ -37,6 +37,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   subscribeCurrMap: boolean = false;
   color: ThemePalette = 'primary';
   @ViewChild(NodeMenuModalComponent, { static: true }) nodeMenu: NodeMenuModalComponent;
+  @ViewChild(TextMapConverterComponent, { static: true }) converterComp: TextMapConverterComponent ; 
   // filterRadius: number = 0;
   filterRadiusForm = new FormGroup({
     filterRadius: new FormControl()
@@ -683,22 +684,34 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
           this.getLinkStatistics()
         }
         if (e.Uo != "Move" && e.Uo != "Initial Layout") {
+          
           // this.child.convertMapToText()
-          if (this.updateConverter == false)
-            this.updateConverter = true
-          else
-            this.updateConverter = false
+          console.log("updateConv!1")
+
         }
       }
-    }
-    else {   // firing from touch not on the model (like from menu buttons)
-      if (this.updateConverter == false)
-        this.updateConverter = true
-      else
-        this.updateConverter = false
+      else {   // firing from touch not on the model (like from menu buttons)
 
+        if (e.Uo != "Move" && e.Uo != "Initial Layout") {
+          // this.child.convertMapToText()
+          this.converterComp.convertMapToText()
+          console.log(this.mapHandler.myDiagram)
+          console.log("update Converter")
+
+        }
+  
+      }
     }
 
+  }
+  redo(){
+    this.mapHandler.myDiagram.commandHandler.redo();
+    // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+  }
+
+  undo(){
+    this.mapHandler.myDiagram.commandHandler.undo();
+    // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
   }
 
   saveAs() {

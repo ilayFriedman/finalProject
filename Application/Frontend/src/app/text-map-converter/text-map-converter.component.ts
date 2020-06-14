@@ -1,6 +1,7 @@
 import { Component, OnInit, SystemJsNgModuleLoader, SimpleChanges, Input, HostListener, OnChanges } from '@angular/core';
 import { MapsHandlerService } from '../services/maps-handler.service';
 import { v4 as uuid } from 'uuid';
+import * as go from 'gojs';
 @Component({
   selector: 'app-text-map-converter',
   templateUrl: './text-map-converter.component.html',
@@ -35,7 +36,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   selectedNodes = []
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.mapModel != null) {
+    if (this.mapHandler.myDiagram.model != null) {
       this.convertMapToText()
     }
   }
@@ -44,7 +45,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 nodeTemplateMap
 
   ngOnInit() {
-    this.mapModel = this.mapHandler.myDiagram.model
+    // this.mapModel = this.mapHandler.myDiagram.model
     console.log(this.mapHandler.myDiagram)
     // add links template
     Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb).forEach(element => {
@@ -66,20 +67,20 @@ nodeTemplateMap
 
 
   convertMapToText() {
-    var newNumLink = this.mapModel.linkDataArray.length
+    var newNumLink = this.mapHandler.myDiagram.model.linkDataArray.length
     if (newNumLink != this.numOfLinks) {
       var nodesKeysDict = {};
       var translate = "";
       this.links = []
 
-      for (let node of this.mapModel.nodeDataArray) {
+      for (let node of this.mapHandler.myDiagram.model.nodeDataArray) {
         nodesKeysDict[node.key] = [node.text, node.category, node.id,node.key]
       }
 
       // console.log( "#@#@#@#@#@")
       // console.log( nodesKeysDict)
       // console.log(this.mapModel.nodeDataArray)
-      for (let link of this.mapModel.linkDataArray) {
+      for (let link of this.mapHandler.myDiagram.model.linkDataArray) {
         // console.log(link)
         if (nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null) {
           console.log(nodesKeysDict[link.from])
@@ -120,7 +121,7 @@ nodeTemplateMap
 
   submitAction() {
     var self = this
-    var keyToInsert = this.mapModel.nodeDataArray.length + 1
+    var keyToInsert = this.mapHandler.myDiagram.model.nodeDataArray.length + 1
     // CASE "FROM" IS NEW
     if (!!this.nodeSelected_From.category == false) {
 
@@ -305,9 +306,10 @@ nodeTemplateMap
     if(status == "yes"){
       console.log("delete!")
       console.log(this.linkSelected.id)
-      this.mapModel.linkDataArray = this.mapModel.linkDataArray.filter(obj => obj.id !=  this.linkToDelete.linkId);
-      this.mapModel.linkDataArray = this.mapModel.linkDataArray.slice()
-      console.log(this.mapModel.linkDataArray)
+      this.mapHandler.myDiagram.model.linkDataArray = this.mapHandler.myDiagram.model.linkDataArray.filter(obj => obj.id !=  this.linkToDelete.linkId);
+      // this.mapHandler.myDiagram.model.linkDataArray = this.mapHandler.myDiagram.model.linkDataArray.slice()
+      // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
+      console.log(this.mapHandler.myDiagram.model.linkDataArray)
     }
     this.linkToDelete = null;
   }

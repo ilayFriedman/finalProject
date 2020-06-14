@@ -87,11 +87,11 @@
                             <span class="k-icon k-i-paste"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button
-                            (click)="this.mapHandler.myDiagram.commandHandler.undo()">
+                            (click)="undo()">
                             <span class="k-icon k-i-undo"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button
-                            (click)="this.mapHandler.myDiagram.commandHandler.redo()">
+                            (click)="redo()">
                             <span class="k-icon k-i-redo"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-icon-button
