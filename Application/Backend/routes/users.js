@@ -176,8 +176,19 @@ router.post('/restorePassword', async function (req, res) {
 });
 
 router.delete('/private/removeUser', async function (req, res) {
-    user.deleteOne({'_id': req.decoded._id})
+    user.deleteOne({'_id': req.decoded._id}, function (err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(`Server error occured while delete user`)
+            res.end()
+        } else {
+            res.status(200).send(`user deleted successfully `)
+            res.end();
+
+        }
+    });
 });
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 module.exports = router;
+

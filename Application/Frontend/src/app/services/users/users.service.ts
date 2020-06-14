@@ -52,5 +52,8 @@ export class UsersService {
     return this.http.post(this.localUrl + '/private/changeInfo', data, { headers: {'token': sessionStorage.token},  responseType: 'text' }).toPromise();
   }
 
-    
+  removeUser(){
+    return this.http.delete(this.localUrl + '/private/removeUser', { headers: {'token': sessionStorage.token},  responseType: 'text' }).toPromise();
+  }
+
 }

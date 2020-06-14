@@ -71,6 +71,7 @@ app.post('/restorePassword', usersRoute);
 app.post('/private/changeInfo', usersRoute);
 app.get('/private/getUsers', usersRoute);
 app.get('/private/getUserDetails', usersRoute);
+app.delete('/private/removeUser', usersRoute);
 
 app.get('/private/getMap/:mapID', mapsRoute);
 app.get('/private/getMapDescription/:mapID', mapsRoute);

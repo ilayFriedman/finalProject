@@ -109,22 +109,17 @@ export class ChangeUserInfoComponent implements OnInit {
     }
 
     deleteAccount(){
-    //   this.groupsService.getSingleOwnerPermission().then(response => {
-    //     var promises = []
-    //     var singleGroupList = response
-    //     console.log(singleGroupList)
-    //     // this.groupsService.deleteGroup()
-    //     this.dbAction=true
-    //     console.log(this.groupsService.allMyGroups)
-
-    //     this.done = true;
-    //     setTimeout(() => {  this.router.navigate(['/logedHome']); }, 2000);
-    //     // alert("User information successfully updated");
-    //   }, error => {
-    //     console.log(error.error);
-    //     alert(error.error);
-    //   }
-    // );
+      this.done = true;
+      this.usersService.removeUser().then(response => {
+        this.dbAction=false
+        sessionStorage.clear()
+        this.router.navigate(['/logedHome']);
+        alert("Your user deleted successfully.\nGood day!");
+      }, error => {
+        console.log(error.error);
+        alert(error.error);
+      }
+    );
 
     }
 }

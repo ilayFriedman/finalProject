@@ -118,10 +118,12 @@
             <h1>Account Deleteion:</h1>
               <h4>Just before deleting your account, it's important for us to let you know the consequences of this action:</h4>
               <ul>
-                <li>All files (folders and maps) that only you have administrator permission on will be permanently deleted from the system<br>
-                    And so do all the other permissions and ability of other users in the system to access these files<br>
-                    For this reason: <b>We recommend</b> that before deleting your user - give Owner permission for at least one other user</li>
+                <li>All of your files (folders and maps) that have not been deleted will remain in the system for use by all users who have been granted permissions.
+                    Also, if there are files that you are the only user with "Owner" premission:<br> Note that once your user is deleted, another user with "Owner" premission<br>
+                     <b>will not be set</b> and consequently will not be able to manage permissions on these files as well as delete them.<br>
+                     <b>For this reason: We recommend</b> that before deleting your user - give "Owner" permission for at least one other user beside you.</li>
                 <li>Your user account (password and username) will be permanently deleted from the system and will no longer be able to log in until you re-register</li>
+                <li>You'll never have more access to the files you manage, even if you re-register with the same user information.</li>
               </ul> 
               <br><br>
               <button style="background: #e65c5c; cursor: pointer;" (click)="deleteAccount()">I Understand the consequences, Delete my account</button>
