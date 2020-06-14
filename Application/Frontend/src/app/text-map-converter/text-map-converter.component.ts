@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 
 
 export class TextMapConverterComponent implements OnInit, OnChanges {
-  @Input() doUpade: boolean;
+  @Input() doUpadte: boolean;
   mapModel: any = null
   links: any[] = []
   numOfLinks = -1
@@ -41,24 +41,27 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   }
 
   constructor(private mapHandler: MapsHandlerService) { }
-
+nodeTemplateMap
 
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
-    
+    console.log(this.mapHandler.myDiagram)
+    // add links template
     Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb).forEach(element => {
       if(element != "Comment" &&  element != "")
         this.typesOflinks.push(element)
     });
+
+      // add nodes from model
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
+
+  // add nodes template
+    Object.keys(this.mapHandler.myDiagram.nodeTemplateMap.Fb).forEach(element => {
+      if(element != "Comment" &&  element != "")
+        this.typesOfNodes.push(element)
+    });
+
     this.convertMapToText()
-
-
-    // remove empty-node, Comment,LinkLabel elements from dict
-    // console.log( this.typesOfNodes)
-    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "")
-    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "Comment")
-    // this.typesOfNodes = this.typesOfNodes.filter(obj=> obj != "LinkLabel")
   }
 
 
@@ -73,9 +76,9 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
         nodesKeysDict[node.key] = [node.text, node.category, node.id,node.key]
       }
 
-      console.log( "#@#@#@#@#@")
-      console.log( nodesKeysDict)
-      console.log(this.mapModel.nodeDataArray)
+      // console.log( "#@#@#@#@#@")
+      // console.log( nodesKeysDict)
+      // console.log(this.mapModel.nodeDataArray)
       for (let link of this.mapModel.linkDataArray) {
         // console.log(link)
         if (nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null) {
@@ -129,7 +132,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
           // create new Node-From
           // console.log(self.nodeSelected_From.key)
           var nodeFrom = {
-            category: self.nodeSelected_From.key, text: self.name_From, id: uuid(), fill: "#ffffff",
+            category: self.nodeSelected_From, text: self.name_From, id: uuid(), fill: "#ffffff",
             stroke: "#000000", strokeWidth: 1, description: "Add a Description", key: (-1 * keyToInsert), refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addNodeData(nodeFrom);
@@ -137,7 +140,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
           // create new Node-From
           var nodeTo = {
-            category: self.nodeSelected_To.key, text: self.name_To, id: uuid(), fill: "#ffffff",
+            category: self.nodeSelected_To, text: self.name_To, id: uuid(), fill: "#ffffff",
             stroke: "#000000", strokeWidth: 1, description: "Add a Description", key: (-1 * keyToInsert), refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addNodeData(nodeTo);
@@ -159,7 +162,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
           // create new Node-From
           // console.log(self.nodeSelected_From.key)
           var nodeFrom = {
-            category: self.nodeSelected_From.key, text: self.name_From, id: uuid(), fill: "#ffffff",
+            category: self.nodeSelected_From, text: self.name_From, id: uuid(), fill: "#ffffff",
             stroke: "#000000", strokeWidth: 1, description: "Add a Description", key: (-1 * keyToInsert), refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addNodeData(nodeFrom);
@@ -191,7 +194,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
           // create new Node-From
           var nodeTo = {
-            category: self.nodeSelected_To.key, text: self.name_To, id: uuid(), fill: "#ffffff",
+            category: self.nodeSelected_To, text: self.name_To, id: uuid(), fill: "#ffffff",
             stroke: "#000000", strokeWidth: 1, description: "Add a Description", key: (-1 * keyToInsert), refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addNodeData(nodeTo);
@@ -248,7 +251,13 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
     this.nodeSelected_From = "Choose Node"
     this.linkSelected = "Choose Link Type"
     this.nodeSelected_To = "Choose Node"
+    if(this.selectedNodes != null && this.selectedNodes[0] != null && this.selectedNodes[1] != null){
+      this.selectedNodes[0].isSelected  = false
+      this.selectedNodes[1].isSelected  = false
+    }
+
     this.selectedNodes = []
+    
 
     this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
       if (node.key == this.fromColoredKey || node.key == this.toColoredKey) {
@@ -263,8 +272,8 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
     this.convertMapToText()
   }
 
-  ngIfCheck(check) {
-    return ((!check.category) && !(typeof (check) == "string"))
+  ngIfCheck(check) { 
+    return ((typeof (check) == "string") && check != "Choose Node")
   }
 
   submitValidationCheck() {

@@ -6,7 +6,7 @@
                         <td><select (ngModelChange)="colorChangerWhenPick($event,'from')" [(ngModel)] ='nodeSelected_From'>
                                 <option [ngValue]="" selected disabled hidden>{{ nodeSelected_From }}</option>
                                 <optgroup label="Create New Nodes:">
-                                        <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>
+                                        <option *ngFor="let item of typesOfNodes" [ngValue]="item">{{item}}</option>
                                 </optgroup>
                                 <optgroup label="Use Current Model Nodes:">
                                         <option *ngFor="let item of this.typesOfNodes_model" [ngValue]="item">{{item.text}}</option>
@@ -23,7 +23,7 @@
                         <td><select (ngModelChange)="colorChangerWhenPick($event,'to')" [(ngModel)] ='nodeSelected_To'>
                                 <option [ngValue]="" selected disabled hidden>{{ nodeSelected_To }}</option>
                                 <optgroup label="Create New Nodes:">
-                                        <option *ngFor="let item of typesOfNodes | keyvalue" [ngValue]="item">{{item.key}}</option>
+                                        <option *ngFor="let item of typesOfNodes" [ngValue]="item">{{item}}</option>
                                 </optgroup>
                                 <optgroup label="Use Current Model Nodes:">
                                         <option *ngFor="let item of this.typesOfNodes_model" [ngValue]="item">{{item.text}}</option>
