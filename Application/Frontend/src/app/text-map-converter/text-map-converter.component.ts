@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 export class TextMapConverterComponent implements OnInit, OnChanges {
   @Input() doUpade: boolean;
   mapModel: any = null
-  links: String[] = []
+  links: any[] = []
   numOfLinks = -1
 
   typesOflinks: any = []
@@ -29,6 +29,10 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   toColoredKey = null
   chooseNodeColor = "yellow"
   resetNodeColor = "white";
+  hoverLink = false;
+  deleteDialogOpened = false;
+  linkToDelete = null;
+  selectedNodes = []
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.mapModel != null) {
@@ -41,21 +45,14 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.mapModel = this.mapHandler.myDiagram.model
-    console.log(this.mapHandler.myDiagram.linkTemplateMap)
-    console.log(this.mapHandler.myDiagram.linkTemplateMap.Fb)
-    console.log(Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb))
-    // this.mapHandler.myDiagram.linkTemplateMap.Fb.forEach(element => {
-    //   console.log(element);
-    //   this.typesOflinks.push(element)
-    // });
-    // this.typesOfNodes = this.mapHandler.myDiagram.nodeTemplateMap.Fb
+    
+    Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb).forEach(element => {
+      if(element != "Comment" &&  element != "")
+        this.typesOflinks.push(element)
+    });
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
     this.convertMapToText()
 
-  
-    // remove empty-link and comment-link elements from dict
-    // this.typesOflinks = this.typesOflinks.filter(obj=> obj != "Comment")
-    // this.typesOflinks = this.typesOflinks.filter(obj=> obj != "")
 
     // remove empty-node, Comment,LinkLabel elements from dict
     // console.log( this.typesOfNodes)
@@ -73,11 +70,16 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
       this.links = []
 
       for (let node of this.mapModel.nodeDataArray) {
-        nodesKeysDict[node.key] = [node.text, node.category]
+        nodesKeysDict[node.key] = [node.text, node.category, node.id,node.key]
       }
 
+      console.log( "#@#@#@#@#@")
+      console.log( nodesKeysDict)
+      console.log(this.mapModel.nodeDataArray)
       for (let link of this.mapModel.linkDataArray) {
+        // console.log(link)
         if (nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null) {
+          console.log(nodesKeysDict[link.from])
           translate += nodesKeysDict[link.from][1] + " " + nodesKeysDict[link.from][0].bold() + " is ";
           switch (link.category) {
             case "Association": {
@@ -105,7 +107,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
               break;
             }
           }
-          this.links.push(translate)
+          this.links.push({linkId: link.id, text: translate, nodeFrom_Id: nodesKeysDict[link.from][2], nodeFromKey : nodesKeysDict[link.from][3], nodeTo_Id: nodesKeysDict[link.to][2], nodeToKey : nodesKeysDict[link.to][3]})
           translate = ""
         }
       }
@@ -142,7 +144,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
           // create link
           var link = {
-            category: self.linkSelected.key, text: self.linkSelected.key, id: uuid(), from: nodeFrom.key,
+            category: self.linkSelected, text: self.linkSelected, id: uuid(), from: nodeFrom.key,
             to: nodeTo.key, refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addLinkData(link);
@@ -168,7 +170,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
           // create link
           var link = {
-            category: self.linkSelected.key, text: self.linkSelected.key, id: uuid(),
+            category: self.linkSelected, text: self.linkSelected, id: uuid(),
             from: nodeFrom.key, to: nodeTo.key, refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addLinkData(link);
@@ -196,7 +198,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
 
           // create link
           var link = {
-            category: self.linkSelected.key, text: self.linkSelected.key, id: uuid(),
+            category: self.linkSelected, text: self.linkSelected, id: uuid(),
             from: nodeFrom.key, to: nodeTo.key, refs: [], ctxs: [], comment: [], connections: []
           }
           d.model.addLinkData(link);
@@ -214,7 +216,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
         var modelLinks = this.mapHandler.myDiagram.model.linkDataArray
         var existLink = false
         modelLinks.forEach(link => {
-          if (link.category != this.linkSelected.key && link.from == this.nodeSelected_From.key && link.to == this.nodeSelected_To.key) {
+          if (link.category != this.linkSelected && link.from == this.nodeSelected_From.key && link.to == this.nodeSelected_To.key) {
             existLink = true
           }
         });
@@ -228,7 +230,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
         this.mapHandler.myDiagram.commit(function (d) {
           var nodeFrom = self.nodeSelected_From
           var nodeTo = self.nodeSelected_To
-          var newLinkToInesrt = { category: self.linkSelected.key, text: self.linkSelected.key, id: uuid(), from: nodeFrom.key, to: nodeTo.key, connections: [] }
+          var newLinkToInesrt = { category: self.linkSelected, text: self.linkSelected, id: uuid(), from: nodeFrom.key, to: nodeTo.key, connections: [] }
           // console.log(modelLinks)
           modelLinks.forEach(link => {
             if (link.from == nodeFrom.key && link.to == nodeTo.key) {
@@ -246,6 +248,7 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
     this.nodeSelected_From = "Choose Node"
     this.linkSelected = "Choose Link Type"
     this.nodeSelected_To = "Choose Node"
+    this.selectedNodes = []
 
     this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
       if (node.key == this.fromColoredKey || node.key == this.toColoredKey) {
@@ -275,42 +278,34 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   }
 
   colorChangerWhenPick(event, sender) {
-    if (event.category) {
-      if (sender == "from" && event.key != this.fromColoredKey) {
-        this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
-          if (node.key == this.fromColoredKey && node.key != this.toColoredKey) {
-            this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.resetNodeColor)
-          }
-        });
-        this.mapHandler.myDiagram.model.setDataProperty(event, "fill", this.chooseNodeColor)
-        this.fromColoredKey = event.key
+    if(event.category){
+      if(sender == "from"){
+        this.selectedNodes[0] = this.mapHandler.myDiagram.findNodeForKey(event.key)
       }
-      if (sender == "to" && event.key != this.toColoredKey) { // sender == "to"
-        this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
-          if (node.key == this.toColoredKey && node.key != this.fromColoredKey) {
-            this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.resetNodeColor)
-          }
-        });
-        this.mapHandler.myDiagram.model.setDataProperty(event, "fill", this.chooseNodeColor)
-        this.toColoredKey = event.key
+
+      if(sender == "to"){
+        this.selectedNodes[1] = this.mapHandler.myDiagram.findNodeForKey(event.key)
+
       }
+      this.mapHandler.myDiagram.selectCollection(this.selectedNodes)
     }
-    else {
-      if (sender == "from") {
-        this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
-          if (node.key == this.fromColoredKey && node.key != this.toColoredKey) {
-            this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.resetNodeColor)
-          }
-        });
-      }
-      if (sender == "to") { // sender == "to"
-        this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
-          if (node.key == this.toColoredKey && node.key != this.fromColoredKey) {
-            this.mapHandler.myDiagram.model.setDataProperty(node, "fill", this.resetNodeColor)
-          }
-        });
-      }
+  }
+
+  deleteLink(status){
+    this.deleteDialogOpened = false;
+    if(status == "yes"){
+      console.log("delete!")
+      console.log(this.linkSelected.id)
+      this.mapModel.linkDataArray = this.mapModel.linkDataArray.filter(obj => obj.id !=  this.linkToDelete.linkId);
+      this.mapModel.linkDataArray = this.mapModel.linkDataArray.slice()
+      console.log(this.mapModel.linkDataArray)
     }
+    this.linkToDelete = null;
+  }
+  
+  openDialog(selectedLink){
+    this.linkToDelete = selectedLink
+    this.deleteDialogOpened =  true;
   }
 
 }

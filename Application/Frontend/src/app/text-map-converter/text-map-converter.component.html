@@ -17,7 +17,7 @@
                         <td><select [(ngModel)] ='linkSelected'>
                                 <option [ngValue]="" selected disabled hidden>{{ linkSelected }}</option>
                                 <optgroup label="Toolbar Links:"></optgroup>
-                                <option *ngFor="let item of typesOflinks | keyvalue" [ngValue]="item">{{item.key}}</option>
+                                <option *ngFor="let item of typesOflinks" [ngValue]="item">{{item}}</option>
                                 </select>
                         </td>
                         <td><select (ngModelChange)="colorChangerWhenPick($event,'to')" [(ngModel)] ='nodeSelected_To'>
@@ -35,12 +35,24 @@
                 </tr>
         </table>
 </div>
-<div >
+<div>
         <ul class="links">
-                <li *ngFor="let link of links;  let i=index"><span [innerHTML]="link"></span><span style="position: absolute;">&times;</span></li>
-                <span></span> 
-            </ul>
+                <li *ngFor="let link of links;  let i=index"   (click)="openDialog(link)">
+                        <span [innerHTML]="link.text"></span>
+                        <span style="float: right; position: relative;"><b>&times;</b></span>
+                </li>
+        </ul>
     </div>
+        <!-- delete dialog configuration -->
+        <kendo-dialog title="Please confirm" *ngIf="deleteDialogOpened" (close)="deleteLink('cancel')" [minWidth]="250">
+        <p style="margin: 30px; text-align: center;">Are you sure you want to Delete Link </p>
+        <span style="margin: 30px; text-align: center;">"<span style="text-align: center;" [innerHTML]="linkToDelete.text"></span>"</span>
+        <p style="margin: 30px; text-align: center; color:red">Note: only the link between two nodes will be remove</p>
+        <kendo-dialog-actions>
+        <button kendoButton (click)="deleteLink('no')">No</button>
+        <button kendoButton (click)="deleteLink('yes')" primary="true">Delete This Link</button>
+        </kendo-dialog-actions>
+</kendo-dialog>
 </div>
 
 

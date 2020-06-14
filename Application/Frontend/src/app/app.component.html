@@ -20,40 +20,34 @@
       </span>
 
       <!-- Search bar -->
-      <span style="float: left;" @fade *ngIf='isLoggedIn()'>
-        <span id="searchBarAndResult">
-          <input type="text" placeholder="Name To Search" [(ngModel)]="inputTextSearch"
-            (keyup.enter)="searchNodesAndMaps()">
-          <div id="searchResultDiv" *ngIf="showSearchResults" style="width: 180px;">
-            <div *ngFor="let node of searchResults">
-              <button mat-button (click)="goToResult(node)" matTooltip="Go to map"
-                style="width: 100%; white-space: normal;">
-                <div mat-line><b style="font-size: 20px;">{{node.MapName}}</b></div>
-                <div mat-line> {{node.MapDescription}} </div>
-              </button>
+      <span style="float: left; padding-top: 10px;" @fade *ngIf='isLoggedIn()'>
+        <span>
+          <input type="search" placeholder="Search Nodes / Maps" [(ngModel)]="inputTextSearch"
+            (keyup.enter)="searchNodesAndMaps()" >
+          <div id="searchResultDiv" *ngIf="this.inputTextSearch !='' && showSearchResults && showPopDiv" style="width: 450px;"  (clickOutside)="closeSearchDiv($event)">
+            <span style="width: 450px; font-size: 23px; margin-bottom: 6px; color: gray;"><b>Nodes:</b></span>
+            <div *ngFor="let node of searchResults[0]" class="result" style="margin-bottom: 5px;">
+                <span style="width:100%"(click)="goToResult(node)"><span class="k-icon k-i-front-element" style="font-size: 15px; color: gray;"></span><span style="margin-left: 5px;"><b>{{node.nodeText}}</b></span><span style="margin-left: 5px;font-size: 13px">in map : "{{node.MapName}}"</span></span>
             </div>
-            <div *ngIf="searchResults.length == 0">
+            <div *ngIf="searchResults[0].length == 0" style="padding: 5%;">
+              <b> No Results </b>
+            </div>
+            <span style="width: 450px; font-size: 23px; padding-top: 23px; margin-bottom: 6px; color: gray;"><b>Maps:</b></span>
+            <div *ngFor="let map of searchResults[1]" class="result" style="margin-bottom: 5px;">
+            <span (click)="goToResult(map)"><span class="k-icon k-i-table-align-middle-center" style="font-size: 15px; color: gray;"></span><span style="margin-left: 5px;"><b>{{map.MapName}}</b></span><span style="margin-left: 5px;font-size: 13px">{{map.MapDescription}}</span></span>
+          </div>
+            <div *ngIf="searchResults[1].length == 0" style="padding: 5%;">
               <b> No Results </b>
             </div>
           </div>
         </span>
-        <span>
-          <button mat-icon-button (click)="searchNodesAndMaps()" matTooltip="Search">
-            <!-- <span class="k-icon k-i-search" style="font-size: 20px"></span> -->
-            <mat-icon>search</mat-icon>
-          </button>
-          <button mat-icon-button (click)="showSearchResults = false" matTooltip="Clear search">
-            <mat-icon>clear</mat-icon>
-            <!-- <span class="k-icon k-i-close" style="font-size: 20px"></span> -->
-          </button>
-        </span>
       </span>
+      <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button
+        [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
       <!-- Right menu buttons -->
       <span @fade style="float: right; position: relative;">
         <!--right side buttons-->
         <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">Hi {{fullName}}!</span>
-        <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button
-            [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
         <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mainMenu"><a mat-button
             [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span></a></span>
         <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mainMenu"><a mat-button (click)="logOut()"

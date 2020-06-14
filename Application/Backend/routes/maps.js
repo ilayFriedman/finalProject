@@ -276,8 +276,8 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                 if (UserHasOwnerPermissionForMap(result, req.decoded._id)) {
                     map.deleteOne({ _id: result._id }, function (err) {
                         if (err) {
-                            // res.status(500).send(`Server error occured.`);
-                            res.statusCode = 500;
+                            res.status(500).send(`Server error occured.`);
+                            // res.statusCode = 500;
                             res.end();
                         }
                         else {
@@ -285,12 +285,12 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                             folder.updateMany({}, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
                                 if (err) {
                                     console.log(err);
-                                    // res.status(500).send("Server error occurred while pop from parent folder.");
-                                    res.statusCode = 500;
+                                    res.status(500).send("Server error occurred while pop from parent folder.");
+                                    // res.statusCode = 500;
                                     res.end();
                                 } else {
-                                    // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                                    res.statusCode = 200;
+                                    res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                    // res.statusCode = 200;
                                     res.end();
                                 }
                             });
@@ -298,11 +298,11 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                     });
                     // write/read permission on map: remove my ID from permission but not delete map
                 } else {
-                    map.updateOne({ _id: result._id }, { $pull: { ["Permission" + [req.params.userPermission]]: { id: req.decoded._id } } }, function (err, result) {
+                    map.updateOne({ _id: result._id }, { $pull: { ["Permission." + [req.params.userPermission]]: { id: req.decoded._id} } }, function (err, result) {
                         if (err) {
                             console.log(err);
-                            // res.status(500).send("Server error occurred while pop from parent folder.");
-                            res.statusCode = 500;
+                            res.status(500).send("Server error occurred while pop from parent folder.");
+                            // res.statusCode = 500;
                             res.end();
                         }
                         else {
@@ -310,12 +310,12 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                             folder.updateOne({ _id: req.params.folderID }, { $pull: { 'MapsInFolder': { "mapID": req.params.mapID } } }, function (err, result) {
                                 if (err) {
                                     console.log(err);
-                                    // res.status(500).send("Server error occurred while pop from parent folder.");
-                                    res.statusCode = 500;
+                                    res.status(500).send("Server error occurred while pop from parent folder.");
+                                    // res.statusCode = 500;
                                     res.end();
                                 } else {
-                                    // res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
-                                    res.statusCode = 200;
+                                    res.status(200).send("Map deleted successfully. && map removed successfully from folder.");
+                                    // res.statusCode = 200;
                                     res.end();
                                 }
                             });
@@ -324,14 +324,14 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                 }
 
             } else {
-                // res.status(404).send(`Could not find the requested map.`);
-                res.statusCode = 404;
+                res.status(404).send(`Could not find the requested map.`);
+                // res.statusCode = 404;
                 res.end();
             }
         })
     } else {
-        // res.status(400).send(`Missing map id`);
-        res.statusCode = 400;
+        res.status(400).send(`Missing map id`);
+        // res.statusCode = 400;
         res.end();
     }
 
@@ -781,22 +781,20 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
                         let nodeId, nodeText, nodeKey;
                         for (let index = 0; index < map.Model.nodeDataArray.length; index++) {
                             const element = map.Model.nodeDataArray[index];
-                            if (element.text.toLowerCase() == req.params.nodeName) {
-                                nodeId = element.id
-                                nodeText = element.text
-                                nodeKey = element.key
+                            if (element.text.toLowerCase() == req.params.nodeName || element.text.toLowerCase().includes(req.params.nodeName)) {
+                                let currInfo = {
+                                    mapID: map._id,
+                                    MapName: map.MapName,
+                                    MapDescription: map.Description,
+                                    nodeId: element.id,
+                                    nodeText: element.text,
+                                    nodeKey: element.key
+        
+                                }
+                                containingMaps.push(currInfo)
                             }
-                        }
-                        let currInfo = {
-                            mapID: map._id,
-                            MapName: map.MapName,
-                            MapDescription: map.Description,
-                            nodeId: nodeId,
-                            nodeText: nodeText,
-                            nodeKey: nodeKey
 
                         }
-                        containingMaps.push(currInfo)
                     }
 
                 });

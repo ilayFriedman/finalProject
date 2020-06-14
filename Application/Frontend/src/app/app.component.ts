@@ -37,6 +37,7 @@ export class AppComponent {
   inputTextSearch: string;
   showSearchResults: boolean = false;
   searchResults: any[] = [];
+  showPopDiv = false;
 
   @ViewChild('results', { static: false }) results: MatSelectionList;
 
@@ -57,12 +58,16 @@ export class AppComponent {
     sessionStorage.clear()
   }
 
-
+  onClickedOutside(e: Event) {
+    console.log("hi")
+    this.showPopDiv = false;
+  }
 
   searchNodesAndMaps() {
-    this.searchResults = [];
+    this.searchResults = [[],[]];
     this.searchNodes();
     this.searchMaps();
+    this.showPopDiv = true
   }
   searchNodes() {
     console.log(this.inputTextSearch);
@@ -74,7 +79,7 @@ export class AppComponent {
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
-          this.searchResults.push(map)
+          this.searchResults[0].push(map)
         })
         this.showSearchResults = true;
 
@@ -86,7 +91,9 @@ export class AppComponent {
       });
 
   }
-
+  closeSearchDiv(event){
+    this.showSearchResults = false;
+  }
   searchMaps() {
     console.log(this.inputTextSearch);
     console.log("search map");
@@ -99,9 +106,9 @@ export class AppComponent {
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
-          if (!this.searchResults.some(mapRes => mapRes['mapID'] === map.mapID)) {
-            this.searchResults.push(map)
-          }
+          this.searchResults[1].push(map)
+          // if (!this.searchResults.some(mapRes => mapRes['mapID'] === map.mapID)) {
+          // }
         })
         this.showSearchResults = true;
       }

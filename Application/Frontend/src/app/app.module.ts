@@ -36,6 +36,7 @@ import { NgxPrintModule } from 'ngx-print';
 import { OpenPageModule } from './open-page/open-page.module';
 import { CanDeactivateGuard } from './can-deactivate.guard';
 import { InputsModule } from '@progress/kendo-angular-inputs';
+import { ClickOutsideDirective } from './click-outside-directive.directive';
 
 
 
@@ -53,6 +54,7 @@ import { InputsModule } from '@progress/kendo-angular-inputs';
     LogedHomeComponent,
     GroupsComponent,
     LoginComponent,
+    ClickOutsideDirective,
   ],
   imports: [
     BrowserModule,
