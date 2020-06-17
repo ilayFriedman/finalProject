@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, OnInit, HostListener, ViewChild, ContentChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, state } from '@angular/animations';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
@@ -131,9 +131,12 @@ export class AppComponent {
       if (!this.mapHandler.currMap_mapViewer) {
         this.mapHandler.currMap_mapViewer = map;
         this.router.navigate(['/mapViewer'])
+        // this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(res.nodeKey));
       }
       else {
-        this.mapViewer.goToConnectMap(map)
+        if (type == 'node') {
+          this.mapViewer.goToConnectMap([map, res.nodeKey])
+        }
       }
     }).catch
       (err => {

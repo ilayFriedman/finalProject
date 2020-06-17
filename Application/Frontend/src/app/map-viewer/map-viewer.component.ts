@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, SimpleChanges, OnChanges, EventEmitter, Output, ViewChild, ViewChildren, NgModule, HostListener } from '@angular/core';
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { MapsHandlerService } from "../services/maps-handler.service";
 import { AppModule } from '../app.module';
 import * as go from 'gojs';
@@ -37,7 +37,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   subscribeCurrMap: boolean = false;
   color: ThemePalette = 'primary';
   @ViewChild(NodeMenuModalComponent, { static: true }) nodeMenu: NodeMenuModalComponent;
-  @ViewChild(TextMapConverterComponent, { static: true }) converterComp: TextMapConverterComponent ; 
+  @ViewChild(TextMapConverterComponent, { static: true }) converterComp: TextMapConverterComponent;
   // filterRadius: number = 0;
   filterRadiusForm = new FormGroup({
     filterRadius: new FormControl()
@@ -46,18 +46,22 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   linkStats = [];
   doUndoFilter: boolean = false;
 
-  constructor(private modalService: ModalService, private router: ActivatedRoute,
+  constructor(private modalService: ModalService, private router: Router,
     public mapHandler: MapsHandlerService, private http: HttpClient, private formBuilder: FormBuilder) { }
 
   canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
     if (this.isSaved) {
       this.mapHandler.updateInUse(" ");
       this.mapHandler.currMap_mapViewer = null;
+      console.log("map = null");
+
       return true;
     }
     if (confirm('Are you sure you want to leave this map? \n If you didn\'t save your changes please do.')) {
       this.mapHandler.updateInUse(" ");
       this.mapHandler.currMap_mapViewer = null;
+      console.log("map = null");
+
       return true;
     }
   }
@@ -66,6 +70,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadFunction($event) {
     this.mapHandler.updateInUse(" ");
+
     return $event.returnValue = 'Are you sure you want to leave this map? \n If you didn\'t save your changes please do.';
   }
 
@@ -85,19 +90,25 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
 
   }
 
-  goToConnectMap(map) {
+  goToConnectMap(args) {
+    console.log(this.mapHandler.currMap_mapViewer);
+
     if (this.canDeactivate()) {
-      this.mapHandler.currMap_mapViewer = map
-      this.mapHandler.updateInUse(" ");
+      // this.mapHandler.updateInUse(" ");
+      // this.currMap_mapViewer.inUseBy = " "
+      this.mapHandler.currMap_mapViewer = args[0]
       this.mapHandler.myDiagram.div = null;
       this.mapHandler.myDiagram = null;
       this.initDiagramProperties()
-      // this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(map.nodeKey));
+      console.log(this.mapHandler.myDiagram.model);
+
+      this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(args[1]));
     }
   }
 
   init() {
     let self = this;
+    // console.log(self.router.getCurrentNavigation().extras.state);
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     self.initDiagramProperties();
 
@@ -171,6 +182,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
   initDiagramProperties() {
     let self = this;
     self.mapHandler.updateInUse(sessionStorage.userId);
+    self.mapHandler.currMap_mapViewer.inUseBy = sessionStorage.userId
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     self.mapHandler.myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       {
@@ -684,7 +696,7 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
           this.getLinkStatistics()
         }
         if (e.Uo != "Move" && e.Uo != "Initial Layout") {
-          
+
           // this.child.convertMapToText()
           console.log("updateConv!1")
 
@@ -699,17 +711,17 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
           console.log("update Converter")
 
         }
-  
+
       }
     }
 
   }
-  redo(){
+  redo() {
     this.mapHandler.myDiagram.commandHandler.redo();
     // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
   }
 
-  undo(){
+  undo() {
     this.mapHandler.myDiagram.commandHandler.undo();
     // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
   }
@@ -752,8 +764,18 @@ export class MapViewerComponent implements OnInit, CanComponentDeactivate {
     }
   }
 
+  isSavedFunc() {
+    console.log(!this.isSaved && !this.mapHandler.isReadOnlyMode);
+
+    return !this.isSaved && this.mapHandler.isReadOnlyMode
+  }
   successSaved() {
     this.openModal("success-save-modal");
+    this.isSaved = true;
+    console.log(this.isSaved);
+    console.log(this.mapHandler.isReadOnlyMode);
+
+
     setTimeout(() => { this.closeModal("success-save-modal"); }, 1000);
   }
 

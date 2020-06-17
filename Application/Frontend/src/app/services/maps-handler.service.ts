@@ -37,7 +37,7 @@ export class MapsHandlerService {
       'inUseBy': inUseBy
     }
     this.http.put(this.localUrl + '/private/updateMapInuse', data, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise().then(res => {
-      this.currMap_mapViewer.inUseBy = inUseBy;
+      // this.currMap_mapViewer.inUseBy = inUseBy;
     }).catch
       (err => {
         console.log("error update in use");

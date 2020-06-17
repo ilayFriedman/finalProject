@@ -86,12 +86,10 @@
                             (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()">
                             <span class="k-icon k-i-paste"></span>
                         </button>
-                        <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button
-                            (click)="undo()">
+                        <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button (click)="undo()">
                             <span class="k-icon k-i-undo"></span>
                         </button>
-                        <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button
-                            (click)="redo()">
+                        <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button (click)="redo()">
                             <span class="k-icon k-i-redo"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-icon-button
@@ -146,11 +144,8 @@
                 </mat-toolbar-row>
             </mat-toolbar>
         </span>
-        <span style="float: right; width: fit-content; height: 100%; vertical-align: text-bottom;">
 
-        </span>
-
-        <span id="usavedError" *ngIf='!isSaved && !mapHandler.isReadOnlyMode'
+        <span id="usavedError" *ngIf='isSavedFunc()'
             style="display: inline-block; width: fit-content; vertical-align: top;">
             Your changes are unsaved <br>
         </span>
