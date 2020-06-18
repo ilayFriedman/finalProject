@@ -166,24 +166,22 @@ router.post('/private/addUserToGroup', async function (req, res) {
     
 
     // Grant new permission
-    user.findOne({ 'Username': req.body.username }, function (err, result) {
-        if (result) {
+    user.findOne({ 'Username': req.body.username }, async function (err, userRes) {
+        if (userRes) {
             // user exist!
-            // console.log(req.body.rootsList)
-            // map.find({_id: { $in: req.body.rootsList }, $or: [{ 'Permission.Owner.id': req.body.groupId }, { 'Permission.Write.id': req.body.groupId }, { 'Permission.Read.id': req.body.groupId }]},function (err, rootsRes) {
-            //     if(rootsRes){
-            //         console.log(rootsRes)
-            //     }
-            // });
-            
-            // {$addToSet:{id: result._id, type: "GroupPermission"}}
+
+            await map.updateMany({'Permission.Owner.id': req.body.groupId}, { $addToSet: { ["Permission.Owner"] : { id: userRes._id.toString(), type: "GroupPermission"} } , async function(err) { if (err) { res.status(500).send("err in add new user to Owner permission"); res.end(); } } })
+            await map.updateMany({'Permission.Write.id': req.body.groupId}, { $addToSet: { ["Permission.Write"] : { id: userRes._id.toString(), type: "GroupPermission"} } , async function(err) { if (err) { res.status(500).send("err in add new user to Write permission"); res.end(); } } })
+            await map.updateMany({'Permission.Read.id': req.body.groupId}, { $addToSet: { ["Permission.Read"] : { id: userRes._id.toString(), type: "GroupPermission"} } , async function(err) { if (err) { res.status(500).send("err in add new user to Read permission"); res.end(); } } })
+
+
             group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
                 if (err) {
                     res.status(500).send("Server error occurred.");
                     res.end();
                 } else if (resultUpadte) {
                     res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify(result));
+                    res.end(JSON.stringify(userRes));
                 } else{
                     res.status(404).send("Could not find the requested Group Id.");
                 }
