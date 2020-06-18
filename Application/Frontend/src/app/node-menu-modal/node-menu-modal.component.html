@@ -38,12 +38,12 @@
                                 <mat-icon matTooltip="Hide All" *ngIf="doShowAllRefs">arrow_back</mat-icon>
                             </button>
                             <button mat-icon-button
-                                [disabled]="this.allRefSelection.selected.length == 0 || mapHandler.checkMapDisplayStatus() &lt; 2"
+                                [disabled]="this.allRefSelection.selected.length == 0 || mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode"
                                 (click)=" addRefToNode()">
                                 <mat-icon matTooltip="Add References">add_to_photos</mat-icon>
                             </button>
                             <button mat-icon-button
-                                [disabled]="this.nodeRefSelection.selected.length == 0 || mapHandler.checkMapDisplayStatus() &lt; 2"
+                                [disabled]="this.nodeRefSelection.selected.length == 0 || mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode"
                                 (click)="removeRefToNode()">
                                 <mat-icon matTooltip="Remove
                                 References">delete_sweep</mat-icon>
@@ -230,12 +230,12 @@
                                 <mat-icon matTooltip="Hide All" *ngIf="doShowAllCtxs">arrow_back</mat-icon>
                             </button>
                             <button mat-icon-button
-                                [disabled]="this.allCtxsSelection.selected.length == 0 || mapHandler.checkMapDisplayStatus() &lt; 2"
+                                [disabled]="this.allCtxsSelection.selected.length == 0 || mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode"
                                 (click)="addCtxsToNode()">
                                 <mat-icon matTooltip="Add Contexts">add_to_photos</mat-icon>
                             </button>
                             <button mat-icon-button
-                                [disabled]="this.nodeCtxsSelection.selected.length == 0 || mapHandler.checkMapDisplayStatus() &lt; 2"
+                                [disabled]="this.nodeCtxsSelection.selected.length == 0 || mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode"
                                 (click)="removeCtxsToNode()">
                                 <mat-icon matTooltip="Remove Contexts">delete_sweep</mat-icon>
                             </button>
@@ -659,7 +659,8 @@
                     </div>
 
                     <button mat-raised-button (click)="addNewConnection()"
-                        [disabled]="mapsSelectedOptions.selected.length == 0" style="margin: 10px;"> Connect </button>
+                        [disabled]="mapsSelectedOptions.selected.length == 0 || mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode"
+                        style="margin: 10px;"> Connect </button>
                 </div>
             </div>
 

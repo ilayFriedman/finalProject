@@ -79,6 +79,7 @@ app.get('/private/getUsersPermissionsMap/:mapID', mapsRoute);
 app.post('/private/createMap', mapsRoute);
 app.put('/private/updateMap', mapsRoute);
 app.put('/private/updateMapInuse', mapsRoute);
+app.get('/private/getMapInUseStatus/:mapID', mapsRoute);
 app.post('/private/updateMapProperties', mapsRoute);
 app.delete('/private/removeMap/:mapID&:userPermission&:folderID', mapsRoute);
 

@@ -298,7 +298,7 @@ router.delete('/private/removeMap/:mapID&:userPermission&:folderID', async funct
                     });
                     // write/read permission on map: remove my ID from permission but not delete map
                 } else {
-                    map.updateOne({ _id: result._id }, { $pull: { ["Permission." + [req.params.userPermission]]: { id: req.decoded._id} } }, function (err, result) {
+                    map.updateOne({ _id: result._id }, { $pull: { ["Permission." + [req.params.userPermission]]: { id: req.decoded._id } } }, function (err, result) {
                         if (err) {
                             console.log(err);
                             res.status(500).send("Server error occurred while pop from parent folder.");
@@ -386,6 +386,26 @@ router.put('/private/updateMapInuse', async function (req, res) {
 
     } else {
         res.status(400).send("No map ID attached to request.");
+    }
+});
+
+router.get('/private/getMapInUseStatus/:mapID', async function (req, res) {
+    try {
+        await map.findOne({ '_id': req.params.mapID }, function (err, result) {
+            if (result) {
+                // console.log(result)
+                if (UserHasReadPermissionForMap(result, req.decoded._id)) {
+                    // console.log(result.inUseBy)
+                    res.send(result.inUseBy);
+                } else {
+                    res.status(403).send("The user's permissions are insufficient to retrieve map");
+                }
+            } else {
+                res.status(404).send("Could not find the requested map.");
+            }
+        })
+    } catch (e) {
+        res.status(500).send('Server error occured.');
     }
 });
 
@@ -671,7 +691,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                     // delete all users from exists premissions
                     await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { res.status(500).send(`err in delete groupPermission owner permission`) } })
                     await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Write"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { res.status(500).send(`err in delete groupPermission Write permission`); } })
-                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString() } } }, async function (err) { if (err) {res.status(500).send(`err in delete groupPermission Read permission`) } })
+                    await map.updateOne({ _id: req.body.mapId }, { $pull: { ["Permission.Read"]: { id: userRes._id.toString() } } }, async function (err) { if (err) { res.status(500).send(`err in delete groupPermission Read permission`) } })
 
                     await map.findOneAndUpdate({ _id: req.body.mapId },
                         { $addToSet: { ["Permission." + req.body.elementToAdd.permission_To]: { id: userRes._id.toString(), type: req.body.elementToAdd.type } } }, async function (err, addResult) {
@@ -709,7 +729,7 @@ router.post('/private/addNewPermission', async function (req, res) {
                                     }
 
                                 }
-                                else{
+                                else {
                                     // not mail
                                     objectToReturn = { id: userRes._id, type: req.body.elementToAdd.type, name: userRes.FirstName + " " + userRes.LastName, username: userRes.Username };
 
@@ -789,7 +809,7 @@ router.get('/private/searchNodes/:nodeName', async function (req, res) {
                                     nodeId: element.id,
                                     nodeText: element.text,
                                     nodeKey: element.key
-        
+
                                 }
                                 containingMaps.push(currInfo)
                             }

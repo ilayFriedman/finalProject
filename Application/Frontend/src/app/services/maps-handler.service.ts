@@ -11,6 +11,12 @@ export class MapsHandlerService {
   myDiagram: any;
   folderNamesList: any = [];
   isReadOnlyMode: boolean = false;
+  userPermission: number;
+  isSaved: boolean;
+  // doUndoFilter: boolean = false;
+  // currNode: any;
+
+
 
 
   constructor(private http: HttpClient) { }
@@ -26,6 +32,9 @@ export class MapsHandlerService {
   }
 
   updateInUse(inUseBy: string) {
+    if (inUseBy == " " && this.currMap_mapViewer.inUseBy != sessionStorage.userId) {
+      return;
+    }
     if (inUseBy != " " && (this.currMap_mapViewer.inUseBy != " " || this.getUserPermission() < 2)) { //if second person try to get in
       return;
     }
@@ -37,7 +46,8 @@ export class MapsHandlerService {
       'inUseBy': inUseBy
     }
     this.http.put(this.localUrl + '/private/updateMapInuse', data, { headers: { 'token': sessionStorage.token }, responseType: 'text' }).toPromise().then(res => {
-      // this.currMap_mapViewer.inUseBy = inUseBy;
+      if (this.currMap_mapViewer)
+        this.currMap_mapViewer.inUseBy = inUseBy;
     }).catch
       (err => {
         console.log("error update in use");
@@ -45,6 +55,11 @@ export class MapsHandlerService {
       });
   }
 
+  async checkInUseStatusInDB() {
+    return this.http.get(this.localUrl + '/private/getMapInUseStatus/' + this.currMap_mapViewer._id, { headers: { 'token': sessionStorage.token }, responseType: 'text' })
+      .toPromise()
+
+  }
   getMap(mapId: String) {
     return this.http.get(this.localUrl + '/private/getMap/' + mapId, { headers: { 'token': sessionStorage.token } }).toPromise()
   }
@@ -114,15 +129,18 @@ export class MapsHandlerService {
 
   }
 
-  checkMapDisplayStatus() {
+  isReadDisplayStatus() {
+    if (this.getUserPermission() < 2) {
+      return true;
+    }
+    // console.log(this.isReadOnlyMode);
     if (this.currMap_mapViewer.inUseBy != " " && this.currMap_mapViewer.inUseBy != sessionStorage.userId) {
       this.isReadOnlyMode = true;
-      console.log(this.isReadOnlyMode);
 
-      return 1;
+      return true;
     }
     else
-      return this.getUserPermission();
+      return false;
   }
 
   // Shared maps //

@@ -45,8 +45,8 @@ router.post('/register', async function (req, res) {
                 } else {
                     const newUser = new user({
                         Username: req.body.email.toLowerCase(),
-                        FirstName: req.body.FirstName,
-                        LastName: req.body.LastName,
+                        FirstName: req.body.FirstName[0].toUpperCase() + req.body.FirstName.slice(1),
+                        LastName: req.body.LastName[0].toUpperCase() + req.body.LastName.slice(1),
                         getPermissionUpdate: req.body.getPermissionUpdate,
                         Password: req.body.pwd,
                     });
@@ -83,7 +83,7 @@ router.post('/private/changeInfo', async function (req, res) {
         res.status(400).send("Could not update user information. The fields FirstName, LastName and pwd are required.");
     }
     try {
-        user.findOneAndUpdate({ "_id": req.decoded._id }, { $set: { 'FirstName': req.body.FirstName, 'LastName': req.body.LastName, 'Password': req.body.pwd , 'getPermissionUpdate': req.body.getPermissionUpdate} }, function (err, mongoRes) {
+        user.findOneAndUpdate({ "_id": req.decoded._id }, { $set: { 'FirstName': req.body.FirstName, 'LastName': req.body.LastName, 'Password': req.body.pwd, 'getPermissionUpdate': req.body.getPermissionUpdate } }, function (err, mongoRes) {
             if (err) {
                 console.log(err);
                 res.status(500).send("Server error occurred.");
@@ -117,10 +117,10 @@ router.get('/private/getUsers', async function (req, res) {
 router.get('/private/getUserDetails', async function (req, res) {
 
     try {
-        user.findOne({'_id': req.decoded._id}, function(err, result) {
+        user.findOne({ '_id': req.decoded._id }, function (err, result) {
             if (result) {
-                var answer = {"FirstName": result.FirstName, "LastName" :result.LastName, "Username": result.Username, getPermissionUpdate: result.getPermissionUpdate}
-                res.writeHead(200, {"Content-Type": "application/json"});
+                var answer = { "FirstName": result.FirstName, "LastName": result.LastName, "Username": result.Username, getPermissionUpdate: result.getPermissionUpdate }
+                res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(answer));
             } else {
                 console.log("server problem while searching user")
@@ -176,7 +176,7 @@ router.post('/restorePassword', async function (req, res) {
 });
 
 router.delete('/private/removeUser', async function (req, res) {
-    user.deleteOne({'_id': req.decoded._id}, function (err, result) {
+    user.deleteOne({ '_id': req.decoded._id }, function (err, result) {
         if (err) {
             console.log(err);
             res.status(500).send(`Server error occured while delete user`)

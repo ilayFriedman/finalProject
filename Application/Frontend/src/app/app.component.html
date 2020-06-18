@@ -58,13 +58,14 @@
       <span class="doNotPrint" style="display: inline-block;" *ngIf='mapHandler.currMap_mapViewer'>
         <!-- <mat-toolbar style="background-color: inherit; width: fit-content; vertical-align: bottom;" class="doNotPrint">
           <mat-toolbar-row> -->
-        <div style="display: inline-block; text-align: center; width: 100%; ">
+        <div style="display: inline-block; text-align: center;">
 
           <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button [matMenuTriggerFor]="saveOptions"
-            [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
+            [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
             <span class="k-icon k-i-save"></span>
           </button>
-          <button class="mapsMenu" matTooltip="Print" mat-icon-button (click)="mapViewer.printOption()">
+          <button class="mapsMenu" class="doNotPrint" matTooltip="Print" mat-icon-button
+            (click)="mapViewer.printOption()">
             <span class="k-icon k-i-print"></span>
           </button>
           <button class="mapsMenu" matTooltip="Clear Map" mat-icon-button (click)="mapViewer.newMap()">
@@ -103,10 +104,7 @@
           <button class="mapsMenu" mat-icon-button [matMenuTriggerFor]="moreOptions">
             <span class="k-icon k-i-more-vertical"></span>
           </button>
-          <button class="mapsMenu" mat-icon-button (click)="mapViewer.undoFilterRadius()" *ngIf="mapViewer.doUndoFilter"
-            matTooltip="Clear Filter">
-            <span class="k-icon k-i-filter-clear"></span>
-          </button>
+
           <!-- <mat-slide-toggle style="font-size: 15px;  text-align: right;" class="doNotPrint"
                             [color]="color" [(ngModel)]="subscribeCurrMap" (change)="changeSubscription()" #toggle>
                             Subscribe
@@ -116,17 +114,17 @@
             <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
             <br>
             <button mat-button (click)="mapViewer.openModal('import-modal')"
-              [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">Import</button><br>
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">Import</button><br>
           </mat-menu>
 
           <mat-menu #saveOptions="matMenu">
             <button class="mapsMenu" style="font-size: 15px;" mat-button (click)="mapViewer.save()"
-              [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
               Save
             </button>
             <br>
             <button class="mapsMenu" mat-button (click)="mapViewer.saveAs()"
-              [disabled]="mapHandler.checkMapDisplayStatus() &lt; 2">
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
               Save As
             </button>
           </mat-menu>
@@ -137,9 +135,14 @@
             <button mat-button (click)="mapViewer.saveAsJSON('', '.json')">JSON File</button>
           </mat-menu>
         </div>
-        <br>
         <!-- </mat-toolbar-row>
         </mat-toolbar> -->
+        <span id="usavedError" *ngIf='isSavedFunc()' style="display: inline-block;">
+          <b>There are unsaved changes!</b>
+        </span>
+        <span id="usavedError" *ngIf='mapHandler.isReadOnlyMode' style="display: inline-block;">
+          <b>You are in read only mode</b>
+        </span>
       </span>
 
       <!-- Right menu buttons -->
