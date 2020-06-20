@@ -5,15 +5,22 @@
     margin-top: 1%;
     padding: 1%;
     height: 100%;
-   
+    text-align: center;
+}
+/* 
+.loginBox{
+    display:inline;
 }
 
-.loginBox{
-    text-align: center;
-    display:inline-block;
-    width: 50%;
-}
+} */
 .registerBox{
-    display:inline-block;
-    width: 50%;
+    text-align: left;
+}
+
+
+
+
+.container_login_register > div {
+    display: inline-block;
+    vertical-align: middle;
 }

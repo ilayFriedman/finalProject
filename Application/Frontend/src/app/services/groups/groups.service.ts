@@ -94,6 +94,7 @@ export class GroupsService {
    */
 
   addUserToGroup(groupId, username, permission_To){
+    console.log("hi")
     const requestBody = {
       groupId: groupId,
       username: username,

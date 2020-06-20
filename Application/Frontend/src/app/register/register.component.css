@@ -1,4 +1,3 @@
-
 .invalid-feedback{
     color: red;
     font-size: 12px;
@@ -6,9 +5,9 @@
   .allRegister{
     height: 100%;
     padding: 1.5%;
-    width: 80%;
+    width: 100%;
     font-family: 'Calibri', ssans-seif;
-    /* background-color: red; */
+
     margin: auto;
   }
   .registerTitle {
@@ -51,19 +50,7 @@
     -webkit-appearance: menulist-button;
     height:35px;
   }
-  /* .form-style-5 .number {
-    background: #1abc9c;
-    color: #fff;
-    height: 30px;
-    width: 30px;
-    display: inline-block;
-    font-size: 0.8em;
-    margin-right: 4px;
-    line-height: 30px;
-    text-align: center;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
-    border-radius: 15px 15px 15px 0px;
-  } */
+
   
   .form-style-5 input[type="submit"],
   .form-style-5 input[type="button"]
@@ -88,4 +75,3 @@
     background: #0099ff;
     cursor: pointer;
   }
-  

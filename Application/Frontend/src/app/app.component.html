@@ -3,13 +3,14 @@
 <head>
   <title>ME - Mapper</title>
   <script src="https://kit.fontawesome.com/02fbb6f7fc.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Shadows+Into+Light" />
 </head>
 
 <body>
   <!-- toolbar -->
   <div class="doNotPrint">
     <div class="toolbar">
-      <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px;">ME-Mapper</a></span>
+      <span style="float: left;"><a mat-button [routerLink]="'/openPage'" style="font-size: 25px; font-family: 'Shadows Into Light'">ME-Mapper</a></span>
       <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">
         <!-- <kendo-autocomplete [data]="autoCompleteUserNamesFilterd" [placeholder]="'Search Nodes or Maps..'" [filterable]="true" (filterChange)="autoCompleteHandler($event)" style="width: 200px;">
                   </kendo-autocomplete> -->
