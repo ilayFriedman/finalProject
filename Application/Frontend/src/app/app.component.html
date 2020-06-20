@@ -24,7 +24,7 @@
       <span style="float: left; padding-top: 10px;" @fade *ngIf='isLoggedIn()'>
         <span>
           <input type="search" placeholder="Search Nodes / Maps" [(ngModel)]="inputTextSearch"
-            (keyup.enter)="searchNodesAndMaps()">
+            (keyup.enter)="searchNodesAndMaps()" style="font-size: 15px;">
           <div id="searchResultDiv" *ngIf="this.inputTextSearch !='' && showSearchResults && showPopDiv"
             style="width: 450px;" (clickOutside)="closeSearchDiv($event)">
             <span style="width: 450px; font-size: 23px; margin-bottom: 6px; color: gray;"><b>Nodes:</b></span>
@@ -51,15 +51,108 @@
           </div>
         </span>
       </span>
-      <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mainMenu"><a mat-button
+      <!-- go to management page button -->
+      <span *ngIf='isLoggedIn()' matTooltip="Managment Page" class="mapsMenu"><a mat-button
           [routerLink]="'/logedHome'"><span class="k-icon k-i-toggle-full-screen-mode"></span></a></span>
+
+      <!-- map edit menu -->
+      <span class="doNotPrint" style="display: inline-block;" *ngIf='mapHandler.currMap_mapViewer'>
+        <!-- <mat-toolbar style="background-color: inherit; width: fit-content; vertical-align: bottom;" class="doNotPrint">
+          <mat-toolbar-row> -->
+        <div style="display: inline-block; text-align: center;">
+
+          <button class="mapsMenu" matTooltip="Save Changes" mat-icon-button [matMenuTriggerFor]="saveOptions"
+            [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
+            <span class="k-icon k-i-save"></span>
+          </button>
+          <button class="mapsMenu" class="doNotPrint" matTooltip="Print" mat-icon-button
+            (click)="mapViewer.printOption()">
+            <span class="k-icon k-i-print"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Clear Map" mat-icon-button (click)="mapViewer.newMap()">
+            <span class="k-icon k-i-reset"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Cut (Ctrl + x)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.cutSelection()">
+            <span class="k-icon k-i-cut"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Copy (Ctrl + c)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.copySelection()">
+            <span class="k-icon k-i-copy"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Paste (Ctrl + v)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.pasteSelection()">
+            <span class="k-icon k-i-paste"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button (click)="mapViewer.undo()">
+            <span class="k-icon k-i-undo"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button (click)="mapViewer.redo()">
+            <span class="k-icon k-i-redo"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.increaseZoom(1.1)">
+            <span class="k-icon k-i-zoom-in"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Zoom Out (Ctrl + -)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.decreaseZoom(0.9)">
+            <span class="k-icon k-i-zoom-out"></span>
+          </button>
+          <button class="mapsMenu" matTooltip="Reset Zoom (Ctrl + 0)" mat-icon-button
+            (click)="mapHandler.myDiagram.commandHandler.resetZoom()">
+            <span class="k-icon k-i-zoom"></span>
+          </button>
+          <button class="mapsMenu" mat-icon-button [matMenuTriggerFor]="moreOptions">
+            <span class="k-icon k-i-more-vertical"></span>
+          </button>
+
+          <!-- <mat-slide-toggle style="font-size: 15px;  text-align: right;" class="doNotPrint"
+                            [color]="color" [(ngModel)]="subscribeCurrMap" (change)="changeSubscription()" #toggle>
+                            Subscribe
+                        </mat-slide-toggle> -->
+
+          <mat-menu #moreOptions="matMenu">
+            <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
+            <br>
+            <button mat-button (click)="mapViewer.openModal('import-modal')"
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">Import</button><br>
+          </mat-menu>
+
+          <mat-menu #saveOptions="matMenu">
+            <button class="mapsMenu" style="font-size: 15px;" mat-button (click)="mapViewer.save()"
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
+              Save
+            </button>
+            <br>
+            <button class="mapsMenu" mat-button (click)="mapViewer.saveAs()"
+              [disabled]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode">
+              Save As
+            </button>
+          </mat-menu>
+
+          <mat-menu #Export="matMenu">
+            <button mat-button (click)="mapViewer.saveAsImg('image/png', '.png')">PNG Image</button><br>
+            <button mat-button (click)="mapViewer.saveAsImg('image/jpeg', '.jpg')">JPEG Image</button><br>
+            <button mat-button (click)="mapViewer.saveAsJSON('', '.json')">JSON File</button>
+          </mat-menu>
+        </div>
+        <!-- </mat-toolbar-row>
+        </mat-toolbar> -->
+        <span id="usavedError" *ngIf='isSavedFunc()' style="display: inline-block;">
+          <b>There are unsaved changes!</b>
+        </span>
+        <span id="usavedError" *ngIf='mapHandler.isReadOnlyMode' style="display: inline-block;">
+          <b>You are in read only mode</b>
+        </span>
+      </span>
+
       <!-- Right menu buttons -->
       <span @fade style="float: right; position: relative;">
         <!--right side buttons-->
-        <span *ngIf='isLoggedIn()' class="mainMenu" style="font-size: 16px;">Hi {{fullName}}!</span>
-        <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mainMenu"><a mat-button
+        <span *ngIf='isLoggedIn()' style="font-size: 20px">Hi {{fullName}}!</span>
+        <span *ngIf='isLoggedIn()' matTooltip="Edit Profile" class="mapsMenu"><a mat-button
             [routerLink]="'/changeUserInfo'"><span class="k-icon k-i-user"></span></a></span>
-        <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mainMenu"><a mat-button (click)="logOut()"
+        <span *ngIf='isLoggedIn()' matTooltip="Log Out" class="mapsMenu"><a mat-button (click)="logOut()"
             [routerLink]="'/openPage'"><span class="k-icon k-i-logout"></span></a></span>
       </span>
     </div>

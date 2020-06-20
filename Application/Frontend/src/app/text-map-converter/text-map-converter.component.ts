@@ -42,23 +42,23 @@ export class TextMapConverterComponent implements OnInit, OnChanges {
   }
 
   constructor(private mapHandler: MapsHandlerService) { }
-nodeTemplateMap
+  nodeTemplateMap
 
   ngOnInit() {
     // this.mapModel = this.mapHandler.myDiagram.model
     console.log(this.mapHandler.myDiagram)
     // add links template
     Object.keys(this.mapHandler.myDiagram.linkTemplateMap.Fb).forEach(element => {
-      if(element != "Comment" &&  element != "")
+      if (element != "Comment" && element != "")
         this.typesOflinks.push(element)
     });
 
-      // add nodes from model
+    // add nodes from model
     this.typesOfNodes_model = this.mapHandler.myDiagram.model.nodeDataArray
 
-  // add nodes template
+    // add nodes template
     Object.keys(this.mapHandler.myDiagram.nodeTemplateMap.Fb).forEach(element => {
-      if(element != "Comment" &&  element != "")
+      if (element != "Comment" && element != "")
         this.typesOfNodes.push(element)
     });
 
@@ -74,7 +74,7 @@ nodeTemplateMap
       this.links = []
 
       for (let node of this.mapHandler.myDiagram.model.nodeDataArray) {
-        nodesKeysDict[node.key] = [node.text, node.category, node.id,node.key]
+        nodesKeysDict[node.key] = [node.text, node.category, node.id, node.key]
       }
 
       // console.log( "#@#@#@#@#@")
@@ -83,7 +83,7 @@ nodeTemplateMap
       for (let link of this.mapHandler.myDiagram.model.linkDataArray) {
         // console.log(link)
         if (nodesKeysDict[link.from] != null && nodesKeysDict[link.to] != null) {
-          console.log(nodesKeysDict[link.from])
+          // console.log(nodesKeysDict[link.from])
           translate += nodesKeysDict[link.from][1] + " " + nodesKeysDict[link.from][0].bold() + " is ";
           switch (link.category) {
             case "Association": {
@@ -111,7 +111,7 @@ nodeTemplateMap
               break;
             }
           }
-          this.links.push({linkId: link.id, text: translate, nodeFrom_Id: nodesKeysDict[link.from][2], nodeFromKey : nodesKeysDict[link.from][3], nodeTo_Id: nodesKeysDict[link.to][2], nodeToKey : nodesKeysDict[link.to][3]})
+          this.links.push({ linkId: link.id, text: translate, nodeFrom_Id: nodesKeysDict[link.from][2], nodeFromKey: nodesKeysDict[link.from][3], nodeTo_Id: nodesKeysDict[link.to][2], nodeToKey: nodesKeysDict[link.to][3] })
           translate = ""
         }
       }
@@ -252,13 +252,13 @@ nodeTemplateMap
     this.nodeSelected_From = "Choose Node"
     this.linkSelected = "Choose Link Type"
     this.nodeSelected_To = "Choose Node"
-    if(this.selectedNodes != null && this.selectedNodes[0] != null && this.selectedNodes[1] != null){
-      this.selectedNodes[0].isSelected  = false
-      this.selectedNodes[1].isSelected  = false
+    if (this.selectedNodes != null && this.selectedNodes[0] != null && this.selectedNodes[1] != null) {
+      this.selectedNodes[0].isSelected = false
+      this.selectedNodes[1].isSelected = false
     }
 
     this.selectedNodes = []
-    
+
 
     this.mapHandler.myDiagram.model.nodeDataArray.forEach(node => {
       if (node.key == this.fromColoredKey || node.key == this.toColoredKey) {
@@ -273,7 +273,7 @@ nodeTemplateMap
     this.convertMapToText()
   }
 
-  ngIfCheck(check) { 
+  ngIfCheck(check) {
     return ((typeof (check) == "string") && check != "Choose Node")
   }
 
@@ -288,12 +288,12 @@ nodeTemplateMap
   }
 
   colorChangerWhenPick(event, sender) {
-    if(event.category){
-      if(sender == "from"){
+    if (event.category) {
+      if (sender == "from") {
         this.selectedNodes[0] = this.mapHandler.myDiagram.findNodeForKey(event.key)
       }
 
-      if(sender == "to"){
+      if (sender == "to") {
         this.selectedNodes[1] = this.mapHandler.myDiagram.findNodeForKey(event.key)
 
       }
@@ -301,22 +301,22 @@ nodeTemplateMap
     }
   }
 
-  deleteLink(status){
+  deleteLink(status) {
     this.deleteDialogOpened = false;
-    if(status == "yes"){
+    if (status == "yes") {
       console.log("delete!")
       console.log(this.linkSelected.id)
-      this.mapHandler.myDiagram.model.linkDataArray = this.mapHandler.myDiagram.model.linkDataArray.filter(obj => obj.id !=  this.linkToDelete.linkId);
+      this.mapHandler.myDiagram.model.linkDataArray = this.mapHandler.myDiagram.model.linkDataArray.filter(obj => obj.id != this.linkToDelete.linkId);
       // this.mapHandler.myDiagram.model.linkDataArray = this.mapHandler.myDiagram.model.linkDataArray.slice()
       // this.mapHandler.myDiagram.model = go.Model.fromJson(this.mapHandler.myDiagram.model.toJson());
       console.log(this.mapHandler.myDiagram.model.linkDataArray)
     }
     this.linkToDelete = null;
   }
-  
-  openDialog(selectedLink){
+
+  openDialog(selectedLink) {
     this.linkToDelete = selectedLink
-    this.deleteDialogOpened =  true;
+    this.deleteDialogOpened = true;
   }
 
 }

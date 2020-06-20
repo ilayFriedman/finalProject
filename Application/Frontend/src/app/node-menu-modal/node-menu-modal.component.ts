@@ -639,7 +639,7 @@ export class NodeMenuModalComponent implements OnInit {
       this.unloadConnections();
       this.nodeToSearch = ""
       this.modalService.closeMenu('nodeMenuModal')
-      this.reInitMapViewer.emit(res);
+      this.reInitMapViewer.emit([res, map.nodeKey]);
     }).catch
       (err => {
         console.log("error with getMap for go to connected map");

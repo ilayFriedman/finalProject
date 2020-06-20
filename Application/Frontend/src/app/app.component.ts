@@ -1,6 +1,6 @@
-import { Component, ViewEncapsulation, OnInit, HostListener, ViewChild, ContentChild } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, HostListener, ViewChild, ContentChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, state } from '@angular/animations';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
@@ -44,7 +44,7 @@ export class AppComponent {
   @ContentChild(MapViewerComponent, { static: false }) mapViewer: MapViewerComponent;
   @ViewChild('results', { static: false }) results: MatSelectionList;
 
-  constructor(private router: Router, private formBuilder: FormBuilder, public mapHandler: MapsHandlerService) { }
+  constructor(private router: Router, private formBuilder: FormBuilder, public mapHandler: MapsHandlerService, public changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
     // this.logOut()
@@ -52,12 +52,22 @@ export class AppComponent {
     this.router.navigate(['/logedHome']) //remove at the end of debug
   }
 
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
+  }
+  ngOnChanges() {
+    this.changeDetector.detectChanges();
+  }
+
+
   isLoggedIn() {
     this.fullName = sessionStorage.userFullName;
     return sessionStorage.userFullName != null;
   }
 
   logOut() {
+    if (this.mapHandler.currMap_mapViewer)
+      this.mapHandler.updateInUse(" ");
     sessionStorage.clear()
   }
 
@@ -131,9 +141,12 @@ export class AppComponent {
       if (!this.mapHandler.currMap_mapViewer) {
         this.mapHandler.currMap_mapViewer = map;
         this.router.navigate(['/mapViewer'])
+        // this.mapHandler.myDiagram.select(this.mapHandler.myDiagram.findNodeForKey(res.nodeKey));
       }
       else {
-        this.mapViewer.goToConnectMap(map)
+        if (type == 'node') {
+          this.mapViewer.goToConnectMap([map, res.nodeKey])
+        }
       }
     }).catch
       (err => {
@@ -141,8 +154,11 @@ export class AppComponent {
         console.log(err)
       })
 
+  }
 
-
+  isSavedFunc() {
+    // console.log(!this.mapHandler.isSaved && !this.mapHandler.isReadOnlyMode);
+    return !this.mapHandler.isSaved && !this.mapHandler.isReadOnlyMode
   }
 
 }

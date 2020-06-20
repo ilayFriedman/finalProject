@@ -1,64 +1,43 @@
-<div id="welcomeAndMenu">
-    <br>
-    <mat-expansion-panel class="welcome">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
+<div id="body">
 
-                <div style="vertical-align: middle; display: inline-block;">
-                    <button mat-raised-button (click)="changeSubscription()"
-                        style="float: right; background-color:  rgb(26, 82, 134); color: white;" matTooltip="Subscribe"
-                        *ngIf="!subscribeCurrMap"> SUBSCRIBE
-                    </button>
-                    <button mat-raised-button (click)="changeSubscription()"
-                        style="float: right; background-color: silver;" matTooltip="Unsubscribe"
-                        *ngIf="subscribeCurrMap">SUBSCRIBED
-                    </button>
-                </div>
-                <b style="font-size: 25px; width: 100%; display: inline-block; text-align: center; ">
-                    {{mapHandler.currMap_mapViewer.MapName}}
-                </b>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <span class="doNotPrint"
-            style="font-size: 18px; width: 100%; display: inline-block; text-align: center; white-space: normal;">
-            {{this.mapHandler.currMap_mapViewer.Description}}
-        </span>
-        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
-            <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
-            {{getMapCreationTime()}}
-        </span>
-        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
-            <span class="k-icon k-i-lock" style="font-size: 15px"></span>
-            {{getUserPermission()}}
-        </span>
-    </mat-expansion-panel>
+    <div id="welcomeAndMenu">
+        <mat-expansion-panel class="welcome">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
 
-    <!-- <div class="welcome">
-        <mat-slide-toggle
-            style="font-size: 15px; width: 50%; display: inline-block;  text-align: right; vertical-align: top;"
-            class="example-margin" class="doNotPrint" [color]="color" [(ngModel)]="subscribeCurrMap"
-            (change)="changeSubscription()" #toggle>
-            Subscribe</mat-slide-toggle>
-        <span style="font-size: 25px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
-            <b>{{this.mapHandler.currMap_mapViewer.MapName}}</b>
-            <br>
-        </span>
-        <span class="doNotPrint"
-            style="font-size: 18px; width: 100%; display: inline-block; text-align: center; margin-bottom: 10px;">
-            {{this.mapHandler.currMap_mapViewer.Description}}
-        </span>
-        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
-            <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
-            {{getMapCreationTime()}}
-        </span>
-        <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
-            <span class="k-icon k-i-lock" style="font-size: 15px"></span>
-            {{getUserPermission()}}
-        </span>
-    </div> -->
+                    <div class="doNotPrint" style="vertical-align: middle; display: inline-block;">
+                        <button mat-raised-button (click)="changeSubscription()"
+                            style="float: right; background-color:  rgb(26, 82, 134); color: white;"
+                            matTooltip="Subscribe" *ngIf="!subscribeCurrMap"> SUBSCRIBE
+                        </button>
+                        <button mat-raised-button (click)="changeSubscription()"
+                            style="float: right; background-color: silver;" matTooltip="Unsubscribe"
+                            *ngIf="subscribeCurrMap">SUBSCRIBED
+                        </button>
+                    </div>
+                    <b style="font-size: 25px; width: 100%; display: inline-block; text-align: center; ">
+                        {{mapHandler.currMap_mapViewer.MapName}}
+                    </b>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <span class="doNotPrint"
+                style="font-size: 18px; width: 100%; display: inline-block; text-align: center; white-space: normal;">
+                {{this.mapHandler.currMap_mapViewer.Description}}
+            </span>
+            <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: left;">
+                <span class="k-icon  k-i-calendar" style="font-size: 15px"></span>
+                {{getMapCreationTime()}}
+            </span>
+            <span class="doNotPrint" style="font-size: 15px; width: 50%; display: inline-block;  text-align: right;">
+                <span class="k-icon k-i-lock" style="font-size: 15px"></span>
+                {{getUserPermission()}}
+            </span>
+        </mat-expansion-panel>
 
-    <div id="mapMenu" style="display: inline-block; width: 100%; vertical-align: bottom; ">
-        <span class="doNotPrint" style="float: left;">
+
+        <!-- <div id="mapMenu" style="width: 100%; vertical-align: bottom; border: solid; "> -->
+        <!-- <span class="doNotPrint" style="float: left;">
+
             <mat-toolbar style="background-color: inherit; width: fit-content; vertical-align: bottom;"
                 class="doNotPrint">
                 <mat-toolbar-row>
@@ -86,12 +65,10 @@
                             (click)="this.mapHandler.myDiagram.commandHandler.pasteSelection()">
                             <span class="k-icon k-i-paste"></span>
                         </button>
-                        <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button
-                            (click)="undo()">
+                        <button class="mapsMenu" matTooltip="Undo (Ctrl + z)" mat-icon-button (click)="undo()">
                             <span class="k-icon k-i-undo"></span>
                         </button>
-                        <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button
-                            (click)="redo()">
+                        <button class="mapsMenu" matTooltip="Redo (Ctrl + y)" mat-icon-button (click)="redo()">
                             <span class="k-icon k-i-redo"></span>
                         </button>
                         <button class="mapsMenu" matTooltip="Zoom In (Ctrl + +)" mat-icon-button
@@ -113,10 +90,6 @@
                             matTooltip="Clear Filter">
                             <span class="k-icon k-i-filter-clear"></span>
                         </button>
-                        <!-- <mat-slide-toggle style="font-size: 15px;  text-align: right;" class="doNotPrint"
-                            [color]="color" [(ngModel)]="subscribeCurrMap" (change)="changeSubscription()" #toggle>
-                            Subscribe
-                        </mat-slide-toggle> -->
 
                         <mat-menu #moreOptions="matMenu">
                             <button class="mapsMenu" mat-menu-item [matMenuTriggerFor]="Export">Export</button>
@@ -145,172 +118,182 @@
                     <br>
                 </mat-toolbar-row>
             </mat-toolbar>
-        </span>
-        <span style="float: right; width: fit-content; height: 100%; vertical-align: text-bottom;">
+        </span> -->
 
-        </span>
-
-        <span id="usavedError" *ngIf='!isSaved && !mapHandler.isReadOnlyMode'
-            style="display: inline-block; width: fit-content; vertical-align: top;">
-            Your changes are unsaved <br>
-        </span>
-        <span id="usavedError" *ngIf='doUndoFilter'
-            style="display: inline-block; width: fit-content; vertical-align: top;">
+        <div class="doNotPrint" id="usavedError" *ngIf='doUndoFilter'
+            style="vertical-align: bottom; width: 100%; font-size: 20px;">
             Filterd by "{{currNode.data.text}}"
-        </span>
-        <span id="usavedError" *ngIf='mapHandler.isReadOnlyMode' style="display: inline-block; width: fit-content;">
-            You are in read only mode
-        </span>
-        <span>
+            <span>
+                <button class="mapsMenu" mat-stroked-button (click)="undoFilterRadius()" matTooltip="Clear Filter"
+                    style="font-size: 20px; line-height: 20px; margin-left: 10px;">CLEAR
+                    <!-- <span class="k-icon k-i-filter-clear"></span> -->
+                </button>
+            </span>
 
-        </span>
+        </div>
+
+        <!-- </div> -->
+
     </div>
+    <!-- diagram, sidde bar, overviwe and converter -->
 
-</div>
-<!-- diagram, sidde bar, overviwe and converter -->
-
-<div id="block_container">
-    <div id="sideBar" class="doNotPrint">
-        <div class="titleArea">Map Shapes</div>
-        <div [hidden]="mapHandler.checkMapDisplayStatus() &lt; 2" id="myPalette"></div>
-        <div class="titleArea">Map Statistics</div>
-        <div style="height: 50%">
-            <mat-accordion>
-                <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            Nodes
-                        </mat-panel-title>
-                        <mat-panel-description>
-                            ({{mapHandler.currMap_mapViewer.Model.nodeDataArray.length}})
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-                    <div id="elementsStatistics" role="list">
-                        <b>Tasks:</b>
-                        <br>
-                        <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
-                            <button mat-stroked-button *ngIf="node.category === 'Task'"
-                                style="white-space: normal; margin-bottom: 2%; text-align: left;"
-                                (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
-                                {{node.text}}
-                            </button>
+    <div id="block_container">
+        <div id="sideBar" class="doNotPrint">
+            <div class="titleArea">Map Shapes</div>
+            <div [hidden]="mapHandler.isReadDisplayStatus() || mapHandler.isReadOnlyMode" id="myPalette"></div>
+            <div class="titleArea">Map Statistics</div>
+            <div style="height: 50%">
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Nodes
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                ({{mapHandler.currMap_mapViewer.Model.nodeDataArray.length}})
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div id="elementsStatistics" role="list">
+                            <b>Tasks:</b>
+                            <br>
+                            <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
+                                <button mat-stroked-button *ngIf="node.category === 'Task'"
+                                    style="white-space: normal; margin-bottom: 2%; text-align: left;"
+                                    (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
+                                    {{node.text}}
+                                </button>
+                            </div>
+                            <br>
+                            <b>Qualities:</b>
+                            <br>
+                            <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
+                                <button mat-stroked-button *ngIf="node.category === 'Quality'"
+                                    style="white-space: normal; margin-bottom: 2%; text-align: left;"
+                                    (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
+                                    {{node.text}}
+                                </button>
+                            </div>
                         </div>
-                        <br>
-                        <b>Qualities:</b>
-                        <br>
-                        <div *ngFor="let node of mapHandler.currMap_mapViewer.Model.nodeDataArray">
-                            <button mat-stroked-button *ngIf="node.category === 'Quality'"
-                                style="white-space: normal; margin-bottom: 2%; text-align: left;"
-                                (click)="mapHandler.myDiagram.select(mapHandler.myDiagram.findNodeForKey(node.key))">
-                                {{node.text}}
-                            </button>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Links
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                ({{mapHandler.currMap_mapViewer.Model.linkDataArray.length}})
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div id="elementsStatistics">
+                            <mat-card class="mat-body-strong" *ngFor="let link of linkStats" id="linksTypesCard">
+                                <span style="margin-right: 2%;">
+                                    {{link.category}}
+                                </span>
+                                <span>
+                                    ({{link.num}})
+                                </span>
+                            </mat-card>
                         </div>
-                    </div>
-                </mat-expansion-panel>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            Links
-                        </mat-panel-title>
-                        <mat-panel-description>
-                            ({{mapHandler.currMap_mapViewer.Model.linkDataArray.length}})
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-                    <div id="elementsStatistics">
-                        <mat-card class="mat-body-strong" *ngFor="let link of linkStats" id="linksTypesCard">
-                            <span style="margin-right: 2%;">
-                                {{link.category}}
-                            </span>
-                            <span>
-                                ({{link.num}})
-                            </span>
-                        </mat-card>
-                    </div>
 
-                    <!-- <mat-list role="list">
+                        <!-- <mat-list role="list">
                     <mat-list-item role="list" *ngFor="let link of linkStats">
                          <div  class="mat-body-strong"> -->
-                    <!-- {{link.category}}: {{link.num}} -->
-                    <!-- </div> -->
-                    <!-- </mat-list-item> 
+                        <!-- {{link.category}}: {{link.num}} -->
+                        <!-- </div> -->
+                        <!-- </mat-list-item> 
                 </mat-list> -->
-                </mat-expansion-panel>
+                    </mat-expansion-panel>
 
-            </mat-accordion>
-        </div>
-    </div>
-    <div id="myDiagram"></div>
-</div>
-
-
-<div class="doNotPrint">
-    <span id="textConverter" style='float: left; width: 70%;'>
-        <app-text-map-converter [doUpadte]=updateConverter></app-text-map-converter>
-    </span>
-    <span style='float: left; width: 30%; height: inherit;'>
-        <div class="handle">Overview</div>
-        <div id="myOverview"></div>
-    </span>
-</div>
-
-<!-- success in save map modal -->
-<jw-modal class="jw-modal" id="success-save-modal">
-    <div class="jw-modal-body">
-        <!-- <span class="close" (click)="closeModal('save-as-modal')">&times;</span> -->
-        <h1>Map saved successfully</h1>
-        <span class="k-icon k-i-check-outline" style="font-size: 100px; color: green;"></span>
-    </div>
-</jw-modal>
-
-<!-- filter radius modal -->
-<jw-modal class="jw-modal" id="filter-radius-modal">
-    <div class="jw-modal-body">
-        <span class="close" (click)="closeModal('filter-radius-modal')">&times;</span>
-        <h1>Your radius of choice:</h1>
-        <form [formGroup]="filterRadiusForm" (ngSubmit)="setFilterRadius()">
-            <mat-form-field appearance="outline">
-                <mat-label>Radius</mat-label>
-                <input matInput type="number" min="0" formControlName="filterRadius">
-                <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('min')"> Please enter positive
-                    number</mat-error>
-                <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('required')"> Please enter a number
-                </mat-error>
-
-            </mat-form-field>
-            <div>
-                <button mat-raised-button type="submit">Go</button>
+                </mat-accordion>
             </div>
-        </form>
-
+        </div>
+        <div id="myDiagram"></div>
     </div>
-</jw-modal>
 
 
-<!-- save map as modal -->
-<jw-modal class="jw-modal" id="save-as-modal">
-    <div class="jw-modal-body">
-        <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
-        <h1>Save your map as:</h1>
-        <app-save-as-map (successSaved)="successSaved()"></app-save-as-map>
+    <div class="doNotPrint">
+        <span id="textConverter" style='float: left; width: 70%;'>
+            <app-text-map-converter [doUpadte]=updateConverter></app-text-map-converter>
+        </span>
+        <span style='float: left; width: 30%; height: inherit;'>
+            <div class="handle">Overview</div>
+            <div id="myOverview"></div>
+        </span>
     </div>
-</jw-modal>
 
-<!-- import map modal -->
-<jw-modal class="jw-modal" id="import-modal">
-    <div class="jw-modal-body">
-        <span class="close" (click)="closeModal('import-modal')">&times;</span>
-        <!-- <mat-form-field appearance="outline" panelClass="example-class"> -->
-        <h1>Import Map From:</h1>
-        <input type="file" (change)="importMap($event.target.files, 'import-modal')">
-    </div>
-</jw-modal>
+    <!-- success in save map modal -->
+    <jw-modal class="jw-modal" id="success-save-modal">
+        <div class="jw-modal-body">
+            <!-- <span class="close" (click)="closeModal('save-as-modal')">&times;</span> -->
+            <h1>Map saved successfully</h1>
+            <span class="k-icon k-i-check-outline" style="font-size: 100px; color: green;"></span>
+        </div>
+    </jw-modal>
 
-<!-- node menu modal -->
-<jw-modal class="jw-modal" id="nodeMenuModal">
-    <div ngDraggable class="jw-modal-body" style="height: 100%;">
-        <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
-        <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="goToConnectMap($event)" (change)="saveChanges()"
-            style="height: 100%;">
-        </app-node-menu-modal>
-    </div>
-</jw-modal>
+    <!-- filter radius modal -->
+    <jw-modal class="jw-modal" id="filter-radius-modal">
+        <div class="jw-modal-body">
+            <span class="close" (click)="closeModal('filter-radius-modal')">&times;</span>
+            <h1>Your radius of choice:</h1>
+            <form [formGroup]="filterRadiusForm" (ngSubmit)="setFilterRadius()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Radius</mat-label>
+                    <input matInput type="number" min="0" formControlName="filterRadius">
+                    <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('min')"> Please enter positive
+                        number</mat-error>
+                    <mat-error *ngIf="filterRadiusForm.controls['filterRadius'].hasError('required')"> Please enter a
+                        number
+                    </mat-error>
+
+                </mat-form-field>
+                <div>
+                    <button mat-raised-button type="submit">Go</button>
+                </div>
+            </form>
+
+        </div>
+    </jw-modal>
+
+
+    <!-- save map as modal -->
+    <jw-modal class="jw-modal" id="save-as-modal">
+        <div class="jw-modal-body">
+            <span class="close" (click)="closeModal('save-as-modal')">&times;</span>
+            <h1>Save your map as:</h1>
+            <app-save-as-map (successSaved)="successSaved()"></app-save-as-map>
+        </div>
+    </jw-modal>
+
+    <!-- import map modal -->
+    <jw-modal class="jw-modal" id="import-modal">
+        <div class="jw-modal-body">
+            <span class="close" (click)="closeModal('import-modal')">&times;</span>
+            <!-- <mat-form-field appearance="outline" panelClass="example-class"> -->
+            <h1>Import Map From:</h1>
+            <input type="file" (change)="importMap($event.target.files, 'import-modal')">
+        </div>
+    </jw-modal>
+
+    <!-- node menu modal -->
+    <jw-modal class="jw-modal" id="nodeMenuModal">
+        <div ngDraggable class="jw-modal-body" style="height: 100%;">
+            <span class="close" (click)="closeMenuModal('nodeMenuModal')">&times;</span>
+            <app-node-menu-modal [tabNum]="tabNum" #nodeMenu (reInit)="goToConnectMap($event)" (change)="saveChanges()"
+                style="height: 100%;">
+            </app-node-menu-modal>
+        </div>
+    </jw-modal>
+
+    <kendo-dialog title="Map is free again" *ngIf="freeMap" (close)="reloadCurrMap('cancel')" [minWidth]="250">
+        <p style="margin: 30px; text-align: center;"> This map is free again, but it is possibly that there are changes
+            in
+            it. Do you whant to reload it? </p>
+        <p style="margin: 30px; text-align: center; color:red">Note: reload will bring back your permissions</p>
+        <kendo-dialog-actions>
+            <button kendoButton (click)="reloadCurrMap('no')">No thanks</button>
+            <button kendoButton (click)="reloadCurrMap('yes')" primary="true">Please reload</button>
+        </kendo-dialog-actions>
+    </kendo-dialog>
+
+
+</div>

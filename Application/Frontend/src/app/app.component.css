@@ -42,11 +42,15 @@ router-outlet {
   z-index: 2;
 }
 
-.result:hover{
+.result:hover {
   background-color: #f3f3f3;
   cursor: pointer;
 }
 
 input[type=search]::-webkit-search-cancel-button {
   -webkit-appearance: searchfield-cancel-button;
+}
+
+.mapsMenu span {
+  font-size: 20px;
 }
