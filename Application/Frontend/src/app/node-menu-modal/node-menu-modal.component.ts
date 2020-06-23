@@ -609,7 +609,7 @@ export class NodeMenuModalComponent implements OnInit {
       let mapResults: any = res;
       if (mapResults) {
         mapResults.forEach(map => {
-          if (map.MapName != this.mapHandler.currMap_mapViewer.MapName)
+          if (map.mapID != this.mapHandler.currMap_mapViewer._id)
             tmpContainingList.push(map)
         })
         this.containingMapsList = new MatTableDataSource<ConnectionElement>(tmpContainingList);
@@ -642,11 +642,19 @@ export class NodeMenuModalComponent implements OnInit {
       this.reInitMapViewer.emit([res, map.nodeKey]);
     }).catch
       (err => {
+        if (err.error == "The user's permissions are insufficient to retrieve map") {
+          console.log("no permissions");
+          this.modalService.open("no-permission-modal");
+
+        }
         console.log("error with getMap for go to connected map");
         console.log(err)
       })
   }
+  noPermission() {
 
+    setTimeout(() => { this.modalService.close("no-permission-modal"); }, 2000);
+  }
   unloadConnections() {
     this.containingMapsList = new MatTableDataSource<ConnectionElement>();
     this.connectedMapsList = [];

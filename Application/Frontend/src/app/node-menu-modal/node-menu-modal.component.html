@@ -764,3 +764,12 @@
         </div>
     </div>
 </jw-modal>
+
+<jw-modal class="jw-modal" id="no-permission-modal">
+    <div class="jw-modal-body">
+        <span class="close" (click)="modalService.close('no-permission-modal')">&times;</span>
+        <span class="k-icon k-i-minus-outline" style="font-size: 100px; color: red;"></span>
+        <h2>You do not have permissions to watch this map</h2>
+        <button (click)="modalService.close('no-permission-modal')"> Got It </button>
+    </div>
+</jw-modal>
