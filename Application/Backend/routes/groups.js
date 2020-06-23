@@ -173,7 +173,7 @@ router.post('/private/addUserToGroup', async function (req, res) {
             // await map.updateMany({'Permission.Write.id': req.body.groupId}, { $addToSet: { ["Permission.Write"] : { id: userRes._id.toString(), type: "GroupPermission"} } , async function(err) { if (err) { res.status(500).send("err in add new user to Write permission"); res.end(); } } })
             // await map.updateMany({'Permission.Read.id': req.body.groupId}, { $addToSet: { ["Permission.Read"] : { id: userRes._id.toString(), type: "GroupPermission"} } , async function(err) { if (err) { res.status(500).send("err in add new user to Read permission"); res.end(); } } })
 
-            group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: result._id.toString() } }, {new: true}, function (err, resultUpadte) {
+            group.findOneAndUpdate({ _id: req.body.groupId }, { $addToSet: { ["Members." + req.body.permission_To]: userRes._id.toString() } }, {new: true}, function (err, resultUpadte) {
                 if (err) {
                     res.status(500).send("Server error occurred.");
                     res.end();

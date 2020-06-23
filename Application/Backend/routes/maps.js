@@ -586,7 +586,7 @@ router.post('/private/addNewPermission', async function (req, res) {
     var objectToReturn = null;
     if (req.body.mapId && req.body.elementToAdd) {
         if (req.body.elementToAdd.type == "Group") {    // means element is a group
-            await group.findOne({ 'Name': req.body.elementToAdd.name, 'Creator': req.decoded._id }, async function (err, groupResult) {
+            await group.findOne({ 'Name': req.body.elementToAdd.name, 'Members.Owner': req.decoded._id }, async function (err, groupResult) {
                 if (groupResult) {
                     //clean same group element
                     await map.findOneAndUpdate({ _id: req.body.mapId }, { $pull: { ["Permission.Owner"]: { id: groupResult._id.toString(), type: "Group" } }, async function(err) { if (err) { res.status(500).send("err in clean group elements read permission"); res.end(); } } })
