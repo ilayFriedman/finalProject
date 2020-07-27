@@ -124,7 +124,7 @@
                         <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">{{sharedMap.MapName}}</td>
                         <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">{{sharedMap.permission}}</td>
                         <td style="vertical-align:center; font-size: 13px;  padding-top : 2%;">
-                            <mat-checkbox (change)="checkCheckBoxvalue($event,sharedMap)"></mat-checkbox>
+                            <mat-checkbox color="primary" (change)="checkCheckBoxvalue($event,sharedMap)"></mat-checkbox>
                         </td>
                         
                     </tr>
@@ -140,7 +140,7 @@
                     </tr>
                     <tr  colspan="4" *ngIf="sharedMapList_notAssociated.length != 0">
                         <td colspan="4"style = "text-align:center;">
-                            <button (click)="AssociatedMap()">Move to Folder!</button></td>
+                            <button (click)="AssociatedMap()" [disabled]="this.folderToSelected == '' || this.folderToSelected == null || sharedMapsToAddMyTree.length == 0">Move to Folder!</button></td>
                     </tr>
                 </table>
             </div>
@@ -330,7 +330,7 @@
                                     <span *ngIf="groupAdderClick == false" class="k-icon k-i-user"></span>
                                 </span>
                                 <span *ngIf="rowIndex > -1">
-                                    <mat-icon *ngIf="dataItem.type == 'Group'">people_alt</mat-icon>
+                                    <mat-icon *ngIf="dataItem.type != 'PersonalPermission'">people_alt</mat-icon>
                                     <span *ngIf="dataItem.type == 'PersonalPermission'" class="k-icon k-i-user"></span>
                                 </span>
                                 
@@ -412,7 +412,7 @@
                             <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem let-rowIndex="rowIndex">
                                 <span *ngIf = "groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newGroupPermission == '' || newGroupPermission == null">Add</button></span>
                                 <span *ngIf = "!groupAdderClick"><button kendoGridSaveCommand [disabled]="this.newUserPermissionChoose == null || newUserPermission == '' || newUserPermission == null">Add</button></span>
-                                    <button *ngIf ="dataItem.type == 'Group'" kendoGridRemoveCommand>Remove Group From List</button>
+                                    <button *ngIf ="dataItem.type != 'PersonalPermission'" kendoGridRemoveCommand>Remove Group From List</button>
                                     <button *ngIf ="dataItem.type == 'PersonalPermission'" kendoGridRemoveCommand>Remove User From List</button>
                                 
                                 <button kendoGridCancelCommand>Cancel</button>

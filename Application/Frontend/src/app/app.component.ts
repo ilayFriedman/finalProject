@@ -50,6 +50,7 @@ export class AppComponent {
     // this.logOut()
     // this.router.navigate(['/login'])
     this.router.navigate(['/logedHome']) //remove at the end of debug
+    this.inputTextSearch = ""
   }
 
   ngAfterViewChecked() {

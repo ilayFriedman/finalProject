@@ -627,7 +627,6 @@ newUserPermissionChoose: any
     console.log(event)
     console.log("##----###")
     console.log(this.newUserPermissionChoose)
-
     this.dbAction = true
 
     var selectedTypeObj = ""
@@ -678,6 +677,8 @@ newUserPermissionChoose: any
           this.userNotFound = true
         // console.log(err);
       });
+
+      
   }
 
   public removeUserHandler(event) {
@@ -892,12 +893,16 @@ newUserPermissionChoose: any
 // ############### permissions- not Associated  functionallity ########################
 
 checkCheckBoxvalue(event, clickedMap){
+  console.log(clickedMap)
   if(event.checked){
     this.sharedMapsToAddMyTree.push(clickedMap)
   }else{
-    this.sharedMapsToAddMyTree = this.sharedMapsToAddMyTree.filter(obj=>obj != clickedMap.mapID)
+    this.sharedMapsToAddMyTree = this.sharedMapsToAddMyTree.filter(obj=>obj.mapID != clickedMap.mapID)
   }
   console.log(event.checked)
+  console.log(this.sharedMapsToAddMyTree)
+
+  this.folderToSelected == ''
 
 
 }

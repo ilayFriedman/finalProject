@@ -65,7 +65,7 @@
             </ng-template>
         </kendo-treeview>
 
-        <div *ngIf="totalGroupsNumber == 0"
+        <div *ngIf="this.groupsArray[0].items.length == 0 && this.groupsArray[1].items.length  == 0 && this.groupsArray[2].items.length == 0"
             style="margin-top: 20%; color: rgb(196, 196, 196); width: 100%; font-size: 20px; text-align: center;">
             <span><i>You Don't Have Any Group.</i></span>
             <br><span style="font-size: 13px; text-align: center;">Click on add button to create one</span></div>

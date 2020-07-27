@@ -3,19 +3,14 @@
     font-size: 12px;
   }
   .allRegister{
-    height: 100%;
     padding: 1.5%;
-    width: 100%;
+    padding-top: 0%;
+
     font-family: 'Calibri', ssans-seif;
 
     margin: auto;
   }
-  .registerTitle {
-    /* -webkit-background-clip: text; */
-    font-size: 260%;
-    /* text-shadow: rgba(34, 34, 34, 0.84) 2px 3px 3px; */
-    color: #0d1250;
-  }
+
 
   .formElements{
     margin-bottom: 3%;
