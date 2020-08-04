@@ -140,7 +140,7 @@
                     </tr>
                     <tr  colspan="4" *ngIf="sharedMapList_notAssociated.length != 0">
                         <td colspan="4"style = "text-align:center;">
-                            <button (click)="AssociatedMap()" [disabled]="this.folderToSelected == '' || this.folderToSelected == null || sharedMapsToAddMyTree.length == 0">Move to Folder!</button></td>
+                            <button (click)="AssociatedMap()" [disabled]="this.folderToSelected == '' || this.folderToSelected == null">Move to Folder!</button></td>
                     </tr>
                 </table>
             </div>

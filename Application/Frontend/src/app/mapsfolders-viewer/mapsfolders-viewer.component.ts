@@ -103,7 +103,7 @@ export class MapsfoldersViewerComponent implements OnInit {
   ngOnInit() {
     // check user connected
     if(sessionStorage.token != null){
-      console.log(this.ownerGroupsNames)
+      // console.log(this.ownerGroupsNames)
           // folders init : find the root Folder
     this.folderHandler.getRootUserFolder().then(res => {
       
@@ -200,6 +200,7 @@ export class MapsfoldersViewerComponent implements OnInit {
         console.log('======create new folder request OK=====');
         var jsonRes = JSON.parse(res)
         self.selectedNode.items.push({ text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true })
+        console.log({ text: jsonRes.Name, folderID: jsonRes._id, Description: jsonRes.Description, parentNode: self.selectedNode, items: [], isFolder: true })
         this.folderNamesList.push({folderID: jsonRes._id, name: jsonRes.Name})
         this.actionInModalIsSuccecs = true
        this.closeModal("addFolderModal");
@@ -907,18 +908,22 @@ checkCheckBoxvalue(event, clickedMap){
 
 }
 
-getNodeFromTree(currNode,folderID){
-  if(currNode.isFolder && currNode.folderID == folderID){
+getNodeFromTree(currNode,folderID, ans){
+  if(currNode.isFolder && currNode.folderID.includes(folderID)){
     return currNode
   }
-    if(currNode.items != null){
-      for (let item of currNode.items) {
-        if(item.isFolder)
-          return this.getNodeFromTree(item, folderID)
-      }
+  if(currNode.items.length != 0){
+    currNode.items.forEach(item => {
+      console.log(item)
+      if(item.isFolder)
+        ans = this.getNodeFromTree(item, folderID,ans)
+      }); 
   }
 
+  return ans
+
 }
+
 AssociatedMap(){
   // console.log(sharedMap)
   // console.log(this.folderToSelected)
@@ -926,29 +931,44 @@ AssociatedMap(){
 //   "mapID" : req.body.mapID, "mapName": req.body.mapName
   var folderToSelected = JSON.parse(JSON.stringify(this.folderToSelected))
   var subList = []
+  var self = this
   this.sharedMapsToAddMyTree.forEach(element => {
     subList.push({mapID: element.mapID, mapName: element.MapName})
   });
 
-  // console.log(subList)
+  console.log(subList)
   this.folderHandler.addExistMapToFolder(folderToSelected.folderID,subList).then(res => {
+    console.log("listSeleceted:")
+    console.log(this.sharedMapsToAddMyTree)
     this.sharedMapsToAddMyTree.forEach(sharedMap => {
       this.sharedMapList_notAssociated = this.sharedMapList_notAssociated.filter(item => item.mapID != sharedMap.mapID);
+
       this.sharedMapList_Associated.push(sharedMap)
-      this.folderToSelected == ''
+      // this.folderToSelected == ''
 
       // add to tree
-      var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected .folderID)
-      parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
-      // console.log(parentFolder)
-      this.totalMapsCounter++;
-    });
+      console.log(folderToSelected)
+      console.log(this.data[0])
+      var parentFolder = this.getNodeFromTree(this.data[0],folderToSelected.folderID,null)
+      console.log(parentFolder)
+      if(parentFolder != null){
+        parentFolder.items.unshift({ text: sharedMap.MapName, mapID: sharedMap.mapID, parentNode: parentFolder, Description: "", usersPermissionsMap: "",permission: sharedMap.permission ,isFolder: false })
+        // console.log(parentFolder)
+        this.totalMapsCounter++;
 
+      // delete 
+
+      }
+      // this.folderToSelected == ''
+    });
+    this.sharedMapsToAddMyTree = []
   }).catch
     (err => {
       console.log("error with creation - promise return");
       console.log(err)
     })
+    subList = []
+    
 }
   
 
